@@ -1271,15 +1271,15 @@ class BaseLLMHTTPHandler:
             client = _get_httpx_client()
 
         try:
-            # Make the POST request - clean and simple, always use data and files
+            # Make the POST request.
+            # If files is None and data is a dict, send as JSON body.
+            # If files is provided, send as multipart (data=form_fields, files=files).
             response = client.post(
                 url=complete_url,
                 headers=headers,
-                data=data,
+                data=data if files is not None else None,
                 files=files,
-                json=(
-                    data if files is None and isinstance(data, dict) else None
-                ),  # Use json param only when no files and data is dict
+                json=data if files is None and isinstance(data, dict) else None,
                 timeout=timeout,
             )
         except Exception as e:
@@ -1346,15 +1346,15 @@ class BaseLLMHTTPHandler:
             async_httpx_client = client
 
         try:
-            # Make the async POST request - clean and simple, always use data and files
+            # Make the async POST request.
+            # If files is None and data is a dict, send as JSON body.
+            # If files is provided, send as multipart (data=form_fields, files=files).
             response = await async_httpx_client.post(
                 url=complete_url,
                 headers=headers,
-                data=data,
+                data=data if files is not None else None,
                 files=files,
-                json=(
-                    data if files is None and isinstance(data, dict) else None
-                ),  # Use json param only when no files and data is dict
+                json=data if files is None and isinstance(data, dict) else None,
                 timeout=timeout,
             )
         except Exception as e:
