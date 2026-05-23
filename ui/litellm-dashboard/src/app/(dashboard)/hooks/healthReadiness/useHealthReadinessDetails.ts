@@ -1,8 +1,8 @@
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import {
   getGlobalLitellmHeaderName,
   getProxyBaseUrl,
 } from "@/components/networking";
+import { type UseQueryResult, useQuery } from "@tanstack/react-query";
 import { createQueryKeys } from "../common/queryKeysFactory";
 
 const healthReadinessDetailsKeys = createQueryKeys("healthReadinessDetails");

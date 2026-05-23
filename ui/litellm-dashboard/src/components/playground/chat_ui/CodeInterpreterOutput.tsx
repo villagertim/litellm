@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { Collapse, Spin } from "antd";
+import {
+  getGlobalLitellmHeaderName,
+  getProxyBaseUrl,
+} from "@/components/networking";
 import {
   CodeOutlined,
   DownloadOutlined,
@@ -7,9 +9,11 @@ import {
   FileTextOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
+import { Collapse, Spin } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coy } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "@/components/networking";
 
 interface ContainerFileCitation {
   type: "container_file_citation";
@@ -34,21 +38,24 @@ const CodeInterpreterOutput: React.FC<CodeInterpreterOutputProps> = ({
   accessToken,
 }) => {
   const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
-  const [loadingImages, setLoadingImages] = useState<Record<string, boolean>>({});
+  const [loadingImages, setLoadingImages] = useState<Record<string, boolean>>(
+    {},
+  );
   const proxyBaseUrl = getProxyBaseUrl();
 
   // Fetch images from container files API
   useEffect(() => {
     const fetchImages = async () => {
       for (const annotation of annotations) {
-        const isImage = annotation.filename?.toLowerCase().endsWith(".png") ||
-                       annotation.filename?.toLowerCase().endsWith(".jpg") ||
-                       annotation.filename?.toLowerCase().endsWith(".jpeg") ||
-                       annotation.filename?.toLowerCase().endsWith(".gif");
-        
+        const isImage =
+          annotation.filename?.toLowerCase().endsWith(".png") ||
+          annotation.filename?.toLowerCase().endsWith(".jpg") ||
+          annotation.filename?.toLowerCase().endsWith(".jpeg") ||
+          annotation.filename?.toLowerCase().endsWith(".gif");
+
         if (isImage && annotation.container_id && annotation.file_id) {
-          setLoadingImages(prev => ({ ...prev, [annotation.file_id]: true }));
-          
+          setLoadingImages((prev) => ({ ...prev, [annotation.file_id]: true }));
+
           try {
             // Fetch image content from container files API
             const response = await fetch(
@@ -57,18 +64,21 @@ const CodeInterpreterOutput: React.FC<CodeInterpreterOutputProps> = ({
                 headers: {
                   [getGlobalLitellmHeaderName()]: `Bearer ${accessToken}`,
                 },
-              }
+              },
             );
-            
+
             if (response.ok) {
               const blob = await response.blob();
               const url = URL.createObjectURL(blob);
-              setImageUrls(prev => ({ ...prev, [annotation.file_id]: url }));
+              setImageUrls((prev) => ({ ...prev, [annotation.file_id]: url }));
             }
           } catch (error) {
             console.error("Error fetching image:", error);
           } finally {
-            setLoadingImages(prev => ({ ...prev, [annotation.file_id]: false }));
+            setLoadingImages((prev) => ({
+              ...prev,
+              [annotation.file_id]: false,
+            }));
           }
         }
       }
@@ -80,7 +90,7 @@ const CodeInterpreterOutput: React.FC<CodeInterpreterOutputProps> = ({
 
     // Cleanup URLs on unmount
     return () => {
-      Object.values(imageUrls).forEach(url => URL.revokeObjectURL(url));
+      Object.values(imageUrls).forEach((url) => URL.revokeObjectURL(url));
     };
   }, [annotations, accessToken, proxyBaseUrl]);
 
@@ -92,9 +102,9 @@ const CodeInterpreterOutput: React.FC<CodeInterpreterOutputProps> = ({
           headers: {
             [getGlobalLitellmHeaderName()]: `Bearer ${accessToken}`,
           },
-        }
+        },
       );
-      
+
       if (response.ok) {
         const blob = await response.blob();
         const url = URL.createObjectURL(blob);
@@ -112,18 +122,20 @@ const CodeInterpreterOutput: React.FC<CodeInterpreterOutputProps> = ({
   };
 
   // Separate images and other files
-  const imageAnnotations = annotations.filter(a => 
-    a.filename?.toLowerCase().endsWith(".png") ||
-    a.filename?.toLowerCase().endsWith(".jpg") ||
-    a.filename?.toLowerCase().endsWith(".jpeg") ||
-    a.filename?.toLowerCase().endsWith(".gif")
+  const imageAnnotations = annotations.filter(
+    (a) =>
+      a.filename?.toLowerCase().endsWith(".png") ||
+      a.filename?.toLowerCase().endsWith(".jpg") ||
+      a.filename?.toLowerCase().endsWith(".jpeg") ||
+      a.filename?.toLowerCase().endsWith(".gif"),
   );
-  
-  const fileAnnotations = annotations.filter(a => 
-    !a.filename?.toLowerCase().endsWith(".png") &&
-    !a.filename?.toLowerCase().endsWith(".jpg") &&
-    !a.filename?.toLowerCase().endsWith(".jpeg") &&
-    !a.filename?.toLowerCase().endsWith(".gif")
+
+  const fileAnnotations = annotations.filter(
+    (a) =>
+      !a.filename?.toLowerCase().endsWith(".png") &&
+      !a.filename?.toLowerCase().endsWith(".jpg") &&
+      !a.filename?.toLowerCase().endsWith(".jpeg") &&
+      !a.filename?.toLowerCase().endsWith(".gif"),
   );
 
   if (!code && annotations.length === 0) {
@@ -166,11 +178,16 @@ const CodeInterpreterOutput: React.FC<CodeInterpreterOutputProps> = ({
 
       {/* Generated Images */}
       {imageAnnotations.map((annotation) => (
-        <div key={annotation.file_id} className="rounded-lg border border-gray-200 overflow-hidden">
+        <div
+          key={annotation.file_id}
+          className="rounded-lg border border-gray-200 overflow-hidden"
+        >
           {loadingImages[annotation.file_id] ? (
             <div className="flex items-center justify-center p-8 bg-gray-50">
               <Spin indicator={<LoadingOutlined spin />} />
-              <span className="ml-2 text-sm text-gray-500">Loading image...</span>
+              <span className="ml-2 text-sm text-gray-500">
+                Loading image...
+              </span>
             </div>
           ) : imageUrls[annotation.file_id] ? (
             <div>
@@ -221,4 +238,3 @@ const CodeInterpreterOutput: React.FC<CodeInterpreterOutputProps> = ({
 };
 
 export default CodeInterpreterOutput;
-

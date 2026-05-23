@@ -1,10 +1,11 @@
+import type { Team } from "@/components/key_team_helpers/key_list";
 import type { DateRangePickerValue } from "@tremor/react";
 import { Button, Text } from "@tremor/react";
 import { Select } from "antd";
-import React, { useState } from "react";
+import type React from "react";
+import { useState } from "react";
 import EntityUsageExportModal from "./EntityUsageExportModal";
 import type { EntitySpendData, EntityType } from "./types";
-import type { Team } from "@/components/key_team_helpers/key_list";
 
 interface UsageExportHeaderProps {
   dateValue: DateRangePickerValue;
@@ -64,7 +65,11 @@ const UsageExportHeader: React.FC<UsageExportHeaderProps> = ({
                 mode={filterMode === "single" ? undefined : "multiple"}
                 style={{ width: "100%" }}
                 placeholder={filterPlaceholder}
-                value={filterMode === "single" ? (selectedFilters[0] ?? undefined) : selectedFilters}
+                value={
+                  filterMode === "single"
+                    ? selectedFilters[0] ?? undefined
+                    : selectedFilters
+                }
                 onChange={(value: any) => {
                   if (filterMode === "single") {
                     onFiltersChange?.(value ? [value] : []);
@@ -82,7 +87,12 @@ const UsageExportHeader: React.FC<UsageExportHeaderProps> = ({
             <Button
               onClick={() => setIsExportModalOpen(true)}
               icon={() => (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"

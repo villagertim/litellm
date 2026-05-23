@@ -1,10 +1,14 @@
-import React from "react";
-import { TextInput, Button } from "@tremor/react";
-import { Select as AntdSelect, Form, Tooltip, Radio } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { Providers, provider_map, providerLogoMap } from "../provider_info_helpers";
-import { MarginConfig } from "./types";
+import { Button, TextInput } from "@tremor/react";
+import { Select as AntdSelect, Form, Radio, Tooltip } from "antd";
+import type React from "react";
+import {
+  Providers,
+  providerLogoMap,
+  provider_map,
+} from "../provider_info_helpers";
 import { handleImageError } from "./provider_display_helpers";
+import type { MarginConfig } from "./types";
 
 interface AddMarginFormProps {
   marginConfig: MarginConfig;
@@ -53,34 +57,47 @@ const AddMarginForm: React.FC<AddMarginFormProps> = ({
           size="large"
           optionFilterProp="children"
           filterOption={(input, option) =>
-            String(option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+            String(option?.label ?? "")
+              .toLowerCase()
+              .includes(input.toLowerCase())
           }
         >
-          <AntdSelect.Option key="global" value="global" label="Global (All Providers)">
+          <AntdSelect.Option
+            key="global"
+            value="global"
+            label="Global (All Providers)"
+          >
             <div className="flex items-center space-x-2">
               <span className="font-medium">Global (All Providers)</span>
             </div>
           </AntdSelect.Option>
-          {Object.entries(Providers).map(([providerEnum, providerDisplayName]) => {
-            const providerValue = provider_map[providerEnum as keyof typeof provider_map];
-            // Only show providers that don't already have a margin configured
-            if (providerValue && marginConfig[providerValue]) {
-              return null;
-            }
-            return (
-              <AntdSelect.Option key={providerEnum} value={providerEnum} label={providerDisplayName}>
-                <div className="flex items-center space-x-2">
-                  <img
-                    src={providerLogoMap[providerDisplayName]}
-                    alt={`${providerEnum} logo`}
-                    className="w-5 h-5"
-                    onError={(e) => handleImageError(e, providerDisplayName)}
-                  />
-                  <span>{providerDisplayName}</span>
-                </div>
-              </AntdSelect.Option>
-            );
-          })}
+          {Object.entries(Providers).map(
+            ([providerEnum, providerDisplayName]) => {
+              const providerValue =
+                provider_map[providerEnum as keyof typeof provider_map];
+              // Only show providers that don't already have a margin configured
+              if (providerValue && marginConfig[providerValue]) {
+                return null;
+              }
+              return (
+                <AntdSelect.Option
+                  key={providerEnum}
+                  value={providerEnum}
+                  label={providerDisplayName}
+                >
+                  <div className="flex items-center space-x-2">
+                    <img
+                      src={providerLogoMap[providerDisplayName]}
+                      alt={`${providerEnum} logo`}
+                      className="w-5 h-5"
+                      onError={(e) => handleImageError(e, providerDisplayName)}
+                    />
+                    <span>{providerDisplayName}</span>
+                  </div>
+                </AntdSelect.Option>
+              );
+            },
+          )}
         </AntdSelect>
       </Form.Item>
 
@@ -120,11 +137,15 @@ const AddMarginForm: React.FC<AddMarginFormProps> = ({
             {
               validator: (_, value) => {
                 if (!value) {
-                  return Promise.reject(new Error("Please enter a margin percentage"));
+                  return Promise.reject(
+                    new Error("Please enter a margin percentage"),
+                  );
                 }
-                const numValue = parseFloat(value);
+                const numValue = Number.parseFloat(value);
                 if (isNaN(numValue) || numValue < 0 || numValue > 1000) {
-                  return Promise.reject(new Error("Percentage must be between 0 and 1000"));
+                  return Promise.reject(
+                    new Error("Percentage must be between 0 and 1000"),
+                  );
                 }
                 return Promise.resolve();
               },
@@ -158,11 +179,15 @@ const AddMarginForm: React.FC<AddMarginFormProps> = ({
             {
               validator: (_, value) => {
                 if (!value) {
-                  return Promise.reject(new Error("Please enter a fixed amount"));
+                  return Promise.reject(
+                    new Error("Please enter a fixed amount"),
+                  );
                 }
-                const numValue = parseFloat(value);
+                const numValue = Number.parseFloat(value);
                 if (isNaN(numValue) || numValue < 0) {
-                  return Promise.reject(new Error("Fixed amount must be non-negative"));
+                  return Promise.reject(
+                    new Error("Fixed amount must be non-negative"),
+                  );
                 }
                 return Promise.resolve();
               },
@@ -182,11 +207,11 @@ const AddMarginForm: React.FC<AddMarginFormProps> = ({
       )}
 
       <div className="flex items-center justify-end space-x-3 pt-6 border-t border-gray-100">
-        <Button 
+        <Button
           variant="primary"
-          onClick={onAddProvider} 
+          onClick={onAddProvider}
           disabled={
-            !selectedProvider || 
+            !selectedProvider ||
             (marginType === "percentage" && !percentageValue) ||
             (marginType === "fixed" && !fixedAmountValue)
           }
@@ -199,4 +224,3 @@ const AddMarginForm: React.FC<AddMarginFormProps> = ({
 };
 
 export default AddMarginForm;
-

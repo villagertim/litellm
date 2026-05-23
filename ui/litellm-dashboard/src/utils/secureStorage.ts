@@ -1,10 +1,9 @@
 function encode(value: string): string {
   // btoa cannot handle characters outside Latin-1, so we percent-encode first.
   return btoa(
-    encodeURIComponent(value).replace(
-      /%([0-9A-F]{2})/g,
-      (_, p1) => String.fromCharCode(parseInt(p1, 16))
-    )
+    encodeURIComponent(value).replace(/%([0-9A-F]{2})/g, (_, p1) =>
+      String.fromCharCode(Number.parseInt(p1, 16)),
+    ),
   );
 }
 
@@ -13,7 +12,7 @@ function decode(encoded: string): string {
     atob(encoded)
       .split("")
       .map((c) => "%" + c.charCodeAt(0).toString(16).padStart(2, "0"))
-      .join("")
+      .join(""),
   );
 }
 

@@ -1,19 +1,19 @@
-import React from "react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, act } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import MCPSemanticFilterSettings from "./MCPSemanticFilterSettings";
 import { useMCPSemanticFilterSettings } from "@/app/(dashboard)/hooks/mcpSemanticFilterSettings/useMCPSemanticFilterSettings";
 import { useUpdateMCPSemanticFilterSettings } from "@/app/(dashboard)/hooks/mcpSemanticFilterSettings/useUpdateMCPSemanticFilterSettings";
+import { act, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import type React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import MCPSemanticFilterSettings from "./MCPSemanticFilterSettings";
 
 vi.mock(
   "@/app/(dashboard)/hooks/mcpSemanticFilterSettings/useMCPSemanticFilterSettings",
-  () => ({ useMCPSemanticFilterSettings: vi.fn() })
+  () => ({ useMCPSemanticFilterSettings: vi.fn() }),
 );
 
 vi.mock(
   "@/app/(dashboard)/hooks/mcpSemanticFilterSettings/useUpdateMCPSemanticFilterSettings",
-  () => ({ useUpdateMCPSemanticFilterSettings: vi.fn() })
+  () => ({ useUpdateMCPSemanticFilterSettings: vi.fn() }),
 );
 
 vi.mock("@/components/playground/llm_calls/fetch_models", () => ({
@@ -46,7 +46,9 @@ const defaultSettingsData = {
 };
 
 // Helper that renders the component and flushes the fetchAvailableModels effect
-async function renderSettings(props: React.ComponentProps<typeof MCPSemanticFilterSettings>) {
+async function renderSettings(
+  props: React.ComponentProps<typeof MCPSemanticFilterSettings>,
+) {
   render(<MCPSemanticFilterSettings {...props} />);
   if (props.accessToken) {
     // Let the async fetchAvailableModels effect settle to avoid act() warnings
@@ -82,7 +84,9 @@ describe("MCPSemanticFilterSettings", () => {
 
   it("should not render the form when accessToken is null", () => {
     render(<MCPSemanticFilterSettings accessToken={null} />);
-    expect(screen.queryByText("Enable Semantic Filtering")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Enable Semantic Filtering"),
+    ).not.toBeInTheDocument();
   });
 
   it("should not show the settings content while loading", async () => {
@@ -93,7 +97,9 @@ describe("MCPSemanticFilterSettings", () => {
       error: null,
     } as any);
     await renderSettings({ accessToken: "test-token" });
-    expect(screen.queryByText("Semantic Tool Filtering")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Semantic Tool Filtering"),
+    ).not.toBeInTheDocument();
   });
 
   it("should show an error alert when data fails to load", async () => {
@@ -105,7 +111,7 @@ describe("MCPSemanticFilterSettings", () => {
     } as any);
     await renderSettings({ accessToken: "test-token" });
     expect(
-      screen.getByText("Could not load MCP Semantic Filter settings")
+      screen.getByText("Could not load MCP Semantic Filter settings"),
     ).toBeInTheDocument();
     expect(screen.getByText("Network error")).toBeInTheDocument();
   });
@@ -137,7 +143,7 @@ describe("MCPSemanticFilterSettings", () => {
   it("should have Save Settings button disabled initially", async () => {
     await renderSettings({ accessToken: "test-token" });
     expect(
-      screen.getByRole("button", { name: /save settings/i })
+      screen.getByRole("button", { name: /save settings/i }),
     ).toBeDisabled();
   });
 
@@ -145,11 +151,15 @@ describe("MCPSemanticFilterSettings", () => {
     const user = userEvent.setup();
     await renderSettings({ accessToken: "test-token" });
 
-    expect(screen.getByRole("button", { name: /save settings/i })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /save settings/i }),
+    ).toBeDisabled();
 
     await user.click(screen.getByRole("switch"));
 
-    expect(screen.getByRole("button", { name: /save settings/i })).not.toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /save settings/i }),
+    ).not.toBeDisabled();
   });
 
   it("should show an error alert when the mutation fails", async () => {

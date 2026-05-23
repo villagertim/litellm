@@ -1,8 +1,12 @@
-import React from "react";
-import { Tooltip, InputNumber, Collapse, Badge } from "antd";
-import { InfoCircleOutlined, DollarOutlined, ToolOutlined } from "@ant-design/icons";
-import { Card, Title, Text } from "@tremor/react";
-import { MCPServerCostInfo } from "./types";
+import {
+  DollarOutlined,
+  InfoCircleOutlined,
+  ToolOutlined,
+} from "@ant-design/icons";
+import { Card, Text, Title } from "@tremor/react";
+import { Badge, Collapse, InputNumber, Tooltip } from "antd";
+import type React from "react";
+import type { MCPServerCostInfo } from "./types";
 
 interface MCPServerCostConfigProps {
   value?: MCPServerCostInfo;
@@ -99,11 +103,18 @@ const MCPServerCostConfig: React.FC<MCPServerCostConfigProps> = ({
                     children: (
                       <div className="space-y-3 max-h-64 overflow-y-auto">
                         {tools.map((tool, index) => (
-                          <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div
+                            key={index}
+                            className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                          >
                             <div className="flex-1">
-                              <Text className="font-medium text-gray-900">{tool.name}</Text>
+                              <Text className="font-medium text-gray-900">
+                                {tool.name}
+                              </Text>
                               {tool.description && (
-                                <Text className="text-gray-500 text-sm block mt-1">{tool.description}</Text>
+                                <Text className="text-gray-500 text-sm block mt-1">
+                                  {tool.description}
+                                </Text>
                               )}
                             </div>
                             <div className="ml-4">
@@ -112,8 +123,12 @@ const MCPServerCostConfig: React.FC<MCPServerCostConfigProps> = ({
                                 step={0.0001}
                                 precision={4}
                                 placeholder="Use default"
-                                value={value.tool_name_to_cost_per_query?.[tool.name]}
-                                onChange={(cost) => handleToolCostChange(tool.name, cost)}
+                                value={
+                                  value.tool_name_to_cost_per_query?.[tool.name]
+                                }
+                                onChange={(cost) =>
+                                  handleToolCostChange(tool.name, cost)
+                                }
                                 disabled={disabled}
                                 style={{ width: "120px" }}
                                 addonBefore="$"
@@ -131,13 +146,15 @@ const MCPServerCostConfig: React.FC<MCPServerCostConfigProps> = ({
         </div>
 
         {(value.default_cost_per_query ||
-          (value.tool_name_to_cost_per_query && Object.keys(value.tool_name_to_cost_per_query).length > 0)) && (
+          (value.tool_name_to_cost_per_query &&
+            Object.keys(value.tool_name_to_cost_per_query).length > 0)) && (
           <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <Text className="text-blue-800 font-medium">Cost Summary:</Text>
             <div className="mt-2 space-y-1">
               {value.default_cost_per_query && (
                 <Text className="text-blue-700">
-                  • Default cost: ${value.default_cost_per_query.toFixed(4)} per query
+                  • Default cost: ${value.default_cost_per_query.toFixed(4)} per
+                  query
                 </Text>
               )}
               {value.tool_name_to_cost_per_query &&

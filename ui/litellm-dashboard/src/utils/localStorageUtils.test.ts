@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  emitLocalStorageChange,
   LOCAL_STORAGE_EVENT,
+  emitLocalStorageChange,
   getLocalStorageItem,
-  setLocalStorageItem,
   removeLocalStorageItem,
+  setLocalStorageItem,
 } from "./localStorageUtils";
 
 describe("emitLocalStorageChange", () => {
@@ -40,7 +40,9 @@ describe("getLocalStorageItem", () => {
   });
 
   it("should return the stored value when it exists", () => {
-    const getItemSpy = vi.spyOn(Storage.prototype, "getItem").mockReturnValue("test-value");
+    const getItemSpy = vi
+      .spyOn(Storage.prototype, "getItem")
+      .mockReturnValue("test-value");
 
     const result = getLocalStorageItem("test-key");
 
@@ -52,14 +54,19 @@ describe("getLocalStorageItem", () => {
 
   it("should return null and log warning when localStorage throws an error", () => {
     const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-    const getItemSpy = vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
-      throw new Error("Storage quota exceeded");
-    });
+    const getItemSpy = vi
+      .spyOn(Storage.prototype, "getItem")
+      .mockImplementation(() => {
+        throw new Error("Storage quota exceeded");
+      });
 
     const result = getLocalStorageItem("test-key");
 
     expect(result).toBeNull();
-    expect(consoleSpy).toHaveBeenCalledWith('Error reading localStorage key "test-key":', expect.any(Error));
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Error reading localStorage key "test-key":',
+      expect.any(Error),
+    );
 
     consoleSpy.mockRestore();
     getItemSpy.mockRestore();
@@ -98,13 +105,18 @@ describe("setLocalStorageItem", () => {
 
   it("should log warning when localStorage throws an error", () => {
     const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-    const setItemSpy = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
-      throw new Error("Storage quota exceeded");
-    });
+    const setItemSpy = vi
+      .spyOn(Storage.prototype, "setItem")
+      .mockImplementation(() => {
+        throw new Error("Storage quota exceeded");
+      });
 
     setLocalStorageItem("test-key", "test-value");
 
-    expect(consoleSpy).toHaveBeenCalledWith('Error setting localStorage key "test-key":', expect.any(Error));
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Error setting localStorage key "test-key":',
+      expect.any(Error),
+    );
 
     consoleSpy.mockRestore();
     setItemSpy.mockRestore();
@@ -143,13 +155,18 @@ describe("removeLocalStorageItem", () => {
 
   it("should log warning when localStorage throws an error", () => {
     const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-    const removeItemSpy = vi.spyOn(Storage.prototype, "removeItem").mockImplementation(() => {
-      throw new Error("Storage operation failed");
-    });
+    const removeItemSpy = vi
+      .spyOn(Storage.prototype, "removeItem")
+      .mockImplementation(() => {
+        throw new Error("Storage operation failed");
+      });
 
     removeLocalStorageItem("test-key");
 
-    expect(consoleSpy).toHaveBeenCalledWith('Error removing localStorage key "test-key":', expect.any(Error));
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Error removing localStorage key "test-key":',
+      expect.any(Error),
+    );
 
     consoleSpy.mockRestore();
     removeItemSpy.mockRestore();

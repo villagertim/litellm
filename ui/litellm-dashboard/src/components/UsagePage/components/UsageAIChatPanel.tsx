@@ -1,7 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Button, Select, Input, Spin } from "antd";
+import { Button, Input, Select, Spin } from "antd";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { modelHubCall, usageAiChatStream, UsageAiToolCallEvent } from "../../networking";
+import {
+  type UsageAiToolCallEvent,
+  modelHubCall,
+  usageAiChatStream,
+} from "../../networking";
 
 const { TextArea } = Input;
 
@@ -34,9 +39,10 @@ const TOOL_ICONS: Record<string, string> = {
 const ToolCallDisplay: React.FC<{ step: ToolCallStep }> = ({ step }) => {
   const icon = TOOL_ICONS[step.tool_name] || "🔧";
   const args = step.arguments;
-  const dateRange = args.start_date && args.end_date
-    ? `${args.start_date} → ${args.end_date}`
-    : "";
+  const dateRange =
+    args.start_date && args.end_date
+      ? `${args.start_date} → ${args.end_date}`
+      : "";
   const filter = args.team_ids || args.tags || args.user_id || "";
 
   return (
@@ -54,12 +60,8 @@ const ToolCallDisplay: React.FC<{ step: ToolCallStep }> = ({ step }) => {
         <div className="font-medium text-gray-700">
           {icon} {step.tool_label}
         </div>
-        {dateRange && (
-          <div className="text-gray-500 mt-0.5">{dateRange}</div>
-        )}
-        {filter && (
-          <div className="text-gray-500 mt-0.5">Filter: {filter}</div>
-        )}
+        {dateRange && <div className="text-gray-500 mt-0.5">{dateRange}</div>}
+        {filter && <div className="text-gray-500 mt-0.5">Filter: {filter}</div>}
         {step.status === "error" && step.error && (
           <div className="text-red-600 mt-0.5">{step.error}</div>
         )}
@@ -72,13 +74,25 @@ const MarkdownContent: React.FC<{ content: string }> = ({ content }) => (
   <ReactMarkdown
     components={{
       p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
-      strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
-      ul: ({ children }) => <ul className="list-disc pl-4 mb-2 space-y-0.5">{children}</ul>,
-      ol: ({ children }) => <ol className="list-decimal pl-4 mb-2 space-y-0.5">{children}</ol>,
+      strong: ({ children }) => (
+        <strong className="font-semibold">{children}</strong>
+      ),
+      ul: ({ children }) => (
+        <ul className="list-disc pl-4 mb-2 space-y-0.5">{children}</ul>
+      ),
+      ol: ({ children }) => (
+        <ol className="list-decimal pl-4 mb-2 space-y-0.5">{children}</ol>
+      ),
       li: ({ children }) => <li>{children}</li>,
-      h1: ({ children }) => <h4 className="font-semibold text-sm mt-2 mb-1">{children}</h4>,
-      h2: ({ children }) => <h4 className="font-semibold text-sm mt-2 mb-1">{children}</h4>,
-      h3: ({ children }) => <h4 className="font-semibold text-sm mt-2 mb-1">{children}</h4>,
+      h1: ({ children }) => (
+        <h4 className="font-semibold text-sm mt-2 mb-1">{children}</h4>
+      ),
+      h2: ({ children }) => (
+        <h4 className="font-semibold text-sm mt-2 mb-1">{children}</h4>
+      ),
+      h3: ({ children }) => (
+        <h4 className="font-semibold text-sm mt-2 mb-1">{children}</h4>
+      ),
       code: ({ children, className }) => {
         const isBlock = className?.includes("language-");
         return isBlock ? (
@@ -86,7 +100,9 @@ const MarkdownContent: React.FC<{ content: string }> = ({ content }) => (
             <code>{children}</code>
           </pre>
         ) : (
-          <code className="px-1 py-0.5 rounded bg-gray-100 text-xs font-mono">{children}</code>
+          <code className="px-1 py-0.5 rounded bg-gray-100 text-xs font-mono">
+            {children}
+          </code>
         );
       },
       table: ({ children }) => (
@@ -94,8 +110,14 @@ const MarkdownContent: React.FC<{ content: string }> = ({ content }) => (
           <table className="text-xs border-collapse w-full">{children}</table>
         </div>
       ),
-      th: ({ children }) => <th className="border border-gray-200 px-2 py-1 bg-gray-50 font-medium text-left">{children}</th>,
-      td: ({ children }) => <td className="border border-gray-200 px-2 py-1">{children}</td>,
+      th: ({ children }) => (
+        <th className="border border-gray-200 px-2 py-1 bg-gray-50 font-medium text-left">
+          {children}
+        </th>
+      ),
+      td: ({ children }) => (
+        <td className="border border-gray-200 px-2 py-1">{children}</td>
+      ),
     }}
   >
     {content}
@@ -110,7 +132,9 @@ const UsageAIChatPanel: React.FC<UsageAIChatPanelProps> = ({
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<string | undefined>(undefined);
+  const [selectedModel, setSelectedModel] = useState<string | undefined>(
+    undefined,
+  );
   const [availableModels, setAvailableModels] = useState<string[]>([]);
   const [isLoadingModels, setIsLoadingModels] = useState(false);
   const [streamingContent, setStreamingContent] = useState("");
@@ -152,7 +176,10 @@ const UsageAIChatPanel: React.FC<UsageAIChatPanelProps> = ({
   const handleSend = async () => {
     if (!accessToken || !inputText.trim() || isLoading) return;
 
-    const userMessage: ChatMessage = { role: "user", content: inputText.trim() };
+    const userMessage: ChatMessage = {
+      role: "user",
+      content: inputText.trim(),
+    };
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
     setInputText("");
@@ -170,7 +197,9 @@ const UsageAIChatPanel: React.FC<UsageAIChatPanelProps> = ({
     try {
       await usageAiChatStream(
         accessToken,
-        updatedMessages.slice(-20).map((m) => ({ role: m.role, content: m.content })),
+        updatedMessages
+          .slice(-20)
+          .map((m) => ({ role: m.role, content: m.content })),
         selectedModel || "",
         (content: string) => {
           setStatusMessage(null);
@@ -182,7 +211,11 @@ const UsageAIChatPanel: React.FC<UsageAIChatPanelProps> = ({
           setActiveToolCalls([]);
           setMessages((prev) => [
             ...prev,
-            { role: "assistant", content: accumulated, toolCalls: toolCalls.length > 0 ? [...toolCalls] : undefined },
+            {
+              role: "assistant",
+              content: accumulated,
+              toolCalls: toolCalls.length > 0 ? [...toolCalls] : undefined,
+            },
           ]);
           setStreamingContent("");
         },
@@ -199,7 +232,9 @@ const UsageAIChatPanel: React.FC<UsageAIChatPanelProps> = ({
           setStatusMessage(status);
         },
         (event: UsageAiToolCallEvent) => {
-          const idx = toolCalls.findIndex((tc) => tc.tool_name === event.tool_name);
+          const idx = toolCalls.findIndex(
+            (tc) => tc.tool_name === event.tool_name,
+          );
           if (idx >= 0) {
             toolCalls[idx] = { ...event };
           } else {
@@ -213,7 +248,8 @@ const UsageAIChatPanel: React.FC<UsageAIChatPanelProps> = ({
       if (error?.name === "AbortError" || abortController.signal.aborted) {
         return;
       }
-      const errorMsg = error?.message || "Failed to get response. Please try again.";
+      const errorMsg =
+        error?.message || "Failed to get response. Please try again.";
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: `Error: ${errorMsg}` },
@@ -258,7 +294,11 @@ const UsageAIChatPanel: React.FC<UsageAIChatPanelProps> = ({
       <div className="px-5 pt-5 pb-3 border-b border-gray-100 flex-shrink-0">
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-blue-600" viewBox="0 0 16 16" fill="currentColor">
+            <svg
+              className="w-5 h-5 text-blue-600"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+            >
               <path d="M8 1l1.5 3.5L13 6l-3.5 1.5L8 11 6.5 7.5 3 6l3.5-1.5L8 1zm4 7l.75 1.75L14.5 10.5l-1.75.75L12 13l-.75-1.75L9.5 10.5l1.75-.75L12 8zM4 9l.75 1.75L6.5 11.5l-1.75.75L4 14l-.75-1.75L1.5 11.5l1.75-.75L4 9z" />
             </svg>
             <h3 className="text-base font-semibold text-gray-900">Ask AI</h3>
@@ -267,8 +307,18 @@ const UsageAIChatPanel: React.FC<UsageAIChatPanelProps> = ({
             onClick={handleClose}
             className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-md hover:bg-gray-100"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -299,11 +349,25 @@ const UsageAIChatPanel: React.FC<UsageAIChatPanelProps> = ({
       <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
         {messages.length === 0 && !streamingContent && !isLoading && (
           <div className="flex flex-col items-center justify-center h-full text-gray-400">
-            <svg className="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            <svg
+              className="w-8 h-8 mb-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+              />
             </svg>
-            <p className="text-sm font-medium">Ask a question about your usage</p>
-            <p className="text-xs mt-1">e.g. &quot;Which model costs me the most?&quot;</p>
+            <p className="text-sm font-medium">
+              Ask a question about your usage
+            </p>
+            <p className="text-xs mt-1">
+              e.g. &quot;Which model costs me the most?&quot;
+            </p>
           </div>
         )}
 
@@ -390,9 +454,7 @@ const UsageAIChatPanel: React.FC<UsageAIChatPanelProps> = ({
           >
             Clear chat
           </button>
-          <span className="text-xs text-gray-400">
-            Enter to send
-          </span>
+          <span className="text-xs text-gray-400">Enter to send</span>
         </div>
       </div>
     </div>

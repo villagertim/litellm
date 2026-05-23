@@ -1,10 +1,12 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import { Tooltip } from "./Tooltip";
 
 vi.mock("@ant-design/icons", () => ({
-  QuestionCircleOutlined: (props: any) => <span data-testid="question-icon" {...props} />,
+  QuestionCircleOutlined: (props: any) => (
+    <span data-testid="question-icon" {...props} />
+  ),
 }));
 
 describe("Tooltip", () => {
@@ -14,7 +16,11 @@ describe("Tooltip", () => {
   });
 
   it("should render children instead of the default icon when provided", () => {
-    render(<Tooltip content="Help text"><button>Info</button></Tooltip>);
+    render(
+      <Tooltip content="Help text">
+        <button>Info</button>
+      </Tooltip>,
+    );
     expect(screen.getByRole("button", { name: /info/i })).toBeInTheDocument();
     expect(screen.queryByTestId("question-icon")).not.toBeInTheDocument();
   });

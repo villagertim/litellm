@@ -1,6 +1,9 @@
-import React from "react";
-import { Form, Input, Select, Collapse } from "antd";
-import { AgentCreateInfo, AgentCredentialFieldMetadata } from "../networking";
+import { Collapse, Form, Input, Select } from "antd";
+import type React from "react";
+import type {
+  AgentCreateInfo,
+  AgentCredentialFieldMetadata,
+} from "../networking";
 import { AGENT_FORM_CONFIG } from "./agent_config";
 import CostConfigFields from "./cost_config_fields";
 
@@ -23,7 +26,9 @@ const DynamicAgentFormFields: React.FC<DynamicAgentFormFieldsProps> = ({
       <Form.Item
         label="Agent Name"
         name="agent_name"
-        rules={[{ required: true, message: "Please enter a unique agent name" }]}
+        rules={[
+          { required: true, message: "Please enter a unique agent name" },
+        ]}
         tooltip="Unique identifier for the agent"
       >
         <Input placeholder="e.g., my-langgraph-agent" />
@@ -34,38 +39,50 @@ const DynamicAgentFormFields: React.FC<DynamicAgentFormFieldsProps> = ({
         name="description"
         tooltip="Brief description of what this agent does"
       >
-        <Input.TextArea rows={2} placeholder="Describe what this agent does..." />
+        <Input.TextArea
+          rows={2}
+          placeholder="Describe what this agent does..."
+        />
       </Form.Item>
 
-      {agentTypeInfo.credential_fields.map((field: AgentCredentialFieldMetadata) => (
-        <Form.Item
-          key={field.key}
-          label={field.label}
-          name={field.key}
-          rules={field.required ? [{ required: true, message: `Please enter ${field.label}` }] : undefined}
-          tooltip={field.tooltip}
-          initialValue={field.default_value}
-        >
-          {field.field_type === "password" ? (
-            <Input.Password placeholder={field.placeholder || ""} />
-          ) : field.field_type === "textarea" ? (
-            <Input.TextArea rows={3} placeholder={field.placeholder || ""} />
-          ) : field.field_type === "select" && field.options ? (
-            <Select placeholder={field.placeholder || ""}>
-              {field.options.map((opt) => (
-                <Select.Option key={opt} value={opt}>
-                  {opt}
-                </Select.Option>
-              ))}
-            </Select>
-          ) : (
-            <Input placeholder={field.placeholder || ""} />
-          )}
-        </Form.Item>
-      ))}
+      {agentTypeInfo.credential_fields.map(
+        (field: AgentCredentialFieldMetadata) => (
+          <Form.Item
+            key={field.key}
+            label={field.label}
+            name={field.key}
+            rules={
+              field.required
+                ? [{ required: true, message: `Please enter ${field.label}` }]
+                : undefined
+            }
+            tooltip={field.tooltip}
+            initialValue={field.default_value}
+          >
+            {field.field_type === "password" ? (
+              <Input.Password placeholder={field.placeholder || ""} />
+            ) : field.field_type === "textarea" ? (
+              <Input.TextArea rows={3} placeholder={field.placeholder || ""} />
+            ) : field.field_type === "select" && field.options ? (
+              <Select placeholder={field.placeholder || ""}>
+                {field.options.map((opt) => (
+                  <Select.Option key={opt} value={opt}>
+                    {opt}
+                  </Select.Option>
+                ))}
+              </Select>
+            ) : (
+              <Input placeholder={field.placeholder || ""} />
+            )}
+          </Form.Item>
+        ),
+      )}
 
       <Collapse style={{ marginBottom: 16 }}>
-        <Panel header={AGENT_FORM_CONFIG.cost.title} key={AGENT_FORM_CONFIG.cost.key}>
+        <Panel
+          header={AGENT_FORM_CONFIG.cost.title}
+          key={AGENT_FORM_CONFIG.cost.key}
+        >
           <CostConfigFields />
         </Panel>
       </Collapse>
@@ -79,7 +96,7 @@ const DynamicAgentFormFields: React.FC<DynamicAgentFormFieldsProps> = ({
  */
 export const buildDynamicAgentData = (
   values: any,
-  agentTypeInfo: AgentCreateInfo
+  agentTypeInfo: AgentCreateInfo,
 ) => {
   // Build litellm_params from template
   const litellmParams: Record<string, any> = {
@@ -96,13 +113,17 @@ export const buildDynamicAgentData = (
 
   // Add cost configuration
   if (values.cost_per_query) {
-    litellmParams.cost_per_query = parseFloat(values.cost_per_query);
+    litellmParams.cost_per_query = Number.parseFloat(values.cost_per_query);
   }
   if (values.input_cost_per_token) {
-    litellmParams.input_cost_per_token = parseFloat(values.input_cost_per_token);
+    litellmParams.input_cost_per_token = Number.parseFloat(
+      values.input_cost_per_token,
+    );
   }
   if (values.output_cost_per_token) {
-    litellmParams.output_cost_per_token = parseFloat(values.output_cost_per_token);
+    litellmParams.output_cost_per_token = Number.parseFloat(
+      values.output_cost_per_token,
+    );
   }
 
   // Apply model_template if defined (e.g., "bedrock/agentcore/{agent_runtime_arn}")
@@ -123,7 +144,8 @@ export const buildDynamicAgentData = (
     agent_card_params: {
       protocolVersion: "1.0",
       name: values.display_name || values.agent_name,
-      description: values.description || `${agentTypeInfo.agent_type_display_name} agent`,
+      description:
+        values.description || `${agentTypeInfo.agent_type_display_name} agent`,
       url: values.api_base || "",
       version: "1.0.0",
       defaultInputModes: ["text"],
@@ -131,23 +153,26 @@ export const buildDynamicAgentData = (
       capabilities: {
         streaming: true,
       },
-      skills: [{
-        id: "chat",
-        name: "Chat",
-        description: "General chat capability",
-        tags: ["chat", "conversation"],
-      }],
+      skills: [
+        {
+          id: "chat",
+          name: "Chat",
+          description: "General chat capability",
+          tags: ["chat", "conversation"],
+        },
+      ],
     },
     litellm_params: litellmParams,
   };
 
   if (values.tpm_limit != null) agentData.tpm_limit = values.tpm_limit;
   if (values.rpm_limit != null) agentData.rpm_limit = values.rpm_limit;
-  if (values.session_tpm_limit != null) agentData.session_tpm_limit = values.session_tpm_limit;
-  if (values.session_rpm_limit != null) agentData.session_rpm_limit = values.session_rpm_limit;
+  if (values.session_tpm_limit != null)
+    agentData.session_tpm_limit = values.session_tpm_limit;
+  if (values.session_rpm_limit != null)
+    agentData.session_rpm_limit = values.session_rpm_limit;
 
   return agentData;
 };
 
 export default DynamicAgentFormFields;
-

@@ -2,16 +2,23 @@ import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ComparisonInstance } from "../CompareUI";
+import { ENDPOINT_CONFIGS, EndpointId } from "../endpoint_config";
 import { ComparisonPanel } from "./ComparisonPanel";
-import { EndpointId, ENDPOINT_CONFIGS } from "../endpoint_config";
 
 vi.mock("./MessageDisplay", () => ({
   MessageDisplay: () => <div data-testid="message-display">MessageDisplay</div>,
 }));
 
 vi.mock("./UnifiedSelector", () => ({
-  UnifiedSelector: ({ value, onChange }: { value: string; onChange: (val: string) => void }) => (
-    <select data-testid="unified-selector" value={value} onChange={(e) => onChange(e.target.value)}>
+  UnifiedSelector: ({
+    value,
+    onChange,
+  }: { value: string; onChange: (val: string) => void }) => (
+    <select
+      data-testid="unified-selector"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    >
       <option value="">Select option</option>
       <option value="gpt-4">gpt-4</option>
     </select>
@@ -23,7 +30,9 @@ vi.mock("../../../tag_management/TagSelector", () => ({
 }));
 
 vi.mock("../../../vector_store_management/VectorStoreSelector", () => ({
-  default: () => <div data-testid="vector-store-selector">VectorStoreSelector</div>,
+  default: () => (
+    <div data-testid="vector-store-selector">VectorStoreSelector</div>
+  ),
 }));
 
 vi.mock("../../../guardrails/GuardrailSelector", () => ({
@@ -86,8 +95,12 @@ describe("ComparisonPanel", () => {
   it("should call onRemove when remove button is clicked", async () => {
     const user = userEvent.setup();
     const onRemove = vi.fn();
-    const { container } = render(<ComparisonPanel {...mockProps} onRemove={onRemove} />);
-    const removeButton = container.querySelector('button[class*="text-red-600"]');
+    const { container } = render(
+      <ComparisonPanel {...mockProps} onRemove={onRemove} />,
+    );
+    const removeButton = container.querySelector(
+      'button[class*="text-red-600"]',
+    );
     expect(removeButton).toBeInTheDocument();
     await user.click(removeButton!);
     expect(onRemove).toHaveBeenCalledTimes(1);

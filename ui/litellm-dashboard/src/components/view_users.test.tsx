@@ -1,7 +1,7 @@
-import React from "react";
-import { render, waitFor, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import ViewUserDashboard from "./view_users";
 
 // Mock the networking module
@@ -93,7 +93,9 @@ describe("ViewUserDashboard", () => {
     // Check if main elements are rendered
     expect(screen.getByText("Users")).toBeInTheDocument();
     // Use getAllByText since "Default User Settings" appears multiple times
-    const defaultUserSettingsTabs = screen.getAllByText("Default User Settings");
+    const defaultUserSettingsTabs = screen.getAllByText(
+      "Default User Settings",
+    );
     expect(defaultUserSettingsTabs.length).toBeGreaterThan(0);
   });
 
@@ -134,7 +136,8 @@ describe("ViewUserDashboard", () => {
     const actionContainer =
       actionsCell?.querySelector("div.flex.gap-2") ||
       Array.from(actionsCell?.querySelectorAll("div") || []).find(
-        (div) => div.className.includes("flex") && div.className.includes("gap"),
+        (div) =>
+          div.className.includes("flex") && div.className.includes("gap"),
       );
 
     expect(actionContainer).toBeInTheDocument();
@@ -147,7 +150,9 @@ describe("ViewUserDashboard", () => {
     // The delete icon is the second tooltip wrapper (index 1)
     // Edit=0, Delete=1, Reset=2
     const deleteTooltipWrapper = tooltipWrappers[1] as HTMLElement;
-    const clickableElement = deleteTooltipWrapper.querySelector("button, [role='button'], svg") as HTMLElement;
+    const clickableElement = deleteTooltipWrapper.querySelector(
+      "button, [role='button'], svg",
+    ) as HTMLElement;
 
     expect(clickableElement).toBeInTheDocument();
 
@@ -158,7 +163,9 @@ describe("ViewUserDashboard", () => {
     });
 
     expect(
-      screen.getByText("Are you sure you want to delete this user? This action cannot be undone."),
+      screen.getByText(
+        "Are you sure you want to delete this user? This action cannot be undone.",
+      ),
     ).toBeInTheDocument();
     expect(screen.getByText("user-1")).toBeInTheDocument();
     const emailInstances = screen.getAllByText("test@example.com");

@@ -1,15 +1,9 @@
 import { CopyOutlined } from "@ant-design/icons";
 import { ArrowLeftIcon, ExternalLinkIcon } from "@heroicons/react/outline";
-import {
-  Badge,
-  Button,
-  Card,
-  Grid,
-  Text,
-  Title,
-} from "@tremor/react";
+import { Badge, Button, Card, Grid, Text, Title } from "@tremor/react";
 import { Spin, Switch, Tooltip } from "antd";
-import React, { useEffect, useState } from "react";
+import type React from "react";
+import { useEffect, useState } from "react";
 import NotificationsManager from "../molecules/notifications_manager";
 import {
   disableClaudeCodePlugin,
@@ -21,9 +15,9 @@ import {
   formatInstallCommand,
   getCategoryBadgeColor,
   getSourceDisplayText,
-  getSourceLink
+  getSourceLink,
 } from "./helpers";
-import { Plugin } from "./types";
+import type { Plugin } from "./types";
 
 interface PluginInfoViewProps {
   pluginId: string;
@@ -58,7 +52,7 @@ const PluginInfoView: React.FC<PluginInfoViewProps> = ({
       // For now, assume pluginId is actually the plugin name
       const data = await getClaudeCodePluginDetails(
         accessToken,
-        pluginId as string
+        pluginId as string,
       );
       setPlugin(data.plugin);
     } catch (error) {
@@ -168,9 +162,7 @@ const PluginInfoView: React.FC<PluginInfoViewProps> = ({
       {/* Plugin Details */}
       <Card>
         <Title>Plugin Details</Title>
-        <Grid
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4"
-        >
+        <Grid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
           {/* Plugin ID */}
           <div>
             <Text className="text-gray-600 text-xs">Plugin ID</Text>
@@ -282,9 +274,7 @@ const PluginInfoView: React.FC<PluginInfoViewProps> = ({
             {plugin.author.name && (
               <div>
                 <Text className="text-gray-600 text-xs">Name</Text>
-                <Text className="font-semibold mt-1">
-                  {plugin.author.name}
-                </Text>
+                <Text className="font-semibold mt-1">{plugin.author.name}</Text>
               </div>
             )}
             {plugin.author.email && (

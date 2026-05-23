@@ -1,6 +1,6 @@
-import openai from "openai";
-import { getProxyBaseUrl } from "@/components/networking";
 import NotificationManager from "@/components/molecules/notifications_manager";
+import { getProxyBaseUrl } from "@/components/networking";
+import openai from "openai";
 
 export async function makeOpenAIImageGenerationRequest(
   prompt: string,
@@ -14,7 +14,7 @@ export async function makeOpenAIImageGenerationRequest(
   // base url should be the current base_url
   const isLocal = process.env.NODE_ENV === "development";
   if (isLocal !== true) {
-    console.log = function () {};
+    console.log = () => {};
   }
   console.log("isLocal:", isLocal);
   const proxyBaseUrl = customBaseUrl || getProxyBaseUrl();
@@ -22,7 +22,10 @@ export async function makeOpenAIImageGenerationRequest(
     apiKey: accessToken,
     baseURL: proxyBaseUrl,
     dangerouslyAllowBrowser: true,
-    defaultHeaders: tags && tags.length > 0 ? { "x-litellm-tags": tags.join(",") } : undefined,
+    defaultHeaders:
+      tags && tags.length > 0
+        ? { "x-litellm-tags": tags.join(",") }
+        : undefined,
   });
 
   try {
@@ -55,7 +58,9 @@ export async function makeOpenAIImageGenerationRequest(
     if (signal?.aborted) {
       console.log("Image generation request was cancelled");
     } else {
-      NotificationManager.fromBackend(`Error occurred while generating image. Please try again. Error: ${error}`);
+      NotificationManager.fromBackend(
+        `Error occurred while generating image. Please try again. Error: ${error}`,
+      );
     }
     throw error; // Re-throw to allow the caller to handle the error
   }

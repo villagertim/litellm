@@ -1,7 +1,7 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
+import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import MCPConnectionStatus from "./mcp_connection_status";
 
 describe("MCPConnectionStatus", () => {
@@ -21,14 +21,16 @@ describe("MCPConnectionStatus", () => {
 
   it("should render nothing when canFetchTools is false and no URL is set", () => {
     const { container } = render(
-      <MCPConnectionStatus {...defaultProps} formValues={{}} />
+      <MCPConnectionStatus {...defaultProps} formValues={{}} />,
     );
     expect(container.firstChild).toBeNull();
   });
 
   it("should show 'Complete required fields' message when URL is set but canFetchTools is false", () => {
     render(<MCPConnectionStatus {...defaultProps} />);
-    expect(screen.getByText(/Complete required fields to test connection/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Complete required fields to test connection/i),
+    ).toBeInTheDocument();
   });
 
   it("should show 'Connection successful' when tools are loaded", () => {
@@ -37,7 +39,7 @@ describe("MCPConnectionStatus", () => {
         {...defaultProps}
         canFetchTools={true}
         tools={[{ name: "tool1" }]}
-      />
+      />,
     );
     expect(screen.getByText("Connection successful")).toBeInTheDocument();
     expect(screen.getByText("Connected")).toBeInTheDocument();
@@ -49,9 +51,11 @@ describe("MCPConnectionStatus", () => {
         {...defaultProps}
         canFetchTools={true}
         isLoadingTools={true}
-      />
+      />,
     );
-    expect(screen.getByText(/Testing connection to MCP server/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Testing connection to MCP server/i),
+    ).toBeInTheDocument();
     expect(screen.getByText("Connecting...")).toBeInTheDocument();
   });
 
@@ -64,7 +68,7 @@ describe("MCPConnectionStatus", () => {
         canFetchTools={true}
         toolsError="Connection refused"
         fetchTools={fetchTools}
-      />
+      />,
     );
 
     expect(screen.getByText("Connection Failed")).toBeInTheDocument();
@@ -76,12 +80,10 @@ describe("MCPConnectionStatus", () => {
 
   it("should show 'No tools found' when connection succeeds but no tools returned", () => {
     render(
-      <MCPConnectionStatus
-        {...defaultProps}
-        canFetchTools={true}
-        tools={[]}
-      />
+      <MCPConnectionStatus {...defaultProps} canFetchTools={true} tools={[]} />,
     );
-    expect(screen.getByText(/No tools found for this MCP server/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/No tools found for this MCP server/i),
+    ).toBeInTheDocument();
   });
 });

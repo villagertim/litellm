@@ -1,11 +1,11 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   convertImageToBase64,
-  createChatMultimodalMessage,
   createChatDisplayMessage,
+  createChatMultimodalMessage,
   shouldShowChatAttachedImage,
 } from "./ChatImageUtils";
-import { MessageType } from "./types";
+import type { MessageType } from "./types";
 
 describe("ChatImageUtils", () => {
   beforeEach(() => {
@@ -14,13 +14,17 @@ describe("ChatImageUtils", () => {
 
   describe("convertImageToBase64", () => {
     it("should convert file to base64 data URI", async () => {
-      const file = new File(["test content"], "test.png", { type: "image/png" });
+      const file = new File(["test content"], "test.png", {
+        type: "image/png",
+      });
       const result = await convertImageToBase64(file);
       expect(result).toMatch(/^data:image\/png;base64,/);
     });
 
     it("should handle different file types", async () => {
-      const jpegFile = new File(["jpeg content"], "test.jpg", { type: "image/jpeg" });
+      const jpegFile = new File(["jpeg content"], "test.jpg", {
+        type: "image/jpeg",
+      });
       const result = await convertImageToBase64(jpegFile);
       expect(result).toMatch(/^data:image\/jpeg;base64,/);
     });
@@ -45,7 +49,9 @@ describe("ChatImageUtils", () => {
 
   describe("createChatMultimodalMessage", () => {
     it("should create multimodal message with text and image", async () => {
-      const file = new File(["test content"], "test.png", { type: "image/png" });
+      const file = new File(["test content"], "test.png", {
+        type: "image/png",
+      });
       const inputMessage = "What is in this image?";
 
       const result = await createChatMultimodalMessage(inputMessage, file);
@@ -62,7 +68,9 @@ describe("ChatImageUtils", () => {
     });
 
     it("should include base64 data URI in image_url", async () => {
-      const file = new File(["test content"], "test.png", { type: "image/png" });
+      const file = new File(["test content"], "test.png", {
+        type: "image/png",
+      });
       const result = await createChatMultimodalMessage("test", file);
 
       const imageContent = result.content[1];
@@ -84,7 +92,12 @@ describe("ChatImageUtils", () => {
 
     it("should create display message with PDF file", () => {
       const filePreviewUrl = "blob:test-url";
-      const result = createChatDisplayMessage("Read this", true, filePreviewUrl, "document.pdf");
+      const result = createChatDisplayMessage(
+        "Read this",
+        true,
+        filePreviewUrl,
+        "document.pdf",
+      );
 
       expect(result.content).toBe("Read this [PDF attached]");
       expect(result.imagePreviewUrl).toBe(filePreviewUrl);
@@ -92,7 +105,12 @@ describe("ChatImageUtils", () => {
 
     it("should create display message with image file", () => {
       const filePreviewUrl = "blob:test-url";
-      const result = createChatDisplayMessage("Look at this", true, filePreviewUrl, "photo.jpg");
+      const result = createChatDisplayMessage(
+        "Look at this",
+        true,
+        filePreviewUrl,
+        "photo.jpg",
+      );
 
       expect(result.content).toBe("Look at this [Image attached]");
       expect(result.imagePreviewUrl).toBe(filePreviewUrl);
@@ -100,14 +118,23 @@ describe("ChatImageUtils", () => {
 
     it("should create display message with file but no fileName", () => {
       const filePreviewUrl = "blob:test-url";
-      const result = createChatDisplayMessage("Check this", true, filePreviewUrl);
+      const result = createChatDisplayMessage(
+        "Check this",
+        true,
+        filePreviewUrl,
+      );
 
       expect(result.content).toBe("Check this ");
       expect(result.imagePreviewUrl).toBe(filePreviewUrl);
     });
 
     it("should create display message with file but no preview URL", () => {
-      const result = createChatDisplayMessage("See this", true, undefined, "image.png");
+      const result = createChatDisplayMessage(
+        "See this",
+        true,
+        undefined,
+        "image.png",
+      );
 
       expect(result.content).toBe("See this [Image attached]");
       expect(result.imagePreviewUrl).toBeUndefined();

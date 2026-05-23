@@ -4,6 +4,15 @@ import { useMCPSemanticFilterSettings } from "@/app/(dashboard)/hooks/mcpSemanti
 import { useUpdateMCPSemanticFilterSettings } from "@/app/(dashboard)/hooks/mcpSemanticFilterSettings/useUpdateMCPSemanticFilterSettings";
 import NotificationManager from "@/components/molecules/notifications_manager";
 import {
+  type ModelGroup,
+  fetchAvailableModels,
+} from "@/components/playground/llm_calls/fetch_models";
+import {
+  CheckCircleOutlined,
+  QuestionCircleOutlined,
+  SaveOutlined,
+} from "@ant-design/icons";
+import {
   Alert,
   Button,
   Card,
@@ -16,20 +25,24 @@ import {
   Slider,
   Space,
   Switch,
-  Typography,
   Tooltip,
+  Typography,
 } from "antd";
-import { QuestionCircleOutlined, CheckCircleOutlined, SaveOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import { fetchAvailableModels, ModelGroup } from "@/components/playground/llm_calls/fetch_models";
 import MCPSemanticFilterTestPanel from "./MCPSemanticFilterTestPanel";
-import { getCurlCommand, runSemanticFilterTest, TestResult } from "./semanticFilterTestUtils";
+import {
+  type TestResult,
+  getCurlCommand,
+  runSemanticFilterTest,
+} from "./semanticFilterTestUtils";
 
 interface MCPSemanticFilterSettingsProps {
   accessToken: string | null;
 }
 
-export default function MCPSemanticFilterSettings({ accessToken }: MCPSemanticFilterSettingsProps) {
+export default function MCPSemanticFilterSettings({
+  accessToken,
+}: MCPSemanticFilterSettingsProps) {
   const { data, isLoading, isError, error } = useMCPSemanticFilterSettings();
   const {
     mutate: updateSettings,
@@ -57,7 +70,9 @@ export default function MCPSemanticFilterSettings({ accessToken }: MCPSemanticFi
       try {
         setLoadingModels(true);
         const models = await fetchAvailableModels(accessToken);
-        const embeddingOnly = models.filter((model) => model.mode === "embedding");
+        const embeddingOnly = models.filter(
+          (model) => model.mode === "embedding",
+        );
         setEmbeddingModels(embeddingOnly);
       } catch (error) {
         console.error("Error fetching embedding models:", error);
@@ -90,7 +105,7 @@ export default function MCPSemanticFilterSettings({ accessToken }: MCPSemanticFi
           setSaveSuccess(true);
           setTimeout(() => setSaveSuccess(false), 3000);
           NotificationManager.success(
-            "Settings updated successfully. Changes will be applied across all pods within 10 seconds."
+            "Settings updated successfully. Changes will be applied across all pods within 10 seconds.",
           );
         },
         onError: (error) => {
@@ -183,9 +198,13 @@ export default function MCPSemanticFilterSettings({ accessToken }: MCPSemanticFi
                     name="enabled"
                     label={
                       <Space>
-                        <Typography.Text strong>Enable Semantic Filtering</Typography.Text>
+                        <Typography.Text strong>
+                          Enable Semantic Filtering
+                        </Typography.Text>
                         <Tooltip title="When enabled, only the most relevant MCP tools will be included in requests based on semantic similarity">
-                          <QuestionCircleOutlined style={{ color: "#8c8c8c" }} />
+                          <QuestionCircleOutlined
+                            style={{ color: "#8c8c8c" }}
+                          />
                         </Tooltip>
                       </Space>
                     }
@@ -194,7 +213,14 @@ export default function MCPSemanticFilterSettings({ accessToken }: MCPSemanticFi
                     <Switch disabled={isUpdating} />
                   </Form.Item>
 
-                  <Typography.Text type="secondary" style={{ display: "block", marginTop: -16, marginBottom: 16 }}>
+                  <Typography.Text
+                    type="secondary"
+                    style={{
+                      display: "block",
+                      marginTop: -16,
+                      marginBottom: 16,
+                    }}
+                  >
                     {schema?.properties?.enabled?.description}
                   </Typography.Text>
                 </Card>
@@ -204,9 +230,13 @@ export default function MCPSemanticFilterSettings({ accessToken }: MCPSemanticFi
                     name="embedding_model"
                     label={
                       <Space>
-                        <Typography.Text strong>Embedding Model</Typography.Text>
+                        <Typography.Text strong>
+                          Embedding Model
+                        </Typography.Text>
                         <Tooltip title="The model used to generate embeddings for semantic matching">
-                          <QuestionCircleOutlined style={{ color: "#8c8c8c" }} />
+                          <QuestionCircleOutlined
+                            style={{ color: "#8c8c8c" }}
+                          />
                         </Tooltip>
                       </Space>
                     }
@@ -216,12 +246,18 @@ export default function MCPSemanticFilterSettings({ accessToken }: MCPSemanticFi
                         label: model.model_group,
                         value: model.model_group,
                       }))}
-                      placeholder={loadingModels ? "Loading models..." : "Select embedding model"}
+                      placeholder={
+                        loadingModels
+                          ? "Loading models..."
+                          : "Select embedding model"
+                      }
                       showSearch
                       disabled={isUpdating || loadingModels}
                       loading={loadingModels}
                       notFoundContent={
-                        loadingModels ? "Loading..." : "No embedding models available"
+                        loadingModels
+                          ? "Loading..."
+                          : "No embedding models available"
                       }
                     />
                   </Form.Item>
@@ -232,7 +268,9 @@ export default function MCPSemanticFilterSettings({ accessToken }: MCPSemanticFi
                       <Space>
                         <Typography.Text strong>Top K Results</Typography.Text>
                         <Tooltip title="Maximum number of tools to return after filtering">
-                          <QuestionCircleOutlined style={{ color: "#8c8c8c" }} />
+                          <QuestionCircleOutlined
+                            style={{ color: "#8c8c8c" }}
+                          />
                         </Tooltip>
                       </Space>
                     }
@@ -249,9 +287,13 @@ export default function MCPSemanticFilterSettings({ accessToken }: MCPSemanticFi
                     name="similarity_threshold"
                     label={
                       <Space>
-                        <Typography.Text strong>Similarity Threshold</Typography.Text>
+                        <Typography.Text strong>
+                          Similarity Threshold
+                        </Typography.Text>
                         <Tooltip title="Minimum similarity score (0-1) for a tool to be included">
-                          <QuestionCircleOutlined style={{ color: "#8c8c8c" }} />
+                          <QuestionCircleOutlined
+                            style={{ color: "#8c8c8c" }}
+                          />
                         </Tooltip>
                       </Space>
                     }
@@ -272,7 +314,13 @@ export default function MCPSemanticFilterSettings({ accessToken }: MCPSemanticFi
                   </Form.Item>
                 </Card>
 
-                <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    gap: 8,
+                  }}
+                >
                   <Button
                     type="primary"
                     icon={<SaveOutlined />}

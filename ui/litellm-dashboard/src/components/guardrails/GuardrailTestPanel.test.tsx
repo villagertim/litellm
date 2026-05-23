@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GuardrailTestPanel } from "./GuardrailTestPanel";
 
 Object.defineProperty(window, "matchMedia", {
@@ -41,11 +41,13 @@ describe("GuardrailTestPanel", () => {
         results={null}
         errors={null}
         onClose={mockOnClose}
-      />
+      />,
     );
 
     // Find and type in the textarea
-    const textarea = screen.getByPlaceholderText("Enter text to test with guardrails...");
+    const textarea = screen.getByPlaceholderText(
+      "Enter text to test with guardrails...",
+    );
     await user.type(textarea, "Test input text");
 
     // Press Enter to submit
@@ -57,4 +59,3 @@ describe("GuardrailTestPanel", () => {
     });
   });
 });
-

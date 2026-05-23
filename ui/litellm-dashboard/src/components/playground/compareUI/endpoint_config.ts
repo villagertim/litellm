@@ -3,7 +3,7 @@
  * Add new endpoints here to extend the comparison functionality.
  */
 
-import { Agent } from "../llm_calls/fetch_agents";
+import type { Agent } from "../llm_calls/fetch_agents";
 
 // Endpoint identifiers
 export const EndpointId = {
@@ -80,30 +80,35 @@ export interface SelectorOption {
 }
 
 // Convert model options to unified format
-export const modelOptionsToSelectorOptions = (models: string[]): SelectorOption[] =>
-  models.map((model) => ({ value: model, label: model }));
+export const modelOptionsToSelectorOptions = (
+  models: string[],
+): SelectorOption[] => models.map((model) => ({ value: model, label: model }));
 
 // Convert agent options to unified format
-export const agentOptionsToSelectorOptions = (agents: Agent[]): SelectorOption[] =>
+export const agentOptionsToSelectorOptions = (
+  agents: Agent[],
+): SelectorOption[] =>
   agents.map((agent) => ({
     value: agent.agent_name,
     label: agent.agent_name || agent.agent_id,
   }));
 
 // Get the selected value field name based on endpoint
-export const getSelectionFieldName = (endpointId: EndpointIdType): "model" | "agent" =>
-  isAgentEndpoint(endpointId) ? "agent" : "model";
+export const getSelectionFieldName = (
+  endpointId: EndpointIdType,
+): "model" | "agent" => (isAgentEndpoint(endpointId) ? "agent" : "model");
 
 // Get the current selection from a comparison based on endpoint
 export const getComparisonSelection = (
   comparison: { model: string; agent: string },
-  endpointId: EndpointIdType
-): string => (isAgentEndpoint(endpointId) ? comparison.agent : comparison.model);
+  endpointId: EndpointIdType,
+): string =>
+  isAgentEndpoint(endpointId) ? comparison.agent : comparison.model;
 
 // Check if comparison has a valid selection for the endpoint
 export const hasValidSelection = (
   comparison: { model: string; agent: string },
-  endpointId: EndpointIdType
+  endpointId: EndpointIdType,
 ): boolean => {
   const selection = getComparisonSelection(comparison, endpointId);
   return Boolean(selection && selection.trim());
@@ -111,7 +116,7 @@ export const hasValidSelection = (
 
 /**
  * To add a new endpoint:
- * 
+ *
  * 1. Add the endpoint ID to EndpointId const
  * 2. Add configuration to ENDPOINT_CONFIGS
  * 3. If the endpoint uses a new selector type (not model or agent):
@@ -119,11 +124,11 @@ export const hasValidSelection = (
  *    - Add fetch logic in CompareUI.tsx
  *    - Add conversion function (e.g., xxxOptionsToSelectorOptions)
  * 4. Add request handling in CompareUI.tsx handleSendMessage
- * 
+ *
  * Example for adding /v1/responses endpoint:
- * 
+ *
  * EndpointId.RESPONSES = "/v1/responses"
- * 
+ *
  * ENDPOINT_CONFIGS[EndpointId.RESPONSES] = {
  *   id: EndpointId.RESPONSES,
  *   label: "/v1/responses",
@@ -135,4 +140,3 @@ export const hasValidSelection = (
  *   validationMessage: "Select a model before sending.",
  * }
  */
-

@@ -4,12 +4,12 @@
  * Decoupled from form submission logic
  */
 
+import MessageManager from "@/components/molecules/message_manager";
 import { Button } from "@tremor/react";
 import { Tabs } from "antd";
 import { Plus } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import MessageManager from "@/components/molecules/message_manager";
-import { FallbackGroup, FallbackGroupConfig } from "./FallbackGroupConfig";
+import { type FallbackGroup, FallbackGroupConfig } from "./FallbackGroupConfig";
 
 interface FallbackSelectionFormProps {
   groups: FallbackGroup[];
@@ -26,7 +26,9 @@ export function FallbackSelectionForm({
   maxFallbacks = 10,
   maxGroups = 5,
 }: FallbackSelectionFormProps) {
-  const [activeKey, setActiveKey] = useState(groups.length > 0 ? groups[0].id : "1");
+  const [activeKey, setActiveKey] = useState(
+    groups.length > 0 ? groups[0].id : "1",
+  );
 
   // Reset activeKey when groups change (e.g., when modal reopens)
   useEffect(() => {
@@ -72,7 +74,9 @@ export function FallbackSelectionForm({
   };
 
   const handleGroupUpdate = (updatedGroup: FallbackGroup) => {
-    const newGroups = groups.map((g) => (g.id === updatedGroup.id ? updatedGroup : g));
+    const newGroups = groups.map((g) =>
+      g.id === updatedGroup.id ? updatedGroup : g,
+    );
     onGroupsChange(newGroups);
   };
 

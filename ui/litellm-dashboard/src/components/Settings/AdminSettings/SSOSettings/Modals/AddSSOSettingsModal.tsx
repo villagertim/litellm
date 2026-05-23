@@ -1,12 +1,12 @@
 "use client";
 
+import { useEditSSOSettings } from "@/app/(dashboard)/hooks/sso/useEditSSOSettings";
 import NotificationsManager from "@/components/molecules/notifications_manager";
 import { parseErrorMessage } from "@/components/shared/errorUtils";
 import { Button, Form, Modal, Space } from "antd";
-import React from "react";
-import BaseSSOSettingsForm from "./BaseSSOSettingsForm";
-import { useEditSSOSettings } from "@/app/(dashboard)/hooks/sso/useEditSSOSettings";
+import type React from "react";
 import { processSSOSettingsPayload } from "../utils";
+import BaseSSOSettingsForm from "./BaseSSOSettingsForm";
 
 interface AddSSOSettingsModalProps {
   isVisible: boolean;
@@ -14,7 +14,11 @@ interface AddSSOSettingsModalProps {
   onSuccess: () => void;
 }
 
-const AddSSOSettingsModal: React.FC<AddSSOSettingsModalProps> = ({ isVisible, onCancel, onSuccess }) => {
+const AddSSOSettingsModal: React.FC<AddSSOSettingsModalProps> = ({
+  isVisible,
+  onCancel,
+  onSuccess,
+}) => {
   const [form] = Form.useForm();
   const { mutateAsync, isPending } = useEditSSOSettings();
 
@@ -28,7 +32,9 @@ const AddSSOSettingsModal: React.FC<AddSSOSettingsModalProps> = ({ isVisible, on
         onSuccess();
       },
       onError: (error) => {
-        NotificationsManager.fromBackend("Failed to save SSO settings: " + parseErrorMessage(error));
+        NotificationsManager.fromBackend(
+          "Failed to save SSO settings: " + parseErrorMessage(error),
+        );
       },
     });
   };

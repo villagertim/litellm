@@ -1,7 +1,7 @@
-import { Icon, Tab, TabGroup, TabList, TabPanels, Text } from "@tremor/react";
 import { isAdminRole } from "@/utils/roles";
 import { RefreshIcon } from "@heroicons/react/outline";
-import React from "react";
+import { Icon, Tab, TabGroup, TabList, TabPanels, Text } from "@tremor/react";
+import type React from "react";
 
 type TeamsHeaderTabsProps = {
   lastRefreshed: string;
@@ -10,7 +10,12 @@ type TeamsHeaderTabsProps = {
   children: React.ReactNode;
 };
 
-const TeamsHeaderTabs = ({ lastRefreshed, onRefresh, userRole, children }: TeamsHeaderTabsProps) => {
+const TeamsHeaderTabs = ({
+  lastRefreshed,
+  onRefresh,
+  userRole,
+  children,
+}: TeamsHeaderTabsProps) => {
   return (
     <TabGroup className="gap-2 h-[75vh] w-full">
       <TabList className="flex justify-between mt-2 w-full items-center">

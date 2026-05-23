@@ -1,14 +1,14 @@
 import { useUISettings } from "@/app/(dashboard)/hooks/uiSettings/useUISettings";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { Member } from "@/components/networking";
+import MemberTable from "@/components/common_components/MemberTable";
+import type { Member } from "@/components/networking";
 import { formatBudgetReset } from "@/utils/budgetUtils";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
 import { isProxyAdminRole, isUserTeamAdminForSingleTeam } from "@/utils/roles";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { Space, Tooltip, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import MemberTable from "@/components/common_components/MemberTable";
-import { TeamData } from "./TeamInfo";
+import type { TeamData } from "./TeamInfo";
 
 interface TeamMemberTabProps {
   teamData: TeamData;
@@ -48,19 +48,25 @@ export default function TeamMemberTab({
 
   const getUserCurrentCycleSpend = (userId: string | null): number => {
     if (!userId) return 0;
-    const membership = teamData.team_memberships.find((tm) => tm.user_id === userId);
+    const membership = teamData.team_memberships.find(
+      (tm) => tm.user_id === userId,
+    );
     return membership?.spend ?? 0;
   };
 
   const getUserTotalSpend = (userId: string | null): number => {
     if (!userId) return 0;
-    const membership = teamData.team_memberships.find((tm) => tm.user_id === userId);
+    const membership = teamData.team_memberships.find(
+      (tm) => tm.user_id === userId,
+    );
     return membership?.total_spend ?? 0;
   };
 
   const getUserBudget = (userId: string | null): string | null => {
     if (!userId) return null;
-    const membership = teamData.team_memberships.find((tm) => tm.user_id === userId);
+    const membership = teamData.team_memberships.find(
+      (tm) => tm.user_id === userId,
+    );
     const maxBudget = membership?.litellm_budget_table?.max_budget;
     if (maxBudget === null || maxBudget === undefined) {
       return null;
@@ -71,7 +77,9 @@ export default function TeamMemberTab({
   // Helper function to get rate limits for a user
   const getUserRateLimits = (userId: string | null): string => {
     if (!userId) return "No Limits";
-    const membership = teamData.team_memberships.find((tm) => tm.user_id === userId);
+    const membership = teamData.team_memberships.find(
+      (tm) => tm.user_id === userId,
+    );
     const rpmLimit = membership?.litellm_budget_table?.rpm_limit;
     const tpmLimit = membership?.litellm_budget_table?.tpm_limit;
 
@@ -84,20 +92,29 @@ export default function TeamMemberTab({
 
   const { data: uiSettingsData } = useUISettings();
   const { userId, userRole } = useAuthorized();
-  const disableTeamAdminDeleteTeamUser = Boolean(uiSettingsData?.values?.disable_team_admin_delete_team_user);
-  const isUserTeamAdmin = isUserTeamAdminForSingleTeam(teamData.team_info.members_with_roles, userId || "");
+  const disableTeamAdminDeleteTeamUser = Boolean(
+    uiSettingsData?.values?.disable_team_admin_delete_team_user,
+  );
+  const isUserTeamAdmin = isUserTeamAdminForSingleTeam(
+    teamData.team_info.members_with_roles,
+    userId || "",
+  );
   const isProxyAdmin = isProxyAdminRole(userRole || "");
 
   const getUserAllowedModels = (userId: string | null): string[] | null => {
     if (!userId) return null;
-    const membership = teamData.team_memberships.find((tm) => tm.user_id === userId);
+    const membership = teamData.team_memberships.find(
+      (tm) => tm.user_id === userId,
+    );
     const models = membership?.litellm_budget_table?.allowed_models;
     return models && models.length > 0 ? models : null;
   };
 
   const getUserBudgetReset = (userId: string | null): string | null => {
     if (!userId) return null;
-    const membership = teamData.team_memberships.find((tm) => tm.user_id === userId);
+    const membership = teamData.team_memberships.find(
+      (tm) => tm.user_id === userId,
+    );
     return formatBudgetReset(membership?.litellm_budget_table?.budget_reset_at);
   };
 
@@ -115,18 +132,26 @@ export default function TeamMemberTab({
       render: (_: unknown, record: Member) => {
         const models = getUserAllowedModels(record.user_id);
         if (!models) {
-          return <Typography.Text type="secondary">(all team models)</Typography.Text>;
+          return (
+            <Typography.Text type="secondary">
+              (all team models)
+            </Typography.Text>
+          );
         }
         const displayed = models.slice(0, 2);
         const remaining = models.length - displayed.length;
         return (
           <Space wrap>
             {displayed.map((m) => (
-              <Typography.Text key={m} code style={{ fontSize: "12px" }}>{m}</Typography.Text>
+              <Typography.Text key={m} code style={{ fontSize: "12px" }}>
+                {m}
+              </Typography.Text>
             ))}
             {remaining > 0 && (
               <Tooltip title={models.slice(2).join(", ")}>
-                <Typography.Text type="secondary">+{remaining} more</Typography.Text>
+                <Typography.Text type="secondary">
+                  +{remaining} more
+                </Typography.Text>
               </Tooltip>
             )}
           </Space>
@@ -144,7 +169,9 @@ export default function TeamMemberTab({
       ),
       key: "spend",
       render: (_: unknown, record: Member) => (
-        <Typography.Text>${formatNumberWithCommas(getUserCurrentCycleSpend(record.user_id), 4)}</Typography.Text>
+        <Typography.Text>
+          ${formatNumberWithCommas(getUserCurrentCycleSpend(record.user_id), 4)}
+        </Typography.Text>
       ),
     },
     {
@@ -158,7 +185,9 @@ export default function TeamMemberTab({
       ),
       key: "total_spend",
       render: (_: unknown, record: Member) => (
-        <Typography.Text>${formatNumberWithCommas(getUserTotalSpend(record.user_id), 4)}</Typography.Text>
+        <Typography.Text>
+          ${formatNumberWithCommas(getUserTotalSpend(record.user_id), 4)}
+        </Typography.Text>
       ),
     },
     {
@@ -168,7 +197,9 @@ export default function TeamMemberTab({
         const budget = getUserBudget(record.user_id);
         return (
           <Typography.Text>
-            {budget ? `$${formatNumberWithCommas(Number(budget), 4)}` : "No Limit"}
+            {budget
+              ? `$${formatNumberWithCommas(Number(budget), 4)}`
+              : "No Limit"}
           </Typography.Text>
         );
       },
@@ -207,14 +238,16 @@ export default function TeamMemberTab({
       canEdit={canEditTeam}
       onEdit={(record) => {
         const membership = teamData.team_memberships.find(
-          (tm) => tm.user_id === record.user_id
+          (tm) => tm.user_id === record.user_id,
         );
         const enhancedMember = {
           ...record,
-          max_budget_in_team: membership?.litellm_budget_table?.max_budget || null,
+          max_budget_in_team:
+            membership?.litellm_budget_table?.max_budget || null,
           tpm_limit: membership?.litellm_budget_table?.tpm_limit || null,
           rpm_limit: membership?.litellm_budget_table?.rpm_limit || null,
-          allowed_models: membership?.litellm_budget_table?.allowed_models || [],
+          allowed_models:
+            membership?.litellm_budget_table?.allowed_models || [],
         };
         setSelectedEditMember(enhancedMember);
         setIsEditMemberModalVisible(true);
@@ -225,7 +258,9 @@ export default function TeamMemberTab({
       roleTooltip="This role applies only to this team and is independent from the user's proxy-level role."
       extraColumns={extraColumns}
       showDeleteForMember={() =>
-        isProxyAdmin || (canEditTeam && !isUserTeamAdmin) || (isUserTeamAdmin && !disableTeamAdminDeleteTeamUser)
+        isProxyAdmin ||
+        (canEditTeam && !isUserTeamAdmin) ||
+        (isUserTeamAdmin && !disableTeamAdminDeleteTeamUser)
       }
     />
   );

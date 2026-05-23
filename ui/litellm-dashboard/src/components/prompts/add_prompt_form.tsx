@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-import { Modal, Form, Select, Upload, Button, Divider } from "antd";
-import { TextInput } from "@tremor/react";
 import { UploadOutlined } from "@ant-design/icons";
+import { TextInput } from "@tremor/react";
+import { Button, Divider, Form, Modal, Select, Upload } from "antd";
 import type { UploadFile, UploadProps } from "antd";
-import { convertPromptFileToJson, createPromptCall } from "../networking";
+import type React from "react";
+import { useState } from "react";
 import NotificationsManager from "../molecules/notifications_manager";
+import { convertPromptFileToJson, createPromptCall } from "../networking";
 
 const { Option } = Select;
 
@@ -21,11 +22,17 @@ interface PromptFormData {
   prompt_file?: File;
 }
 
-const AddPromptForm: React.FC<AddPromptFormProps> = ({ visible, onClose, accessToken, onSuccess }) => {
+const AddPromptForm: React.FC<AddPromptFormProps> = ({
+  visible,
+  onClose,
+  accessToken,
+  onSuccess,
+}) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const [promptIntegration, setPromptIntegration] = useState<string>("dotprompt");
+  const [promptIntegration, setPromptIntegration] =
+    useState<string>("dotprompt");
 
   const handleCancel = () => {
     form.resetFields();
@@ -58,7 +65,10 @@ const AddPromptForm: React.FC<AddPromptFormProps> = ({ visible, onClose, accessT
         const file = fileList[0].originFileObj as File;
 
         try {
-          const conversionResult = await convertPromptFileToJson(accessToken, file);
+          const conversionResult = await convertPromptFileToJson(
+            accessToken,
+            file,
+          );
           console.log("Conversion result:", conversionResult);
 
           // Prepare prompt data for creation
@@ -75,7 +85,9 @@ const AddPromptForm: React.FC<AddPromptFormProps> = ({ visible, onClose, accessT
           };
         } catch (conversionError) {
           console.error("Error converting prompt file:", conversionError);
-          NotificationsManager.fromBackend("Failed to convert prompt file to JSON");
+          NotificationsManager.fromBackend(
+            "Failed to convert prompt file to JSON",
+          );
           setLoading(false);
           return;
         }
@@ -138,14 +150,19 @@ const AddPromptForm: React.FC<AddPromptFormProps> = ({ visible, onClose, accessT
             { required: true, message: "Please enter a prompt ID" },
             {
               pattern: /^[a-zA-Z0-9_-]+$/,
-              message: "Prompt ID can only contain letters, numbers, underscores, and hyphens",
+              message:
+                "Prompt ID can only contain letters, numbers, underscores, and hyphens",
             },
           ]}
         >
           <TextInput placeholder="Enter unique prompt ID (e.g., my_prompt_id)" />
         </Form.Item>
 
-        <Form.Item label="Prompt Integration" name="prompt_integration" initialValue="dotprompt">
+        <Form.Item
+          label="Prompt Integration"
+          name="prompt_integration"
+          initialValue="dotprompt"
+        >
           <Select value={promptIntegration} onChange={setPromptIntegration}>
             <Option value="dotprompt">dotprompt</Option>
           </Select>
@@ -154,11 +171,18 @@ const AddPromptForm: React.FC<AddPromptFormProps> = ({ visible, onClose, accessT
         {promptIntegration === "dotprompt" && (
           <>
             <Divider />
-            <Form.Item label="Prompt File" extra="Upload a .prompt file that follows the Dotprompt specification">
+            <Form.Item
+              label="Prompt File"
+              extra="Upload a .prompt file that follows the Dotprompt specification"
+            >
               <Upload {...uploadProps}>
                 <Button icon={<UploadOutlined />}>Select .prompt File</Button>
               </Upload>
-              {fileList.length > 0 && <div className="mt-2 text-sm text-gray-600">Selected: {fileList[0].name}</div>}
+              {fileList.length > 0 && (
+                <div className="mt-2 text-sm text-gray-600">
+                  Selected: {fileList[0].name}
+                </div>
+              )}
             </Form.Item>
           </>
         )}

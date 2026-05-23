@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
 import { Select } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { getAgentsList } from "../networking";
 
 interface Agent {
@@ -10,12 +11,12 @@ interface Agent {
 }
 
 interface AgentSelectorProps {
-  onChange: (selected: { 
-    agents: string[]; 
+  onChange: (selected: {
+    agents: string[];
     accessGroups: string[];
   }) => void;
-  value?: { 
-    agents: string[]; 
+  value?: {
+    agents: string[];
     accessGroups: string[];
   };
   className?: string;
@@ -42,9 +43,9 @@ const AgentSelector: React.FC<AgentSelectorProps> = ({
       setLoading(true);
       try {
         const response = await getAgentsList(accessToken);
-        let agentsList = response?.agents || [];
+        const agentsList = response?.agents || [];
         setAgents(agentsList);
-        
+
         // Extract unique access groups from agents
         const groups = new Set<string>();
         agentsList.forEach((agent: Agent) => {
@@ -108,7 +109,9 @@ const AgentSelector: React.FC<AgentSelectorProps> = ({
         style={{ width: "100%" }}
         disabled={disabled}
         filterOption={(input, option) => {
-          const searchText = options.find((opt) => opt.value === option?.value)?.searchText || "";
+          const searchText =
+            options.find((opt) => opt.value === option?.value)?.searchText ||
+            "";
           return searchText.toLowerCase().includes(input.toLowerCase());
         }}
       >
@@ -145,4 +148,3 @@ const AgentSelector: React.FC<AgentSelectorProps> = ({
 };
 
 export default AgentSelector;
-

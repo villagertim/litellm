@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import { Button } from "antd";
 import MessageManager from "@/components/molecules/message_manager";
+import { Button } from "antd";
+import type React from "react";
+import { useState } from "react";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 interface CreatedKeyDisplayProps {
   apiKey: string;
@@ -23,9 +24,10 @@ const CreatedKeyDisplay: React.FC<CreatedKeyDisplayProps> = ({ apiKey }) => {
   return (
     <div>
       <p className="mb-2">
-        Please save this secret key somewhere safe and accessible. For security reasons,{" "}
-        <b>you will not be able to view it again</b> through your LiteLLM account. If you
-        lose this secret key, you will need to generate a new one.
+        Please save this secret key somewhere safe and accessible. For security
+        reasons, <b>you will not be able to view it again</b> through your
+        LiteLLM account. If you lose this secret key, you will need to generate
+        a new one.
       </p>
 
       <p className="text-sm text-gray-600 mt-3 mb-1">Virtual Key:</p>
@@ -37,7 +39,9 @@ const CreatedKeyDisplay: React.FC<CreatedKeyDisplayProps> = ({ apiKey }) => {
           marginBottom: "10px",
         }}
       >
-        <pre style={{ wordWrap: "break-word", whiteSpace: "normal", margin: 0 }}>
+        <pre
+          style={{ wordWrap: "break-word", whiteSpace: "normal", margin: 0 }}
+        >
           {apiKey}
         </pre>
       </div>

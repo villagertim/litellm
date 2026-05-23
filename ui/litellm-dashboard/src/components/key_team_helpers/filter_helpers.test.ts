@@ -13,14 +13,22 @@ describe("fetchTeamFilterOptions", () => {
   it("should return empty arrays when accessToken is null", async () => {
     const result = await fetchTeamFilterOptions(null, "team-1");
 
-    expect(result).toEqual({ keyAliases: [], organizationIds: [], userIds: [] });
+    expect(result).toEqual({
+      keyAliases: [],
+      organizationIds: [],
+      userIds: [],
+    });
     expect(mockKeyListCall).not.toHaveBeenCalled();
   });
 
   it("should return empty arrays when teamId is empty", async () => {
     const result = await fetchTeamFilterOptions("tok-123", "");
 
-    expect(result).toEqual({ keyAliases: [], organizationIds: [], userIds: [] });
+    expect(result).toEqual({
+      keyAliases: [],
+      organizationIds: [],
+      userIds: [],
+    });
     expect(mockKeyListCall).not.toHaveBeenCalled();
   });
 
@@ -42,17 +50,11 @@ describe("fetchTeamFilterOptions", () => {
   it("should deduplicate organization IDs across pages", async () => {
     mockKeyListCall
       .mockResolvedValueOnce({
-        keys: [
-          { organization_id: "org-b" },
-          { organization_id: "org-a" },
-        ],
+        keys: [{ organization_id: "org-b" }, { organization_id: "org-a" }],
         total_pages: 2,
       })
       .mockResolvedValueOnce({
-        keys: [
-          { organization_id: "org-a" },
-          { organization_id: "org-c" },
-        ],
+        keys: [{ organization_id: "org-a" }, { organization_id: "org-c" }],
         total_pages: 2,
       });
 
@@ -85,6 +87,10 @@ describe("fetchTeamFilterOptions", () => {
 
     const result = await fetchTeamFilterOptions("tok-123", "team-1");
 
-    expect(result).toEqual({ keyAliases: [], organizationIds: [], userIds: [] });
+    expect(result).toEqual({
+      keyAliases: [],
+      organizationIds: [],
+      userIds: [],
+    });
   });
 });

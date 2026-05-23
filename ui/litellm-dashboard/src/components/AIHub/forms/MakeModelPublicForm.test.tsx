@@ -1,5 +1,11 @@
-import { render, screen, fireEvent, act, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import MakeModelPublicForm from "./MakeModelPublicForm";
 
 interface ModelGroupInfo {
@@ -39,18 +45,21 @@ vi.mock("antd", () => ({
         {footer}
       </div>
     ) : null,
-  Form: Object.assign(({ children, form }: any) => <form data-testid="form">{children}</form>, {
-    useForm: () => [
-      {
-        resetFields: vi.fn(),
-        validateFields: vi.fn(),
-        getFieldsValue: vi.fn(),
-        setFieldsValue: vi.fn(),
-      },
-      vi.fn(),
-    ],
-    Item: ({ children }: any) => <div>{children}</div>,
-  }),
+  Form: Object.assign(
+    ({ children, form }: any) => <form data-testid="form">{children}</form>,
+    {
+      useForm: () => [
+        {
+          resetFields: vi.fn(),
+          validateFields: vi.fn(),
+          getFieldsValue: vi.fn(),
+          setFieldsValue: vi.fn(),
+        },
+        vi.fn(),
+      ],
+      Item: ({ children }: any) => <div>{children}</div>,
+    },
+  ),
   Steps: Object.assign(
     ({ children, current, className }: any) => (
       <div data-testid="steps" className={className}>
@@ -62,7 +71,12 @@ vi.mock("antd", () => ({
     },
   ),
   Button: ({ children, onClick, disabled, loading, ...props }: any) => (
-    <button onClick={onClick} disabled={disabled || loading} data-loading={loading} {...props}>
+    <button
+      onClick={onClick}
+      disabled={disabled || loading}
+      data-loading={loading}
+      {...props}
+    >
       {children}
     </button>
   ),
@@ -82,7 +96,9 @@ vi.mock("antd", () => ({
 
 // Mock @tremor/react components
 vi.mock("@tremor/react", () => ({
-  Text: ({ children, className }: any) => <span className={className}>{children}</span>,
+  Text: ({ children, className }: any) => (
+    <span className={className}>{children}</span>
+  ),
   Title: ({ children }: any) => <h3>{children}</h3>,
   Badge: ({ children, color, size }: any) => (
     <span data-color={color} data-size={size}>
@@ -95,7 +111,10 @@ vi.mock("@tremor/react", () => ({
 vi.mock("../../model_filters", () => ({
   default: ({ onFilteredDataChange, modelHubData }: any) => (
     <div data-testid="model-filters">
-      <button data-testid="trigger-filter-change" onClick={() => onFilteredDataChange(modelHubData)}>
+      <button
+        data-testid="trigger-filter-change"
+        onClick={() => onFilteredDataChange(modelHubData)}
+      >
         Apply Filters
       </button>
     </div>
@@ -164,7 +183,9 @@ describe("MakeModelPublicForm", () => {
     render(<MakeModelPublicForm {...mockProps} />);
 
     expect(screen.getByText("Make Models Public")).toBeInTheDocument();
-    expect(screen.getByText("Select Models to Make Public")).toBeInTheDocument();
+    expect(
+      screen.getByText("Select Models to Make Public"),
+    ).toBeInTheDocument();
   });
 
   it("should initialize with correct state", () => {
@@ -172,7 +193,9 @@ describe("MakeModelPublicForm", () => {
 
     // Check that the component renders with the correct title and content
     expect(screen.getByText("Make Models Public")).toBeInTheDocument();
-    expect(screen.getByText("Select Models to Make Public")).toBeInTheDocument();
+    expect(
+      screen.getByText("Select Models to Make Public"),
+    ).toBeInTheDocument();
 
     // Check that all model checkboxes are present
     const checkboxes = screen.getAllByRole("checkbox");
@@ -187,7 +210,9 @@ describe("MakeModelPublicForm", () => {
     render(<MakeModelPublicForm {...mockProps} />);
 
     // Initially on step 1
-    expect(screen.getByText("Select Models to Make Public")).toBeInTheDocument();
+    expect(
+      screen.getByText("Select Models to Make Public"),
+    ).toBeInTheDocument();
 
     // Select all models using the select all checkbox
     const selectAllCheckbox = screen.getByLabelText("Select All (2)");
@@ -206,7 +231,9 @@ describe("MakeModelPublicForm", () => {
 
     // Should move to step 2
     await waitFor(() => {
-      expect(screen.getByText("Confirm Making Models Public")).toBeInTheDocument();
+      expect(
+        screen.getByText("Confirm Making Models Public"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -229,7 +256,9 @@ describe("MakeModelPublicForm", () => {
 
     // Wait for navigation to complete
     await waitFor(() => {
-      expect(screen.getByText("Confirm Making Models Public")).toBeInTheDocument();
+      expect(
+        screen.getByText("Confirm Making Models Public"),
+      ).toBeInTheDocument();
     });
 
     // Submit
@@ -239,7 +268,10 @@ describe("MakeModelPublicForm", () => {
     });
 
     await waitFor(() => {
-      expect(mockMakeModelGroupPublic).toHaveBeenCalledWith("test-token", ["gpt-4", "gpt-3.5-turbo"]);
+      expect(mockMakeModelGroupPublic).toHaveBeenCalledWith("test-token", [
+        "gpt-4",
+        "gpt-3.5-turbo",
+      ]);
       expect(mockProps.onSuccess).toHaveBeenCalled();
       expect(mockProps.onClose).toHaveBeenCalled();
     });
@@ -289,7 +321,9 @@ describe("MakeModelPublicForm", () => {
     });
 
     // Should stay on same step
-    expect(screen.getByText("Select Models to Make Public")).toBeInTheDocument();
+    expect(
+      screen.getByText("Select Models to Make Public"),
+    ).toBeInTheDocument();
   });
 
   it("should display empty state when no models are available", () => {
@@ -300,7 +334,9 @@ describe("MakeModelPublicForm", () => {
 
     render(<MakeModelPublicForm {...emptyProps} />);
 
-    expect(screen.getByText("No models match the current filters.")).toBeInTheDocument();
+    expect(
+      screen.getByText("No models match the current filters."),
+    ).toBeInTheDocument();
 
     // Select All checkbox should be disabled
     const selectAllCheckbox = screen.getByLabelText("Select All");
@@ -335,7 +371,9 @@ describe("MakeModelPublicForm", () => {
 
     // Verify we're on step 1
     await waitFor(() => {
-      expect(screen.getByText("Confirm Making Models Public")).toBeInTheDocument();
+      expect(
+        screen.getByText("Confirm Making Models Public"),
+      ).toBeInTheDocument();
     });
 
     // Click Previous button
@@ -345,7 +383,9 @@ describe("MakeModelPublicForm", () => {
     });
 
     // Should go back to step 0
-    expect(screen.getByText("Select Models to Make Public")).toBeInTheDocument();
+    expect(
+      screen.getByText("Select Models to Make Public"),
+    ).toBeInTheDocument();
   });
 
   it("should handle individual model selection", async () => {
@@ -409,7 +449,9 @@ describe("MakeModelPublicForm", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText("Confirm Making Models Public")).toBeInTheDocument();
+      expect(
+        screen.getByText("Confirm Making Models Public"),
+      ).toBeInTheDocument();
     });
 
     // Submit
@@ -420,7 +462,9 @@ describe("MakeModelPublicForm", () => {
 
     // Should handle error and show error notification
     await waitFor(() => {
-      expect(mockMakeModelGroupPublic).toHaveBeenCalledWith("test-token", ["gpt-3.5-turbo"]);
+      expect(mockMakeModelGroupPublic).toHaveBeenCalledWith("test-token", [
+        "gpt-3.5-turbo",
+      ]);
     });
 
     // Should not call onSuccess or onClose on error
@@ -444,7 +488,9 @@ describe("MakeModelPublicForm", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText("Confirm Making Models Public")).toBeInTheDocument();
+      expect(
+        screen.getByText("Confirm Making Models Public"),
+      ).toBeInTheDocument();
     });
 
     // Submit
@@ -542,7 +588,9 @@ describe("MakeModelPublicForm", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText("Confirm Making Models Public")).toBeInTheDocument();
+      expect(
+        screen.getByText("Confirm Making Models Public"),
+      ).toBeInTheDocument();
     });
 
     // Should show the selected model

@@ -1,6 +1,6 @@
-import { chromium, expect } from "@playwright/test";
-import { users, Role, STORAGE_PATHS } from "./fixtures/users";
 import * as fs from "fs";
+import { chromium, expect } from "@playwright/test";
+import { Role, STORAGE_PATHS, users } from "./fixtures/users";
 
 async function globalSetup() {
   const browser = await chromium.launch();
@@ -15,10 +15,13 @@ async function globalSetup() {
       await page.getByPlaceholder("Enter your password").fill(password);
       await page.getByRole("button", { name: "Login", exact: true }).click();
       await page.waitForURL(
-        (url) => url.pathname.startsWith("/ui") && !url.pathname.includes("/login"),
+        (url) =>
+          url.pathname.startsWith("/ui") && !url.pathname.includes("/login"),
         { timeout: 30_000 },
       );
-      await expect(page.locator("a", { hasText: "Virtual Keys" })).toBeVisible({ timeout: 30_000 });
+      await expect(page.locator("a", { hasText: "Virtual Keys" })).toBeVisible({
+        timeout: 30_000,
+      });
       // Dismiss feedback popup if present
       const dismiss = page.getByText("Don't ask me again");
       if (await dismiss.isVisible({ timeout: 1_500 }).catch(() => false)) {
@@ -27,8 +30,13 @@ async function globalSetup() {
       await page.context().storageState({ path: storagePath });
     } catch (e) {
       fs.mkdirSync("test-results", { recursive: true });
-      await page.screenshot({ path: `test-results/global-setup-${role}-failure.png`, fullPage: true });
-      console.error(`Global setup failed for role ${role}. Screenshot saved. URL: ${page.url()}`);
+      await page.screenshot({
+        path: `test-results/global-setup-${role}-failure.png`,
+        fullPage: true,
+      });
+      console.error(
+        `Global setup failed for role ${role}. Screenshot saved. URL: ${page.url()}`,
+      );
       throw e;
     } finally {
       await page.close();

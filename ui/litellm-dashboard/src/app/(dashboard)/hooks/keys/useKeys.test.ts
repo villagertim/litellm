@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { ReactNode } from "react";
-import { useKeys, useDeletedKeys } from "./useKeys";
 import type { KeyResponse } from "@/components/key_team_helpers/key_list";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { renderHook, waitFor } from "@testing-library/react";
+import React, { type ReactNode } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useDeletedKeys, useKeys } from "./useKeys";
 
 // Mock the networking utilities
 vi.mock("@/components/networking", () => ({
@@ -456,10 +456,9 @@ describe("useKeys", () => {
       json: async () => mockKeysResponse,
     });
 
-    const { result } = renderHook(
-      () => useKeys(1, 10, { projectID: null }),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useKeys(1, 10, { projectID: null }), {
+      wrapper,
+    });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -629,7 +628,9 @@ describe("useDeletedKeys", () => {
     const page = 2;
     const pageSize = 20;
 
-    const { result } = renderHook(() => useDeletedKeys(page, pageSize), { wrapper });
+    const { result } = renderHook(() => useDeletedKeys(page, pageSize), {
+      wrapper,
+    });
 
     // Wait for success
     await waitFor(() => {
@@ -744,7 +745,9 @@ describe("useDeletedKeys", () => {
       selectedKeyAlias: "test-alias",
     };
 
-    const { result } = renderHook(() => useDeletedKeys(1, 10, options), { wrapper });
+    const { result } = renderHook(() => useDeletedKeys(1, 10, options), {
+      wrapper,
+    });
 
     // Wait for success
     await waitFor(() => {

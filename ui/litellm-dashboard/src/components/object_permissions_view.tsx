@@ -1,8 +1,8 @@
-import React from "react";
 import { Text } from "@tremor/react";
-import VectorStorePermissions from "./permissions/VectorStorePermissions";
-import MCPServerPermissions from "./permissions/MCPServerPermissions";
+import React from "react";
 import AgentPermissions from "./permissions/AgentPermissions";
+import MCPServerPermissions from "./permissions/MCPServerPermissions";
+import VectorStorePermissions from "./permissions/VectorStorePermissions";
 
 interface ObjectPermission {
   object_permission_id: string;
@@ -39,8 +39,17 @@ export function ObjectPermissionsView({
   const searchTools = objectPermission?.search_tools || [];
 
   const content = (
-    <div className={variant === "card" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}>
-      <VectorStorePermissions vectorStores={vectorStores} accessToken={accessToken} />
+    <div
+      className={
+        variant === "card"
+          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          : "space-y-4"
+      }
+    >
+      <VectorStorePermissions
+        vectorStores={vectorStores}
+        accessToken={accessToken}
+      />
       <MCPServerPermissions
         mcpServers={mcpServers}
         mcpAccessGroups={mcpAccessGroups}
@@ -57,10 +66,13 @@ export function ObjectPermissionsView({
         <Text className="text-sm font-medium text-gray-800">Search tools</Text>
         {searchTools.length === 0 ? (
           <Text className="mt-1 block text-xs text-gray-500">
-            No restriction — all configured search tools are allowed for this team.
+            No restriction — all configured search tools are allowed for this
+            team.
           </Text>
         ) : (
-          <Text className="mt-1 block text-xs text-gray-700">{searchTools.join(", ")}</Text>
+          <Text className="mt-1 block text-xs text-gray-700">
+            {searchTools.join(", ")}
+          </Text>
         )}
       </div>
     </div>
@@ -68,11 +80,17 @@ export function ObjectPermissionsView({
 
   if (variant === "card") {
     return (
-      <div className={`bg-white border border-gray-200 rounded-lg p-6 ${className}`}>
+      <div
+        className={`bg-white border border-gray-200 rounded-lg p-6 ${className}`}
+      >
         <div className="flex items-center gap-2 mb-6">
           <div>
-            <Text className="font-semibold text-gray-900">Object Permissions</Text>
-            <Text className="text-xs text-gray-500">Access control for Vector Stores and MCP Servers</Text>
+            <Text className="font-semibold text-gray-900">
+              Object Permissions
+            </Text>
+            <Text className="text-xs text-gray-500">
+              Access control for Vector Stores and MCP Servers
+            </Text>
           </div>
         </div>
         {content}

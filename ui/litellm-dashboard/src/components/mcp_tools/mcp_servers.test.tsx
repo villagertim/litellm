@@ -1,9 +1,15 @@
-import React from "react";
-import { render, waitFor, screen, fireEvent, act } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import MCPServers from "./mcp_servers";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as networking from "../networking";
+import MCPServers from "./mcp_servers";
 
 // Mock the networking module
 vi.mock("../networking", () => ({
@@ -171,7 +177,9 @@ describe("MCPServers", () => {
     ];
 
     vi.mocked(networking.fetchMCPServers).mockResolvedValue(mockServers);
-    vi.mocked(networking.fetchMCPServerHealth).mockResolvedValue(mockHealthStatuses);
+    vi.mocked(networking.fetchMCPServerHealth).mockResolvedValue(
+      mockHealthStatuses,
+    );
 
     const queryClient = createQueryClient();
     const { getByText } = render(
@@ -213,7 +221,7 @@ describe("MCPServers", () => {
     vi.mocked(networking.fetchMCPServers).mockResolvedValue(mockServers);
     // Mock health check to never resolve (to test loading state)
     vi.mocked(networking.fetchMCPServerHealth).mockImplementation(
-      () => new Promise(() => { }), // Never resolves
+      () => new Promise(() => {}), // Never resolves
     );
 
     const queryClient = createQueryClient();
@@ -308,11 +316,15 @@ describe("MCPServers", () => {
 
     // Find the team select dropdown by looking for the "Team" label
     const teamLabel = screen.getByText("Team");
-    const teamSelectContainer = teamLabel.closest("div")?.querySelector(".ant-select");
+    const teamSelectContainer = teamLabel
+      .closest("div")
+      ?.querySelector(".ant-select");
     expect(teamSelectContainer).toBeTruthy();
 
     // Open the dropdown by clicking on the selector
-    const selectSelector = teamSelectContainer?.querySelector(".ant-select-selector");
+    const selectSelector = teamSelectContainer?.querySelector(
+      ".ant-select-selector",
+    );
     expect(selectSelector).toBeTruthy();
 
     act(() => {
@@ -322,14 +334,18 @@ describe("MCPServers", () => {
     // Wait for dropdown to open
     await waitFor(
       () => {
-        const dropdownOptions = document.querySelectorAll(".ant-select-item-option");
+        const dropdownOptions = document.querySelectorAll(
+          ".ant-select-item-option",
+        );
         expect(dropdownOptions.length).toBeGreaterThan(0);
       },
       { timeout: 5000 },
     );
 
     // Find and click on "Team A" option
-    const dropdownOptions = document.querySelectorAll(".ant-select-item-option");
+    const dropdownOptions = document.querySelectorAll(
+      ".ant-select-item-option",
+    );
     const teamAOption = Array.from(dropdownOptions).find((option) =>
       option.textContent?.includes("Team A"),
     );

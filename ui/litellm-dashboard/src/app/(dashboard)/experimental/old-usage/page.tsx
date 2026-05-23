@@ -1,7 +1,7 @@
 "use client";
 
-import Usage from "@/components/usage";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import Usage from "@/components/usage";
 import { useState } from "react";
 
 const OldUsagePage = () => {

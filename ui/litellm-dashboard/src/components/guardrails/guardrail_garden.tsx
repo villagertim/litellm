@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import { ArrowRightOutlined, SearchOutlined } from "@ant-design/icons";
 import { Input } from "antd";
-import { SearchOutlined, ArrowRightOutlined } from "@ant-design/icons";
-import { GuardrailCardInfo, ALL_CARDS } from "./guardrail_garden_data";
+import type React from "react";
+import { useState } from "react";
 import GuardrailCard from "./guardrail_garden_card";
+import { ALL_CARDS, type GuardrailCardInfo } from "./guardrail_garden_data";
 import GuardrailDetailView from "./guardrail_garden_detail";
 
 interface GuardrailGardenProps {
@@ -10,9 +11,14 @@ interface GuardrailGardenProps {
   onGuardrailCreated: () => void;
 }
 
-const GuardrailGarden: React.FC<GuardrailGardenProps> = ({ accessToken, onGuardrailCreated }) => {
+const GuardrailGarden: React.FC<GuardrailGardenProps> = ({
+  accessToken,
+  onGuardrailCreated,
+}) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCard, setSelectedCard] = useState<GuardrailCardInfo | null>(null);
+  const [selectedCard, setSelectedCard] = useState<GuardrailCardInfo | null>(
+    null,
+  );
   const [showAllLitellm, setShowAllLitellm] = useState(false);
   const CARDS_PER_ROW = 5;
   const VISIBLE_ROWS = 2;
@@ -57,10 +63,33 @@ const GuardrailGarden: React.FC<GuardrailGardenProps> = ({ accessToken, onGuardr
 
       {/* LiteLLM Content Filter Section */}
       <div style={{ marginBottom: 40 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 600, color: "#111827", margin: 0 }}>LiteLLM Content Filter</h2>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: 4,
+          }}
+        >
+          <h2
+            style={{
+              fontSize: 20,
+              fontWeight: 600,
+              color: "#111827",
+              margin: 0,
+            }}
+          >
+            LiteLLM Content Filter
+          </h2>
           <span
-            style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 14, color: "#1a73e8", cursor: "pointer" }}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              fontSize: 14,
+              color: "#1a73e8",
+              cursor: "pointer",
+            }}
             onClick={() => setShowAllLitellm(!showAllLitellm)}
           >
             {showAllLitellm ? (
@@ -74,32 +103,57 @@ const GuardrailGarden: React.FC<GuardrailGardenProps> = ({ accessToken, onGuardr
           </span>
         </div>
         <p style={{ fontSize: 13, color: "#6b7280", margin: "4px 0 20px 0" }}>
-          Built-in guardrails powered by LiteLLM. Zero latency, no external dependencies, no additional cost.
+          Built-in guardrails powered by LiteLLM. Zero latency, no external
+          dependencies, no additional cost.
         </p>
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-          gap: 16,
-        }}>
-          {(showAllLitellm ? litellmCards : litellmCards.slice(0, CARDS_PER_ROW * VISIBLE_ROWS)).map((card) => (
-            <GuardrailCard key={card.id} card={card} onClick={() => setSelectedCard(card)} />
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+            gap: 16,
+          }}
+        >
+          {(showAllLitellm
+            ? litellmCards
+            : litellmCards.slice(0, CARDS_PER_ROW * VISIBLE_ROWS)
+          ).map((card) => (
+            <GuardrailCard
+              key={card.id}
+              card={card}
+              onClick={() => setSelectedCard(card)}
+            />
           ))}
         </div>
       </div>
 
       {/* Partner Guardrails Section */}
       <div style={{ marginBottom: 40 }}>
-        <h2 style={{ fontSize: 20, fontWeight: 600, color: "#111827", margin: "0 0 4px 0" }}>Partner Guardrails</h2>
+        <h2
+          style={{
+            fontSize: 20,
+            fontWeight: 600,
+            color: "#111827",
+            margin: "0 0 4px 0",
+          }}
+        >
+          Partner Guardrails
+        </h2>
         <p style={{ fontSize: 13, color: "#6b7280", margin: "4px 0 20px 0" }}>
           Third-party guardrail integrations from leading AI security providers.
         </p>
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-          gap: 16,
-        }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+            gap: 16,
+          }}
+        >
           {partnerCards.map((card) => (
-            <GuardrailCard key={card.id} card={card} onClick={() => setSelectedCard(card)} />
+            <GuardrailCard
+              key={card.id}
+              card={card}
+              onClick={() => setSelectedCard(card)}
+            />
           ))}
         </div>
       </div>

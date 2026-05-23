@@ -1,16 +1,31 @@
-import React, { useEffect, useState } from "react";
-import { Card, Form, Button, Tooltip, Typography, Select as AntdSelect, Modal, Radio, Badge, Space } from "antd";
-import type { FormInstance } from "antd";
-import { Text, TextInput } from "@tremor/react";
-import { modelAvailableCall } from "../networking";
-import ConnectionErrorDisplay from "./model_connection_test";
 import { all_admin_roles } from "@/utils/roles";
-import { handleAddAutoRouterSubmit } from "./handle_add_auto_router_submit";
-import { fetchAvailableModels, ModelGroup } from "../playground/llm_calls/fetch_models";
-import RouterConfigBuilder from "./RouterConfigBuilder";
-import ComplexityRouterConfig from "./ComplexityRouterConfig";
+import { BranchesOutlined, ThunderboltOutlined } from "@ant-design/icons";
+import { Text, TextInput } from "@tremor/react";
+import {
+  Select as AntdSelect,
+  Badge,
+  Button,
+  Card,
+  Form,
+  Modal,
+  Radio,
+  Space,
+  Tooltip,
+  Typography,
+} from "antd";
+import type { FormInstance } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
 import NotificationManager from "../molecules/notifications_manager";
-import { ThunderboltOutlined, BranchesOutlined } from "@ant-design/icons";
+import { modelAvailableCall } from "../networking";
+import {
+  type ModelGroup,
+  fetchAvailableModels,
+} from "../playground/llm_calls/fetch_models";
+import ComplexityRouterConfig from "./ComplexityRouterConfig";
+import RouterConfigBuilder from "./RouterConfigBuilder";
+import { handleAddAutoRouterSubmit } from "./handle_add_auto_router_submit";
+import ConnectionErrorDisplay from "./model_connection_test";
 
 interface AddAutoRouterTabProps {
   form: FormInstance;
@@ -30,23 +45,32 @@ interface ComplexityTiers {
 
 const { Title, Link } = Typography;
 
-const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({ form, handleOk, accessToken, userRole }) => {
+const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
+  form,
+  handleOk,
+  accessToken,
+  userRole,
+}) => {
   // State for connection testing
-  const [isResultModalVisible, setIsResultModalVisible] = useState<boolean>(false);
-  const [isTestingConnection, setIsTestingConnection] = useState<boolean>(false);
+  const [isResultModalVisible, setIsResultModalVisible] =
+    useState<boolean>(false);
+  const [isTestingConnection, setIsTestingConnection] =
+    useState<boolean>(false);
   const [connectionTestId, setConnectionTestId] = useState<string>("");
 
   const [modelAccessGroups, setModelAccessGroups] = useState<string[]>([]);
   const [modelInfo, setModelInfo] = useState<ModelGroup[]>([]);
-  const [showCustomDefaultModel, setShowCustomDefaultModel] = useState<boolean>(false);
-  const [showCustomEmbeddingModel, setShowCustomEmbeddingModel] = useState<boolean>(false);
-  
+  const [showCustomDefaultModel, setShowCustomDefaultModel] =
+    useState<boolean>(false);
+  const [showCustomEmbeddingModel, setShowCustomEmbeddingModel] =
+    useState<boolean>(false);
+
   // Router type state - default to complexity router
   const [routerType, setRouterType] = useState<RouterType>("complexity");
-  
+
   // Semantic router config (existing)
   const [routerConfig, setRouterConfig] = useState<any>(null);
-  
+
   // Complexity router config (new)
   const [complexityTiers, setComplexityTiers] = useState<ComplexityTiers>({
     SIMPLE: "",
@@ -57,7 +81,15 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({ form, handleOk, acc
 
   useEffect(() => {
     const fetchModelAccessGroups = async () => {
-      const response = await modelAvailableCall(accessToken, "", "", false, null, true, true);
+      const response = await modelAvailableCall(
+        accessToken,
+        "",
+        "",
+        false,
+        null,
+        true,
+        true,
+      );
       setModelAccessGroups(response["data"].map((model: any) => model["id"]));
     };
     fetchModelAccessGroups();
@@ -89,7 +121,7 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({ form, handleOk, acc
   const handleAutoRouterSubmit = () => {
     console.log("Auto router submit triggered!");
     console.log("Router type:", routerType);
-    
+
     const currentFormValues = form.getFieldsValue();
     console.log("Form values:", currentFormValues);
 
@@ -104,13 +136,19 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({ form, handleOk, acc
       // Complexity Router validation
       const filledTiers = Object.values(complexityTiers).filter(Boolean);
       if (filledTiers.length === 0) {
-        NotificationManager.fromBackend("Please select at least one model for a complexity tier");
+        NotificationManager.fromBackend(
+          "Please select at least one model for a complexity tier",
+        );
         return;
       }
 
       // For complexity router, use the first non-empty tier as default
-      const defaultModel = complexityTiers.MEDIUM || complexityTiers.SIMPLE || complexityTiers.COMPLEX || complexityTiers.REASONING;
-      
+      const defaultModel =
+        complexityTiers.MEDIUM ||
+        complexityTiers.SIMPLE ||
+        complexityTiers.COMPLEX ||
+        complexityTiers.REASONING;
+
       // Set form values for complexity router
       form.setFieldsValue({
         custom_llm_provider: "auto_router",
@@ -123,7 +161,7 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({ form, handleOk, acc
         .validateFields(["auto_router_name"])
         .then((values) => {
           console.log("Complexity router validation passed");
-          
+
           // Build the complexity router config
           const submitValues = {
             ...values,
@@ -136,7 +174,7 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({ form, handleOk, acc
             },
             model_access_group: currentFormValues.model_access_group,
           };
-          
+
           console.log("Final submit values:", submitValues);
           handleAddAutoRouterSubmit(submitValues, accessToken, form, handleOk);
         })
@@ -144,7 +182,6 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({ form, handleOk, acc
           console.error("Validation failed:", error);
           NotificationManager.fromBackend("Please fill in all required fields");
         });
-        
     } else {
       // Semantic Router validation (existing logic)
       if (!currentFormValues.auto_router_default_model) {
@@ -159,14 +196,21 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({ form, handleOk, acc
       });
 
       // Custom validation for router config
-      if (!routerConfig || !routerConfig.routes || routerConfig.routes.length === 0) {
-        NotificationManager.fromBackend("Please configure at least one route for the auto router");
+      if (
+        !routerConfig ||
+        !routerConfig.routes ||
+        routerConfig.routes.length === 0
+      ) {
+        NotificationManager.fromBackend(
+          "Please configure at least one route for the auto router",
+        );
         return;
       }
 
       // Check if all routes have required fields
       const invalidRoutes = routerConfig.routes.filter(
-        (route: any) => !route.name || !route.description || route.utterances.length === 0,
+        (route: any) =>
+          !route.name || !route.description || route.utterances.length === 0,
       );
 
       if (invalidRoutes.length > 0) {
@@ -179,7 +223,10 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({ form, handleOk, acc
       form
         .validateFields()
         .then((values) => {
-          console.log("Form validation passed, submitting with values:", values);
+          console.log(
+            "Form validation passed, submitting with values:",
+            values,
+          );
           const submitValues = {
             ...values,
             auto_router_config: routerConfig,
@@ -201,9 +248,13 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({ form, handleOk, acc
               };
               return friendlyNames[fieldName] || fieldName;
             });
-            NotificationManager.fromBackend(`Please fill in the following required fields: ${missingFields.join(", ")}`);
+            NotificationManager.fromBackend(
+              `Please fill in the following required fields: ${missingFields.join(", ")}`,
+            );
           } else {
-            NotificationManager.fromBackend("Please fill in all required fields");
+            NotificationManager.fromBackend(
+              "Please fill in all required fields",
+            );
           }
         });
     }
@@ -213,14 +264,15 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({ form, handleOk, acc
     <>
       <Title level={2}>Add Auto Router</Title>
       <Text className="text-gray-600 mb-6">
-        Create an auto router that automatically selects the best model based on request complexity or semantic matching.
+        Create an auto router that automatically selects the best model based on
+        request complexity or semantic matching.
       </Text>
 
       <Card className="mb-4">
         <div className="mb-4">
           <Text className="text-sm font-medium mb-2 block">Router Type</Text>
-          <Radio.Group 
-            value={routerType} 
+          <Radio.Group
+            value={routerType}
             onChange={(e) => setRouterType(e.target.value)}
             className="w-full"
           >
@@ -229,19 +281,22 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({ form, handleOk, acc
                 <div className="flex items-center gap-2">
                   <ThunderboltOutlined className="text-yellow-500" />
                   <span className="font-medium">Complexity Router</span>
-                  <Badge 
-                    count="Recommended" 
-                    style={{ 
-                      backgroundColor: '#52c41a',
-                      fontSize: '10px',
-                      padding: '0 6px',
-                    }} 
+                  <Badge
+                    count="Recommended"
+                    style={{
+                      backgroundColor: "#52c41a",
+                      fontSize: "10px",
+                      padding: "0 6px",
+                    }}
                   />
                 </div>
                 <div className="text-xs text-gray-500 ml-6 mt-1">
-                  Automatically routes based on request complexity. No training data needed — just pick 4 models and go.
+                  Automatically routes based on request complexity. No training
+                  data needed — just pick 4 models and go.
                   <br />
-                  <span className="text-green-600">✓ Zero API calls</span> · <span className="text-green-600">✓ &lt;1ms latency</span> · <span className="text-green-600">✓ No cost</span>
+                  <span className="text-green-600">✓ Zero API calls</span> ·{" "}
+                  <span className="text-green-600">✓ &lt;1ms latency</span> ·{" "}
+                  <span className="text-green-600">✓ No cost</span>
                 </div>
               </Radio>
               <Radio value="semantic" className="w-full mt-2">
@@ -250,7 +305,8 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({ form, handleOk, acc
                   <span className="font-medium">Semantic Router</span>
                 </div>
                 <div className="text-xs text-gray-500 ml-6 mt-1">
-                  Routes based on semantic similarity to example utterances. Requires embedding model and training examples.
+                  Routes based on semantic similarity to example utterances.
+                  Requires embedding model and training examples.
                 </div>
               </Radio>
             </Space>
@@ -268,7 +324,9 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({ form, handleOk, acc
         >
           {/* Auto Router Name */}
           <Form.Item
-            rules={[{ required: true, message: "Auto router name is required" }]}
+            rules={[
+              { required: true, message: "Auto router name is required" },
+            ]}
             label="Auto Router Name"
             name="auto_router_name"
             tooltip="Unique name for this auto router configuration"
@@ -307,7 +365,12 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({ form, handleOk, acc
 
               {/* Auto Router Default Model */}
               <Form.Item
-                rules={[{ required: routerType === "semantic", message: "Default model is required" }]}
+                rules={[
+                  {
+                    required: routerType === "semantic",
+                    message: "Default model is required",
+                  },
+                ]}
                 label="Default Model"
                 name="auto_router_default_model"
                 tooltip="Fallback model to use when auto routing logic cannot determine the best model"
@@ -320,7 +383,9 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({ form, handleOk, acc
                     setShowCustomDefaultModel(value === "custom");
                   }}
                   options={[
-                    ...Array.from(new Set(modelInfo.map((option) => option.model_group))).map((model_group) => ({
+                    ...Array.from(
+                      new Set(modelInfo.map((option) => option.model_group)),
+                    ).map((model_group) => ({
                       value: model_group,
                       label: model_group,
                     })),
@@ -347,7 +412,9 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({ form, handleOk, acc
                     form.setFieldValue("auto_router_embedding_model", value);
                   }}
                   options={[
-                    ...Array.from(new Set(modelInfo.map((option) => option.model_group))).map((model_group) => ({
+                    ...Array.from(
+                      new Set(modelInfo.map((option) => option.model_group)),
+                    ).map((model_group) => ({
                       value: model_group,
                       label: model_group,
                     })),
@@ -363,7 +430,9 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({ form, handleOk, acc
 
           <div className="flex items-center my-4">
             <div className="flex-grow border-t border-gray-200"></div>
-            <span className="px-4 text-gray-500 text-sm">Additional Settings</span>
+            <span className="px-4 text-gray-500 text-sm">
+              Additional Settings
+            </span>
             <div className="flex-grow border-t border-gray-200"></div>
           </div>
 
@@ -393,10 +462,15 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({ form, handleOk, acc
 
           <div className="flex justify-between items-center mb-4">
             <Tooltip title="Get help on our github">
-              <Typography.Link href="https://github.com/BerriAI/litellm/issues">Need Help?</Typography.Link>
+              <Typography.Link href="https://github.com/BerriAI/litellm/issues">
+                Need Help?
+              </Typography.Link>
             </Tooltip>
             <div className="space-x-2">
-              <Button onClick={handleTestConnection} loading={isTestingConnection}>
+              <Button
+                onClick={handleTestConnection}
+                loading={isTestingConnection}
+              >
                 Test Connection
               </Button>
               <Button

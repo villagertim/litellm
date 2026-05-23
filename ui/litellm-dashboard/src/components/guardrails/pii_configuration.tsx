@@ -1,7 +1,8 @@
 import { Typography } from "antd";
-import React, { useState } from "react";
+import type React from "react";
+import { useState } from "react";
 import { CategoryFilter, PiiEntityList, QuickActions } from "./pii_components";
-import { PiiConfigurationProps } from "./types";
+import type { PiiConfigurationProps } from "./types";
 
 const { Title, Text } = Typography;
 
@@ -30,7 +31,10 @@ const PiiConfiguration: React.FC<PiiConfigurationProps> = ({
 
   // Filter entities based on selected categories
   const filteredEntities = entities.filter((entity) => {
-    return selectedCategories.length === 0 || selectedCategories.includes(entityToCategoryMap.get(entity) || "");
+    return (
+      selectedCategories.length === 0 ||
+      selectedCategories.includes(entityToCategoryMap.get(entity) || "")
+    );
   });
 
   // Select all entities with a specified action
@@ -61,7 +65,9 @@ const PiiConfiguration: React.FC<PiiConfigurationProps> = ({
             Configure PII Protection
           </Title>
         </div>
-        <Text className="text-gray-500">{selectedEntities.length} items selected</Text>
+        <Text className="text-gray-500">
+          {selectedEntities.length} items selected
+        </Text>
       </div>
 
       <div className="mb-6">

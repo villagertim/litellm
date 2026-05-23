@@ -1,4 +1,7 @@
-import { getProviderCreateMetadata, ProviderCreateInfo } from "@/components/networking";
+import {
+  type ProviderCreateInfo,
+  getProviderCreateMetadata,
+} from "@/components/networking";
 import { useQuery } from "@tanstack/react-query";
 import { createQueryKeys } from "../common/queryKeysFactory";
 

@@ -10,13 +10,16 @@ vi.mock("@tremor/react", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@tremor/react")>();
   return {
     ...actual,
-    TabPanel: ({ children }: { children: React.ReactNode }) => React.createElement("div", null, children),
+    TabPanel: ({ children }: { children: React.ReactNode }) =>
+      React.createElement("div", null, children),
     // Keep Select/SelectItem as the real implementation so scope-switching is testable
   };
 });
 
 type GlobalRetryPolicy = { [key: string]: number };
-type ModelGroupRetryPolicy = { [key: string]: { [key: string]: number } | undefined };
+type ModelGroupRetryPolicy = {
+  [key: string]: { [key: string]: number } | undefined;
+};
 
 const DEFAULT_RETRY = 0;
 
@@ -41,7 +44,11 @@ describe("ModelRetrySettingsTab", () => {
   });
 
   it("should render a model-specific heading when a model group is selected", () => {
-    render(<ModelRetrySettingsTab {...buildProps({ selectedModelGroup: "gpt-4" })} />);
+    render(
+      <ModelRetrySettingsTab
+        {...buildProps({ selectedModelGroup: "gpt-4" })}
+      />,
+    );
 
     expect(screen.getByText("Retry Policy for gpt-4")).toBeInTheDocument();
   });
@@ -53,7 +60,9 @@ describe("ModelRetrySettingsTab", () => {
     expect(screen.getByText(/AuthenticationError/)).toBeInTheDocument();
     expect(screen.getByText(/TimeoutError \(408\)/)).toBeInTheDocument();
     expect(screen.getByText(/RateLimitError \(429\)/)).toBeInTheDocument();
-    expect(screen.getByText(/ContentPolicyViolationError \(400\)/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/ContentPolicyViolationError \(400\)/),
+    ).toBeInTheDocument();
     expect(screen.getByText(/InternalServerError \(500\)/)).toBeInTheDocument();
   });
 
@@ -71,7 +80,11 @@ describe("ModelRetrySettingsTab", () => {
     const globalRetryPolicy: GlobalRetryPolicy = {
       RateLimitErrorRetries: 5,
     };
-    render(<ModelRetrySettingsTab {...buildProps({ globalRetryPolicy, defaultRetry: 0 })} />);
+    render(
+      <ModelRetrySettingsTab
+        {...buildProps({ globalRetryPolicy, defaultRetry: 0 })}
+      />,
+    );
 
     // The RateLimitError row is the 4th entry in the map
     const inputs = screen.getAllByRole("spinbutton");
@@ -145,7 +158,11 @@ describe("ModelRetrySettingsTab", () => {
   });
 
   it("should not show global reference annotations in global scope", () => {
-    render(<ModelRetrySettingsTab {...buildProps({ selectedModelGroup: "global" })} />);
+    render(
+      <ModelRetrySettingsTab
+        {...buildProps({ selectedModelGroup: "global" })}
+      />,
+    );
 
     expect(screen.queryByText(/Global:/)).not.toBeInTheDocument();
   });
@@ -153,7 +170,9 @@ describe("ModelRetrySettingsTab", () => {
   it("should call handleSaveRetrySettings when the Save button is clicked", async () => {
     const user = userEvent.setup();
     const handleSaveRetrySettings = vi.fn();
-    render(<ModelRetrySettingsTab {...buildProps({ handleSaveRetrySettings })} />);
+    render(
+      <ModelRetrySettingsTab {...buildProps({ handleSaveRetrySettings })} />,
+    );
 
     await user.click(screen.getByRole("button", { name: /save/i }));
 

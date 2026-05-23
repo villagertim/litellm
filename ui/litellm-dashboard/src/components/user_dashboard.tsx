@@ -3,20 +3,23 @@ import { clearTokenCookies, getCookie } from "@/utils/cookieUtils";
 import { Col, Grid } from "@tremor/react";
 import { jwtDecode } from "jwt-decode";
 import { useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import type React from "react";
+import { useEffect, useState } from "react";
 import Onboarding from "../app/onboarding/page";
+import { VirtualKeysTable } from "./VirtualKeysPage/VirtualKeysTable";
 import { fetchTeams } from "./common_components/fetch_teams";
-import { KeyResponse, Team } from "./key_team_helpers/key_list";
+import type { KeyResponse, Team } from "./key_team_helpers/key_list";
 import {
+  type Organization,
   getProxyBaseUrl,
   getProxyUISettings,
   keyInfoCall,
   modelAvailableCall,
-  Organization,
   userGetInfoV2,
 } from "./networking";
-import CreateKey, { CreateKeyPrefillData } from "./organisms/create_key_button";
-import { VirtualKeysTable } from "./VirtualKeysPage/VirtualKeysTable";
+import CreateKey, {
+  type CreateKeyPrefillData,
+} from "./organisms/create_key_button";
 
 export interface ProxySettings {
   PROXY_BASE_URL: string | null;
@@ -88,7 +91,9 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [teamSpend, setTeamSpend] = useState<number | null>(null);
   const [userModels, setUserModels] = useState<string[]>([]);
-  const [proxySettings, setProxySettings] = useState<ProxySettings | null>(null);
+  const [proxySettings, setProxySettings] = useState<ProxySettings | null>(
+    null,
+  );
   const [selectedTeam, setSelectedTeam] = useState<any | null>(null);
 
   // Clear session storage on page unload so next load fetches fresh data.
@@ -170,24 +175,37 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
         console.log(`currentOrg: ${JSON.stringify(currentOrg)}`);
         const fetchData = async () => {
           try {
-            const proxy_settings: ProxySettings = await getProxyUISettings(accessToken);
+            const proxy_settings: ProxySettings =
+              await getProxyUISettings(accessToken);
             setProxySettings(proxy_settings);
 
             const response = await userGetInfoV2(accessToken, userID);
 
             setUserSpendData(response);
 
-            sessionStorage.setItem("userSpendData" + userID, JSON.stringify(response));
+            sessionStorage.setItem(
+              "userSpendData" + userID,
+              JSON.stringify(response),
+            );
 
-            const model_available = await modelAvailableCall(accessToken, userID, userRole);
+            const model_available = await modelAvailableCall(
+              accessToken,
+              userID,
+              userRole,
+            );
             // loop through model_info["data"] and create an array of element.model_name
-            let available_model_names = model_available["data"].map((element: { id: string }) => element.id);
+            const available_model_names = model_available["data"].map(
+              (element: { id: string }) => element.id,
+            );
             console.log("available_model_names:", available_model_names);
             setUserModels(available_model_names);
 
             console.log("userModels:", userModels);
 
-            sessionStorage.setItem("userModels" + userID, JSON.stringify(available_model_names));
+            sessionStorage.setItem(
+              "userModels" + userID,
+              JSON.stringify(available_model_names),
+            );
           } catch (error: any) {
             console.error("There was an error fetching the data", error);
             if (error.message.includes("Invalid proxy server token passed")) {
@@ -231,11 +249,20 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
 
   useEffect(() => {
     // This code will run every time selectedTeam changes
-    if (keys !== null && selectedTeam !== null && selectedTeam !== undefined && selectedTeam.team_id !== null) {
+    if (
+      keys !== null &&
+      selectedTeam !== null &&
+      selectedTeam !== undefined &&
+      selectedTeam.team_id !== null
+    ) {
       let sum = 0;
       console.log(`keys: ${JSON.stringify(keys)}`);
       for (const key of keys) {
-        if (selectedTeam.hasOwnProperty("team_id") && key.team_id !== null && key.team_id === selectedTeam.team_id) {
+        if (
+          selectedTeam.hasOwnProperty("team_id") &&
+          key.team_id !== null &&
+          key.team_id === selectedTeam.team_id
+        ) {
           sum += key.spend;
         }
       }
@@ -319,7 +346,8 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
   // Admin Viewer can view keys read-only — gate "Create Key" but render the
   // virtual-keys table the same as for Proxy Admin (read parity). Every
   // other role keeps its existing ability to create keys.
-  const canCreateKey = userRole !== "Admin Viewer" && userRole !== "proxy_admin_viewer";
+  const canCreateKey =
+    userRole !== "Admin Viewer" && userRole !== "proxy_admin_viewer";
 
   console.log("inside user dashboard, selected team", selectedTeam);
   console.log("All cookies after redirect:", document.cookie);

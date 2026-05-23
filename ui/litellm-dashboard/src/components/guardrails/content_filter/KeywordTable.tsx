@@ -1,6 +1,6 @@
 import { DeleteOutlined } from "@ant-design/icons";
 import { Button, Select, Table, Typography } from "antd";
-import React from "react";
+import type React from "react";
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -90,4 +90,3 @@ const KeywordTable: React.FC<KeywordTableProps> = ({
 };
 
 export default KeywordTable;
-

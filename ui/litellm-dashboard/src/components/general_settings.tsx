@@ -1,29 +1,30 @@
-import React, { useState, useEffect } from "react";
+import { CheckCircleIcon, TrashIcon } from "@heroicons/react/outline";
 import {
-  Card,
-  Table,
-  TableHead,
-  TableRow,
   Badge,
-  TableHeaderCell,
-  TableCell,
-  TableBody,
-  Text,
   Button,
+  Card,
   Icon,
   Switch,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+  Text,
 } from "@tremor/react";
-import { TabPanel, TabPanels, TabGroup, TabList, Tab } from "@tremor/react";
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@tremor/react";
+import { InputNumber } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
 import {
+  deleteConfigFieldSetting,
   getGeneralSettingsCall,
   updateConfigFieldSetting,
-  deleteConfigFieldSetting,
 } from "./networking";
-import { InputNumber } from "antd";
-import { TrashIcon, CheckCircleIcon } from "@heroicons/react/outline";
 
-import RouterSettings from "./router_settings";
 import Fallbacks from "./Settings/RouterSettings/Fallbacks/Fallbacks";
+import RouterSettings from "./router_settings";
 import RoutingGroups from "./routing_groups";
 interface GeneralSettingsPageProps {
   accessToken: string | null;
@@ -40,15 +41,22 @@ interface generalSettingsItem {
   stored_in_db: boolean | null;
 }
 
-const GeneralSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, userRole, userID, modelData }) => {
-  const [generalSettings, setGeneralSettings] = useState<generalSettingsItem[]>([]);
+const GeneralSettings: React.FC<GeneralSettingsPageProps> = ({
+  accessToken,
+  userRole,
+  userID,
+  modelData,
+}) => {
+  const [generalSettings, setGeneralSettings] = useState<generalSettingsItem[]>(
+    [],
+  );
 
   useEffect(() => {
     if (!accessToken) {
       return;
     }
     getGeneralSettingsCall(accessToken).then((data) => {
-      let general_settings = data;
+      const general_settings = data;
       setGeneralSettings(general_settings);
     });
   }, [accessToken]);
@@ -56,7 +64,9 @@ const GeneralSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, user
   const handleInputChange = (fieldName: string, newValue: any) => {
     // Update the value in the state
     const updatedSettings = generalSettings.map((setting) =>
-      setting.field_name === fieldName ? { ...setting, field_value: newValue } : setting,
+      setting.field_name === fieldName
+        ? { ...setting, field_value: newValue }
+        : setting,
     );
     setGeneralSettings(updatedSettings);
   };
@@ -66,7 +76,7 @@ const GeneralSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, user
       return;
     }
 
-    let fieldValue = generalSettings[idx].field_value;
+    const fieldValue = generalSettings[idx].field_value;
 
     if (fieldValue == null || fieldValue == undefined) {
       return;
@@ -76,7 +86,9 @@ const GeneralSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, user
       // update value in state
 
       const updatedSettings = generalSettings.map((setting) =>
-        setting.field_name === fieldName ? { ...setting, stored_in_db: true } : setting,
+        setting.field_name === fieldName
+          ? { ...setting, stored_in_db: true }
+          : setting,
       );
       setGeneralSettings(updatedSettings);
     } catch (error) {
@@ -94,7 +106,9 @@ const GeneralSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, user
       // update value in state
 
       const updatedSettings = generalSettings.map((setting) =>
-        setting.field_name === fieldName ? { ...setting, stored_in_db: null, field_value: null } : setting,
+        setting.field_name === fieldName
+          ? { ...setting, stored_in_db: null, field_value: null }
+          : setting,
       );
       setGeneralSettings(updatedSettings);
     } catch (error) {
@@ -169,29 +183,55 @@ const GeneralSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, user
                             <InputNumber
                               step={1}
                               value={value.field_value}
-                              onChange={(newValue) => handleInputChange(value.field_name, newValue)}
+                              onChange={(newValue) =>
+                                handleInputChange(value.field_name, newValue)
+                              }
                             />
                           ) : value.field_type == "Boolean" ? (
                             <Switch
-                              checked={value.field_value === true || value.field_value === "true"}
-                              onChange={(checked) => handleInputChange(value.field_name, checked)}
+                              checked={
+                                value.field_value === true ||
+                                value.field_value === "true"
+                              }
+                              onChange={(checked) =>
+                                handleInputChange(value.field_name, checked)
+                              }
                             />
                           ) : null}
                         </TableCell>
                         <TableCell>
                           {value.stored_in_db == true ? (
-                            <Badge icon={CheckCircleIcon} className="text-white">
+                            <Badge
+                              icon={CheckCircleIcon}
+                              className="text-white"
+                            >
                               In DB
                             </Badge>
                           ) : value.stored_in_db == false ? (
-                            <Badge className="text-gray bg-white outline">In Config</Badge>
+                            <Badge className="text-gray bg-white outline">
+                              In Config
+                            </Badge>
                           ) : (
-                            <Badge className="text-gray bg-white outline">Not Set</Badge>
+                            <Badge className="text-gray bg-white outline">
+                              Not Set
+                            </Badge>
                           )}
                         </TableCell>
                         <TableCell>
-                          <Button onClick={() => handleUpdateField(value.field_name, index)}>Update</Button>
-                          <Icon icon={TrashIcon} color="red" onClick={() => handleResetField(value.field_name, index)}>
+                          <Button
+                            onClick={() =>
+                              handleUpdateField(value.field_name, index)
+                            }
+                          >
+                            Update
+                          </Button>
+                          <Icon
+                            icon={TrashIcon}
+                            color="red"
+                            onClick={() =>
+                              handleResetField(value.field_name, index)
+                            }
+                          >
                             Reset
                           </Icon>
                         </TableCell>

@@ -1,5 +1,5 @@
 import { Select } from "antd";
-import React from "react";
+import type React from "react";
 import { ENDPOINT_OPTIONS } from "./chatConstants";
 
 interface EndpointSelectorProps {
@@ -8,7 +8,11 @@ interface EndpointSelectorProps {
   className?: string;
 }
 
-const EndpointSelector: React.FC<EndpointSelectorProps> = ({ endpointType, onEndpointChange, className }) => {
+const EndpointSelector: React.FC<EndpointSelectorProps> = ({
+  endpointType,
+  onEndpointChange,
+  className,
+}) => {
   return (
     <div className={className}>
       <Select

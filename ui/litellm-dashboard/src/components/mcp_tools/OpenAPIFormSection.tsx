@@ -1,9 +1,13 @@
-import React, { useState } from "react";
-import { Form, Input, Tooltip } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { FormInstance } from "antd/es/form";
+import { Form, Input, Tooltip } from "antd";
+import type { FormInstance } from "antd/es/form";
+import type React from "react";
+import { useState } from "react";
+import OpenAPIQuickPicker, {
+  type OpenAPIRegistryEntry,
+  type OpenAPIKeyTool,
+} from "./OpenAPIQuickPicker";
 import { AUTH_TYPE, OAUTH_FLOW } from "./types";
-import OpenAPIQuickPicker, { OpenAPIRegistryEntry, OpenAPIKeyTool } from "./OpenAPIQuickPicker";
 
 interface OpenAPIFormSectionProps {
   form: FormInstance;
@@ -77,7 +81,9 @@ const OpenAPIFormSection: React.FC<OpenAPIFormSectionProps> = ({
           </span>
         }
         name="spec_path"
-        rules={[{ required: true, message: "Please enter an OpenAPI spec URL" }]}
+        rules={[
+          { required: true, message: "Please enter an OpenAPI spec URL" },
+        ]}
       >
         <Input
           placeholder="https://petstore3.swagger.io/api/v3/openapi.json"

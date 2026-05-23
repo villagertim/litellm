@@ -1,6 +1,6 @@
-import { TableCell } from "@tremor/react";
-import { Team } from "@/components/key_team_helpers/key_list";
 import TeamRoleBadge from "@/app/(dashboard)/teams/components/TeamsTable/YourRoleCell/TeamRoleBadge";
+import type { Team } from "@/components/key_team_helpers/key_list";
+import { TableCell } from "@tremor/react";
 
 interface YourRoleCellProps {
   team: Team;

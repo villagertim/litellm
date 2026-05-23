@@ -6,7 +6,11 @@ interface DurationSelectProps {
   onChange?: (value: string) => void;
 }
 
-export default function DurationSelect({ className, value, onChange }: DurationSelectProps) {
+export default function DurationSelect({
+  className,
+  value,
+  onChange,
+}: DurationSelectProps) {
   return (
     <Select className={className} value={value} onChange={onChange}>
       <Select.Option value="24h">Daily</Select.Option>

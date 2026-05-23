@@ -1,6 +1,13 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+  PlusOutlined,
+  ReloadOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Button,
@@ -15,23 +22,16 @@ import {
   message,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
+import React, { useMemo, useState } from "react";
+import DeleteResourceModal from "../common_components/DeleteResourceModal";
 import {
-  DeleteOutlined,
-  EditOutlined,
-  EyeOutlined,
-  PlusOutlined,
-  ReloadOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
-import {
-  MemoryRow,
+  type MemoryRow,
   createMemory,
   deleteMemory,
   fetchMemoryList,
   updateMemory,
 } from "../networking";
 import { MemoryEditModal } from "./MemoryEditModal";
-import DeleteResourceModal from "../common_components/DeleteResourceModal";
 
 const { Text, Paragraph, Title } = Typography;
 
@@ -80,11 +80,7 @@ export const MemoryView: React.FC<MemoryViewProps> = ({ accessToken }) => {
   // currently-visible page without us needing a manual refetch().
   const MEMORY_LIST_KEY = "memoryList" as const;
 
-  const {
-    data,
-    isLoading,
-    isFetching,
-  } = useQuery({
+  const { data, isLoading, isFetching } = useQuery({
     queryKey: [MEMORY_LIST_KEY, appliedSearch, currentPage],
     queryFn: () => {
       if (!accessToken) throw new Error("Access token required");
@@ -299,7 +295,9 @@ export const MemoryView: React.FC<MemoryViewProps> = ({ accessToken }) => {
       dataIndex: "updated_at",
       key: "updated_at",
       width: 180,
-      render: (ts?: string) => <Text type="secondary">{formatTimestamp(ts)}</Text>,
+      render: (ts?: string) => (
+        <Text type="secondary">{formatTimestamp(ts)}</Text>
+      ),
       // No sorter — backend already returns rows in `updated_at DESC` order,
       // and a client-side sorter on a paginated view would only affect the
       // current page.
@@ -345,8 +343,9 @@ export const MemoryView: React.FC<MemoryViewProps> = ({ accessToken }) => {
             Memory
           </Title>
           <Paragraph type="secondary" style={{ marginBottom: 0 }}>
-            Inspect what your agents have stored under <Text code>/v1/memory</Text>.
-            Scoped to memories visible to your user / team (admins see all).
+            Inspect what your agents have stored under{" "}
+            <Text code>/v1/memory</Text>. Scoped to memories visible to your
+            user / team (admins see all).
           </Paragraph>
         </div>
 
@@ -410,8 +409,7 @@ export const MemoryView: React.FC<MemoryViewProps> = ({ accessToken }) => {
               pageSize: PAGE_SIZE,
               total,
               showSizeChanger: false,
-              showTotal: (n, range) =>
-                `${range[0]}–${range[1]} of ${n}`,
+              showTotal: (n, range) => `${range[0]}–${range[1]} of ${n}`,
               onChange: (page) => setCurrentPage(page),
             }}
             locale={{
@@ -481,8 +479,7 @@ export const MemoryView: React.FC<MemoryViewProps> = ({ accessToken }) => {
                   padding: 12,
                   borderRadius: 6,
                   whiteSpace: "pre-wrap",
-                  fontFamily:
-                    "ui-monospace, SFMono-Regular, Menlo, monospace",
+                  fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
                   fontSize: 13,
                 }}
               >
@@ -550,8 +547,16 @@ export const MemoryView: React.FC<MemoryViewProps> = ({ accessToken }) => {
             ? [
                 { label: "Key", value: deleteRow.key, code: true },
                 { label: "Memory ID", value: deleteRow.memory_id, code: true },
-                { label: "User ID", value: deleteRow.user_id ?? "-", code: true },
-                { label: "Team ID", value: deleteRow.team_id ?? "-", code: true },
+                {
+                  label: "User ID",
+                  value: deleteRow.user_id ?? "-",
+                  code: true,
+                },
+                {
+                  label: "Team ID",
+                  value: deleteRow.team_id ?? "-",
+                  code: true,
+                },
               ]
             : []
         }

@@ -1,18 +1,21 @@
 /* @vitest-environment jsdom */
 import { act, render, screen } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import HealthCheckComponent from "./HealthCheckComponent";
 
 const mockIndividualModelHealthCheckCall = vi.fn();
 const mockLatestHealthChecksCall = vi.fn();
 
 vi.mock("../networking", () => ({
-  individualModelHealthCheckCall: (...args: unknown[]) => mockIndividualModelHealthCheckCall(...args),
-  latestHealthChecksCall: (...args: unknown[]) => mockLatestHealthChecksCall(...args),
+  individualModelHealthCheckCall: (...args: unknown[]) =>
+    mockIndividualModelHealthCheckCall(...args),
+  latestHealthChecksCall: (...args: unknown[]) =>
+    mockLatestHealthChecksCall(...args),
 }));
 
 describe("HealthCheckComponent", () => {
-  const getDisplayModelName = (model: { model_name?: string }) => model.model_name ?? "";
+  const getDisplayModelName = (model: { model_name?: string }) =>
+    model.model_name ?? "";
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -52,7 +55,9 @@ describe("HealthCheckComponent", () => {
 
     expect(screen.getByText("Model Health Status")).toBeInTheDocument();
     expect(
-      screen.getByText("Run health checks on individual models to verify they are working correctly"),
+      screen.getByText(
+        "Run health checks on individual models to verify they are working correctly",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -88,8 +93,14 @@ describe("HealthCheckComponent", () => {
       await new Promise((r) => setTimeout(r, 50));
     });
 
-    expect(mockIndividualModelHealthCheckCall).toHaveBeenCalledWith("token-123", "deployment-abc-123");
-    expect(mockIndividualModelHealthCheckCall).not.toHaveBeenCalledWith("token-123", "gpt-4");
+    expect(mockIndividualModelHealthCheckCall).toHaveBeenCalledWith(
+      "token-123",
+      "deployment-abc-123",
+    );
+    expect(mockIndividualModelHealthCheckCall).not.toHaveBeenCalledWith(
+      "token-123",
+      "gpt-4",
+    );
   });
 
   it("should show pagination controls and request the next page", async () => {
@@ -127,7 +138,9 @@ describe("HealthCheckComponent", () => {
       await new Promise((r) => setTimeout(r, 0));
     });
 
-    expect(screen.getByTestId("health-results-count")).toHaveTextContent("Showing 1 - 50 of 75 results");
+    expect(screen.getByTestId("health-results-count")).toHaveTextContent(
+      "Showing 1 - 50 of 75 results",
+    );
 
     await act(async () => {
       screen.getByRole("button", { name: "Next" }).click();

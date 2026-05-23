@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { transformKeyInfo } from "./transform_key_info";
 
 describe("transformKeyInfo", () => {

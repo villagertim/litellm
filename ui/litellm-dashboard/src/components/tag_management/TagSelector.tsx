@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
 import { Select } from "antd";
-import { Tag } from "./types";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { tagListCall } from "../networking";
+import type { Tag } from "./types";
 
 interface TagSelectorProps {
   onChange: (selectedTags: string[]) => void;
@@ -10,7 +11,12 @@ interface TagSelectorProps {
   accessToken: string;
 }
 
-const TagSelector: React.FC<TagSelectorProps> = ({ onChange, value, className, accessToken }) => {
+const TagSelector: React.FC<TagSelectorProps> = ({
+  onChange,
+  value,
+  className,
+  accessToken,
+}) => {
   const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(false);
 

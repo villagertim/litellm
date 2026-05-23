@@ -1,5 +1,5 @@
 import { render } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import BulkCreateUsersButton from "./bulk_create_users_button";
 
 vi.mock("./networking", () => ({
@@ -22,7 +22,13 @@ vi.mock("./molecules/notifications_manager", () => ({
 
 describe("BulkCreateUsersButton", () => {
   it("should render", () => {
-    const { getByText } = render(<BulkCreateUsersButton accessToken="test-token" teams={[]} possibleUIRoles={null} />);
+    const { getByText } = render(
+      <BulkCreateUsersButton
+        accessToken="test-token"
+        teams={[]}
+        possibleUIRoles={null}
+      />,
+    );
     expect(getByText("+ Bulk Invite Users")).toBeInTheDocument();
   });
 });

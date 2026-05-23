@@ -1,11 +1,31 @@
 import TableIconActionButton from "@/components/common_components/IconActionButton/TableIconActionButtons/TableIconActionButton";
 import NotificationsManager from "@/components/molecules/notifications_manager";
 import { isAdminRole } from "@/utils/roles";
-import { ChevronDownIcon, ChevronRightIcon, ExternalLinkIcon, PlusCircleIcon } from "@heroicons/react/outline";
-import { Card, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, Text, Title } from "@tremor/react";
+import {
+  ChevronDownIcon,
+  ChevronRightIcon,
+  ExternalLinkIcon,
+  PlusCircleIcon,
+} from "@heroicons/react/outline";
+import {
+  Card,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+  Text,
+  Title,
+} from "@tremor/react";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import { getProxyBaseUrl, getPublicModelHubInfo, updateUsefulLinksCall } from "../networking";
+import type React from "react";
+import { useEffect, useState } from "react";
+import {
+  getProxyBaseUrl,
+  getPublicModelHubInfo,
+  updateUsefulLinksCall,
+} from "../networking";
 
 interface UsefulLinksManagementProps {
   accessToken: string | null;
@@ -19,7 +39,10 @@ interface Link {
   index?: number;
 }
 
-const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessToken, userRole }) => {
+const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({
+  accessToken,
+  userRole,
+}) => {
   const [links, setLinks] = useState<Link[]>([]);
   const [newLink, setNewLink] = useState({ url: "", displayName: "" });
   const [editingLink, setEditingLink] = useState<Link | null>(null);
@@ -124,7 +147,9 @@ const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessTok
 
     // Check for duplicate display names
     if (links.some((link) => link.displayName === newLink.displayName)) {
-      NotificationsManager.fromBackend("A link with this display name already exists");
+      NotificationsManager.fromBackend(
+        "A link with this display name already exists",
+      );
       return;
     }
 
@@ -159,12 +184,22 @@ const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessTok
     }
 
     // Check for duplicate display names (excluding current link)
-    if (links.some((link) => link.id !== editingLink.id && link.displayName === editingLink.displayName)) {
-      NotificationsManager.fromBackend("A link with this display name already exists");
+    if (
+      links.some(
+        (link) =>
+          link.id !== editingLink.id &&
+          link.displayName === editingLink.displayName,
+      )
+    ) {
+      NotificationsManager.fromBackend(
+        "A link with this display name already exists",
+      );
       return;
     }
 
-    const updatedLinks = links.map((link) => (link.id === editingLink.id ? editingLink : link));
+    const updatedLinks = links.map((link) =>
+      link.id === editingLink.id ? editingLink : link,
+    );
 
     if (await saveLinksToBackend(updatedLinks)) {
       setLinks(updatedLinks);
@@ -215,24 +250,34 @@ const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessTok
   const handleMoveUp = (index: number) => {
     if (index === 0) return;
     const newLinks = [...links];
-    [newLinks[index - 1], newLinks[index]] = [newLinks[index], newLinks[index - 1]];
+    [newLinks[index - 1], newLinks[index]] = [
+      newLinks[index],
+      newLinks[index - 1],
+    ];
     setLinks(newLinks);
   };
 
   const handleMoveDown = (index: number) => {
     if (index === links.length - 1) return;
     const newLinks = [...links];
-    [newLinks[index], newLinks[index + 1]] = [newLinks[index + 1], newLinks[index]];
+    [newLinks[index], newLinks[index + 1]] = [
+      newLinks[index + 1],
+      newLinks[index],
+    ];
     setLinks(newLinks);
   };
 
   return (
     <Card className="mb-6">
-      <div className="flex items-center justify-between cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
+      <div
+        className="flex items-center justify-between cursor-pointer"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
         <div className="flex flex-col">
           <Title className="mb-0">Link Management</Title>
           <p className="text-sm text-gray-500">
-            Manage the links that are displayed under &apos;Useful Links&apos; on the public model hub.
+            Manage the links that are displayed under &apos;Useful Links&apos;
+            on the public model hub.
           </p>
         </div>
         <div className="flex items-center">
@@ -247,10 +292,14 @@ const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessTok
       {isExpanded && (
         <div className="mt-4">
           <div className="mb-6">
-            <Text className="text-sm font-medium text-gray-700 mb-2">Add New Link</Text>
+            <Text className="text-sm font-medium text-gray-700 mb-2">
+              Add New Link
+            </Text>
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Display Name</label>
+                <label className="block text-xs text-gray-500 mb-1">
+                  Display Name
+                </label>
                 <input
                   type="text"
                   value={newLink.displayName}
@@ -292,7 +341,9 @@ const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessTok
             </div>
           </div>
           <div className="flex items-center justify-between mb-2">
-            <Text className="text-sm font-medium text-gray-700">Manage Existing Links</Text>
+            <Text className="text-sm font-medium text-gray-700">
+              Manage Existing Links
+            </Text>
             <div className="flex items-center space-x-2">
               <Link
                 href={`${getProxyBaseUrl()}/ui/model_hub_table`}
@@ -334,9 +385,13 @@ const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessTok
               <Table className="[&_td]:py-0.5 [&_th]:py-1">
                 <TableHead>
                   <TableRow>
-                    <TableHeaderCell className="py-1 h-8">Display Name</TableHeaderCell>
+                    <TableHeaderCell className="py-1 h-8">
+                      Display Name
+                    </TableHeaderCell>
                     <TableHeaderCell className="py-1 h-8">URL</TableHeaderCell>
-                    <TableHeaderCell className="py-1 h-8">Actions</TableHeaderCell>
+                    <TableHeaderCell className="py-1 h-8">
+                      Actions
+                    </TableHeaderCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -389,8 +444,12 @@ const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessTok
                         </>
                       ) : (
                         <>
-                          <TableCell className="py-0.5 text-sm text-gray-900">{link.displayName}</TableCell>
-                          <TableCell className="py-0.5 text-sm text-gray-500">{link.url}</TableCell>
+                          <TableCell className="py-0.5 text-sm text-gray-900">
+                            {link.displayName}
+                          </TableCell>
+                          <TableCell className="py-0.5 text-sm text-gray-500">
+                            {link.url}
+                          </TableCell>
                           <TableCell className="py-0.5 whitespace-nowrap">
                             {isRearranging ? (
                               <div className="flex space-x-2">
@@ -440,7 +499,10 @@ const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessTok
                   ))}
                   {links.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={3} className="py-0.5 text-sm text-gray-500 text-center">
+                      <TableCell
+                        colSpan={3}
+                        className="py-0.5 text-sm text-gray-500 text-center"
+                      >
                         No links added yet. Add a new link above.
                       </TableCell>
                     </TableRow>

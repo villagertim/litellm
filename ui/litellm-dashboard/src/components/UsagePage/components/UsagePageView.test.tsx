@@ -14,9 +14,9 @@ import UsagePage from "./UsagePageView";
 beforeAll(() => {
   if (typeof window !== "undefined" && !window.ResizeObserver) {
     window.ResizeObserver = class ResizeObserver {
-      observe() { }
-      unobserve() { }
-      disconnect() { }
+      observe() {}
+      unobserve() {}
+      disconnect() {}
     } as any;
   }
 });
@@ -57,7 +57,11 @@ vi.mock("./EndpointUsage/EndpointUsage", () => ({
 
 vi.mock("./UsageViewSelect/UsageViewSelect", async () => {
   const React = await import("react");
-  const UsageViewSelect = ({ value, onChange, canViewTagUsage = false }: any) => {
+  const UsageViewSelect = ({
+    value,
+    onChange,
+    canViewTagUsage = false,
+  }: any) => {
     const tagOption = canViewTagUsage
       ? React.createElement("option", { value: "tag" }, "Tag Usage")
       : null;
@@ -71,11 +75,19 @@ vi.mock("./UsageViewSelect/UsageViewSelect", async () => {
       },
       React.createElement("option", { value: "global" }, "Global Usage"),
       React.createElement("option", { value: "team" }, "Team Usage"),
-      React.createElement("option", { value: "organization" }, "Organization Usage"),
+      React.createElement(
+        "option",
+        { value: "organization" },
+        "Organization Usage",
+      ),
       React.createElement("option", { value: "customer" }, "Customer Usage"),
       tagOption,
       React.createElement("option", { value: "agent" }, "Agent Usage"),
-      React.createElement("option", { value: "user-agent-activity" }, "User Agent Activity"),
+      React.createElement(
+        "option",
+        { value: "user-agent-activity" },
+        "User Agent Activity",
+      ),
     );
   };
   UsageViewSelect.displayName = "UsageViewSelect";
@@ -85,7 +97,11 @@ vi.mock("./UsageViewSelect/UsageViewSelect", async () => {
 vi.mock("../../shared/advanced_date_picker", async () => {
   const React = await import("react");
   const AdvancedDatePicker = () => {
-    return React.createElement("div", { "data-testid": "advanced-date-picker" }, "Date Picker");
+    return React.createElement(
+      "div",
+      { "data-testid": "advanced-date-picker" },
+      "Date Picker",
+    );
   };
   AdvancedDatePicker.displayName = "AdvancedDatePicker";
   return { default: AdvancedDatePicker };
@@ -104,7 +120,9 @@ vi.mock("../../EntityUsageExport", () => ({
 }));
 
 vi.mock("./UsageAIChatPanel", () => ({
-  default: () => <div data-testid="usage-ai-chat-panel">Usage AI Chat Panel</div>,
+  default: () => (
+    <div data-testid="usage-ai-chat-panel">Usage AI Chat Panel</div>
+  ),
 }));
 
 vi.mock("@/app/(dashboard)/hooks/customers/useCustomers", () => ({
@@ -142,7 +160,13 @@ vi.mock("antd", async (importOriginal) => {
         onChange: (e: any) => onChange?.(e.target.value),
         role: "combobox",
       },
-      options?.map((opt: any) => React.createElement("option", { key: opt.value, value: opt.value }, opt.label)),
+      options?.map((opt: any) =>
+        React.createElement(
+          "option",
+          { key: opt.value, value: opt.value },
+          opt.label,
+        ),
+      ),
     );
   }
   (Select as any).displayName = "AntdSelect";
@@ -154,7 +178,12 @@ vi.mock("antd", async (importOriginal) => {
       { ...rest, "data-testid": "antd-alert", "data-type": type },
       message && React.createElement("div", null, message),
       description && React.createElement("div", null, description),
-      closable && React.createElement("button", { onClick: onClose, "aria-label": "Close" }, "×"),
+      closable &&
+        React.createElement(
+          "button",
+          { onClick: onClose, "aria-label": "Close" },
+          "×",
+        ),
     );
   }
   (Alert as any).displayName = "AntdAlert";
@@ -164,7 +193,12 @@ vi.mock("antd", async (importOriginal) => {
     return React.createElement(
       "div",
       { ...rest, "data-testid": "antd-badge", "data-color": color },
-      count && React.createElement("span", { "data-testid": "antd-badge-count" }, count),
+      count &&
+        React.createElement(
+          "span",
+          { "data-testid": "antd-badge-count" },
+          count,
+        ),
       children,
     );
   }
@@ -175,14 +209,20 @@ vi.mock("antd", async (importOriginal) => {
       "div",
       { ...rest, "data-testid": "antd-table" },
       columns?.map((col: any) =>
-        React.createElement("div", { key: col.key, "data-testid": `column-${col.key}` }, col.title),
+        React.createElement(
+          "div",
+          { key: col.key, "data-testid": `column-${col.key}` },
+          col.title,
+        ),
       ),
       dataSource?.map((row: any) =>
         React.createElement(
           "div",
           { key: row.key, "data-testid": `row-${row.key}` },
           columns?.map((col: any) => {
-            const value = col.render ? col.render(row[col.dataIndex], row) : row[col.dataIndex];
+            const value = col.render
+              ? col.render(row[col.dataIndex], row)
+              : row[col.dataIndex];
             return React.createElement("div", { key: col.key }, value);
           }),
         ),
@@ -213,7 +253,11 @@ vi.mock("antd", async (importOriginal) => {
 
   function Tooltip(props: any) {
     const { title, children, ...rest } = props;
-    return React.createElement("div", { ...rest, "data-testid": "antd-tooltip", title }, children);
+    return React.createElement(
+      "div",
+      { ...rest, "data-testid": "antd-tooltip", title },
+      children,
+    );
   }
   (Tooltip as any).displayName = "AntdTooltip";
 
@@ -236,7 +280,10 @@ vi.mock("@ant-design/icons", async () => {
   }
 
   function LoadingOutlined(props: any) {
-    return React.createElement("span", { "data-testid": "loading-icon", ...props });
+    return React.createElement("span", {
+      "data-testid": "loading-icon",
+      ...props,
+    });
   }
 
   return {
@@ -265,58 +312,114 @@ vi.mock("@tremor/react", async () => {
   const actual = await import("@tremor/react");
 
   function TabGroup({ children }: any) {
-    return React.createElement("div", { "data-testid": "tremor-tab-group" }, children);
+    return React.createElement(
+      "div",
+      { "data-testid": "tremor-tab-group" },
+      children,
+    );
   }
 
   function TabList({ children }: any) {
-    return React.createElement("div", { "data-testid": "tremor-tab-list" }, children);
+    return React.createElement(
+      "div",
+      { "data-testid": "tremor-tab-list" },
+      children,
+    );
   }
 
   function Tab({ children, ...props }: any) {
-    return React.createElement("button", { ...props, "data-testid": "tremor-tab" }, children);
+    return React.createElement(
+      "button",
+      { ...props, "data-testid": "tremor-tab" },
+      children,
+    );
   }
 
   function TabPanels({ children }: any) {
-    return React.createElement("div", { "data-testid": "tremor-tab-panels" }, children);
+    return React.createElement(
+      "div",
+      { "data-testid": "tremor-tab-panels" },
+      children,
+    );
   }
 
   function TabPanel({ children }: any) {
-    return React.createElement("div", { "data-testid": "tremor-tab-panel" }, children);
+    return React.createElement(
+      "div",
+      { "data-testid": "tremor-tab-panel" },
+      children,
+    );
   }
 
   function Card({ children, ...props }: any) {
-    return React.createElement("div", { ...props, "data-testid": "tremor-card" }, children);
+    return React.createElement(
+      "div",
+      { ...props, "data-testid": "tremor-card" },
+      children,
+    );
   }
 
   function Grid({ children, numItems, ...props }: any) {
-    return React.createElement("div", { ...props, "data-testid": "tremor-grid" }, children);
+    return React.createElement(
+      "div",
+      { ...props, "data-testid": "tremor-grid" },
+      children,
+    );
   }
 
   function Col({ children, numColSpan, ...props }: any) {
-    return React.createElement("div", { ...props, "data-testid": "tremor-col" }, children);
+    return React.createElement(
+      "div",
+      { ...props, "data-testid": "tremor-col" },
+      children,
+    );
   }
 
   function Title({ children, ...props }: any) {
-    return React.createElement("h2", { ...props, "data-testid": "tremor-title" }, children);
+    return React.createElement(
+      "h2",
+      { ...props, "data-testid": "tremor-title" },
+      children,
+    );
   }
 
   function Text({ children, ...props }: any) {
-    return React.createElement("p", { ...props, "data-testid": "tremor-text" }, children);
+    return React.createElement(
+      "p",
+      { ...props, "data-testid": "tremor-text" },
+      children,
+    );
   }
 
-  function BarChart({ data, valueFormatter, yAxisWidth, showLegend, customTooltip, ...props }: any) {
-    return React.createElement("div", { ...props, "data-testid": "tremor-bar-chart" }, "Bar Chart");
+  function BarChart({
+    data,
+    valueFormatter,
+    yAxisWidth,
+    showLegend,
+    customTooltip,
+    ...props
+  }: any) {
+    return React.createElement(
+      "div",
+      { ...props, "data-testid": "tremor-bar-chart" },
+      "Bar Chart",
+    );
   }
 
   function DonutChart({ data, ...props }: any) {
-    return React.createElement("div", { ...props, "data-testid": "tremor-donut-chart" }, "Donut Chart");
+    return React.createElement(
+      "div",
+      { ...props, "data-testid": "tremor-donut-chart" },
+      "Donut Chart",
+    );
   }
 
   function Button({ children, icon, onClick, ...props }: any) {
     return React.createElement(
       "button",
       { ...props, onClick, "data-testid": "tremor-button" },
-      icon && React.createElement("span", { "data-testid": "tremor-button-icon" }),
+      icon &&
+        React.createElement("span", { "data-testid": "tremor-button-icon" }),
       children,
     );
   }
@@ -340,7 +443,9 @@ vi.mock("@tremor/react", async () => {
 });
 
 describe("UsagePage", () => {
-  const mockUserDailyActivityAggregatedCall = vi.mocked(networking.userDailyActivityAggregatedCall);
+  const mockUserDailyActivityAggregatedCall = vi.mocked(
+    networking.userDailyActivityAggregatedCall,
+  );
   const mockUserDailyActivityCall = vi.mocked(networking.userDailyActivityCall);
   const mockTagListCall = vi.mocked(networking.tagListCall);
   const mockUseCustomers = vi.mocked(useCustomers);
@@ -538,8 +643,16 @@ describe("UsagePage", () => {
         pages: [
           {
             users: [
-              { user_id: "user-001", user_alias: "Alice", user_email: "alice@example.com" },
-              { user_id: "user-002", user_alias: null, user_email: "bob@example.com" },
+              {
+                user_id: "user-001",
+                user_alias: "Alice",
+                user_email: "alice@example.com",
+              },
+              {
+                user_id: "user-002",
+                user_alias: null,
+                user_email: "bob@example.com",
+              },
               { user_id: "user-003", user_alias: null, user_email: null },
             ],
             page: 1,
@@ -579,7 +692,9 @@ describe("UsagePage", () => {
     const totalRequestElements = screen.getAllByText("Total Requests");
     expect(totalRequestElements.length).toBeGreaterThan(0);
     expect(screen.getByText("1,500")).toBeInTheDocument();
-    const successfulRequestLabelElements = screen.getAllByText("Successful Requests");
+    const successfulRequestLabelElements = screen.getAllByText(
+      "Successful Requests",
+    );
     expect(successfulRequestLabelElements.length).toBeGreaterThan(0);
     // Use getAllByText since this value appears in multiple places (metrics card + table)
     const successfulRequestElements = screen.getAllByText("1,450");
@@ -596,7 +711,9 @@ describe("UsagePage", () => {
     // Check for usage metrics cards
     const totalRequestElements = screen.getAllByText("Total Requests");
     expect(totalRequestElements.length).toBeGreaterThan(0);
-    const successfulRequestElements = screen.getAllByText("Successful Requests");
+    const successfulRequestElements = screen.getAllByText(
+      "Successful Requests",
+    );
     expect(successfulRequestElements.length).toBeGreaterThan(0);
     const failedRequestElements = screen.getAllByText("Failed Requests");
     expect(failedRequestElements.length).toBeGreaterThan(0);
@@ -662,11 +779,15 @@ describe("UsagePage", () => {
       expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
     });
 
-    expect(screen.getByRole("option", { name: "Tag Usage" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: "Tag Usage" }),
+    ).toBeInTheDocument();
   });
 
   it("should show organization usage banner and view for admins", async () => {
-    renderWithProviders(<UsagePage {...defaultProps} organizations={mockOrganizations} />);
+    renderWithProviders(
+      <UsagePage {...defaultProps} organizations={mockOrganizations} />,
+    );
 
     await waitFor(() => {
       expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
@@ -757,7 +878,9 @@ describe("UsagePage", () => {
       // User with alias should show "alias (id)"
       expect(screen.getByText("Alice (user-001)")).toBeInTheDocument();
       // User without alias but with email should show "email (id)"
-      expect(screen.getByText("bob@example.com (user-002)")).toBeInTheDocument();
+      expect(
+        screen.getByText("bob@example.com (user-002)"),
+      ).toBeInTheDocument();
       // User with neither alias nor email should show just the id
       expect(screen.getByText("user-003")).toBeInTheDocument();
     });
@@ -779,7 +902,11 @@ describe("UsagePage", () => {
           pages: [
             {
               users: [
-                { user_id: "user-dup", user_alias: "DupUser", user_email: null },
+                {
+                  user_id: "user-dup",
+                  user_alias: "DupUser",
+                  user_email: null,
+                },
               ],
               page: 1,
               total_pages: 2,
@@ -787,8 +914,16 @@ describe("UsagePage", () => {
             },
             {
               users: [
-                { user_id: "user-dup", user_alias: "DupUser", user_email: null },
-                { user_id: "user-unique", user_alias: "UniqueUser", user_email: null },
+                {
+                  user_id: "user-dup",
+                  user_alias: "DupUser",
+                  user_email: null,
+                },
+                {
+                  user_id: "user-unique",
+                  user_alias: "UniqueUser",
+                  user_email: null,
+                },
               ],
               page: 2,
               total_pages: 2,
@@ -891,7 +1026,9 @@ describe("UsagePage", () => {
 
   describe("aggregated endpoint fallback", () => {
     it("should fall back to paginated calls when aggregated endpoint fails", async () => {
-      mockUserDailyActivityAggregatedCall.mockRejectedValue(new Error("Aggregated endpoint not available"));
+      mockUserDailyActivityAggregatedCall.mockRejectedValue(
+        new Error("Aggregated endpoint not available"),
+      );
       mockUserDailyActivityCall.mockResolvedValue({
         ...mockSpendData,
         metadata: {
@@ -913,7 +1050,9 @@ describe("UsagePage", () => {
     });
 
     it("should aggregate multiple pages when paginated endpoint has more than 1 page", async () => {
-      mockUserDailyActivityAggregatedCall.mockRejectedValue(new Error("Not available"));
+      mockUserDailyActivityAggregatedCall.mockRejectedValue(
+        new Error("Not available"),
+      );
 
       const page1Data = {
         results: [mockSpendData.results[0]],
@@ -1000,7 +1139,9 @@ describe("UsagePage", () => {
 
       const usageSelect = screen.getByTestId("usage-view-select");
       act(() => {
-        fireEvent.change(usageSelect, { target: { value: "user-agent-activity" } });
+        fireEvent.change(usageSelect, {
+          target: { value: "user-agent-activity" },
+        });
       });
 
       await waitFor(() => {

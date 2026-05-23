@@ -8,7 +8,9 @@ describe("TagSelector", () => {
   });
 
   it("should allow creating new tags", () => {
-    const { container } = render(<TagSelector onChange={() => {}} accessToken="test-token" />);
+    const { container } = render(
+      <TagSelector onChange={() => {}} accessToken="test-token" />,
+    );
     const tagSelector = container.querySelector("input");
     expect(tagSelector).toBeInTheDocument();
     if (tagSelector) {

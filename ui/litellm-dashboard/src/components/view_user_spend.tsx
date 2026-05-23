@@ -1,8 +1,9 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { modelAvailableCall } from "./networking";
-import { formatNumberWithCommas } from "@/utils/dataUtils";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { formatNumberWithCommas } from "@/utils/dataUtils";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { modelAvailableCall } from "./networking";
 
 // Define the props type
 interface UserSpendData {
@@ -15,11 +16,17 @@ interface ViewUserSpendProps {
   userMaxBudget: number | null;
   selectedTeam: any | null;
 }
-const ViewUserSpend: React.FC<ViewUserSpendProps> = ({ userSpend, userMaxBudget, selectedTeam }) => {
+const ViewUserSpend: React.FC<ViewUserSpendProps> = ({
+  userSpend,
+  userMaxBudget,
+  selectedTeam,
+}) => {
   const { accessToken, userRole, userId: userID } = useAuthorized();
-  let [spend, setSpend] = useState(userSpend !== null ? userSpend : 0.0);
+  const [spend, setSpend] = useState(userSpend !== null ? userSpend : 0.0);
   const [maxBudget, setMaxBudget] = useState(
-    selectedTeam ? Number(formatNumberWithCommas(selectedTeam.max_budget, 4)) : null,
+    selectedTeam
+      ? Number(formatNumberWithCommas(selectedTeam.max_budget, 4))
+      : null,
   );
   useEffect(() => {
     if (selectedTeam) {
@@ -78,8 +85,14 @@ const ViewUserSpend: React.FC<ViewUserSpendProps> = ({ userSpend, userMaxBudget,
         }
 
         if (accessToken !== null) {
-          const model_available = await modelAvailableCall(accessToken, userID, userRole);
-          let available_model_names = model_available["data"].map((element: { id: string }) => element.id);
+          const model_available = await modelAvailableCall(
+            accessToken,
+            userID,
+            userRole,
+          );
+          const available_model_names = model_available["data"].map(
+            (element: { id: string }) => element.id,
+          );
           console.log("available_model_names:", available_model_names);
           setUserModels(available_model_names);
         }
@@ -114,22 +127,30 @@ const ViewUserSpend: React.FC<ViewUserSpendProps> = ({ userSpend, userMaxBudget,
     modelsToDisplay = userModels;
   }
 
-  const displayMaxBudget = maxBudget !== null ? `$${formatNumberWithCommas(Number(maxBudget), 4)} limit` : "No limit";
+  const displayMaxBudget =
+    maxBudget !== null
+      ? `$${formatNumberWithCommas(Number(maxBudget), 4)} limit`
+      : "No limit";
 
-  const roundedSpend = spend !== undefined ? formatNumberWithCommas(spend, 4) : null;
+  const roundedSpend =
+    spend !== undefined ? formatNumberWithCommas(spend, 4) : null;
 
   console.log(`spend in view user spend: ${spend}`);
   return (
     <div className="flex items-center">
       <div className="flex justify-between gap-x-6">
         <div>
-          <p className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">Total Spend</p>
+          <p className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">
+            Total Spend
+          </p>
           <p className="text-2xl text-tremor-content-strong dark:text-dark-tremor-content-strong font-semibold">
             ${roundedSpend}
           </p>
         </div>
         <div>
-          <p className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">Max Budget</p>
+          <p className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">
+            Max Budget
+          </p>
           <p className="text-2xl text-tremor-content-strong dark:text-dark-tremor-content-strong font-semibold">
             {displayMaxBudget}
           </p>

@@ -63,7 +63,13 @@ describe("embeddings_api", () => {
   });
 
   it("should not include encoding_format when making the request", async () => {
-    await makeOpenAIEmbeddingsRequest("Sample text", mockUpdateEmbeddingsUI, "text-embedding-3-small", "abcdef", []);
+    await makeOpenAIEmbeddingsRequest(
+      "Sample text",
+      mockUpdateEmbeddingsUI,
+      "text-embedding-3-small",
+      "abcdef",
+      [],
+    );
 
     const fetchCall = mockFetch.mock.calls[0];
     const options = fetchCall[1] as RequestInit;

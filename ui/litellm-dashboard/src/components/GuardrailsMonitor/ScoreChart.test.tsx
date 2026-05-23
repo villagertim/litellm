@@ -1,6 +1,6 @@
-import React from "react";
-import { describe, it, expect, vi } from "vitest";
 import { screen } from "@testing-library/react";
+import React from "react";
+import { describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../tests/test-utils";
 import { ScoreChart } from "./ScoreChart";
 
@@ -30,13 +30,17 @@ describe("ScoreChart", () => {
   it("should show empty state when no data is provided", () => {
     renderWithProviders(<ScoreChart />);
 
-    expect(screen.getByText("No chart data for this period")).toBeInTheDocument();
+    expect(
+      screen.getByText("No chart data for this period"),
+    ).toBeInTheDocument();
   });
 
   it("should show empty state when data is an empty array", () => {
     renderWithProviders(<ScoreChart data={[]} />);
 
-    expect(screen.getByText("No chart data for this period")).toBeInTheDocument();
+    expect(
+      screen.getByText("No chart data for this period"),
+    ).toBeInTheDocument();
   });
 
   it("should render the chart when data is provided", () => {
@@ -47,7 +51,9 @@ describe("ScoreChart", () => {
 
     renderWithProviders(<ScoreChart data={data} />);
 
-    expect(screen.queryByText("No chart data for this period")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("No chart data for this period"),
+    ).not.toBeInTheDocument();
     expect(screen.getByText(/2026-03-01/)).toBeInTheDocument();
     expect(screen.getByText(/2026-03-02/)).toBeInTheDocument();
   });

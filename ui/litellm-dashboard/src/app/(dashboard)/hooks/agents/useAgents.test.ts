@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { ReactNode } from "react";
-import { useAgents } from "./useAgents";
+import type { Agent, AgentsResponse } from "@/components/agents/types";
 import { getAgentsList } from "@/components/networking";
-import type { AgentsResponse, Agent } from "@/components/agents/types";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { renderHook, waitFor } from "@testing-library/react";
+import React, { type ReactNode } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useAgents } from "./useAgents";
 
 // Mock the networking function
 vi.mock("@/components/networking", () => ({

@@ -10,8 +10,17 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { Badge, Select } from "antd";
-import React from "react";
-export type UsageOption = "global" | "my-usage" | "organization" | "team" | "customer" | "tag" | "agent" | "user" | "user-agent-activity";
+import type React from "react";
+export type UsageOption =
+  | "global"
+  | "my-usage"
+  | "organization"
+  | "team"
+  | "customer"
+  | "tag"
+  | "agent"
+  | "user"
+  | "user-agent-activity";
 export interface UsageViewSelectProps {
   value: UsageOption;
   onChange: (value: UsageOption) => void;
@@ -128,7 +137,9 @@ export const UsageViewSelect: React.FC<UsageViewSelectProps> = ({
         label = isAdmin ? option.showForAdmin : option.showForNonAdmin;
       }
       if (option.descriptionForAdmin && option.descriptionForNonAdmin) {
-        desc = isAdmin ? option.descriptionForAdmin : option.descriptionForNonAdmin;
+        desc = isAdmin
+          ? option.descriptionForAdmin
+          : option.descriptionForNonAdmin;
       }
       return {
         value: option.value,
@@ -148,7 +159,9 @@ export const UsageViewSelect: React.FC<UsageViewSelectProps> = ({
             <BarChartOutlined style={{ fontSize: "32px" }} />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-semibold text-gray-900 mb-0.5 leading-tight">{title}</h3>
+            <h3 className="text-sm font-semibold text-gray-900 mb-0.5 leading-tight">
+              {title}
+            </h3>
             <p className="text-xs text-gray-600 leading-tight">{description}</p>
           </div>
         </div>
@@ -169,8 +182,12 @@ export const UsageViewSelect: React.FC<UsageViewSelectProps> = ({
                 <div className="flex items-center gap-2 py-1">
                   <div className="flex-shrink-0 mt-0.5">{opt.icon}</div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-gray-900">{opt.label}</div>
-                    <div className="text-xs text-gray-600 mt-0.5">{opt.description}</div>
+                    <div className="text-sm font-medium text-gray-900">
+                      {opt.label}
+                    </div>
+                    <div className="text-xs text-gray-600 mt-0.5">
+                      {opt.description}
+                    </div>
                   </div>
                   {opt.badgeText && (
                     <div className="items-center">

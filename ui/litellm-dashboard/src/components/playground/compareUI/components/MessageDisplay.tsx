@@ -1,5 +1,5 @@
 import { Bot, Loader2, UserRound } from "lucide-react";
-import React from "react";
+import type React from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coy } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -84,12 +84,17 @@ export function MessageDisplay({ messages, isLoading }: MessageDisplayProps) {
                 {String(children).replace(/\n$/, "")}
               </SyntaxHighlighter>
             ) : (
-              <code className={`${className} px-1.5 py-0.5 rounded bg-gray-100 text-sm font-mono`} {...props}>
+              <code
+                className={`${className} px-1.5 py-0.5 rounded bg-gray-100 text-sm font-mono`}
+                {...props}
+              >
                 {children}
               </code>
             );
           },
-          pre: ({ node, ...props }) => <pre style={{ overflowX: "auto", maxWidth: "100%" }} {...props} />,
+          pre: ({ node, ...props }) => (
+            <pre style={{ overflowX: "auto", maxWidth: "100%" }} {...props} />
+          ),
         }}
       >
         {typeof message.content === "string" ? message.content : ""}
@@ -125,7 +130,9 @@ export function MessageDisplay({ messages, isLoading }: MessageDisplayProps) {
                     <Bot size={16} />
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-gray-700">{displayModel}</span>
+                    <span className="text-sm font-semibold text-gray-700">
+                      {displayModel}
+                    </span>
                     {assistantMessage.toolName && (
                       <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
                         {assistantMessage.toolName}
@@ -134,13 +141,19 @@ export function MessageDisplay({ messages, isLoading }: MessageDisplayProps) {
                   </div>
                 </div>
                 {assistantMessage.reasoningContent && (
-                  <ReasoningContent reasoningContent={assistantMessage.reasoningContent} />
+                  <ReasoningContent
+                    reasoningContent={assistantMessage.reasoningContent}
+                  />
                 )}
                 {assistantMessage.searchResults && (
-                  <SearchResultsDisplay searchResults={assistantMessage.searchResults} />
+                  <SearchResultsDisplay
+                    searchResults={assistantMessage.searchResults}
+                  />
                 )}
                 {renderMessageBody(assistantMessage)}
-                {(assistantMessage.timeToFirstToken || assistantMessage.totalLatency || assistantMessage.usage) && (
+                {(assistantMessage.timeToFirstToken ||
+                  assistantMessage.totalLatency ||
+                  assistantMessage.usage) && (
                   <ResponseMetrics
                     timeToFirstToken={assistantMessage.timeToFirstToken}
                     totalLatency={assistantMessage.totalLatency}
@@ -155,7 +168,9 @@ export function MessageDisplay({ messages, isLoading }: MessageDisplayProps) {
                 <span>Generating response...</span>
               </div>
             ) : (
-              <div className="text-sm text-gray-500">Waiting for a response...</div>
+              <div className="text-sm text-gray-500">
+                Waiting for a response...
+              </div>
             )}
           </div>
         );

@@ -4,7 +4,7 @@ import { createQueryKeys } from "../common/queryKeysFactory";
 import useAuthorized from "../useAuthorized";
 
 const mcpSemanticFilterSettingsKeys = createQueryKeys(
-  "mcpSemanticFilterSettings"
+  "mcpSemanticFilterSettings",
 );
 
 export const useMCPSemanticFilterSettings = () => {

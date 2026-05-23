@@ -1,9 +1,9 @@
-import { render, screen, act } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import NotificationsManager from "../molecules/notifications_manager";
 import { RequestResponsePanel } from "./RequestResponsePanel";
 import type { LogEntry } from "./columns";
-import NotificationsManager from "../molecules/notifications_manager";
 
 const mockNotificationsManager = vi.mocked(NotificationsManager);
 
@@ -80,7 +80,9 @@ describe("RequestResponsePanel", () => {
     const mockWriteText = vi.fn().mockResolvedValue(undefined);
 
     if (navigator.clipboard) {
-      vi.spyOn(navigator.clipboard, "writeText").mockImplementation(mockWriteText);
+      vi.spyOn(navigator.clipboard, "writeText").mockImplementation(
+        mockWriteText,
+      );
     } else {
       Object.defineProperty(navigator, "clipboard", {
         value: {
@@ -104,7 +106,9 @@ describe("RequestResponsePanel", () => {
     );
 
     const copyButtons = screen.getAllByRole("button");
-    const copyRequestButton = copyButtons.find((button) => button.getAttribute("title") === "Copy request");
+    const copyRequestButton = copyButtons.find(
+      (button) => button.getAttribute("title") === "Copy request",
+    );
 
     expect(copyRequestButton).toBeInTheDocument();
 
@@ -113,18 +117,26 @@ describe("RequestResponsePanel", () => {
     });
 
     expect(mockGetRawRequest).toHaveBeenCalled();
-    expect(mockWriteText).toHaveBeenCalledWith(JSON.stringify({ test: "request data" }, null, 2));
-    expect(mockNotificationsManager.success).toHaveBeenCalledWith("Request copied to clipboard");
+    expect(mockWriteText).toHaveBeenCalledWith(
+      JSON.stringify({ test: "request data" }, null, 2),
+    );
+    expect(mockNotificationsManager.success).toHaveBeenCalledWith(
+      "Request copied to clipboard",
+    );
   });
 
   it("should copy response to clipboard when copy button is clicked", async () => {
     const user = userEvent.setup();
     const mockGetRawRequest = vi.fn().mockReturnValue({ test: "request" });
-    const mockFormattedResponse = vi.fn().mockReturnValue({ test: "response data" });
+    const mockFormattedResponse = vi
+      .fn()
+      .mockReturnValue({ test: "response data" });
     const mockWriteText = vi.fn().mockResolvedValue(undefined);
 
     if (navigator.clipboard) {
-      vi.spyOn(navigator.clipboard, "writeText").mockImplementation(mockWriteText);
+      vi.spyOn(navigator.clipboard, "writeText").mockImplementation(
+        mockWriteText,
+      );
     } else {
       Object.defineProperty(navigator, "clipboard", {
         value: {
@@ -148,7 +160,9 @@ describe("RequestResponsePanel", () => {
     );
 
     const copyButtons = screen.getAllByRole("button");
-    const copyResponseButton = copyButtons.find((button) => button.getAttribute("title") === "Copy response");
+    const copyResponseButton = copyButtons.find(
+      (button) => button.getAttribute("title") === "Copy response",
+    );
 
     expect(copyResponseButton).toBeInTheDocument();
     expect(copyResponseButton).not.toBeDisabled();
@@ -158,13 +172,21 @@ describe("RequestResponsePanel", () => {
     });
 
     expect(mockFormattedResponse).toHaveBeenCalled();
-    expect(mockWriteText).toHaveBeenCalledWith(JSON.stringify({ test: "response data" }, null, 2));
-    expect(mockNotificationsManager.success).toHaveBeenCalledWith("Response copied to clipboard");
+    expect(mockWriteText).toHaveBeenCalledWith(
+      JSON.stringify({ test: "response data" }, null, 2),
+    );
+    expect(mockNotificationsManager.success).toHaveBeenCalledWith(
+      "Response copied to clipboard",
+    );
   });
 
   it("should call formattedResponse for the response panel and not getRawRequest", () => {
-    const mockGetRawRequest = vi.fn().mockReturnValue({ requestData: "this should not appear in response" });
-    const mockFormattedResponse = vi.fn().mockReturnValue({ responseData: "this should appear in response" });
+    const mockGetRawRequest = vi
+      .fn()
+      .mockReturnValue({ requestData: "this should not appear in response" });
+    const mockFormattedResponse = vi
+      .fn()
+      .mockReturnValue({ responseData: "this should appear in response" });
 
     render(
       <RequestResponsePanel
@@ -180,13 +202,17 @@ describe("RequestResponsePanel", () => {
 
     expect(mockFormattedResponse).toHaveBeenCalled();
     expect(mockGetRawRequest).toHaveBeenCalled();
-    
+
     const formattedResponseCallCount = mockFormattedResponse.mock.calls.length;
     expect(formattedResponseCallCount).toBeGreaterThanOrEqual(1);
-    
+
     const responseData = mockFormattedResponse.mock.results[0].value;
-    expect(responseData).toEqual({ responseData: "this should appear in response" });
-    expect(responseData).not.toEqual({ requestData: "this should not appear in response" });
+    expect(responseData).toEqual({
+      responseData: "this should appear in response",
+    });
+    expect(responseData).not.toEqual({
+      requestData: "this should not appear in response",
+    });
   });
 
   it("should show error response data when hasError is true and hasResponse is false", () => {
@@ -207,7 +233,14 @@ describe("RequestResponsePanel", () => {
         },
       },
     };
-    const errorResponse = { error: { message: "Model not found", type: "NotFoundError", code: 404, param: null } };
+    const errorResponse = {
+      error: {
+        message: "Model not found",
+        type: "NotFoundError",
+        code: 404,
+        param: null,
+      },
+    };
     const mockGetRawRequest = vi.fn().mockReturnValue({ messages: [] });
     const mockFormattedResponse = vi.fn().mockReturnValue(errorResponse);
     render(
@@ -221,10 +254,14 @@ describe("RequestResponsePanel", () => {
         formattedResponse={mockFormattedResponse}
       />,
     );
-    expect(screen.queryByText("Response data not available")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Response data not available"),
+    ).not.toBeInTheDocument();
     expect(mockFormattedResponse).toHaveBeenCalled();
     const copyButtons = screen.getAllByRole("button");
-    const copyResponseButton = copyButtons.find((button) => button.getAttribute("title") === "Copy response");
+    const copyResponseButton = copyButtons.find(
+      (button) => button.getAttribute("title") === "Copy response",
+    );
     expect(copyResponseButton).not.toBeDisabled();
   });
 
@@ -246,9 +283,22 @@ describe("RequestResponsePanel", () => {
   });
 
   it("should show error code in response header when hasError is true", () => {
-    const errorInfo = { error_message: "Rate limit exceeded", error_class: "RateLimitError", error_code: 429 };
+    const errorInfo = {
+      error_message: "Rate limit exceeded",
+      error_class: "RateLimitError",
+      error_code: 429,
+    };
     const mockGetRawRequest = vi.fn().mockReturnValue({ messages: [] });
-    const mockFormattedResponse = vi.fn().mockReturnValue({ error: { message: "Rate limit exceeded", type: "RateLimitError", code: 429, param: null } });
+    const mockFormattedResponse = vi
+      .fn()
+      .mockReturnValue({
+        error: {
+          message: "Rate limit exceeded",
+          type: "RateLimitError",
+          code: 429,
+          param: null,
+        },
+      });
     render(
       <RequestResponsePanel
         row={{ original: baseLogEntry }}

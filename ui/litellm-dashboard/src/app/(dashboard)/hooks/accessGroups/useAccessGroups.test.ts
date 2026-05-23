@@ -1,15 +1,17 @@
+import * as networking from "@/components/networking";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { renderHook, waitFor } from "@testing-library/react";
 /* @vitest-environment jsdom */
 import React from "react";
-import { renderHook, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useAccessGroups, AccessGroupResponse } from "./useAccessGroups";
-import * as networking from "@/components/networking";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { type AccessGroupResponse, useAccessGroups } from "./useAccessGroups";
 
 vi.mock("@/components/networking", () => ({
   getProxyBaseUrl: vi.fn(() => "http://proxy.example"),
   getGlobalLitellmHeaderName: vi.fn(() => "Authorization"),
-  deriveErrorMessage: vi.fn((data: unknown) => (data as { detail?: string })?.detail ?? "Unknown error"),
+  deriveErrorMessage: vi.fn(
+    (data: unknown) => (data as { detail?: string })?.detail ?? "Unknown error",
+  ),
   handleError: vi.fn(),
 }));
 
@@ -32,7 +34,11 @@ const createQueryClient = () =>
 
 const wrapper = ({ children }: { children: React.ReactNode }) => {
   const queryClient = createQueryClient();
-  return React.createElement(QueryClientProvider, { client: queryClient }, children);
+  return React.createElement(
+    QueryClientProvider,
+    { client: queryClient },
+    children,
+  );
 };
 
 const mockAccessToken = "test-token-123";
@@ -58,10 +64,16 @@ const fetchMock = vi.fn();
 describe("useAccessGroups", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
-    vi.mocked(networking.getProxyBaseUrl).mockReturnValue("http://proxy.example");
-    vi.mocked(networking.getGlobalLitellmHeaderName).mockReturnValue("Authorization");
+    vi.mocked(networking.getProxyBaseUrl).mockReturnValue(
+      "http://proxy.example",
+    );
+    vi.mocked(networking.getGlobalLitellmHeaderName).mockReturnValue(
+      "Authorization",
+    );
 
-    const useAuthorizedModule = await import("@/app/(dashboard)/hooks/useAuthorized");
+    const useAuthorizedModule = await import(
+      "@/app/(dashboard)/hooks/useAuthorized"
+    );
     vi.mocked(useAuthorizedModule.default).mockReturnValue({
       accessToken: mockAccessToken,
       userRole: "Admin",
@@ -111,7 +123,9 @@ describe("useAccessGroups", () => {
   });
 
   it("should not fetch when access token is null", async () => {
-    const useAuthorizedModule = await import("@/app/(dashboard)/hooks/useAuthorized");
+    const useAuthorizedModule = await import(
+      "@/app/(dashboard)/hooks/useAuthorized"
+    );
     vi.mocked(useAuthorizedModule.default).mockReturnValue({
       accessToken: null,
       userRole: "Admin",
@@ -126,7 +140,9 @@ describe("useAccessGroups", () => {
   });
 
   it("should not fetch when access token is empty string", async () => {
-    const useAuthorizedModule = await import("@/app/(dashboard)/hooks/useAuthorized");
+    const useAuthorizedModule = await import(
+      "@/app/(dashboard)/hooks/useAuthorized"
+    );
     vi.mocked(useAuthorizedModule.default).mockReturnValue({
       accessToken: "",
       userRole: "Admin",
@@ -141,7 +157,9 @@ describe("useAccessGroups", () => {
   });
 
   it("should not fetch when user role is not an admin role", async () => {
-    const useAuthorizedModule = await import("@/app/(dashboard)/hooks/useAuthorized");
+    const useAuthorizedModule = await import(
+      "@/app/(dashboard)/hooks/useAuthorized"
+    );
     vi.mocked(useAuthorizedModule.default).mockReturnValue({
       accessToken: mockAccessToken,
       userRole: "Viewer",
@@ -156,7 +174,9 @@ describe("useAccessGroups", () => {
   });
 
   it("should not fetch when user role is null", async () => {
-    const useAuthorizedModule = await import("@/app/(dashboard)/hooks/useAuthorized");
+    const useAuthorizedModule = await import(
+      "@/app/(dashboard)/hooks/useAuthorized"
+    );
     vi.mocked(useAuthorizedModule.default).mockReturnValue({
       accessToken: mockAccessToken,
       userRole: null,
@@ -171,7 +191,9 @@ describe("useAccessGroups", () => {
   });
 
   it("should fetch when user role is proxy_admin", async () => {
-    const useAuthorizedModule = await import("@/app/(dashboard)/hooks/useAuthorized");
+    const useAuthorizedModule = await import(
+      "@/app/(dashboard)/hooks/useAuthorized"
+    );
     vi.mocked(useAuthorizedModule.default).mockReturnValue({
       accessToken: mockAccessToken,
       userRole: "proxy_admin",

@@ -14,7 +14,9 @@ vi.mock("../../chat_ui/ResponseMetrics", () => ({
 }));
 
 vi.mock("../../chat_ui/SearchResultsDisplay", () => ({
-  SearchResultsDisplay: () => <div data-testid="search-results">SearchResultsDisplay</div>,
+  SearchResultsDisplay: () => (
+    <div data-testid="search-results">SearchResultsDisplay</div>
+  ),
 }));
 
 vi.mock("../../chat_ui/ChatImageRenderer", () => ({
@@ -39,7 +41,9 @@ describe("MessageDisplay", () => {
         model: "gpt-4",
       },
     ];
-    const { getByText } = render(<MessageDisplay messages={messages} isLoading={false} />);
+    const { getByText } = render(
+      <MessageDisplay messages={messages} isLoading={false} />,
+    );
     expect(getByText("Hello")).toBeInTheDocument();
     expect(getByText("Hi there!")).toBeInTheDocument();
   });
@@ -64,7 +68,9 @@ describe("MessageDisplay", () => {
         },
       },
     ];
-    const { getByText, getByTestId } = render(<MessageDisplay messages={messages} isLoading={false} />);
+    const { getByText, getByTestId } = render(
+      <MessageDisplay messages={messages} isLoading={false} />,
+    );
     expect(getByText("You")).toBeInTheDocument();
     expect(getByText("What is 2+2?")).toBeInTheDocument();
     expect(getByText("gpt-4")).toBeInTheDocument();
@@ -86,8 +92,12 @@ describe("MessageDisplay", () => {
         model: "gpt-4",
       },
     ];
-    const { getByTestId, getByText } = render(<MessageDisplay messages={messages} isLoading={false} />);
-    expect(getByText("What is in this image? [Image attached]")).toBeInTheDocument();
+    const { getByTestId, getByText } = render(
+      <MessageDisplay messages={messages} isLoading={false} />,
+    );
+    expect(
+      getByText("What is in this image? [Image attached]"),
+    ).toBeInTheDocument();
     expect(getByTestId("chat-image-renderer")).toBeInTheDocument();
     const image = getByTestId("chat-image-renderer").querySelector("img");
     expect(image).toHaveAttribute("src", "blob:test-image-url");

@@ -1,6 +1,6 @@
-import React from "react";
 import { Select, Typography } from "antd";
-import { Organization } from "../networking";
+import type React from "react";
+import type { Organization } from "../networking";
 
 const { Text } = Typography;
 
@@ -33,7 +33,9 @@ const OrganizationDropdown: React.FC<OrganizationDropdownProps> = ({
       style={{ minWidth: 280, ...style }}
       filterOption={(input, option) => {
         if (!option) return false;
-        const org = organizations?.find((o) => o.organization_id === option.key);
+        const org = organizations?.find(
+          (o) => o.organization_id === option.key,
+        );
         if (!org) return false;
 
         const searchTerm = input.toLowerCase().trim();

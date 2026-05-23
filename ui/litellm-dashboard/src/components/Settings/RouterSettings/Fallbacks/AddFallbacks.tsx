@@ -4,14 +4,17 @@
  * Works with forms - reads from and writes to router_settings.fallbacks
  */
 
+import MessageManager from "@/components/molecules/message_manager";
 import { Button as TremorButton } from "@tremor/react";
 import { Button } from "antd";
 import React, { useEffect, useState } from "react";
-import MessageManager from "@/components/molecules/message_manager";
 import NotificationManager from "../../../molecules/notifications_manager";
-import { fetchAvailableModels, ModelGroup } from "../../../playground/llm_calls/fetch_models";
+import {
+  type ModelGroup,
+  fetchAvailableModels,
+} from "../../../playground/llm_calls/fetch_models";
 import { AddFallbacksModal } from "./AddFallbacksModal";
-import { FallbackGroup } from "./FallbackGroupConfig";
+import type { FallbackGroup } from "./FallbackGroupConfig";
 import { FallbackSelectionForm } from "./FallbackSelectionForm";
 
 export type FallbackEntry = { [modelName: string]: string[] };
@@ -71,7 +74,9 @@ export default function AddFallbacks({
     }
   }, [accessToken, isModalVisible]);
 
-  const availableModels = Array.from(new Set(modelInfo.map((option) => option.model_group))).sort();
+  const availableModels = Array.from(
+    new Set(modelInfo.map((option) => option.model_group)),
+  ).sort();
 
   const handleCancel = () => {
     setIsModalVisible(false);
@@ -113,7 +118,9 @@ export default function AddFallbacks({
       setIsSaving(true);
       try {
         await onChange(updatedFallbacks);
-        NotificationManager.success(`${groups.length} fallback configuration(s) added successfully!`);
+        NotificationManager.success(
+          `${groups.length} fallback configuration(s) added successfully!`,
+        );
         handleCancel();
       } catch (error) {
         // Error handling is done in handleFallbacksChange, so we don't need to show another notification here
@@ -147,11 +154,7 @@ export default function AddFallbacks({
         {/* Footer with Cancel and Save buttons */}
         {groups.length > 0 && (
           <div className="flex items-center justify-end space-x-3 pt-6 mt-6 border-t border-gray-100">
-            <Button
-              type="default"
-              onClick={handleCancel}
-              disabled={isSaving}
-            >
+            <Button type="default" onClick={handleCancel} disabled={isSaving}>
               Cancel
             </Button>
             <Button

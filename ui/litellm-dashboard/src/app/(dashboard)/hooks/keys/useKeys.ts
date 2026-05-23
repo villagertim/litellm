@@ -1,13 +1,17 @@
-import { keepPreviousData, useQuery, UseQueryResult } from "@tanstack/react-query";
-import { createQueryKeys } from "../common/queryKeysFactory";
+import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import type { KeyResponse } from "@/components/key_team_helpers/key_list";
 import {
-  getProxyBaseUrl,
-  getGlobalLitellmHeaderName,
   deriveErrorMessage,
+  getGlobalLitellmHeaderName,
+  getProxyBaseUrl,
   handleError,
 } from "@/components/networking";
-import { KeyResponse } from "@/components/key_team_helpers/key_list";
-import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import {
+  type UseQueryResult,
+  keepPreviousData,
+  useQuery,
+} from "@tanstack/react-query";
+import { createQueryKeys } from "../common/queryKeysFactory";
 
 export const keyKeys = createQueryKeys("keys");
 
@@ -54,7 +58,7 @@ const keyListCall = async (
    */
   try {
     const baseUrl = getProxyBaseUrl();
-    
+
     const params = new URLSearchParams(
       Object.entries({
         team_id: options.teamID,
@@ -112,7 +116,8 @@ export const useKeys = (
 
   return useQuery<KeysResponse>({
     queryKey: keyKeys.list({ page, limit: pageSize, ...options }),
-    queryFn: async () => await keyListCall(accessToken!, page, pageSize, options),
+    queryFn: async () =>
+      await keyListCall(accessToken!, page, pageSize, options),
     enabled: Boolean(accessToken),
     staleTime: 30000, // 30 seconds
     placeholderData: keepPreviousData,
@@ -129,7 +134,11 @@ export const useDeletedKeys = (
 
   return useQuery<KeysResponse>({
     queryKey: deletedKeyKeys.list({ page, limit: pageSize, ...options }),
-    queryFn: async () => await keyListCall(accessToken!, page, pageSize, { ...options, status: "deleted" }),
+    queryFn: async () =>
+      await keyListCall(accessToken!, page, pageSize, {
+        ...options,
+        status: "deleted",
+      }),
     enabled: Boolean(accessToken),
     staleTime: 30000, // 30 seconds
     placeholderData: keepPreviousData,

@@ -1,9 +1,9 @@
-import React from "react";
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import React from "react";
+import { describe, expect, it, vi } from "vitest";
 import ToolPermissionRulesEditor, {
-  ToolPermissionConfig,
+  type ToolPermissionConfig,
 } from "./ToolPermissionRulesEditor";
 
 describe("ToolPermissionRulesEditor", () => {
@@ -42,23 +42,33 @@ describe("ToolPermissionRulesEditor", () => {
         latestConfig = next;
         setState(next);
       };
-      return <ToolPermissionRulesEditor value={state} onChange={handleChange} />;
+      return (
+        <ToolPermissionRulesEditor value={state} onChange={handleChange} />
+      );
     };
 
     render(<Wrapper />);
 
-    await userEvent.click(screen.getByRole("button", { name: /restrict tool arguments/i }));
-    const initialInput = await screen.findByPlaceholderText(/messages\[0\].content/i);
+    await userEvent.click(
+      screen.getByRole("button", { name: /restrict tool arguments/i }),
+    );
+    const initialInput = await screen.findByPlaceholderText(
+      /messages\[0\].content/i,
+    );
     await userEvent.clear(initialInput);
     fireEvent.change(initialInput, { target: { value: "input.location" } });
 
-    const violationArea = await screen.findByPlaceholderText(/violates our org policy/i);
+    const violationArea = await screen.findByPlaceholderText(
+      /violates our org policy/i,
+    );
     await userEvent.clear(violationArea);
     fireEvent.change(violationArea, { target: { value: "Do not run bash" } });
 
     await waitFor(() => {
       expect(latestConfig).not.toBeNull();
-      expect(latestConfig?.rules[0].allowed_param_patterns).toEqual({ "input.location": "" });
+      expect(latestConfig?.rules[0].allowed_param_patterns).toEqual({
+        "input.location": "",
+      });
       expect(latestConfig?.violation_message_template).toBe("Do not run bash");
     });
   });

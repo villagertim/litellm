@@ -1,16 +1,18 @@
-import React from "react";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderWithProviders } from "../../../tests/test-utils";
+import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "../../../tests/test-utils";
 import * as networking from "../networking";
 import ImpactPopover from "./impact_popover";
-import { PolicyAttachment } from "./types";
+import type { PolicyAttachment } from "./types";
 
 vi.mock("../networking");
 
 vi.mock("@heroicons/react/outline", () => ({
-  EyeIcon: function EyeIcon() { return null; },
+  EyeIcon: function EyeIcon() {
+    return null;
+  },
 }));
 
 vi.mock("@tremor/react", async (importOriginal) => {
@@ -18,7 +20,11 @@ vi.mock("@tremor/react", async (importOriginal) => {
   return {
     ...actual,
     Icon: ({ icon: IconComp, onClick, className }: any) =>
-      React.createElement("button", { type: "button", onClick, className }, IconComp?.displayName ?? IconComp?.name ?? "icon"),
+      React.createElement(
+        "button",
+        { type: "button", onClick, className },
+        IconComp?.displayName ?? IconComp?.name ?? "icon",
+      ),
   };
 });
 
@@ -31,7 +37,11 @@ vi.mock("antd", async (importOriginal) => {
       React.createElement(
         "div",
         null,
-        React.createElement("div", { "data-testid": "popover-content" }, content),
+        React.createElement(
+          "div",
+          { "data-testid": "popover-content" },
+          content,
+        ),
         React.createElement(
           "div",
           {
@@ -39,16 +49,19 @@ vi.mock("antd", async (importOriginal) => {
             "aria-label": "open-popover",
             onClick: () => onOpenChange?.(true),
           },
-          children
-        )
+          children,
+        ),
       ),
-    Tooltip: ({ children }: any) => React.createElement(React.Fragment, null, children),
+    Tooltip: ({ children }: any) =>
+      React.createElement(React.Fragment, null, children),
     Spin: () => React.createElement("span", null, "Loading..."),
     Tag: ({ children }: any) => React.createElement("span", null, children),
   };
 });
 
-const makeAttachment = (overrides: Partial<PolicyAttachment> = {}): PolicyAttachment => ({
+const makeAttachment = (
+  overrides: Partial<PolicyAttachment> = {},
+): PolicyAttachment => ({
   attachment_id: "att-001",
   policy_name: "my-policy",
   scope: null,
@@ -65,12 +78,18 @@ describe("ImpactPopover", () => {
   });
 
   it("should render", () => {
-    renderWithProviders(<ImpactPopover attachment={makeAttachment()} accessToken="tok" />);
-    expect(screen.getByRole("button", { name: /open-popover/i })).toBeInTheDocument();
+    renderWithProviders(
+      <ImpactPopover attachment={makeAttachment()} accessToken="tok" />,
+    );
+    expect(
+      screen.getByRole("button", { name: /open-popover/i }),
+    ).toBeInTheDocument();
   });
 
   it("should show 'Click to load' as the initial popover content", () => {
-    renderWithProviders(<ImpactPopover attachment={makeAttachment()} accessToken="tok" />);
+    renderWithProviders(
+      <ImpactPopover attachment={makeAttachment()} accessToken="tok" />,
+    );
     expect(screen.getByText(/click to load/i)).toBeInTheDocument();
   });
 
@@ -82,32 +101,46 @@ describe("ImpactPopover", () => {
       sample_keys: [],
       sample_teams: [],
     });
-    const attachment = makeAttachment({ policy_name: "rate-limit", teams: ["team-a"] });
-    renderWithProviders(<ImpactPopover attachment={attachment} accessToken="my-token" />);
+    const attachment = makeAttachment({
+      policy_name: "rate-limit",
+      teams: ["team-a"],
+    });
+    renderWithProviders(
+      <ImpactPopover attachment={attachment} accessToken="my-token" />,
+    );
     await user.click(screen.getByRole("button", { name: /open-popover/i }));
     await waitFor(() => {
-      expect(networking.estimateAttachmentImpactCall).toHaveBeenCalledWith("my-token", {
-        policy_name: "rate-limit",
-        scope: null,
-        teams: ["team-a"],
-        keys: [],
-        models: [],
-        tags: [],
-      });
+      expect(networking.estimateAttachmentImpactCall).toHaveBeenCalledWith(
+        "my-token",
+        {
+          policy_name: "rate-limit",
+          scope: null,
+          teams: ["team-a"],
+          keys: [],
+          models: [],
+          tags: [],
+        },
+      );
     });
   });
 
   it("should not call the API when accessToken is null", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<ImpactPopover attachment={makeAttachment()} accessToken={null} />);
+    renderWithProviders(
+      <ImpactPopover attachment={makeAttachment()} accessToken={null} />,
+    );
     await user.click(screen.getByRole("button", { name: /open-popover/i }));
     expect(networking.estimateAttachmentImpactCall).not.toHaveBeenCalled();
   });
 
   it("should show a loading indicator while the impact is being fetched", async () => {
     const user = userEvent.setup();
-    vi.mocked(networking.estimateAttachmentImpactCall).mockReturnValue(new Promise(() => {}));
-    renderWithProviders(<ImpactPopover attachment={makeAttachment()} accessToken="tok" />);
+    vi.mocked(networking.estimateAttachmentImpactCall).mockReturnValue(
+      new Promise(() => {}),
+    );
+    renderWithProviders(
+      <ImpactPopover attachment={makeAttachment()} accessToken="tok" />,
+    );
     await user.click(screen.getByRole("button", { name: /open-popover/i }));
     // Multiple "Loading..." nodes exist (Spin + adjacent text) — assert at least one is present
     expect(screen.queryAllByText(/loading/i).length).toBeGreaterThan(0);
@@ -121,9 +154,13 @@ describe("ImpactPopover", () => {
       sample_keys: [],
       sample_teams: [],
     });
-    renderWithProviders(<ImpactPopover attachment={makeAttachment()} accessToken="tok" />);
+    renderWithProviders(
+      <ImpactPopover attachment={makeAttachment()} accessToken="tok" />,
+    );
     await user.click(screen.getByRole("button", { name: /open-popover/i }));
-    expect(await screen.findByText(/global scope.*affects all keys and teams/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/global scope.*affects all keys and teams/i),
+    ).toBeInTheDocument();
   });
 
   it("should show key and team counts when impact data is loaded for a specific scope", async () => {
@@ -134,7 +171,9 @@ describe("ImpactPopover", () => {
       sample_keys: ["sk-abc"],
       sample_teams: ["team-x"],
     });
-    renderWithProviders(<ImpactPopover attachment={makeAttachment()} accessToken="tok" />);
+    renderWithProviders(
+      <ImpactPopover attachment={makeAttachment()} accessToken="tok" />,
+    );
     await user.click(screen.getByRole("button", { name: /open-popover/i }));
     expect(await screen.findByText(/5/)).toBeInTheDocument();
     expect(screen.getByText(/2/)).toBeInTheDocument();
@@ -148,7 +187,9 @@ describe("ImpactPopover", () => {
       sample_keys: ["sk-key-one", "sk-key-two"],
       sample_teams: [],
     });
-    renderWithProviders(<ImpactPopover attachment={makeAttachment()} accessToken="tok" />);
+    renderWithProviders(
+      <ImpactPopover attachment={makeAttachment()} accessToken="tok" />,
+    );
     await user.click(screen.getByRole("button", { name: /open-popover/i }));
     expect(await screen.findByText("sk-key-one")).toBeInTheDocument();
     expect(screen.getByText("sk-key-two")).toBeInTheDocument();
@@ -162,9 +203,13 @@ describe("ImpactPopover", () => {
       sample_keys: [],
       sample_teams: [],
     });
-    renderWithProviders(<ImpactPopover attachment={makeAttachment()} accessToken="tok" />);
+    renderWithProviders(
+      <ImpactPopover attachment={makeAttachment()} accessToken="tok" />,
+    );
     await user.click(screen.getByRole("button", { name: /open-popover/i }));
-    expect(await screen.findByText(/no keys or teams currently affected/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/no keys or teams currently affected/i),
+    ).toBeInTheDocument();
   });
 
   it("should not call the API a second time when the popover is already loaded", async () => {
@@ -175,7 +220,9 @@ describe("ImpactPopover", () => {
       sample_keys: ["sk-abc"],
       sample_teams: [],
     });
-    renderWithProviders(<ImpactPopover attachment={makeAttachment()} accessToken="tok" />);
+    renderWithProviders(
+      <ImpactPopover attachment={makeAttachment()} accessToken="tok" />,
+    );
     await user.click(screen.getByRole("button", { name: /open-popover/i }));
     await screen.findByText("sk-abc");
     await user.click(screen.getByRole("button", { name: /open-popover/i }));

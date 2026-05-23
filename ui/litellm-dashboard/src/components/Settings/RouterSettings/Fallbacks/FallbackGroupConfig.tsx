@@ -55,7 +55,9 @@ export function FallbackGroupConfig({
   };
 
   const removeFallback = (indexToRemove: number) => {
-    const newFallbacks = group.fallbackModels.filter((_, index) => index !== indexToRemove);
+    const newFallbacks = group.fallbackModels.filter(
+      (_, index) => index !== indexToRemove,
+    );
     onChange({
       ...group,
       fallbackModels: newFallbacks,
@@ -78,7 +80,9 @@ export function FallbackGroupConfig({
           value={group.primaryModel}
           onChange={handlePrimaryChange}
           showSearch
-          getPopupContainer={(trigger) => trigger.parentElement || document.body}
+          getPopupContainer={(trigger) =>
+            trigger.parentElement || document.body
+          }
           filterOption={(input, option) =>
             (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
           }
@@ -126,13 +130,17 @@ export function FallbackGroupConfig({
               value={group.fallbackModels}
               onChange={handleFallbackSelect}
               disabled={!group.primaryModel}
-              getPopupContainer={(trigger) => trigger.parentElement || document.body}
+              getPopupContainer={(trigger) =>
+                trigger.parentElement || document.body
+              }
               options={availableFallbackOptions.map((m) => ({
                 label: m,
                 value: m,
               }))}
               optionRender={(option, info) => {
-                const isSelected = group.fallbackModels.includes(option.value as string);
+                const isSelected = group.fallbackModels.includes(
+                  option.value as string,
+                );
                 const orderIndex = isSelected
                   ? group.fallbackModels.indexOf(option.value as string) + 1
                   : null;
@@ -158,7 +166,9 @@ export function FallbackGroupConfig({
               )}
               showSearch
               filterOption={(input, option) =>
-                (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
               }
             />
             <p className="text-xs text-gray-500 mt-1 ml-1">
@@ -173,7 +183,9 @@ export function FallbackGroupConfig({
             {group.fallbackModels.length === 0 ? (
               <div className="h-32 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400">
                 <span className="text-sm">No fallback models selected</span>
-                <span className="text-xs mt-1">Add models from the dropdown above</span>
+                <span className="text-xs mt-1">
+                  Add models from the dropdown above
+                </span>
               </div>
             ) : (
               group.fallbackModels.map((modelValue, index) => {
@@ -187,7 +199,9 @@ export function FallbackGroupConfig({
                         <span className="text-xs font-bold">{index + 1}</span>
                       </div>
                       <div>
-                        <span className="font-medium text-gray-800">{modelValue}</span>
+                        <span className="font-medium text-gray-800">
+                          {modelValue}
+                        </span>
                       </div>
                     </div>
 

@@ -1,5 +1,11 @@
-import { describe, it, expect } from "vitest";
-import { AUTH_TYPE, OAUTH_FLOW, TRANSPORT, handleTransport, handleAuth } from "./types";
+import { describe, expect, it } from "vitest";
+import {
+  AUTH_TYPE,
+  OAUTH_FLOW,
+  TRANSPORT,
+  handleAuth,
+  handleTransport,
+} from "./types";
 
 describe("handleTransport", () => {
   it("should default to SSE when transport is null", () => {
@@ -15,7 +21,9 @@ describe("handleTransport", () => {
   });
 
   it("should keep stdio even when specPath is present", () => {
-    expect(handleTransport(TRANSPORT.STDIO, "/spec.yaml")).toBe(TRANSPORT.STDIO);
+    expect(handleTransport(TRANSPORT.STDIO, "/spec.yaml")).toBe(
+      TRANSPORT.STDIO,
+    );
   });
 
   it("should return the transport as-is when no specPath", () => {

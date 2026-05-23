@@ -1,9 +1,9 @@
-import React from "react";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
+import type React from "react";
 import EmptyState from "./EmptyState";
 import MessageBubble from "./MessageBubble";
-import { Message } from "./types";
+import type { Message } from "./types";
 
 interface MessageListProps {
   messages: Message[];
@@ -39,4 +39,3 @@ const MessageList: React.FC<MessageListProps> = ({
 };
 
 export default MessageList;
-

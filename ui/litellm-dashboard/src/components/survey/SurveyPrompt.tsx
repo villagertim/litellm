@@ -1,5 +1,5 @@
-import React from "react";
 import { MessageSquare } from "lucide-react";
+import React from "react";
 import { NudgePrompt } from "./NudgePrompt";
 
 interface SurveyPromptProps {
@@ -8,7 +8,11 @@ interface SurveyPromptProps {
   isVisible: boolean;
 }
 
-export function SurveyPrompt({ onOpen, onDismiss, isVisible }: SurveyPromptProps) {
+export function SurveyPrompt({
+  onOpen,
+  onDismiss,
+  isVisible,
+}: SurveyPromptProps) {
   return (
     <NudgePrompt
       onOpen={onOpen}
@@ -22,4 +26,3 @@ export function SurveyPrompt({ onOpen, onDismiss, isVisible }: SurveyPromptProps
     />
   );
 }
-

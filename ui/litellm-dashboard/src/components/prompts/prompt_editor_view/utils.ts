@@ -1,4 +1,4 @@
-import { PromptType, Message, Tool } from "./types";
+import type { Message, PromptType, Tool } from "./types";
 
 export const extractVariables = (prompt: PromptType): string[] => {
   const variableSet = new Set<string>();
@@ -104,7 +104,12 @@ const parseToolsFromFrontmatter = (lines: string[]): Tool[] => {
     }
 
     // New top-level key ends the tools block
-    if (line.length > 0 && !/^\s/.test(line) && trimmed !== "-" && !trimmed.startsWith("-")) {
+    if (
+      line.length > 0 &&
+      !/^\s/.test(line) &&
+      trimmed !== "-" &&
+      !trimmed.startsWith("-")
+    ) {
       break;
     }
 
@@ -121,8 +126,7 @@ const parseToolsFromFrontmatter = (lines: string[]): Tool[] => {
         description: toolObj?.function?.description || "",
         json: JSON.stringify(toolObj, null, 2),
       });
-    } catch {
-    }
+    } catch {}
   }
 
   return tools;
@@ -185,7 +189,9 @@ const parseDotpromptBody = (body: string): ParsedBody => {
     const content = buffer.join("\n").trim();
     if (currentRole === "developer") {
       if (content) {
-        developerMessage = developerMessage ? `${developerMessage}\n\n${content}` : content;
+        developerMessage = developerMessage
+          ? `${developerMessage}\n\n${content}`
+          : content;
       }
     } else if (content) {
       messages.push({ role: currentRole, content });
@@ -214,8 +220,9 @@ const parseDotpromptBody = (body: string): ParsedBody => {
 
 export const parseExistingPrompt = (apiResponse: any): PromptType => {
   // Extract dotprompt_content from litellm_params
-  const dotpromptContent = apiResponse?.prompt_spec?.litellm_params?.dotprompt_content || "";
-  
+  const dotpromptContent =
+    apiResponse?.prompt_spec?.litellm_params?.dotprompt_content || "";
+
   if (!dotpromptContent) {
     throw new Error("No dotprompt_content found in API response");
   }
@@ -245,8 +252,17 @@ export const parseExistingPrompt = (apiResponse: any): PromptType => {
     messages:
       parsedBody.messages.length > 0
         ? parsedBody.messages
-        : [{ role: "user", content: "Enter task specifics. Use {{template_variables}} for dynamic inputs" }],
-    environment: apiResponse?.prompt_spec?.environment || apiResponse?.prompt_spec?.prompt_info?.environment || "development",
+        : [
+            {
+              role: "user",
+              content:
+                "Enter task specifics. Use {{template_variables}} for dynamic inputs",
+            },
+          ],
+    environment:
+      apiResponse?.prompt_spec?.environment ||
+      apiResponse?.prompt_spec?.prompt_info?.environment ||
+      "development",
   };
 };
 

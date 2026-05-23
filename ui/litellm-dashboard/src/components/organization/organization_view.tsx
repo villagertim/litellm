@@ -1,9 +1,15 @@
+import {
+  organizationKeys,
+  useOrganization,
+} from "@/app/(dashboard)/hooks/organizations/useOrganizations";
 import { useTeams } from "@/app/(dashboard)/hooks/teams/useTeams";
-import { organizationKeys, useOrganization } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
-import { useQueryClient } from "@tanstack/react-query";
-import { formatNumberWithCommas, copyToClipboard as utilCopyToClipboard } from "@/utils/dataUtils";
+import {
+  formatNumberWithCommas,
+  copyToClipboard as utilCopyToClipboard,
+} from "@/utils/dataUtils";
 import { createTeamAliasMap } from "@/utils/teamUtils";
 import { ArrowLeftIcon } from "@heroicons/react/outline";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Badge,
   Card,
@@ -16,14 +22,15 @@ import {
 import { Button, Form, Input, Select, Tabs, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { CheckIcon, CopyIcon } from "lucide-react";
-import React, { useMemo, useState } from "react";
+import type React from "react";
+import { useMemo, useState } from "react";
+import { ModelSelect } from "../ModelSelect/ModelSelect";
 import MemberTable from "../common_components/MemberTable";
 import UserSearchModal from "../common_components/user_search_modal";
 import MCPServerSelector from "../mcp_server_management/MCPServerSelector";
-import { ModelSelect } from "../ModelSelect/ModelSelect";
 import NotificationsManager from "../molecules/notifications_manager";
 import {
-  Member,
+  type Member,
   Organization,
   organizationMemberAddCall,
   organizationMemberDeleteCall,
@@ -59,8 +66,11 @@ const OrganizationInfoView: React.FC<OrganizationInfoProps> = ({
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false);
   const [isAddMemberModalVisible, setIsAddMemberModalVisible] = useState(false);
-  const [isEditMemberModalVisible, setIsEditMemberModalVisible] = useState(false);
-  const [selectedEditMember, setSelectedEditMember] = useState<Member | null>(null);
+  const [isEditMemberModalVisible, setIsEditMemberModalVisible] =
+    useState(false);
+  const [selectedEditMember, setSelectedEditMember] = useState<Member | null>(
+    null,
+  );
   const [copiedStates, setCopiedStates] = useState<Record<string, boolean>>({});
   const [isOrgSaving, setIsOrgSaving] = useState(false);
   const canEditOrg = is_org_admin || is_proxy_admin;
@@ -79,7 +89,11 @@ const OrganizationInfoView: React.FC<OrganizationInfoProps> = ({
         user_id: values.user_id,
         role: values.role,
       };
-      const response = await organizationMemberAddCall(accessToken, organizationId, member);
+      const response = await organizationMemberAddCall(
+        accessToken,
+        organizationId,
+        member,
+      );
 
       NotificationsManager.success("Organization member added successfully");
       setIsAddMemberModalVisible(false);
@@ -101,7 +115,11 @@ const OrganizationInfoView: React.FC<OrganizationInfoProps> = ({
         role: values.role,
       };
 
-      const response = await organizationMemberUpdateCall(accessToken, organizationId, member);
+      const response = await organizationMemberUpdateCall(
+        accessToken,
+        organizationId,
+        member,
+      );
       NotificationsManager.success("Organization member updated successfully");
       setIsEditMemberModalVisible(false);
       form.resetFields();
@@ -116,7 +134,11 @@ const OrganizationInfoView: React.FC<OrganizationInfoProps> = ({
     try {
       if (!accessToken) return;
 
-      await organizationMemberDeleteCall(accessToken, organizationId, values.user_id);
+      await organizationMemberDeleteCall(
+        accessToken,
+        organizationId,
+        values.user_id,
+      );
       NotificationsManager.success("Organization member deleted successfully");
       setIsEditMemberModalVisible(false);
       form.resetFields();
@@ -146,7 +168,10 @@ const OrganizationInfoView: React.FC<OrganizationInfoProps> = ({
       };
 
       // Handle object_permission updates
-      if (values.vector_stores !== undefined || values.mcp_servers_and_groups !== undefined) {
+      if (
+        values.vector_stores !== undefined ||
+        values.mcp_servers_and_groups !== undefined
+      ) {
         updateData.object_permission = {
           ...orgData?.object_permission,
           vector_stores: values.vector_stores || [],
@@ -168,11 +193,15 @@ const OrganizationInfoView: React.FC<OrganizationInfoProps> = ({
 
       const response = await organizationUpdateCall(accessToken, updateData);
 
-      NotificationsManager.success("Organization settings updated successfully");
+      NotificationsManager.success(
+        "Organization settings updated successfully",
+      );
       setIsEditing(false);
       queryClient.invalidateQueries({ queryKey: organizationKeys.all });
     } catch (error) {
-      NotificationsManager.fromBackend("Failed to update organization settings");
+      NotificationsManager.fromBackend(
+        "Failed to update organization settings",
+      );
       console.error("Error updating organization:", error);
     } finally {
       setIsOrgSaving(false);
@@ -187,7 +216,10 @@ const OrganizationInfoView: React.FC<OrganizationInfoProps> = ({
     return <div className="p-4">Organization not found</div>;
   }
 
-  const copyToClipboard = async (text: string | null | undefined, key: string) => {
+  const copyToClipboard = async (
+    text: string | null | undefined,
+    key: string,
+  ) => {
     const success = await utilCopyToClipboard(text);
     if (success) {
       setCopiedStates((prev) => ({ ...prev, [key]: true }));
@@ -236,21 +268,35 @@ const OrganizationInfoView: React.FC<OrganizationInfoProps> = ({
     <div className="w-full h-screen p-4 bg-white">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <TremorButton icon={ArrowLeftIcon} onClick={onClose} variant="light" className="mb-4">
+          <TremorButton
+            icon={ArrowLeftIcon}
+            onClick={onClose}
+            variant="light"
+            className="mb-4"
+          >
             Back to Organizations
           </TremorButton>
           <Title>{orgData.organization_alias}</Title>
           <div className="flex items-center cursor-pointer">
-            <Text className="text-gray-500 font-mono">{orgData.organization_id}</Text>
+            <Text className="text-gray-500 font-mono">
+              {orgData.organization_id}
+            </Text>
             <Button
               type="text"
               size="small"
-              icon={copiedStates["org-id"] ? <CheckIcon size={12} /> : <CopyIcon size={12} />}
+              icon={
+                copiedStates["org-id"] ? (
+                  <CheckIcon size={12} />
+                ) : (
+                  <CopyIcon size={12} />
+                )
+              }
               onClick={() => copyToClipboard(orgData.organization_id, "org-id")}
-              className={`left-2 z-10 transition-all duration-200 ${copiedStates["org-id"]
-                ? "text-green-600 bg-green-50 border-green-200"
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
-                }`}
+              className={`left-2 z-10 transition-all duration-200 ${
+                copiedStates["org-id"]
+                  ? "text-green-600 bg-green-50 border-green-200"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+              }`}
             />
           </div>
         </div>
@@ -264,12 +310,23 @@ const OrganizationInfoView: React.FC<OrganizationInfoProps> = ({
             key: "overview",
             label: "Overview",
             children: (
-              <Grid numItems={1} numItemsSm={2} numItemsLg={3} className="gap-6">
+              <Grid
+                numItems={1}
+                numItemsSm={2}
+                numItemsLg={3}
+                className="gap-6"
+              >
                 <Card>
                   <Text>Organization Details</Text>
                   <div className="mt-2">
-                    <Text>Created: {new Date(orgData.created_at).toLocaleDateString()}</Text>
-                    <Text>Updated: {new Date(orgData.updated_at).toLocaleDateString()}</Text>
+                    <Text>
+                      Created:{" "}
+                      {new Date(orgData.created_at).toLocaleDateString()}
+                    </Text>
+                    <Text>
+                      Updated:{" "}
+                      {new Date(orgData.updated_at).toLocaleDateString()}
+                    </Text>
                     <Text>Created By: {orgData.created_by}</Text>
                   </div>
                 </Card>
@@ -285,7 +342,9 @@ const OrganizationInfoView: React.FC<OrganizationInfoProps> = ({
                         : `$${formatNumberWithCommas(orgData.litellm_budget_table.max_budget, 4)}`}
                     </Text>
                     {orgData.litellm_budget_table.budget_duration && (
-                      <Text className="text-gray-500">Reset: {orgData.litellm_budget_table.budget_duration}</Text>
+                      <Text className="text-gray-500">
+                        Reset: {orgData.litellm_budget_table.budget_duration}
+                      </Text>
                     )}
                   </div>
                 </Card>
@@ -293,10 +352,19 @@ const OrganizationInfoView: React.FC<OrganizationInfoProps> = ({
                 <Card>
                   <Text>Rate Limits</Text>
                   <div className="mt-2">
-                    <Text>TPM: {orgData.litellm_budget_table.tpm_limit || "Unlimited"}</Text>
-                    <Text>RPM: {orgData.litellm_budget_table.rpm_limit || "Unlimited"}</Text>
+                    <Text>
+                      TPM:{" "}
+                      {orgData.litellm_budget_table.tpm_limit || "Unlimited"}
+                    </Text>
+                    <Text>
+                      RPM:{" "}
+                      {orgData.litellm_budget_table.rpm_limit || "Unlimited"}
+                    </Text>
                     {orgData.litellm_budget_table.max_parallel_requests && (
-                      <Text>Max Parallel Requests: {orgData.litellm_budget_table.max_parallel_requests}</Text>
+                      <Text>
+                        Max Parallel Requests:{" "}
+                        {orgData.litellm_budget_table.max_parallel_requests}
+                      </Text>
                     )}
                   </div>
                 </Card>
@@ -367,7 +435,9 @@ const OrganizationInfoView: React.FC<OrganizationInfoProps> = ({
                 <div className="flex justify-between items-center mb-4">
                   <Title>Organization Settings</Title>
                   {canEditOrg && !isEditing && (
-                    <TremorButton onClick={() => setIsEditing(true)}>Edit Settings</TremorButton>
+                    <TremorButton onClick={() => setIsEditing(true)}>
+                      Edit Settings
+                    </TremorButton>
                   )}
                 </div>
 
@@ -381,12 +451,17 @@ const OrganizationInfoView: React.FC<OrganizationInfoProps> = ({
                       tpm_limit: orgData.litellm_budget_table.tpm_limit,
                       rpm_limit: orgData.litellm_budget_table.rpm_limit,
                       max_budget: orgData.litellm_budget_table.max_budget,
-                      budget_duration: orgData.litellm_budget_table.budget_duration,
-                      metadata: orgData.metadata ? JSON.stringify(orgData.metadata, null, 2) : "",
-                      vector_stores: orgData.object_permission?.vector_stores || [],
+                      budget_duration:
+                        orgData.litellm_budget_table.budget_duration,
+                      metadata: orgData.metadata
+                        ? JSON.stringify(orgData.metadata, null, 2)
+                        : "",
+                      vector_stores:
+                        orgData.object_permission?.vector_stores || [],
                       mcp_servers_and_groups: {
                         servers: orgData.object_permission?.mcp_servers || [],
-                        accessGroups: orgData.object_permission?.mcp_access_groups || [],
+                        accessGroups:
+                          orgData.object_permission?.mcp_access_groups || [],
                       },
                     }}
                     layout="vertical"
@@ -407,7 +482,9 @@ const OrganizationInfoView: React.FC<OrganizationInfoProps> = ({
                     <Form.Item label="Models" name="models">
                       <ModelSelect
                         value={form.getFieldValue("models")}
-                        onChange={(values) => form.setFieldValue("models", values)}
+                        onChange={(values) =>
+                          form.setFieldValue("models", values)
+                        }
                         context="organization"
                         options={{
                           includeSpecialOptions: true,
@@ -417,7 +494,11 @@ const OrganizationInfoView: React.FC<OrganizationInfoProps> = ({
                     </Form.Item>
 
                     <Form.Item label="Max Budget (USD)" name="max_budget">
-                      <NumericalInput step={0.01} precision={2} style={{ width: "100%" }} />
+                      <NumericalInput
+                        step={0.01}
+                        precision={2}
+                        style={{ width: "100%" }}
+                      />
                     </Form.Item>
 
                     <Form.Item label="Reset Budget" name="budget_duration">
@@ -428,26 +509,39 @@ const OrganizationInfoView: React.FC<OrganizationInfoProps> = ({
                       </Select>
                     </Form.Item>
 
-                    <Form.Item label="Tokens per minute Limit (TPM)" name="tpm_limit">
+                    <Form.Item
+                      label="Tokens per minute Limit (TPM)"
+                      name="tpm_limit"
+                    >
                       <NumericalInput step={1} style={{ width: "100%" }} />
                     </Form.Item>
 
-                    <Form.Item label="Requests per minute Limit (RPM)" name="rpm_limit">
+                    <Form.Item
+                      label="Requests per minute Limit (RPM)"
+                      name="rpm_limit"
+                    >
                       <NumericalInput step={1} style={{ width: "100%" }} />
                     </Form.Item>
 
                     <Form.Item label="Vector Stores" name="vector_stores">
                       <VectorStoreSelector
-                        onChange={(values) => form.setFieldValue("vector_stores", values)}
+                        onChange={(values) =>
+                          form.setFieldValue("vector_stores", values)
+                        }
                         value={form.getFieldValue("vector_stores")}
                         accessToken={accessToken || ""}
                         placeholder="Select vector stores"
                       />
                     </Form.Item>
 
-                    <Form.Item label="MCP Servers & Access Groups" name="mcp_servers_and_groups">
+                    <Form.Item
+                      label="MCP Servers & Access Groups"
+                      name="mcp_servers_and_groups"
+                    >
                       <MCPServerSelector
-                        onChange={(values) => form.setFieldValue("mcp_servers_and_groups", values)}
+                        onChange={(values) =>
+                          form.setFieldValue("mcp_servers_and_groups", values)
+                        }
                         value={form.getFieldValue("mcp_servers_and_groups")}
                         accessToken={accessToken || ""}
                         placeholder="Select MCP servers and access groups"
@@ -460,7 +554,11 @@ const OrganizationInfoView: React.FC<OrganizationInfoProps> = ({
 
                     <div className="sticky z-10 bg-white p-4 border-t border-gray-200 bottom-[-1.5rem] inset-x-[-1.5rem]">
                       <div className="flex justify-end items-center gap-2">
-                        <TremorButton variant="secondary" onClick={() => setIsEditing(false)} disabled={isOrgSaving}>
+                        <TremorButton
+                          variant="secondary"
+                          onClick={() => setIsEditing(false)}
+                          disabled={isOrgSaving}
+                        >
                           Cancel
                         </TremorButton>
                         <TremorButton type="submit" loading={isOrgSaving}>
@@ -495,8 +593,14 @@ const OrganizationInfoView: React.FC<OrganizationInfoProps> = ({
                     </div>
                     <div>
                       <Text className="font-medium">Rate Limits</Text>
-                      <div>TPM: {orgData.litellm_budget_table.tpm_limit || "Unlimited"}</div>
-                      <div>RPM: {orgData.litellm_budget_table.rpm_limit || "Unlimited"}</div>
+                      <div>
+                        TPM:{" "}
+                        {orgData.litellm_budget_table.tpm_limit || "Unlimited"}
+                      </div>
+                      <div>
+                        RPM:{" "}
+                        {orgData.litellm_budget_table.rpm_limit || "Unlimited"}
+                      </div>
                     </div>
                     <div>
                       <Text className="font-medium">Budget</Text>
@@ -506,7 +610,11 @@ const OrganizationInfoView: React.FC<OrganizationInfoProps> = ({
                           ? `$${formatNumberWithCommas(orgData.litellm_budget_table.max_budget, 4)}`
                           : "No Limit"}
                       </div>
-                      <div>Reset: {orgData.litellm_budget_table.budget_duration || "Never"}</div>
+                      <div>
+                        Reset:{" "}
+                        {orgData.litellm_budget_table.budget_duration ||
+                          "Never"}
+                      </div>
                     </div>
 
                     <ObjectPermissionsView
@@ -537,7 +645,8 @@ const OrganizationInfoView: React.FC<OrganizationInfoProps> = ({
           {
             label: "internal_user",
             value: "internal_user",
-            description: "Can view/create keys for themselves within organization.",
+            description:
+              "Can view/create keys for themselves within organization.",
           },
           {
             label: "internal_user_viewer",

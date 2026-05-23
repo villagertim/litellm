@@ -1,9 +1,13 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { ReactNode } from "react";
-import { useEditSSOSettings, EditSSOSettingsParams, EditSSOSettingsResponse } from "./useEditSSOSettings";
 import { updateSSOSettings } from "@/components/networking";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { renderHook, waitFor } from "@testing-library/react";
+import React, { type ReactNode } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  type EditSSOSettingsParams,
+  type EditSSOSettingsResponse,
+  useEditSSOSettings,
+} from "./useEditSSOSettings";
 
 vi.mock("@/components/networking", () => ({
   updateSSOSettings: vi.fn(),
@@ -122,7 +126,9 @@ describe("useEditSSOSettings", () => {
       google_client_id: "new-google-client-id",
     };
 
-    await expect(result.current.mutateAsync(params)).rejects.toThrow("Access token is required");
+    await expect(result.current.mutateAsync(params)).rejects.toThrow(
+      "Access token is required",
+    );
 
     expect(updateSSOSettings).not.toHaveBeenCalled();
   });

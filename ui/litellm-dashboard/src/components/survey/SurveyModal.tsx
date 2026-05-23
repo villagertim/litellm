@@ -1,6 +1,6 @@
+import { Button, Checkbox, Input, Progress, Radio, Space } from "antd";
+import { ArrowLeft, ArrowRight, MessageSquare, X } from "lucide-react";
 import React, { useState } from "react";
-import { X, MessageSquare, ArrowRight, ArrowLeft } from "lucide-react";
-import { Button, Input, Radio, Space, Progress, Checkbox } from "antd";
 
 interface SurveyModalProps {
   isOpen: boolean;
@@ -17,17 +17,20 @@ const REASONS_OPTIONS = [
   {
     id: "ai_integration",
     label: "AI Integration",
-    description: "LiteLLM had the logging/guardrail integration we needed - Langfuse, OTEL, S3 logging, Azure Content Safety guardrails",
+    description:
+      "LiteLLM had the logging/guardrail integration we needed - Langfuse, OTEL, S3 logging, Azure Content Safety guardrails",
   },
   {
     id: "unified_api",
     label: "Unified API",
-    description: "LiteLLM had the best OpenAI-compatible API across providers - OpenAI, Anthropic, Gemini, etc.",
+    description:
+      "LiteLLM had the best OpenAI-compatible API across providers - OpenAI, Anthropic, Gemini, etc.",
   },
   {
     id: "breadth_of_models",
     label: "Breadth of Models/Providers",
-    description: "LiteLLM had the provider + endpoint combinations we needed - /ocr endpoint with Mistral OCR, /batches endppint with Bedrock API, etc.",
+    description:
+      "LiteLLM had the provider + endpoint combinations we needed - /ocr endpoint with Mistral OCR, /batches endppint with Bedrock API, etc.",
   },
   {
     id: "other",
@@ -89,9 +92,11 @@ export function SurveyModal({ isOpen, onClose, onComplete }: SurveyModalProps) {
       // Map reason IDs to readable labels
       const reasonLabels: Record<string, string> = {
         oss_adoption: "OSS Adoption (stars, contributors, forks)",
-        ai_integration: "AI Integration (Langfuse, OTEL, S3, Azure Content Safety)",
+        ai_integration:
+          "AI Integration (Langfuse, OTEL, S3, Azure Content Safety)",
         unified_api: "Unified API (OpenAI-compatible)",
-        breadth_of_models: "Breadth of Models/Providers (/ocr, /batches, Bedrock, Azure OCR)",
+        breadth_of_models:
+          "Breadth of Models/Providers (/ocr, /batches, Bedrock, Azure OCR)",
       };
 
       const readableReasons = data.reasons.map((r) => {
@@ -103,7 +108,7 @@ export function SurveyModal({ isOpen, onClose, onComplete }: SurveyModalProps) {
 
       // Submit to feedback endpoint (redirects to Google Form)
       const feedbackUrl = "https://feedback.litellm.ai/survey";
-      
+
       const formData = new URLSearchParams({
         "entry.2015264290": data.usingAtCompany ? "Yes" : "No",
         "entry.1876243786": data.companyName || "",
@@ -125,7 +130,10 @@ export function SurveyModal({ isOpen, onClose, onComplete }: SurveyModalProps) {
     onComplete();
   };
 
-  const updateData = (key: keyof SurveyData, value: boolean | string | string[] | null) => {
+  const updateData = (
+    key: keyof SurveyData,
+    value: boolean | string | string[] | null,
+  ) => {
     setData((prev) => ({
       ...prev,
       [key]: value,
@@ -172,8 +180,13 @@ export function SurveyModal({ isOpen, onClose, onComplete }: SurveyModalProps) {
     if (step === 1) {
       return (
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-gray-900">Are you using LiteLLM at your company?</h2>
-          <p className="text-gray-500">Help us understand how our product is being used in professional environments.</p>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Are you using LiteLLM at your company?
+          </h2>
+          <p className="text-gray-500">
+            Help us understand how our product is being used in professional
+            environments.
+          </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
             <button
               onClick={() => updateData("usingAtCompany", true)}
@@ -183,7 +196,9 @@ export function SurveyModal({ isOpen, onClose, onComplete }: SurveyModalProps) {
                   : "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
               }`}
             >
-              <span className="block text-lg font-semibold text-gray-900 mb-1">Yes</span>
+              <span className="block text-lg font-semibold text-gray-900 mb-1">
+                Yes
+              </span>
               <span className="text-sm text-gray-500">We use it for work</span>
             </button>
             <button
@@ -194,8 +209,12 @@ export function SurveyModal({ isOpen, onClose, onComplete }: SurveyModalProps) {
                   : "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
               }`}
             >
-              <span className="block text-lg font-semibold text-gray-900 mb-1">No</span>
-              <span className="text-sm text-gray-500">Personal project / Hobby</span>
+              <span className="block text-lg font-semibold text-gray-900 mb-1">
+                No
+              </span>
+              <span className="text-sm text-gray-500">
+                Personal project / Hobby
+              </span>
             </button>
           </div>
         </div>
@@ -206,8 +225,12 @@ export function SurveyModal({ isOpen, onClose, onComplete }: SurveyModalProps) {
     if (step === 2 && data.usingAtCompany === true) {
       return (
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-gray-900">What company are you using LiteLLM at?</h2>
-          <p className="text-gray-500">This helps us understand our user base better.</p>
+          <h2 className="text-2xl font-bold text-gray-900">
+            What company are you using LiteLLM at?
+          </h2>
+          <p className="text-gray-500">
+            This helps us understand our user base better.
+          </p>
           <Input
             size="large"
             placeholder="Enter your company name"
@@ -223,14 +246,21 @@ export function SurveyModal({ isOpen, onClose, onComplete }: SurveyModalProps) {
     if (step === 3) {
       return (
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-gray-900">When did you start using LiteLLM?</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            When did you start using LiteLLM?
+          </h2>
           <Radio.Group
             value={data.startDate}
             onChange={(e) => updateData("startDate", e.target.value)}
             className="w-full"
           >
             <Space direction="vertical" className="w-full">
-              {["Less than a month ago", "1-3 months ago", "3-6 months ago", "More than 6 months ago"].map((option) => (
+              {[
+                "Less than a month ago",
+                "1-3 months ago",
+                "3-6 months ago",
+                "More than 6 months ago",
+              ].map((option) => (
                 <label
                   key={option}
                   className={`flex items-center p-4 rounded-lg border cursor-pointer transition-all w-full ${
@@ -252,7 +282,9 @@ export function SurveyModal({ isOpen, onClose, onComplete }: SurveyModalProps) {
     if (step === 4) {
       return (
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-gray-900">Why did you pick LiteLLM over other AI Gateways?</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Why did you pick LiteLLM over other AI Gateways?
+          </h2>
           <p className="text-gray-500">Select all that apply.</p>
           <div className="space-y-3">
             {REASONS_OPTIONS.map((option) => {
@@ -275,10 +307,17 @@ export function SurveyModal({ isOpen, onClose, onComplete }: SurveyModalProps) {
                         : "border-gray-200 hover:bg-gray-50"
                     }`}
                   >
-                    <Checkbox checked={isSelected} className="mt-0.5 pointer-events-none" />
+                    <Checkbox
+                      checked={isSelected}
+                      className="mt-0.5 pointer-events-none"
+                    />
                     <div className="ml-3">
-                      <span className="block font-medium text-gray-900">{option.label}</span>
-                      <span className="text-sm text-gray-500">{option.description}</span>
+                      <span className="block font-medium text-gray-900">
+                        {option.label}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        {option.description}
+                      </span>
                     </div>
                   </div>
                   {/* Show text input if "Other" is selected */}
@@ -287,7 +326,9 @@ export function SurveyModal({ isOpen, onClose, onComplete }: SurveyModalProps) {
                       className="mt-2 ml-7"
                       placeholder="Please specify..."
                       value={data.otherReason}
-                      onChange={(e) => updateData("otherReason", e.target.value)}
+                      onChange={(e) =>
+                        updateData("otherReason", e.target.value)
+                      }
                       onClick={(e) => e.stopPropagation()}
                       autoFocus
                     />
@@ -304,9 +345,12 @@ export function SurveyModal({ isOpen, onClose, onComplete }: SurveyModalProps) {
     if (step === 5) {
       return (
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-gray-900">Want to share more?</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Want to share more?
+          </h2>
           <p className="text-gray-500">
-            Leave your email and we may reach out to learn more about your experience. This is completely optional.
+            Leave your email and we may reach out to learn more about your
+            experience. This is completely optional.
           </p>
           <Input
             size="large"
@@ -331,7 +375,10 @@ export function SurveyModal({ isOpen, onClose, onComplete }: SurveyModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <div
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm"
+        onClick={onClose}
+      />
 
       {/* Modal */}
       <div className="relative w-full max-w-lg bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transform transition-all duration-300 ease-out">
@@ -339,7 +386,9 @@ export function SurveyModal({ isOpen, onClose, onComplete }: SurveyModalProps) {
         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
           <div className="flex items-center gap-2 text-blue-600">
             <MessageSquare className="h-5 w-5" />
-            <span className="font-semibold text-sm tracking-wide uppercase">Quick Feedback</span>
+            <span className="font-semibold text-sm tracking-wide uppercase">
+              Quick Feedback
+            </span>
           </div>
           <button
             onClick={onClose}
@@ -350,7 +399,12 @@ export function SurveyModal({ isOpen, onClose, onComplete }: SurveyModalProps) {
         </div>
 
         {/* Progress Bar */}
-        <Progress percent={(getStepNumber() / totalSteps) * 100} showInfo={false} strokeColor="#2563eb" className="m-0" />
+        <Progress
+          percent={(getStepNumber() / totalSteps) * 100}
+          showInfo={false}
+          strokeColor="#2563eb"
+          className="m-0"
+        />
 
         {/* Content */}
         <div className="p-8 flex-1 overflow-y-auto">{renderStepContent()}</div>
@@ -362,7 +416,11 @@ export function SurveyModal({ isOpen, onClose, onComplete }: SurveyModalProps) {
           </div>
           <div className="flex gap-3">
             {step > 1 && (
-              <Button onClick={handleBack} disabled={isSubmitting} icon={<ArrowLeft className="h-4 w-4" />}>
+              <Button
+                onClick={handleBack}
+                disabled={isSubmitting}
+                icon={<ArrowLeft className="h-4 w-4" />}
+              >
                 Back
               </Button>
             )}
@@ -382,4 +440,3 @@ export function SurveyModal({ isOpen, onClose, onComplete }: SurveyModalProps) {
     </div>
   );
 }
-

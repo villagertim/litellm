@@ -15,7 +15,8 @@ import {
   Title,
 } from "@tremor/react";
 import { Tooltip } from "antd";
-import React, { useState } from "react";
+import type React from "react";
+import { useState } from "react";
 import { ProviderLogo } from "../../../molecules/models/ProviderLogo";
 import { ChartLoader } from "../../../shared/chart_loader";
 
@@ -34,7 +35,11 @@ interface SpendByProviderProps {
   providerSpend: ProviderSpendData[];
 }
 
-const SpendByProvider: React.FC<SpendByProviderProps> = ({ loading, isDateChanging, providerSpend }) => {
+const SpendByProvider: React.FC<SpendByProviderProps> = ({
+  loading,
+  isDateChanging,
+  providerSpend,
+}) => {
   const [includeZeroSpend, setIncludeZeroSpend] = useState(false);
   const [includeUnknown, setIncludeUnknown] = useState(false);
 
@@ -95,8 +100,12 @@ const SpendByProvider: React.FC<SpendByProviderProps> = ({ loading, isDateChangi
                 <TableRow>
                   <TableHeaderCell>Provider</TableHeaderCell>
                   <TableHeaderCell>Spend</TableHeaderCell>
-                  <TableHeaderCell className="text-green-600">Successful</TableHeaderCell>
-                  <TableHeaderCell className="text-red-600">Failed</TableHeaderCell>
+                  <TableHeaderCell className="text-green-600">
+                    Successful
+                  </TableHeaderCell>
+                  <TableHeaderCell className="text-red-600">
+                    Failed
+                  </TableHeaderCell>
                   <TableHeaderCell>Tokens</TableHeaderCell>
                 </TableRow>
               </TableHead>
@@ -105,11 +114,18 @@ const SpendByProvider: React.FC<SpendByProviderProps> = ({ loading, isDateChangi
                   <TableRow key={provider.provider}>
                     <TableCell>
                       <div className="flex items-center space-x-2">
-                        {provider.provider && <ProviderLogo provider={provider.provider} className="w-4 h-4" />}
+                        {provider.provider && (
+                          <ProviderLogo
+                            provider={provider.provider}
+                            className="w-4 h-4"
+                          />
+                        )}
                         <span>{provider.provider}</span>
                       </div>
                     </TableCell>
-                    <TableCell>${formatNumberWithCommas(provider.spend, 2)}</TableCell>
+                    <TableCell>
+                      ${formatNumberWithCommas(provider.spend, 2)}
+                    </TableCell>
                     <TableCell className="text-green-600">
                       {provider.successful_requests.toLocaleString()}
                     </TableCell>

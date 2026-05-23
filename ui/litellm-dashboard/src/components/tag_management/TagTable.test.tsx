@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import TagTable from "./TagTable";
-import { Tag } from "./types";
+import type { Tag } from "./types";
 
 describe("TagTable", () => {
   const mockOnEdit = vi.fn();

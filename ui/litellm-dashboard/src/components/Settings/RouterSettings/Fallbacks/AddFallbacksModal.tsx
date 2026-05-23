@@ -5,7 +5,7 @@
 
 import { Modal } from "antd";
 import { ArrowRight } from "lucide-react";
-import React from "react";
+import type React from "react";
 
 interface AddFallbacksModalProps {
   open: boolean;
@@ -27,9 +27,12 @@ export function AddFallbacksModal({
               <ArrowRight className="w-5 h-5 text-indigo-600" />
             </div>
             <div>
-              <h2 className="text-lg font-bold m-0">Configure Model Fallbacks</h2>
+              <h2 className="text-lg font-bold m-0">
+                Configure Model Fallbacks
+              </h2>
               <p className="text-sm text-gray-500 font-normal m-0">
-                Manage multiple fallback chains for different models (up to 5 groups at a time)
+                Manage multiple fallback chains for different models (up to 5
+                groups at a time)
               </p>
             </div>
           </div>

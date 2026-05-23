@@ -1,14 +1,19 @@
+import {
+  type DeletedKeyResponse,
+  useDeletedKeys,
+} from "@/app/(dashboard)/hooks/keys/useKeys";
 import { screen } from "@testing-library/react";
-import { vi, it, expect, beforeEach, MockedFunction } from "vitest";
+import { type MockedFunction, beforeEach, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../tests/test-utils";
 import DeletedKeysPage from "./DeletedKeysPage";
-import { useDeletedKeys, DeletedKeyResponse } from "@/app/(dashboard)/hooks/keys/useKeys";
 
 vi.mock("@/app/(dashboard)/hooks/keys/useKeys", () => ({
   useDeletedKeys: vi.fn(),
 }));
 
-const mockUseDeletedKeys = useDeletedKeys as MockedFunction<typeof useDeletedKeys>;
+const mockUseDeletedKeys = useDeletedKeys as MockedFunction<
+  typeof useDeletedKeys
+>;
 
 const mockDeletedKey: DeletedKeyResponse = {
   token: "sk-1234567890abcdef",

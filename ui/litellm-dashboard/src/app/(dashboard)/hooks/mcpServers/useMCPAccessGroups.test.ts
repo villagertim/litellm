@@ -1,10 +1,10 @@
+import * as networking from "@/components/networking";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { renderHook, waitFor } from "@testing-library/react";
 /* @vitest-environment jsdom */
 import React from "react";
-import { renderHook, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useMCPAccessGroups } from "./useMCPAccessGroups";
-import * as networking from "@/components/networking";
 
 vi.mock("@/components/networking", () => ({
   fetchMCPAccessGroups: vi.fn(),
@@ -28,7 +28,11 @@ const createQueryClient = () =>
 
 const wrapper = ({ children }: { children: React.ReactNode }) => {
   const queryClient = createQueryClient();
-  return React.createElement(QueryClientProvider, { client: queryClient }, children);
+  return React.createElement(
+    QueryClientProvider,
+    { client: queryClient },
+    children,
+  );
 };
 
 const mockAccessToken = "test-token-456";
@@ -37,7 +41,9 @@ const mockAccessGroups = ["group-1", "group-2", "group-3"];
 describe("useMCPAccessGroups", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
-    const useAuthorizedModule = await import("@/app/(dashboard)/hooks/useAuthorized");
+    const useAuthorizedModule = await import(
+      "@/app/(dashboard)/hooks/useAuthorized"
+    );
     vi.mocked(useAuthorizedModule.default).mockReturnValue({
       accessToken: mockAccessToken,
     } as any);
@@ -56,7 +62,9 @@ describe("useMCPAccessGroups", () => {
   });
 
   it("should return MCP access groups when access token is present", async () => {
-    vi.mocked(networking.fetchMCPAccessGroups).mockResolvedValue(mockAccessGroups);
+    vi.mocked(networking.fetchMCPAccessGroups).mockResolvedValue(
+      mockAccessGroups,
+    );
 
     const { result } = renderHook(() => useMCPAccessGroups(), { wrapper });
 
@@ -64,12 +72,16 @@ describe("useMCPAccessGroups", () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(networking.fetchMCPAccessGroups).toHaveBeenCalledWith(mockAccessToken);
+    expect(networking.fetchMCPAccessGroups).toHaveBeenCalledWith(
+      mockAccessToken,
+    );
     expect(result.current.data).toEqual(mockAccessGroups);
   });
 
   it("should not fetch when access token is null", async () => {
-    const useAuthorizedModule = await import("@/app/(dashboard)/hooks/useAuthorized");
+    const useAuthorizedModule = await import(
+      "@/app/(dashboard)/hooks/useAuthorized"
+    );
     vi.mocked(useAuthorizedModule.default).mockReturnValue({
       accessToken: null,
     } as any);
@@ -83,7 +95,9 @@ describe("useMCPAccessGroups", () => {
   });
 
   it("should not fetch when access token is empty string", async () => {
-    const useAuthorizedModule = await import("@/app/(dashboard)/hooks/useAuthorized");
+    const useAuthorizedModule = await import(
+      "@/app/(dashboard)/hooks/useAuthorized"
+    );
     vi.mocked(useAuthorizedModule.default).mockReturnValue({
       accessToken: "",
     } as any);

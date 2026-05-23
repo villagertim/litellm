@@ -1,7 +1,7 @@
-import React from "react";
 import { Button as TremorButton } from "@tremor/react";
 import { Input, Select } from "antd";
-import { ArrowLeftIcon, SaveIcon, ClockIcon } from "lucide-react";
+import { ArrowLeftIcon, ClockIcon, SaveIcon } from "lucide-react";
+import type React from "react";
 import PromptCodeSnippets from "./PromptCodeSnippets";
 
 interface PromptEditorHeaderProps {
@@ -43,7 +43,12 @@ const PromptEditorHeader: React.FC<PromptEditorHeaderProps> = ({
   return (
     <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
       <div className="flex items-center space-x-3">
-        <TremorButton icon={ArrowLeftIcon} variant="light" onClick={onBack} size="xs">
+        <TremorButton
+          icon={ArrowLeftIcon}
+          variant="light"
+          onClick={onBack}
+          size="xs"
+        >
           Back
         </TremorButton>
         <Input
@@ -68,7 +73,9 @@ const PromptEditorHeader: React.FC<PromptEditorHeaderProps> = ({
             { label: "Production", value: "production" },
           ]}
         />
-        <span className="px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded">Draft</span>
+        <span className="px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded">
+          Draft
+        </span>
         <span className="text-xs text-gray-400">Unsaved changes</span>
       </div>
       <div className="flex items-center space-x-2">
@@ -77,7 +84,7 @@ const PromptEditorHeader: React.FC<PromptEditorHeaderProps> = ({
           model={promptModel}
           promptVariables={promptVariables}
           accessToken={accessToken}
-          version={version?.replace('v', '') || "1"}
+          version={version?.replace("v", "") || "1"}
           proxySettings={proxySettings}
         />
         {editMode && onShowHistory && (
@@ -103,4 +110,3 @@ const PromptEditorHeader: React.FC<PromptEditorHeaderProps> = ({
 };
 
 export default PromptEditorHeader;
-

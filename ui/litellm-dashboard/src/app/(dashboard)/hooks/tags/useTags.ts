@@ -1,8 +1,8 @@
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { createQueryKeys } from "../common/queryKeysFactory";
-import { tagListCall } from "@/components/networking";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { TagListResponse } from "@/components/tag_management/types";
+import { tagListCall } from "@/components/networking";
+import type { TagListResponse } from "@/components/tag_management/types";
+import { type UseQueryResult, useQuery } from "@tanstack/react-query";
+import { createQueryKeys } from "../common/queryKeysFactory";
 
 const tagKeys = createQueryKeys("tags");
 

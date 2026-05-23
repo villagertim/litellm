@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from "react";
+import { isAdminRole } from "@/utils/roles";
 import { Button } from "@tremor/react";
 import { Modal } from "antd";
-import {
-  getClaudeCodePluginsList,
-  deleteClaudeCodePlugin,
-} from "./networking";
+import type React from "react";
+import { useEffect, useState } from "react";
 import AddPluginForm from "./claude_code_plugins/add_plugin_form";
 import PluginTable from "./claude_code_plugins/plugin_table";
 import SkillDetail from "./claude_code_plugins/skill_detail";
-import { isAdminRole } from "@/utils/roles";
+import type { ListPluginsResponse, Plugin } from "./claude_code_plugins/types";
 import NotificationsManager from "./molecules/notifications_manager";
-import { Plugin, ListPluginsResponse } from "./claude_code_plugins/types";
+import { deleteClaudeCodePlugin, getClaudeCodePluginsList } from "./networking";
 
 interface ClaudeCodePluginsPanelProps {
   accessToken: string | null;
@@ -40,7 +38,7 @@ const ClaudeCodePluginsPanel: React.FC<ClaudeCodePluginsPanelProps> = ({
     try {
       const response: ListPluginsResponse = await getClaudeCodePluginsList(
         accessToken,
-        false
+        false,
       );
       setPluginsList(response.plugins);
     } catch (error) {
@@ -64,7 +62,9 @@ const ClaudeCodePluginsPanel: React.FC<ClaudeCodePluginsPanelProps> = ({
     setIsDeleting(true);
     try {
       await deleteClaudeCodePlugin(accessToken, pluginToDelete.name);
-      NotificationsManager.success(`Skill "${pluginToDelete.displayName}" deleted successfully`);
+      NotificationsManager.success(
+        `Skill "${pluginToDelete.displayName}" deleted successfully`,
+      );
       fetchPlugins();
     } catch (error) {
       console.error("Error deleting skill:", error);
@@ -90,12 +90,18 @@ const ClaudeCodePluginsPanel: React.FC<ClaudeCodePluginsPanelProps> = ({
           <div className="flex flex-col gap-2 mb-4">
             <h1 className="text-2xl font-bold">Skills</h1>
             <p className="text-sm text-gray-600">
-              Register Claude Code skills. Published skills appear in the Skill Hub for all users and
-              are served via{" "}
-              <code className="bg-gray-100 px-1 rounded">/claude-code/marketplace.json</code>.
+              Register Claude Code skills. Published skills appear in the Skill
+              Hub for all users and are served via{" "}
+              <code className="bg-gray-100 px-1 rounded">
+                /claude-code/marketplace.json
+              </code>
+              .
             </p>
             <div className="mt-2 flex gap-2">
-              <Button onClick={() => setIsAddModalVisible(true)} disabled={!accessToken || !isAdmin}>
+              <Button
+                onClick={() => setIsAddModalVisible(true)}
+                disabled={!accessToken || !isAdmin}
+              >
                 + Add Skill
               </Button>
             </div>

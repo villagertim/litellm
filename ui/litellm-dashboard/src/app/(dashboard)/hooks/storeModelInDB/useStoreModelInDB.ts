@@ -1,5 +1,8 @@
-import { useMutation, UseMutationResult } from "@tanstack/react-query";
-import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "@/components/networking";
+import {
+  getGlobalLitellmHeaderName,
+  getProxyBaseUrl,
+} from "@/components/networking";
+import { type UseMutationResult, useMutation } from "@tanstack/react-query";
 import useAuthorized from "../useAuthorized";
 
 export interface StoreModelInDBParams {
@@ -12,10 +15,12 @@ export interface StoreModelInDBResponse {
 
 const performStoreModelInDB = async (
   accessToken: string,
-  params: StoreModelInDBParams
+  params: StoreModelInDBParams,
 ): Promise<StoreModelInDBResponse> => {
   const proxyBaseUrl = getProxyBaseUrl();
-  const url = proxyBaseUrl ? `${proxyBaseUrl}/config/field/update` : `/config/field/update`;
+  const url = proxyBaseUrl
+    ? `${proxyBaseUrl}/config/field/update`
+    : `/config/field/update`;
 
   const response = await fetch(url, {
     method: "POST",
@@ -33,7 +38,10 @@ const performStoreModelInDB = async (
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     const errorMessage =
-      errorData?.error?.message || errorData?.message || errorData?.detail || "Failed to update model storage settings";
+      errorData?.error?.message ||
+      errorData?.message ||
+      errorData?.detail ||
+      "Failed to update model storage settings";
     throw new Error(errorMessage);
   }
 

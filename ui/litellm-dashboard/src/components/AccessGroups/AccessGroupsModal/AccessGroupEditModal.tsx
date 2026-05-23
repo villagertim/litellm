@@ -1,15 +1,15 @@
-import React, { useEffect } from "react";
-import { Modal, Form } from "antd";
+import type { AccessGroupResponse } from "@/app/(dashboard)/hooks/accessGroups/useAccessGroups";
+import {
+  type AccessGroupUpdateParams,
+  useEditAccessGroup,
+} from "@/app/(dashboard)/hooks/accessGroups/useEditAccessGroup";
 import MessageManager from "@/components/molecules/message_manager";
+import { Form, Modal } from "antd";
+import React, { useEffect } from "react";
 import {
   AccessGroupBaseForm,
-  AccessGroupFormValues,
+  type AccessGroupFormValues,
 } from "./AccessGroupBaseForm";
-import {
-  useEditAccessGroup,
-  AccessGroupUpdateParams,
-} from "@/app/(dashboard)/hooks/accessGroups/useEditAccessGroup";
-import { AccessGroupResponse } from "@/app/(dashboard)/hooks/accessGroups/useAccessGroups";
 
 interface AccessGroupEditModalProps {
   visible: boolean;

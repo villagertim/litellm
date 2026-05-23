@@ -1,10 +1,10 @@
-import React from "react";
+import { useOrganization } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { vi, test, expect, beforeEach } from "vitest";
+import React from "react";
+import { beforeEach, expect, test, vi } from "vitest";
 import { renderWithProviders } from "../../../tests/test-utils";
 import OrganizationInfoView from "./organization_view";
-import { useOrganization } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
 
 // Mock networking calls used by the component's mutation handlers
 vi.mock("../networking", () => {
@@ -101,7 +101,10 @@ beforeEach(() => {
 });
 
 test("renders organization view after loading data", async () => {
-  mockUseOrganization.mockReturnValue({ data: mockOrg, isLoading: false } as any);
+  mockUseOrganization.mockReturnValue({
+    data: mockOrg,
+    isLoading: false,
+  } as any);
 
   const { findAllByText } = renderWithProviders(
     <OrganizationInfoView
@@ -121,7 +124,10 @@ test("renders organization view after loading data", async () => {
 });
 
 test("should display empty state when organization has no members", async () => {
-  mockUseOrganization.mockReturnValue({ data: mockOrg, isLoading: false } as any);
+  mockUseOrganization.mockReturnValue({
+    data: mockOrg,
+    isLoading: false,
+  } as any);
 
   const user = userEvent.setup();
   renderWithProviders(
@@ -152,7 +158,10 @@ test("should display team aliases when teams are available", async () => {
     ...mockOrg,
     teams: [{ team_id: "team_123" }, { team_id: "team_456" }],
   };
-  mockUseOrganization.mockReturnValue({ data: orgWithTeams, isLoading: false } as any);
+  mockUseOrganization.mockReturnValue({
+    data: orgWithTeams,
+    isLoading: false,
+  } as any);
 
   renderWithProviders(
     <OrganizationInfoView
@@ -186,7 +195,10 @@ test("should display team ID as fallback when alias is not found", async () => {
     ...mockOrg,
     teams: [{ team_id: "team_999" }],
   };
-  mockUseOrganization.mockReturnValue({ data: orgWithUnknownTeam, isLoading: false } as any);
+  mockUseOrganization.mockReturnValue({
+    data: orgWithUnknownTeam,
+    isLoading: false,
+  } as any);
 
   renderWithProviders(
     <OrganizationInfoView

@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import CloudZeroUpdateModal from "./CloudZeroUpdateModal";
-import { CloudZeroSettings } from "./types";
+import type { CloudZeroSettings } from "./types";
 
 vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({
   __esModule: true,
@@ -50,7 +50,12 @@ describe("CloudZeroUpdateModal", () => {
   it("should render", () => {
     render(
       <QueryClientProvider client={queryClient}>
-        <CloudZeroUpdateModal open={true} onOk={vi.fn()} onCancel={vi.fn()} settings={mockSettings} />
+        <CloudZeroUpdateModal
+          open={true}
+          onOk={vi.fn()}
+          onCancel={vi.fn()}
+          settings={mockSettings}
+        />
       </QueryClientProvider>,
     );
 

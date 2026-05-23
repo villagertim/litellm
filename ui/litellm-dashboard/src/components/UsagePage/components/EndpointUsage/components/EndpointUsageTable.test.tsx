@@ -10,7 +10,11 @@ vi.mock("antd", async () => {
       "div",
       { "data-testid": "antd-table" },
       columns?.map((col: any) =>
-        React.createElement("div", { key: col.key, "data-testid": `column-${col.key}` }, col.title),
+        React.createElement(
+          "div",
+          { key: col.key, "data-testid": `column-${col.key}` },
+          col.title,
+        ),
       ),
       dataSource?.map((row: any) =>
         React.createElement(
@@ -24,7 +28,10 @@ vi.mock("antd", async () => {
   (Table as any).displayName = "Table";
 
   function Progress({ percent }: any) {
-    return React.createElement("div", { "data-testid": "antd-progress", "data-percent": percent });
+    return React.createElement("div", {
+      "data-testid": "antd-progress",
+      "data-percent": percent,
+    });
   }
   (Progress as any).displayName = "Progress";
 

@@ -1,8 +1,8 @@
 import test, { expect } from "@playwright/test";
-import { Role } from "../../fixtures/roles";
 import { ADMIN_STORAGE_PATH } from "../../constants";
-import { Page } from "../../fixtures/pages";
 import { menuLabelToPage } from "../../fixtures/menuMappings";
+import { Page } from "../../fixtures/pages";
+import { Role } from "../../fixtures/roles";
 import { navigateToPage } from "../../helpers/navigation";
 
 const sidebarButtons = {
@@ -23,7 +23,9 @@ for (const { role, storage } of roles) {
   test.describe(`${role} sidebar`, () => {
     test.use({ storageState: storage });
 
-    test("should navigate to correct URL when clicking sidebar menu items from homepage", async ({ page }) => {
+    test("should navigate to correct URL when clicking sidebar menu items from homepage", async ({
+      page,
+    }) => {
       await page.goto("/ui");
       await page.evaluate(() => {
         window.localStorage.setItem("disableUsageIndicator", "true");
@@ -31,11 +33,15 @@ for (const { role, storage } of roles) {
         window.localStorage.setItem("disableShowNewBadge", "true");
       });
 
-      for (const buttonLabel of sidebarButtons[role as keyof typeof sidebarButtons]) {
+      for (const buttonLabel of sidebarButtons[
+        role as keyof typeof sidebarButtons
+      ]) {
         const expectedPage = menuLabelToPage[buttonLabel];
 
         if (!expectedPage) {
-          throw new Error(`No page mapping found for menu label: ${buttonLabel}`);
+          throw new Error(
+            `No page mapping found for menu label: ${buttonLabel}`,
+          );
         }
 
         const tab = page.getByRole("menuitem", { name: buttonLabel });
@@ -44,11 +50,15 @@ for (const { role, storage } of roles) {
         await tab.click();
 
         // Verify URL contains the correct page query parameter
-        await expect(page).toHaveURL(new RegExp(`[?&]page=${expectedPage}(&|$)`));
+        await expect(page).toHaveURL(
+          new RegExp(`[?&]page=${expectedPage}(&|$)`),
+        );
       }
     });
 
-    test("should navigate directly to page using navigation helper", async ({ page }) => {
+    test("should navigate directly to page using navigation helper", async ({
+      page,
+    }) => {
       await page.goto("/ui");
       await page.evaluate(() => {
         window.localStorage.setItem("disableUsageIndicator", "true");
@@ -64,7 +74,9 @@ for (const { role, storage } of roles) {
       await expect(page).toHaveURL(new RegExp(`[?&]page=${Page.Models}(&|$)`));
 
       await navigateToPage(page, Page.LlmPlayground);
-      await expect(page).toHaveURL(new RegExp(`[?&]page=${Page.LlmPlayground}(&|$)`));
+      await expect(page).toHaveURL(
+        new RegExp(`[?&]page=${Page.LlmPlayground}(&|$)`),
+      );
     });
   });
 }

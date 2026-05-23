@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { Form, Input, InputNumber, Select } from "antd";
-import { TextInput } from "@tremor/react";
-import { InfoCircleOutlined } from "@ant-design/icons";
-import { Tooltip } from "antd";
-import { getOpenAPISchema } from "../networking";
 import { formatLabel } from "@/utils/textUtils";
+import { InfoCircleOutlined } from "@ant-design/icons";
+import { TextInput } from "@tremor/react";
+import { Form, Input, InputNumber, Select } from "antd";
+import { Tooltip } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { getOpenAPISchema } from "../networking";
 
 interface SchemaProperty {
   type?: string;
@@ -53,7 +54,11 @@ const validateJSON = (value: string): boolean => {
   }
 };
 
-const getFieldHelp = (key: string, property: SchemaProperty, type: string): string => {
+const getFieldHelp = (
+  key: string,
+  property: SchemaProperty,
+  type: string,
+): string => {
   // Default help text based on type
   const defaultHelp =
     {
@@ -70,12 +75,15 @@ const getFieldHelp = (key: string, property: SchemaProperty, type: string): stri
     tpm_limit: "Enter maximum tokens per minute (whole number)",
     rpm_limit: "Enter maximum requests per minute (whole number)",
     duration: "Enter duration (e.g., 30s, 24h, 7d)",
-    metadata: 'Enter JSON object with key-value pairs\nExample: {"team": "research", "project": "nlp"}',
+    metadata:
+      'Enter JSON object with key-value pairs\nExample: {"team": "research", "project": "nlp"}',
     config: 'Enter configuration as JSON object\nExample: {"setting": "value"}',
     permissions: "Enter comma-separated permission strings",
-    enforced_params: 'Enter parameters as JSON object\nExample: {"param": "value"}',
+    enforced_params:
+      'Enter parameters as JSON object\nExample: {"param": "value"}',
     blocked: "Enter true/false or specific block conditions",
-    aliases: 'Enter aliases as JSON object\nExample: {"alias1": "value1", "alias2": "value2"}',
+    aliases:
+      'Enter aliases as JSON object\nExample: {"alias1": "value1", "alias2": "value2"}',
     models: "Select one or more model names",
     key_alias: "Enter a unique identifier for this key",
     tags: "Enter comma-separated tag strings",
@@ -105,7 +113,8 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
   customValidation = {},
   defaultValues = {},
 }) => {
-  const [schemaProperties, setSchemaProperties] = useState<OpenAPISchema | null>(null);
+  const [schemaProperties, setSchemaProperties] =
+    useState<OpenAPISchema | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -122,7 +131,10 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
 
         const defaultFormValues: { [key: string]: any } = {};
         Object.keys(componentSchema.properties)
-          .filter((key) => !excludedFields.includes(key) && defaultValues[key] !== undefined)
+          .filter(
+            (key) =>
+              !excludedFields.includes(key) && defaultValues[key] !== undefined,
+          )
           .forEach((key) => {
             defaultFormValues[key] = defaultValues[key];
           });
@@ -130,7 +142,9 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
         form.setFieldsValue(defaultFormValues);
       } catch (error) {
         console.error("Schema fetch error:", error);
-        setError(error instanceof Error ? error.message : "Failed to fetch schema");
+        setError(
+          error instanceof Error ? error.message : "Failed to fetch schema",
+        );
       }
     };
 
@@ -143,7 +157,8 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
     }
     if (property.anyOf) {
       const types = property.anyOf.map((t) => t.type);
-      if (types.includes("number") || types.includes("integer")) return "number";
+      if (types.includes("number") || types.includes("integer"))
+        return "number";
       if (types.includes("string")) return "string";
     }
     return "string";
@@ -186,7 +201,13 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
 
     let inputComponent;
     if (isJSONField(key, property)) {
-      inputComponent = <Input.TextArea rows={4} placeholder="Enter as JSON" className="font-mono" />;
+      inputComponent = (
+        <Input.TextArea
+          rows={4}
+          placeholder="Enter as JSON"
+          className="font-mono"
+        />
+      );
     } else if (property.enum) {
       inputComponent = (
         <Select>
@@ -198,7 +219,12 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
         </Select>
       );
     } else if (type === "number" || type === "integer") {
-      inputComponent = <InputNumber style={{ width: "100%" }} precision={type === "integer" ? 0 : undefined} />;
+      inputComponent = (
+        <InputNumber
+          style={{ width: "100%" }}
+          precision={type === "integer" ? 0 : undefined}
+        />
+      );
     } else if (key === "duration") {
       inputComponent = <TextInput placeholder="eg: 30s, 30h, 30d" />;
     } else {
@@ -213,7 +239,11 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
         className="mt-8"
         rules={rules}
         initialValue={defaultValues[key]}
-        help={<div className="text-xs text-gray-500">{getFieldHelp(key, property, type)}</div>}
+        help={
+          <div className="text-xs text-gray-500">
+            {getFieldHelp(key, property, type)}
+          </div>
+        }
       >
         {inputComponent}
       </Form.Item>

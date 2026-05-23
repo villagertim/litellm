@@ -1,8 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
-import { TextInput, Text } from "@tremor/react";
-import { Select } from "antd";
 import { RobotOutlined } from "@ant-design/icons";
-import { fetchAvailableModels, ModelGroup } from "../playground/llm_calls/fetch_models";
+import { Text, TextInput } from "@tremor/react";
+import { Select } from "antd";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
+import {
+  type ModelGroup,
+  fetchAvailableModels,
+} from "../playground/llm_calls/fetch_models";
 
 interface ModelSelectorProps {
   accessToken: string;
@@ -28,7 +32,8 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({
   labelText = "Select Model",
 }) => {
   const [selectedModel, setSelectedModel] = useState<string | undefined>(value);
-  const [showCustomModelInput, setShowCustomModelInput] = useState<boolean>(false);
+  const [showCustomModelInput, setShowCustomModelInput] =
+    useState<boolean>(false);
   const [modelInfo, setModelInfo] = useState<ModelGroup[]>([]);
   const customModelTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -94,7 +99,9 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({
         placeholder={placeholder}
         onChange={onModelChange}
         options={[
-          ...Array.from(new Set(modelInfo.map((option) => option.model_group))).map((model_group, index) => ({
+          ...Array.from(
+            new Set(modelInfo.map((option) => option.model_group)),
+          ).map((model_group, index) => ({
             value: model_group,
             label: model_group,
             key: index,

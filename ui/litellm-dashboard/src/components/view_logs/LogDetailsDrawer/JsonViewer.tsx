@@ -1,7 +1,7 @@
 import { Typography } from "antd";
 import { JsonView, defaultStyles } from "react-json-view-lite";
 import "react-json-view-lite/dist/index.css";
-import { JSON_MAX_HEIGHT, COLOR_BG_LIGHT, SPACING_LARGE } from "./constants";
+import { COLOR_BG_LIGHT, JSON_MAX_HEIGHT, SPACING_LARGE } from "./constants";
 
 const { Text } = Typography;
 

@@ -1,6 +1,14 @@
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { Organization, organizationInfoCall, organizationListCall } from "@/components/networking";
-import { useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
+import {
+  type Organization,
+  organizationInfoCall,
+  organizationListCall,
+} from "@/components/networking";
+import {
+  type UseQueryResult,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { createQueryKeys } from "../common/queryKeysFactory";
 
 export const organizationKeys = createQueryKeys("organizations");
@@ -31,9 +39,14 @@ export const useOrganization = (organizationID?: string) => {
     initialData: () => {
       if (!organizationID) return undefined;
 
-      const organizations = queryClient.getQueryData<Organization[]>(organizationKeys.list({}));
+      const organizations = queryClient.getQueryData<Organization[]>(
+        organizationKeys.list({}),
+      );
 
-      return organizations?.find((organization: Organization) => organization.organization_id === organizationID);
+      return organizations?.find(
+        (organization: Organization) =>
+          organization.organization_id === organizationID,
+      );
     },
   });
 };

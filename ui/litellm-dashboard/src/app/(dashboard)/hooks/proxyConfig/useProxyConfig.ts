@@ -1,7 +1,17 @@
-import { useQuery, useMutation, UseMutationResult, useQueryClient } from "@tanstack/react-query";
+import {
+  deriveErrorMessage,
+  getGlobalLitellmHeaderName,
+  handleError,
+  proxyBaseUrl,
+} from "@/components/networking";
+import {
+  type UseMutationResult,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { createQueryKeys } from "../common/queryKeysFactory";
 import useAuthorized from "../useAuthorized";
-import { proxyBaseUrl, getGlobalLitellmHeaderName, deriveErrorMessage, handleError } from "@/components/networking";
 
 /**
  * Enum for config types that can be fetched from the proxy config endpoint.
@@ -72,7 +82,10 @@ export interface DeleteProxyConfigFieldResponse {
  * @param configType - The type of config to fetch (from ConfigType enum)
  * @returns Promise resolving to the config list response
  */
-export const getProxyConfigCall = async (accessToken: string, configType: ConfigType): Promise<ProxyConfigResponse> => {
+export const getProxyConfigCall = async (
+  accessToken: string,
+  configType: ConfigType,
+): Promise<ProxyConfigResponse> => {
   try {
     const url = proxyBaseUrl
       ? `${proxyBaseUrl}/config/list?config_type=${configType}`
@@ -114,7 +127,9 @@ export const deleteProxyConfigFieldCall = async (
   request: DeleteProxyConfigFieldRequest,
 ): Promise<DeleteProxyConfigFieldResponse> => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/config/field/delete` : `/config/field/delete`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/config/field/delete`
+      : `/config/field/delete`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -135,7 +150,10 @@ export const deleteProxyConfigFieldCall = async (
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error(`Failed to delete proxy config field ${request.field_name}:`, error);
+    console.error(
+      `Failed to delete proxy config field ${request.field_name}:`,
+      error,
+    );
     throw error;
   }
 };
@@ -170,7 +188,11 @@ export const useDeleteProxyConfigField = (): UseMutationResult<
   const { accessToken } = useAuthorized();
   const queryClient = useQueryClient();
 
-  return useMutation<DeleteProxyConfigFieldResponse, Error, DeleteProxyConfigFieldRequest>({
+  return useMutation<
+    DeleteProxyConfigFieldResponse,
+    Error,
+    DeleteProxyConfigFieldRequest
+  >({
     mutationFn: async (request: DeleteProxyConfigFieldRequest) => {
       if (!accessToken) {
         throw new Error("Access token is required");

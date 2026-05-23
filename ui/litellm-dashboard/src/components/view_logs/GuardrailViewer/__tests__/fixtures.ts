@@ -1,7 +1,7 @@
 import type {
-  BedrockGuardrailResponse,
   BedrockAssessment,
   BedrockGuardrailCoverage,
+  BedrockGuardrailResponse,
   BedrockGuardrailUsage,
 } from "@/components/view_logs/GuardrailViewer/BedrockGuardrailDetails";
 
@@ -32,7 +32,9 @@ export interface GuardrailInformation {
 }
 
 // ===== Builders =====
-export const makeEntity = (overrides: Partial<GuardrailEntity> = {}): GuardrailEntity => ({
+export const makeEntity = (
+  overrides: Partial<GuardrailEntity> = {},
+): GuardrailEntity => ({
   end: 18,
   start: 5,
   score: 0.92,
@@ -51,36 +53,78 @@ export const makeMaskedCounts = (overrides: Record<string, number> = {}) => ({
   ...overrides,
 });
 
-export const makeBedrockUsage = (overrides: Partial<BedrockGuardrailUsage> = {}): BedrockGuardrailUsage => ({
+export const makeBedrockUsage = (
+  overrides: Partial<BedrockGuardrailUsage> = {},
+): BedrockGuardrailUsage => ({
   contentPolicyUnits: 4,
   topicPolicyUnits: 2,
   ...overrides,
 });
 
-export const makeBedrockCoverage = (overrides: Partial<BedrockGuardrailCoverage> = {}): BedrockGuardrailCoverage => ({
+export const makeBedrockCoverage = (
+  overrides: Partial<BedrockGuardrailCoverage> = {},
+): BedrockGuardrailCoverage => ({
   textCharacters: { guarded: 27, total: 100 },
   images: { guarded: 1, total: 3 },
   ...overrides,
 });
 
-export const makeAssessment = (overrides: Partial<BedrockAssessment> = {}): BedrockAssessment => ({
+export const makeAssessment = (
+  overrides: Partial<BedrockAssessment> = {},
+): BedrockAssessment => ({
   wordPolicy: {
     customWords: [{ action: "BLOCKED", detected: true, match: "badword" }],
-    managedWordLists: [{ action: "ALLOWED", detected: false, match: "ok", type: "PROFANITY" }],
+    managedWordLists: [
+      { action: "ALLOWED", detected: false, match: "ok", type: "PROFANITY" },
+    ],
   },
   contentPolicy: {
     filters: [
-      { type: "HATE", action: "BLOCKED", detected: true, filterStrength: "HIGH", confidence: "MEDIUM" },
-      { type: "VIOLENCE", action: "NONE", detected: false, filterStrength: "LOW", confidence: "LOW" },
+      {
+        type: "HATE",
+        action: "BLOCKED",
+        detected: true,
+        filterStrength: "HIGH",
+        confidence: "MEDIUM",
+      },
+      {
+        type: "VIOLENCE",
+        action: "NONE",
+        detected: false,
+        filterStrength: "LOW",
+        confidence: "LOW",
+      },
     ],
   },
-  topicPolicy: { topics: [{ name: "weapons", type: "DENY", detected: true, action: "BLOCKED" }] },
+  topicPolicy: {
+    topics: [
+      { name: "weapons", type: "DENY", detected: true, action: "BLOCKED" },
+    ],
+  },
   sensitiveInformationPolicy: {
-    piiEntities: [{ type: "EMAIL", match: "x@y.com", detected: true, action: "ANONYMIZED" }],
-    regexes: [{ name: "ticket", regex: "#[0-9]+", match: "#123", detected: true, action: "BLOCKED" }],
+    piiEntities: [
+      { type: "EMAIL", match: "x@y.com", detected: true, action: "ANONYMIZED" },
+    ],
+    regexes: [
+      {
+        name: "ticket",
+        regex: "#[0-9]+",
+        match: "#123",
+        detected: true,
+        action: "BLOCKED",
+      },
+    ],
   },
   contextualGroundingPolicy: {
-    filters: [{ type: "GROUNDING", action: "BLOCKED", detected: true, score: 0.2, threshold: 0.5 }],
+    filters: [
+      {
+        type: "GROUNDING",
+        action: "BLOCKED",
+        detected: true,
+        score: 0.2,
+        threshold: 0.5,
+      },
+    ],
   },
   automatedReasoningPolicy: { findings: [{ foo: "bar" }] },
   invocationMetrics: {
@@ -91,7 +135,9 @@ export const makeAssessment = (overrides: Partial<BedrockAssessment> = {}): Bedr
   ...overrides,
 });
 
-export const makeBedrockResponse = (overrides: Partial<BedrockGuardrailResponse> = {}): BedrockGuardrailResponse => ({
+export const makeBedrockResponse = (
+  overrides: Partial<BedrockGuardrailResponse> = {},
+): BedrockGuardrailResponse => ({
   action: "NONE",
   outputs: [{ text: "ok" }],
   usage: makeBedrockUsage(),
@@ -100,7 +146,9 @@ export const makeBedrockResponse = (overrides: Partial<BedrockGuardrailResponse>
   ...overrides,
 });
 
-export const makeGuardrailInformation = (overrides: Partial<GuardrailInformation> = {}): GuardrailInformation => ({
+export const makeGuardrailInformation = (
+  overrides: Partial<GuardrailInformation> = {},
+): GuardrailInformation => ({
   guardrail_name: "pii-rail",
   guardrail_mode: "post",
   guardrail_status: "success",

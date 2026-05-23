@@ -1,6 +1,6 @@
-import { MessageType } from "./types";
+import type { MCPServer } from "../../mcp_tools/types";
 import { EndpointType } from "./mode_endpoint_mapping";
-import { MCPServer } from "../../mcp_tools/types";
+import type { MessageType } from "./types";
 
 interface CodeGenMetadata {
   tags?: string[];
@@ -67,13 +67,19 @@ export const generateCodeSnippet = (params: GenerateCodeParams): string => {
   const userPrompt = inputMessage || "Your prompt here"; // Fallback if inputMessage is empty
 
   // Safely escape the prompt to prevent issues with quotes
-  const safePrompt = userPrompt.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, "\\n");
+  const safePrompt = userPrompt
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, "\\n");
 
-  const messages = chatHistory.filter((msg) => !msg.isImage).map(({ role, content }) => ({ role, content }));
+  const messages = chatHistory
+    .filter((msg) => !msg.isImage)
+    .map(({ role, content }) => ({ role, content }));
 
   const metadata: CodeGenMetadata = {};
   if (selectedTags.length > 0) metadata.tags = selectedTags;
-  if (selectedVectorStores.length > 0) metadata.vector_stores = selectedVectorStores;
+  if (selectedVectorStores.length > 0)
+    metadata.vector_stores = selectedVectorStores;
   if (selectedGuardrails.length > 0) metadata.guardrails = selectedGuardrails;
   if (selectedPolicies.length > 0) metadata.policies = selectedPolicies;
 
@@ -113,7 +119,10 @@ client = openai.OpenAI(
       }
 
       // Create example for chat completions with optional image support
-      const messagesExample = messages.length > 0 ? messages : [{ role: "user", content: userPrompt }];
+      const messagesExample =
+        messages.length > 0
+          ? messages
+          : [{ role: "user", content: userPrompt }];
 
       endpointSpecificCode = `
 import base64
@@ -173,7 +182,10 @@ print(response)
       }
 
       // Create example for responses API with optional image support
-      const inputExample = messages.length > 0 ? messages : [{ role: "user", content: userPrompt }];
+      const inputExample =
+        messages.length > 0
+          ? messages
+          : [{ role: "user", content: userPrompt }];
 
       endpointSpecificCode = `
 import base64
@@ -536,7 +548,7 @@ audio_file = open("path/to/your/audio/file.mp3", "rb")
 # Make the transcription request
 response = client.audio.transcriptions.create(
 	model="${modelNameForCode}",
-	file=audio_file${inputMessage ? `,\n	prompt="${inputMessage.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"` : ""}
+	file=audio_file${inputMessage ? `,\n	prompt="${inputMessage.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"` : ""}
 )
 
 print(response.text)
@@ -568,7 +580,8 @@ print(f"Audio saved to {output_filename}")
 `;
       break;
     default:
-      endpointSpecificCode = "\n# Code generation for this endpoint is not implemented yet.";
+      endpointSpecificCode =
+        "\n# Code generation for this endpoint is not implemented yet.";
   }
 
   const finalCode = `${clientInitialization}\n${endpointSpecificCode}`;

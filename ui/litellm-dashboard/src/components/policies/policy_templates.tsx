@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { Card, Button, Spin, Checkbox } from "antd";
 import MessageManager from "@/components/molecules/message_manager";
 import {
+  BeakerIcon,
+  CheckCircleIcon,
+  CurrencyDollarIcon,
   ShieldCheckIcon,
   ShieldExclamationIcon,
-  BeakerIcon,
-  CurrencyDollarIcon,
-  CheckCircleIcon,
 } from "@heroicons/react/outline";
+import { Button, Card, Checkbox, Spin } from "antd";
+import type React from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getPolicyTemplates } from "../networking";
 
 interface PolicyTemplateCardProps {
@@ -103,12 +104,7 @@ const PolicyTemplateCard: React.FC<PolicyTemplateCardProps> = ({
         </div>
       </div>
 
-      <Button
-        type="primary"
-        block
-        className="mt-auto"
-        onClick={onUseTemplate}
-      >
+      <Button type="primary" block className="mt-auto" onClick={onUseTemplate}>
         Use Template
       </Button>
     </Card>
@@ -123,7 +119,10 @@ interface PolicyTemplatesProps {
 }
 
 // Map icon names from JSON to actual icon components
-const iconMap: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
+const iconMap: Record<
+  string,
+  React.ComponentType<React.SVGProps<SVGSVGElement>>
+> = {
   ShieldCheckIcon: ShieldCheckIcon,
   ShieldExclamationIcon: ShieldExclamationIcon,
   BeakerIcon: BeakerIcon,
@@ -131,7 +130,12 @@ const iconMap: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>
   CheckCircleIcon: CheckCircleIcon,
 };
 
-const PolicyTemplates: React.FC<PolicyTemplatesProps> = ({ onUseTemplate, onOpenAiSuggestion, onTemplatesLoaded, accessToken }) => {
+const PolicyTemplates: React.FC<PolicyTemplatesProps> = ({
+  onUseTemplate,
+  onOpenAiSuggestion,
+  onTemplatesLoaded,
+  accessToken,
+}) => {
   const [templates, setTemplates] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
@@ -154,7 +158,9 @@ const PolicyTemplates: React.FC<PolicyTemplatesProps> = ({ onUseTemplate, onOpen
     if (selectedTags.size === 0) return templates;
     return templates.filter((t) => {
       const tags: string[] = t.tags || [];
-      return Array.from(selectedTags).every((selectedTag) => tags.includes(selectedTag));
+      return Array.from(selectedTags).every((selectedTag) =>
+        tags.includes(selectedTag),
+      );
     });
   }, [templates, selectedTags]);
 
@@ -249,9 +255,7 @@ const PolicyTemplates: React.FC<PolicyTemplatesProps> = ({ onUseTemplate, onOpen
                   <label
                     key={tag}
                     className={`flex items-center justify-between px-2 py-1.5 rounded-md cursor-pointer transition-colors ${
-                      selectedTags.has(tag)
-                        ? "bg-blue-50"
-                        : "hover:bg-gray-50"
+                      selectedTags.has(tag) ? "bg-blue-50" : "hover:bg-gray-50"
                     }`}
                   >
                     <div className="flex items-center gap-2">

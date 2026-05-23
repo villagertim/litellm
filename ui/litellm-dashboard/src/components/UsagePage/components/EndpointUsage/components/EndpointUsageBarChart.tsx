@@ -1,13 +1,18 @@
-import React from "react";
+import {
+  CustomLegend,
+  CustomTooltip,
+} from "@/components/common_components/chartUtils";
 import { BarChart, Card, Title } from "@tremor/react";
-import { CustomLegend, CustomTooltip } from "@/components/common_components/chartUtils";
-import { MetricWithMetadata } from "../../../types";
+import React from "react";
+import type { MetricWithMetadata } from "../../../types";
 
 interface EndpointUsageBarChartProps {
   endpointData?: Record<string, MetricWithMetadata>;
 }
 
-const EndpointUsageBarChart: React.FC<EndpointUsageBarChartProps> = ({ endpointData }) => {
+const EndpointUsageBarChart: React.FC<EndpointUsageBarChartProps> = ({
+  endpointData,
+}) => {
   const dataToUse = endpointData || {};
 
   // Transform endpoint data into chart format
@@ -30,7 +35,10 @@ const EndpointUsageBarChart: React.FC<EndpointUsageBarChartProps> = ({ endpointD
       <div className="flex justify-between items-center">
         <Title>Success vs Failed Requests by Endpoint</Title>
         <CustomLegend
-          categories={["metrics.successful_requests", "metrics.failed_requests"]}
+          categories={[
+            "metrics.successful_requests",
+            "metrics.failed_requests",
+          ]}
           colors={["green", "red"]}
         />
       </div>

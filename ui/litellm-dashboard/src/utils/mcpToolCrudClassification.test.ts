@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { classifyToolOp, groupToolsByCrud } from "./mcpToolCrudClassification";
 
 describe("classifyToolOp", () => {
@@ -32,7 +32,9 @@ describe("classifyToolOp", () => {
   });
 
   it("should fall back to description when name is unrecognised", () => {
-    expect(classifyToolOp("mytool", "This will delete the record")).toBe("delete");
+    expect(classifyToolOp("mytool", "This will delete the record")).toBe(
+      "delete",
+    );
     expect(classifyToolOp("mytool", "fetch data from the API")).toBe("read");
   });
 

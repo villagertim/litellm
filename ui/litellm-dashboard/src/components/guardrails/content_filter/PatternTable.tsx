@@ -1,6 +1,6 @@
-import React from "react";
-import { Typography, Select, Table, Tag, Button } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
+import { Button, Select, Table, Tag, Typography } from "antd";
+import type React from "react";
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -41,13 +41,21 @@ const PatternTable: React.FC<PatternTableProps> = ({
       title: "Pattern name",
       dataIndex: "name",
       key: "name",
-      render: (_: string, record: Pattern) => record.display_name || record.name,
+      render: (_: string, record: Pattern) =>
+        record.display_name || record.name,
     },
     {
       title: "Regex pattern",
       dataIndex: "pattern",
       key: "pattern",
-      render: (pattern: string) => (pattern ? <Text code style={{ fontSize: 12 }}>{pattern.substring(0, 40)}...</Text> : "-"),
+      render: (pattern: string) =>
+        pattern ? (
+          <Text code style={{ fontSize: 12 }}>
+            {pattern.substring(0, 40)}...
+          </Text>
+        ) : (
+          "-"
+        ),
     },
     {
       title: "Action",
@@ -57,7 +65,9 @@ const PatternTable: React.FC<PatternTableProps> = ({
       render: (action: string, record: Pattern) => (
         <Select
           value={action}
-          onChange={(value) => onActionChange(record.id, value as "BLOCK" | "MASK")}
+          onChange={(value) =>
+            onActionChange(record.id, value as "BLOCK" | "MASK")
+          }
           style={{ width: 120 }}
           size="small"
         >
@@ -104,4 +114,3 @@ const PatternTable: React.FC<PatternTableProps> = ({
 };
 
 export default PatternTable;
-

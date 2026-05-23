@@ -1,7 +1,7 @@
-import React from "react";
 import { Skeleton } from "antd";
+import type React from "react";
 import AgentCard from "./agent_card";
-import { Agent, AgentKeyInfo } from "./types";
+import type { Agent, AgentKeyInfo } from "./types";
 
 interface AgentCardGridProps {
   agentsList: Agent[];

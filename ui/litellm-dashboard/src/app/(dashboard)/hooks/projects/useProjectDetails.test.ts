@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { ReactNode } from "react";
+import { renderHook, waitFor } from "@testing-library/react";
+import React, { type ReactNode } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useProjectDetails } from "./useProjectDetails";
-import { projectKeys, ProjectResponse } from "./useProjects";
+import { type ProjectResponse, projectKeys } from "./useProjects";
 
 vi.mock("@/components/networking", () => ({
   getProxyBaseUrl: vi.fn(() => ""),
@@ -57,11 +57,17 @@ describe("useProjectDetails", () => {
     });
     vi.clearAllMocks();
     global.fetch = vi.fn();
-    mockUseAuthorized.mockReturnValue({ accessToken: "test-token", userRole: "Admin" });
+    mockUseAuthorized.mockReturnValue({
+      accessToken: "test-token",
+      userRole: "Admin",
+    });
   });
 
   it("should render", () => {
-    (global.fetch as any).mockResolvedValue({ ok: true, json: async () => mockProject });
+    (global.fetch as any).mockResolvedValue({
+      ok: true,
+      json: async () => mockProject,
+    });
     const { result } = renderHook(() => useProjectDetails("proj-1"), {
       wrapper: makeWrapper(queryClient),
     });
@@ -69,7 +75,10 @@ describe("useProjectDetails", () => {
   });
 
   it("should return project details when the request succeeds", async () => {
-    (global.fetch as any).mockResolvedValue({ ok: true, json: async () => mockProject });
+    (global.fetch as any).mockResolvedValue({
+      ok: true,
+      json: async () => mockProject,
+    });
     const { result } = renderHook(() => useProjectDetails("proj-1"), {
       wrapper: makeWrapper(queryClient),
     });
@@ -78,8 +87,13 @@ describe("useProjectDetails", () => {
   });
 
   it("should call /project/info with the projectId encoded as a query param", async () => {
-    (global.fetch as any).mockResolvedValue({ ok: true, json: async () => mockProject });
-    renderHook(() => useProjectDetails("proj-1"), { wrapper: makeWrapper(queryClient) });
+    (global.fetch as any).mockResolvedValue({
+      ok: true,
+      json: async () => mockProject,
+    });
+    renderHook(() => useProjectDetails("proj-1"), {
+      wrapper: makeWrapper(queryClient),
+    });
     await waitFor(() => expect(global.fetch).toHaveBeenCalled());
     const [url] = (global.fetch as any).mock.calls[0];
     expect(url).toContain("/project/info");
@@ -104,7 +118,10 @@ describe("useProjectDetails", () => {
   });
 
   it("should not fetch when userRole is not an admin role", () => {
-    mockUseAuthorized.mockReturnValue({ accessToken: "test-token", userRole: "Internal User" });
+    mockUseAuthorized.mockReturnValue({
+      accessToken: "test-token",
+      userRole: "Internal User",
+    });
     const { result } = renderHook(() => useProjectDetails("proj-1"), {
       wrapper: makeWrapper(queryClient),
     });
@@ -113,7 +130,10 @@ describe("useProjectDetails", () => {
   });
 
   it("should seed initialData from the projects list cache", async () => {
-    (global.fetch as any).mockResolvedValue({ ok: true, json: async () => mockProject });
+    (global.fetch as any).mockResolvedValue({
+      ok: true,
+      json: async () => mockProject,
+    });
     queryClient.setQueryData(projectKeys.list({}), mockProjects);
     const { result } = renderHook(() => useProjectDetails("proj-1"), {
       wrapper: makeWrapper(queryClient),

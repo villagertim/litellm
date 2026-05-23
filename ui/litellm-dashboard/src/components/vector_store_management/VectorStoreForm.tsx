@@ -1,17 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { TextInput, Button as TremorButton } from "@tremor/react";
-import { Modal, Form, Select, Tooltip, Input, Alert } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { CredentialItem, vectorStoreCreateCall } from "../networking";
+import { TextInput, Button as TremorButton } from "@tremor/react";
+import { Alert, Form, Input, Modal, Select, Tooltip } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
+import NotificationsManager from "../molecules/notifications_manager";
+import { type CredentialItem, vectorStoreCreateCall } from "../networking";
 import {
+  type ModelGroup,
+  fetchAvailableModels,
+} from "../playground/llm_calls/fetch_models";
+import {
+  type VectorStoreFieldConfig,
   VectorStoreProviders,
+  getProviderSpecificFields,
   vectorStoreProviderLogoMap,
   vectorStoreProviderMap,
-  getProviderSpecificFields,
-  VectorStoreFieldConfig,
 } from "../vector_store_providers";
-import { fetchAvailableModels, ModelGroup } from "../playground/llm_calls/fetch_models";
-import NotificationsManager from "../molecules/notifications_manager";
 
 interface VectorStoreFormProps {
   isVisible: boolean;
@@ -73,11 +77,16 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
       };
 
       // pass all provider fields as litellm params dict
-      const providerFields = getProviderSpecificFields(formValues.custom_llm_provider);
+      const providerFields = getProviderSpecificFields(
+        formValues.custom_llm_provider,
+      );
       const litellmParams = providerFields.reduce(
         (acc, field) => {
           // Special handling for Milvus: rename embedding_model to litellm_embedding_model
-          if (formValues.custom_llm_provider === "milvus" && field.name === "embedding_model") {
+          if (
+            formValues.custom_llm_provider === "milvus" &&
+            field.name === "embedding_model"
+          ) {
             acc["litellm_embedding_model"] = formValues[field.name];
           } else {
             acc[field.name] = formValues[field.name];
@@ -108,8 +117,20 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
   };
 
   return (
-    <Modal title="Add New Vector Store" open={isVisible} width={1000} footer={null} onCancel={handleCancel}>
-      <Form form={form} onFinish={handleCreate} labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} labelAlign="left">
+    <Modal
+      title="Add New Vector Store"
+      open={isVisible}
+      width={1000}
+      footer={null}
+      onCancel={handleCancel}
+    >
+      <Form
+        form={form}
+        onFinish={handleCreate}
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 16 }}
+        labelAlign="left"
+      >
         <Form.Item
           label={
             <span>
@@ -124,32 +145,38 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
           initialValue="bedrock"
         >
           <Select onChange={(value) => setSelectedProvider(value)}>
-            {Object.entries(VectorStoreProviders).map(([providerEnum, providerDisplayName]) => {
-              return (
-                <Select.Option key={providerEnum} value={vectorStoreProviderMap[providerEnum]}>
-                  <div className="flex items-center space-x-2">
-                    <img
-                      src={vectorStoreProviderLogoMap[providerDisplayName]}
-                      alt={`${providerEnum} logo`}
-                      className="w-5 h-5"
-                      onError={(e) => {
-                        // Create a div with provider initial as fallback
-                        const target = e.target as HTMLImageElement;
-                        const parent = target.parentElement;
-                        if (parent) {
-                          const fallbackDiv = document.createElement("div");
-                          fallbackDiv.className =
-                            "w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-xs";
-                          fallbackDiv.textContent = providerDisplayName.charAt(0);
-                          parent.replaceChild(fallbackDiv, target);
-                        }
-                      }}
-                    />
-                    <span>{providerDisplayName}</span>
-                  </div>
-                </Select.Option>
-              );
-            })}
+            {Object.entries(VectorStoreProviders).map(
+              ([providerEnum, providerDisplayName]) => {
+                return (
+                  <Select.Option
+                    key={providerEnum}
+                    value={vectorStoreProviderMap[providerEnum]}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <img
+                        src={vectorStoreProviderLogoMap[providerDisplayName]}
+                        alt={`${providerEnum} logo`}
+                        className="w-5 h-5"
+                        onError={(e) => {
+                          // Create a div with provider initial as fallback
+                          const target = e.target as HTMLImageElement;
+                          const parent = target.parentElement;
+                          if (parent) {
+                            const fallbackDiv = document.createElement("div");
+                            fallbackDiv.className =
+                              "w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-xs";
+                            fallbackDiv.textContent =
+                              providerDisplayName.charAt(0);
+                            parent.replaceChild(fallbackDiv, target);
+                          }
+                        }}
+                      />
+                      <span>{providerDisplayName}</span>
+                    </div>
+                  </Select.Option>
+                );
+              },
+            )}
           </Select>
         </Form.Item>
 
@@ -159,16 +186,27 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
             message="PG Vector Setup Required"
             description={
               <div>
-                <p>LiteLLM provides a server to connect to PG Vector. To use this provider:</p>
+                <p>
+                  LiteLLM provides a server to connect to PG Vector. To use this
+                  provider:
+                </p>
                 <ol style={{ marginLeft: "16px", marginTop: "8px" }}>
                   <li>
                     Deploy the litellm-pgvector server from:{" "}
-                    <a href="https://github.com/BerriAI/litellm-pgvector" target="_blank" rel="noopener noreferrer">
+                    <a
+                      href="https://github.com/BerriAI/litellm-pgvector"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       https://github.com/BerriAI/litellm-pgvector
                     </a>
                   </li>
-                  <li>Configure your PostgreSQL database with pgvector extension</li>
-                  <li>Start the server and note the API base URL and API key</li>
+                  <li>
+                    Configure your PostgreSQL database with pgvector extension
+                  </li>
+                  <li>
+                    Start the server and note the API base URL and API key
+                  </li>
                   <li>Enter those details in the fields below</li>
                 </ol>
               </div>
@@ -199,7 +237,9 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
                   </li>
                   <li>Create a corpus in your Google Cloud project</li>
                   <li>Note the corpus ID from the Vertex AI console</li>
-                  <li>Enter the corpus ID in the Vector Store ID field below</li>
+                  <li>
+                    Enter the corpus ID in the Vector Store ID field below
+                  </li>
                 </ol>
               </div>
             }
@@ -218,8 +258,8 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
                 <p>To use Vertex AI Search (Discovery Engine):</p>
                 <ol style={{ marginLeft: "16px", marginTop: "8px" }}>
                   <li>
-                    Enable the Discovery Engine API on your Google Cloud project and create a data store following the
-                    guide:{" "}
+                    Enable the Discovery Engine API on your Google Cloud project
+                    and create a data store following the guide:{" "}
                     <a
                       href="https://cloud.google.com/generative-ai-app-builder/docs/create-data-store-es"
                       target="_blank"
@@ -230,8 +270,12 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
                     </a>
                   </li>
                   <li>Pick a supported location: global, us, or eu</li>
-                  <li>Copy the data store ID from the Vertex AI Search console</li>
-                  <li>Enter the data store ID in the Vector Store ID field below</li>
+                  <li>
+                    Copy the data store ID from the Vertex AI Search console
+                  </li>
+                  <li>
+                    Enter the data store ID in the Vector Store ID field below
+                  </li>
                 </ol>
               </div>
             }
@@ -251,7 +295,13 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
             </span>
           }
           name="vector_store_id"
-          rules={[{ required: true, message: "Please input the vector store ID from your api provider" }]}
+          rules={[
+            {
+              required: true,
+              message:
+                "Please input the vector store ID from your api provider",
+            },
+          ]}
         >
           <TextInput
             placeholder={
@@ -265,16 +315,59 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
         </Form.Item>
 
         {/* Provider-specific fields */}
-        {getProviderSpecificFields(selectedProvider).map((field: VectorStoreFieldConfig) => {
-          if (field.type === "select") {
-            const selectOptions =
-              field.options ??
-              modelInfo
-                .filter((option: ModelGroup) => option.mode === "embedding" || option.mode === null)
-                .map((option: ModelGroup) => ({
-                  value: option.model_group,
-                  label: option.model_group,
-                }));
+        {getProviderSpecificFields(selectedProvider).map(
+          (field: VectorStoreFieldConfig) => {
+            if (field.type === "select") {
+              const selectOptions =
+                field.options ??
+                modelInfo
+                  .filter(
+                    (option: ModelGroup) =>
+                      option.mode === "embedding" || option.mode === null,
+                  )
+                  .map((option: ModelGroup) => ({
+                    value: option.model_group,
+                    label: option.model_group,
+                  }));
+
+              return (
+                <Form.Item
+                  key={field.name}
+                  label={
+                    <span>
+                      {field.label}{" "}
+                      <Tooltip title={field.tooltip}>
+                        <InfoCircleOutlined style={{ marginLeft: "4px" }} />
+                      </Tooltip>
+                    </span>
+                  }
+                  name={field.name}
+                  initialValue={field.initialValue}
+                  rules={
+                    field.required
+                      ? [
+                          {
+                            required: true,
+                            message: `Please select the ${field.label.toLowerCase()}`,
+                          },
+                        ]
+                      : []
+                  }
+                >
+                  <Select
+                    placeholder={field.placeholder}
+                    showSearch={true}
+                    filterOption={(input, option) =>
+                      (option?.label ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                    options={selectOptions}
+                    style={{ width: "100%" }}
+                  />
+                </Form.Item>
+              );
+            }
 
             return (
               <Form.Item
@@ -288,42 +381,25 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
                   </span>
                 }
                 name={field.name}
-                initialValue={field.initialValue}
                 rules={
-                  field.required ? [{ required: true, message: `Please select the ${field.label.toLowerCase()}` }] : []
+                  field.required
+                    ? [
+                        {
+                          required: true,
+                          message: `Please input the ${field.label.toLowerCase()}`,
+                        },
+                      ]
+                    : []
                 }
               >
-                <Select
+                <TextInput
+                  type={field.type || "text"}
                   placeholder={field.placeholder}
-                  showSearch={true}
-                  filterOption={(input, option) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase())}
-                  options={selectOptions}
-                  style={{ width: "100%" }}
                 />
               </Form.Item>
             );
-          }
-
-          return (
-            <Form.Item
-              key={field.name}
-              label={
-                <span>
-                  {field.label}{" "}
-                  <Tooltip title={field.tooltip}>
-                    <InfoCircleOutlined style={{ marginLeft: "4px" }} />
-                  </Tooltip>
-                </span>
-              }
-              name={field.name}
-              rules={
-                field.required ? [{ required: true, message: `Please input the ${field.label.toLowerCase()}` }] : []
-              }
-            >
-              <TextInput type={field.type || "text"} placeholder={field.placeholder} />
-            </Form.Item>
-          );
-        })}
+          },
+        )}
 
         <Form.Item
           label={
@@ -358,7 +434,9 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
             showSearch
             placeholder="Select or search for existing credentials"
             optionFilterProp="children"
-            filterOption={(input, option) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase())}
+            filterOption={(input, option) =>
+              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+            }
             options={[
               { value: null, label: "None" },
               ...credentials.map((credential) => ({

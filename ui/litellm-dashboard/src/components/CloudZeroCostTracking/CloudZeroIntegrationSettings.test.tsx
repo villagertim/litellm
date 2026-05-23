@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CloudZeroIntegrationSettings } from "./CloudZeroIntegrationSettings";
-import { CloudZeroSettings } from "./types";
+import type { CloudZeroSettings } from "./types";
 
 vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({
   __esModule: true,
@@ -59,7 +59,10 @@ describe("CloudZeroIntegrationSettings", () => {
   it("should render", () => {
     render(
       <QueryClientProvider client={queryClient}>
-        <CloudZeroIntegrationSettings settings={mockSettings} onSettingsUpdated={vi.fn()} />
+        <CloudZeroIntegrationSettings
+          settings={mockSettings}
+          onSettingsUpdated={vi.fn()}
+        />
       </QueryClientProvider>,
     );
 
@@ -72,7 +75,10 @@ describe("CloudZeroIntegrationSettings", () => {
   it("should display the correct values from settings", () => {
     render(
       <QueryClientProvider client={queryClient}>
-        <CloudZeroIntegrationSettings settings={mockSettings} onSettingsUpdated={vi.fn()} />
+        <CloudZeroIntegrationSettings
+          settings={mockSettings}
+          onSettingsUpdated={vi.fn()}
+        />
       </QueryClientProvider>,
     );
 

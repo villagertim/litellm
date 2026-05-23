@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import PublicModelHub from "./public_model_hub";
 
 vi.mock("next/navigation", () => ({
@@ -103,7 +103,9 @@ describe("PublicModelHub", () => {
     ];
 
     const networkingModule = await import("./networking");
-    vi.mocked(networkingModule.modelHubPublicModelsCall).mockResolvedValue(mockModelsWithHealthChecks);
+    vi.mocked(networkingModule.modelHubPublicModelsCall).mockResolvedValue(
+      mockModelsWithHealthChecks,
+    );
 
     render(<PublicModelHub />);
 

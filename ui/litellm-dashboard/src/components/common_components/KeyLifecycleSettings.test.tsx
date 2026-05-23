@@ -1,5 +1,5 @@
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders, screen } from "../../../tests/test-utils";
 import KeyLifecycleSettings from "./KeyLifecycleSettings";
 
@@ -42,7 +42,14 @@ vi.mock("@ant-design/icons", () => ({
 }));
 
 vi.mock("@tremor/react", () => ({
-  TextInput: ({ value, onValueChange, onChange, placeholder, name, className }: any) => {
+  TextInput: ({
+    value,
+    onValueChange,
+    onChange,
+    placeholder,
+    name,
+    className,
+  }: any) => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       if (onChange) {
         onChange(e);
@@ -53,7 +60,9 @@ vi.mock("@tremor/react", () => ({
     };
     return (
       <input
-        data-testid={name === "duration" ? "duration-input" : "custom-interval-input"}
+        data-testid={
+          name === "duration" ? "duration-input" : "custom-interval-input"
+        }
         value={value}
         onChange={handleChange}
         placeholder={placeholder}
@@ -100,47 +109,59 @@ describe("KeyLifecycleSettings", () => {
     });
 
     it("should show correct placeholder in create mode", () => {
-      renderWithProviders(<KeyLifecycleSettings {...defaultProps} isCreateMode={true} />);
+      renderWithProviders(
+        <KeyLifecycleSettings {...defaultProps} isCreateMode={true} />,
+      );
 
       const input = screen.getByTestId("duration-input");
       expect(input).toHaveAttribute(
         "placeholder",
-        "e.g., 30d or leave empty to never expire"
+        "e.g., 30d or leave empty to never expire",
       );
     });
 
     it("should show correct placeholder in edit mode", () => {
-      renderWithProviders(<KeyLifecycleSettings {...defaultProps} isCreateMode={false} />);
+      renderWithProviders(
+        <KeyLifecycleSettings {...defaultProps} isCreateMode={false} />,
+      );
 
       const input = screen.getByTestId("duration-input");
       expect(input).toHaveAttribute("placeholder", "e.g., 30d");
     });
 
     it("should show correct tooltip in create mode", () => {
-      renderWithProviders(<KeyLifecycleSettings {...defaultProps} isCreateMode={true} />);
+      renderWithProviders(
+        <KeyLifecycleSettings {...defaultProps} isCreateMode={true} />,
+      );
 
       const tooltips = screen.getAllByTestId("tooltip");
       const expiryTooltip = tooltips.find((tooltip) =>
-        tooltip.getAttribute("title")?.includes("Leave empty to keep the current expiry unchanged")
+        tooltip
+          .getAttribute("title")
+          ?.includes("Leave empty to keep the current expiry unchanged"),
       );
       expect(expiryTooltip).toBeInTheDocument();
       expect(expiryTooltip).toHaveAttribute(
         "title",
-        "Set when this key should expire. Format: 30s (seconds), 30m (minutes), 30h (hours), 30d (days). Leave empty to keep the current expiry unchanged."
+        "Set when this key should expire. Format: 30s (seconds), 30m (minutes), 30h (hours), 30d (days). Leave empty to keep the current expiry unchanged.",
       );
     });
 
     it("should show correct tooltip in edit mode", () => {
-      renderWithProviders(<KeyLifecycleSettings {...defaultProps} isCreateMode={false} />);
+      renderWithProviders(
+        <KeyLifecycleSettings {...defaultProps} isCreateMode={false} />,
+      );
 
       const tooltips = screen.getAllByTestId("tooltip");
       const expiryTooltip = tooltips.find((tooltip) =>
-        tooltip.getAttribute("title")?.includes("Leave empty to keep the current expiry unchanged")
+        tooltip
+          .getAttribute("title")
+          ?.includes("Leave empty to keep the current expiry unchanged"),
       );
       expect(expiryTooltip).toBeInTheDocument();
       expect(expiryTooltip).toHaveAttribute(
         "title",
-        "Set when this key should expire. Format: 30s (seconds), 30m (minutes), 30h (hours), 30d (days). Leave empty to keep the current expiry unchanged."
+        "Set when this key should expire. Format: 30s (seconds), 30m (minutes), 30h (hours), 30d (days). Leave empty to keep the current expiry unchanged.",
       );
     });
 
@@ -169,13 +190,18 @@ describe("KeyLifecycleSettings", () => {
         setFieldsValue: vi.fn(),
       };
       renderWithProviders(
-        <KeyLifecycleSettings {...defaultProps} form={formWithoutSetFieldValue} />
+        <KeyLifecycleSettings
+          {...defaultProps}
+          form={formWithoutSetFieldValue}
+        />,
       );
 
       const input = screen.getByTestId("duration-input");
       await user.type(input, "90d");
 
-      expect(formWithoutSetFieldValue.setFieldsValue).toHaveBeenCalledWith({ duration: "90d" });
+      expect(formWithoutSetFieldValue.setFieldsValue).toHaveBeenCalledWith({
+        duration: "90d",
+      });
     });
   });
 
@@ -188,14 +214,18 @@ describe("KeyLifecycleSettings", () => {
     });
 
     it("should show switch as unchecked when autoRotationEnabled is false", () => {
-      renderWithProviders(<KeyLifecycleSettings {...defaultProps} autoRotationEnabled={false} />);
+      renderWithProviders(
+        <KeyLifecycleSettings {...defaultProps} autoRotationEnabled={false} />,
+      );
 
       const switchElement = screen.getByTestId("switch") as HTMLInputElement;
       expect(switchElement.checked).toBe(false);
     });
 
     it("should show switch as checked when autoRotationEnabled is true", () => {
-      renderWithProviders(<KeyLifecycleSettings {...defaultProps} autoRotationEnabled={true} />);
+      renderWithProviders(
+        <KeyLifecycleSettings {...defaultProps} autoRotationEnabled={true} />,
+      );
 
       const switchElement = screen.getByTestId("switch") as HTMLInputElement;
       expect(switchElement.checked).toBe(true);
@@ -205,7 +235,10 @@ describe("KeyLifecycleSettings", () => {
       const user = userEvent.setup();
       const onAutoRotationChange = vi.fn();
       renderWithProviders(
-        <KeyLifecycleSettings {...defaultProps} onAutoRotationChange={onAutoRotationChange} />
+        <KeyLifecycleSettings
+          {...defaultProps}
+          onAutoRotationChange={onAutoRotationChange}
+        />,
       );
 
       const switchElement = screen.getByTestId("switch");
@@ -215,7 +248,9 @@ describe("KeyLifecycleSettings", () => {
     });
 
     it("should not show rotation interval section when auto-rotation is disabled", () => {
-      renderWithProviders(<KeyLifecycleSettings {...defaultProps} autoRotationEnabled={false} />);
+      renderWithProviders(
+        <KeyLifecycleSettings {...defaultProps} autoRotationEnabled={false} />,
+      );
 
       expect(screen.queryByText("Rotation Interval")).not.toBeInTheDocument();
       expect(screen.queryByTestId("select")).not.toBeInTheDocument();
@@ -223,7 +258,11 @@ describe("KeyLifecycleSettings", () => {
 
     it("should show rotation interval section when auto-rotation is enabled", () => {
       renderWithProviders(
-        <KeyLifecycleSettings {...defaultProps} autoRotationEnabled={true} rotationInterval="30d" />
+        <KeyLifecycleSettings
+          {...defaultProps}
+          autoRotationEnabled={true}
+          rotationInterval="30d"
+        />,
       );
 
       expect(screen.getByText("Rotation Interval")).toBeInTheDocument();
@@ -232,7 +271,11 @@ describe("KeyLifecycleSettings", () => {
 
     it("should show all predefined interval options", () => {
       renderWithProviders(
-        <KeyLifecycleSettings {...defaultProps} autoRotationEnabled={true} rotationInterval="30d" />
+        <KeyLifecycleSettings
+          {...defaultProps}
+          autoRotationEnabled={true}
+          rotationInterval="30d"
+        />,
       );
 
       expect(screen.getByText("7 days")).toBeInTheDocument();
@@ -245,7 +288,11 @@ describe("KeyLifecycleSettings", () => {
 
     it("should display current rotation interval in select", () => {
       renderWithProviders(
-        <KeyLifecycleSettings {...defaultProps} autoRotationEnabled={true} rotationInterval="90d" />
+        <KeyLifecycleSettings
+          {...defaultProps}
+          autoRotationEnabled={true}
+          rotationInterval="90d"
+        />,
       );
 
       const select = screen.getByTestId("select") as HTMLSelectElement;
@@ -261,7 +308,7 @@ describe("KeyLifecycleSettings", () => {
           autoRotationEnabled={true}
           rotationInterval="7d"
           onRotationIntervalChange={onRotationIntervalChange}
-        />
+        />,
       );
 
       const select = screen.getByTestId("select");
@@ -273,14 +320,22 @@ describe("KeyLifecycleSettings", () => {
     it("should show custom input when custom option is selected", async () => {
       const user = userEvent.setup();
       renderWithProviders(
-        <KeyLifecycleSettings {...defaultProps} autoRotationEnabled={true} rotationInterval="30d" />
+        <KeyLifecycleSettings
+          {...defaultProps}
+          autoRotationEnabled={true}
+          rotationInterval="30d"
+        />,
       );
 
       const select = screen.getByTestId("select");
       await user.selectOptions(select, "custom");
 
       expect(screen.getByTestId("custom-interval-input")).toBeInTheDocument();
-      expect(screen.getByText("Supported formats: seconds (s), minutes (m), hours (h), days (d)")).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "Supported formats: seconds (s), minutes (m), hours (h), days (d)",
+        ),
+      ).toBeInTheDocument();
     });
 
     it("should hide custom input when predefined interval is selected after custom", async () => {
@@ -292,13 +347,15 @@ describe("KeyLifecycleSettings", () => {
           autoRotationEnabled={true}
           rotationInterval="custom-value"
           onRotationIntervalChange={onRotationIntervalChange}
-        />
+        />,
       );
 
       const select = screen.getByTestId("select");
       await user.selectOptions(select, "7d");
 
-      expect(screen.queryByTestId("custom-interval-input")).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("custom-interval-input"),
+      ).not.toBeInTheDocument();
       expect(onRotationIntervalChange).toHaveBeenCalledWith("7d");
     });
 
@@ -311,7 +368,7 @@ describe("KeyLifecycleSettings", () => {
           autoRotationEnabled={true}
           rotationInterval=""
           onRotationIntervalChange={onRotationIntervalChange}
-        />
+        />,
       );
 
       const select = screen.getByTestId("select");
@@ -324,38 +381,52 @@ describe("KeyLifecycleSettings", () => {
     });
 
     it("should show info message when auto-rotation is enabled", () => {
-      renderWithProviders(<KeyLifecycleSettings {...defaultProps} autoRotationEnabled={true} />);
+      renderWithProviders(
+        <KeyLifecycleSettings {...defaultProps} autoRotationEnabled={true} />,
+      );
 
       expect(
         screen.getByText(
-          "When rotation occurs, you'll receive a notification with the new key. The old key will be deactivated after a brief grace period."
-        )
+          "When rotation occurs, you'll receive a notification with the new key. The old key will be deactivated after a brief grace period.",
+        ),
       ).toBeInTheDocument();
     });
 
     it("should not show info message when auto-rotation is disabled", () => {
-      renderWithProviders(<KeyLifecycleSettings {...defaultProps} autoRotationEnabled={false} />);
+      renderWithProviders(
+        <KeyLifecycleSettings {...defaultProps} autoRotationEnabled={false} />,
+      );
 
       expect(
         screen.queryByText(
-          "When rotation occurs, you'll receive a notification with the new key. The old key will be deactivated after a brief grace period."
-        )
+          "When rotation occurs, you'll receive a notification with the new key. The old key will be deactivated after a brief grace period.",
+        ),
       ).not.toBeInTheDocument();
     });
 
     it("should initialize with custom interval input visible when custom interval is provided", () => {
       renderWithProviders(
-        <KeyLifecycleSettings {...defaultProps} autoRotationEnabled={true} rotationInterval="14d" />
+        <KeyLifecycleSettings
+          {...defaultProps}
+          autoRotationEnabled={true}
+          rotationInterval="14d"
+        />,
       );
 
       expect(screen.getByTestId("custom-interval-input")).toBeInTheDocument();
-      const customInput = screen.getByTestId("custom-interval-input") as HTMLInputElement;
+      const customInput = screen.getByTestId(
+        "custom-interval-input",
+      ) as HTMLInputElement;
       expect(customInput.value).toBe("14d");
     });
 
     it("should show custom option selected when custom interval is provided", () => {
       renderWithProviders(
-        <KeyLifecycleSettings {...defaultProps} autoRotationEnabled={true} rotationInterval="14d" />
+        <KeyLifecycleSettings
+          {...defaultProps}
+          autoRotationEnabled={true}
+          rotationInterval="14d"
+        />,
       );
 
       const select = screen.getByTestId("select") as HTMLSelectElement;
@@ -371,7 +442,7 @@ describe("KeyLifecycleSettings", () => {
           autoRotationEnabled={true}
           rotationInterval="30d"
           onRotationIntervalChange={onRotationIntervalChange}
-        />
+        />,
       );
 
       const select = screen.getByTestId("select");

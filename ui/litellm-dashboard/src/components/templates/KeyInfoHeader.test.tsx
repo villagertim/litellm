@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { KeyInfoHeader, KeyInfoData } from "./KeyInfoHeader";
+import { type KeyInfoData, KeyInfoHeader } from "./KeyInfoHeader";
 
 const MOCK_DATA: KeyInfoData = {
   keyName: "My Test Key",
@@ -42,19 +42,29 @@ describe("KeyInfoHeader", () => {
   describe("back button", () => {
     it("should render with default text", () => {
       render(<KeyInfoHeader data={MOCK_DATA} />);
-      expect(screen.getByRole("button", { name: /back to keys/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /back to keys/i }),
+      ).toBeInTheDocument();
     });
 
     it("should render with custom text", () => {
-      render(<KeyInfoHeader data={MOCK_DATA} backButtonText="Back to Dashboard" />);
-      expect(screen.getByRole("button", { name: /back to dashboard/i })).toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: /back to keys/i })).not.toBeInTheDocument();
+      render(
+        <KeyInfoHeader data={MOCK_DATA} backButtonText="Back to Dashboard" />,
+      );
+      expect(
+        screen.getByRole("button", { name: /back to dashboard/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: /back to keys/i }),
+      ).not.toBeInTheDocument();
     });
 
     it("should call onBack when clicked", async () => {
       const onBack = vi.fn();
       render(<KeyInfoHeader data={MOCK_DATA} onBack={onBack} />);
-      await userEvent.click(screen.getByRole("button", { name: /back to keys/i }));
+      await userEvent.click(
+        screen.getByRole("button", { name: /back to keys/i }),
+      );
       expect(onBack).toHaveBeenCalledTimes(1);
     });
   });
@@ -62,77 +72,112 @@ describe("KeyInfoHeader", () => {
   describe("action buttons", () => {
     it("should show Regenerate and Delete buttons by default", () => {
       render(<KeyInfoHeader data={MOCK_DATA} />);
-      expect(screen.getByRole("button", { name: /regenerate key/i })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /delete key/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /regenerate key/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /delete key/i }),
+      ).toBeInTheDocument();
     });
 
     it("should show Regenerate and Delete buttons when canModifyKey is true", () => {
       render(<KeyInfoHeader data={MOCK_DATA} canModifyKey={true} />);
-      expect(screen.getByRole("button", { name: /regenerate key/i })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /delete key/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /regenerate key/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /delete key/i }),
+      ).toBeInTheDocument();
     });
 
     it("should hide Regenerate and Delete buttons when canModifyKey is false", () => {
       render(<KeyInfoHeader data={MOCK_DATA} canModifyKey={false} />);
-      expect(screen.queryByRole("button", { name: /regenerate key/i })).not.toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: /delete key/i })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: /regenerate key/i }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: /delete key/i }),
+      ).not.toBeInTheDocument();
     });
 
     it("should call onRegenerate when Regenerate Key is clicked", async () => {
       const onRegenerate = vi.fn();
       render(<KeyInfoHeader data={MOCK_DATA} onRegenerate={onRegenerate} />);
-      await userEvent.click(screen.getByRole("button", { name: /regenerate key/i }));
+      await userEvent.click(
+        screen.getByRole("button", { name: /regenerate key/i }),
+      );
       expect(onRegenerate).toHaveBeenCalledTimes(1);
     });
 
     it("should call onDelete when Delete Key is clicked", async () => {
       const onDelete = vi.fn();
       render(<KeyInfoHeader data={MOCK_DATA} onDelete={onDelete} />);
-      await userEvent.click(screen.getByRole("button", { name: /delete key/i }));
+      await userEvent.click(
+        screen.getByRole("button", { name: /delete key/i }),
+      );
       expect(onDelete).toHaveBeenCalledTimes(1);
     });
 
     it("should disable Regenerate button when regenerateDisabled is true", () => {
       render(<KeyInfoHeader data={MOCK_DATA} regenerateDisabled={true} />);
-      expect(screen.getByRole("button", { name: /regenerate key/i })).toBeDisabled();
+      expect(
+        screen.getByRole("button", { name: /regenerate key/i }),
+      ).toBeDisabled();
     });
 
     it("should not disable Regenerate button by default", () => {
       render(<KeyInfoHeader data={MOCK_DATA} />);
-      expect(screen.getByRole("button", { name: /regenerate key/i })).not.toBeDisabled();
+      expect(
+        screen.getByRole("button", { name: /regenerate key/i }),
+      ).not.toBeDisabled();
     });
   });
 
   describe("Create New Key button", () => {
     it("should show when onCreateNew is provided", () => {
       render(<KeyInfoHeader data={MOCK_DATA} onCreateNew={vi.fn()} />);
-      expect(screen.getByRole("button", { name: /create new key/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /create new key/i }),
+      ).toBeInTheDocument();
     });
 
     it("should hide when onCreateNew is not provided", () => {
       render(<KeyInfoHeader data={MOCK_DATA} />);
-      expect(screen.queryByRole("button", { name: /create new key/i })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: /create new key/i }),
+      ).not.toBeInTheDocument();
     });
 
     it("should call onCreateNew when clicked", async () => {
       const onCreateNew = vi.fn();
       render(<KeyInfoHeader data={MOCK_DATA} onCreateNew={onCreateNew} />);
-      await userEvent.click(screen.getByRole("button", { name: /create new key/i }));
+      await userEvent.click(
+        screen.getByRole("button", { name: /create new key/i }),
+      );
       expect(onCreateNew).toHaveBeenCalledTimes(1);
     });
   });
 
   describe("default_user_id handling", () => {
     it("should show Default Proxy Admin tag for User when userId is default_user_id and no alias/email", () => {
-      const data = { ...MOCK_DATA, userId: "default_user_id", userEmail: "", userAlias: null };
+      const data = {
+        ...MOCK_DATA,
+        userId: "default_user_id",
+        userEmail: "",
+        userAlias: null,
+      };
       render(<KeyInfoHeader data={data} />);
-      expect(screen.getAllByText("Default Proxy Admin").length).toBeGreaterThanOrEqual(1);
+      expect(
+        screen.getAllByText("Default Proxy Admin").length,
+      ).toBeGreaterThanOrEqual(1);
     });
 
     it("should show Default Proxy Admin tag for Created By when value is default_user_id", () => {
       const data = { ...MOCK_DATA, createdBy: "default_user_id" };
       render(<KeyInfoHeader data={data} />);
-      expect(screen.getAllByText("Default Proxy Admin").length).toBeGreaterThanOrEqual(1);
+      expect(
+        screen.getAllByText("Default Proxy Admin").length,
+      ).toBeGreaterThanOrEqual(1);
     });
   });
 

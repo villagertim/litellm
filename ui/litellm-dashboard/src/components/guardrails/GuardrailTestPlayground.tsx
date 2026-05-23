@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import { Card, List, Empty, Spin, Input, Typography } from "antd";
 import { ExperimentOutlined, SearchOutlined } from "@ant-design/icons";
-import GuardrailTestPanel from "./GuardrailTestPanel";
-import { applyGuardrail } from "../networking";
+import { Card, Empty, Input, List, Spin, Typography } from "antd";
+import type React from "react";
+import { useState } from "react";
 import NotificationsManager from "../molecules/notifications_manager";
+import { applyGuardrail } from "../networking";
+import GuardrailTestPanel from "./GuardrailTestPanel";
 
 interface GuardrailItem {
   guardrail_id?: string;
@@ -43,14 +44,16 @@ const GuardrailTestPlayground: React.FC<GuardrailTestPlaygroundProps> = ({
   accessToken,
   onClose,
 }) => {
-  const [selectedGuardrails, setSelectedGuardrails] = useState<Set<string>>(new Set());
+  const [selectedGuardrails, setSelectedGuardrails] = useState<Set<string>>(
+    new Set(),
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [testErrors, setTestErrors] = useState<TestError[]>([]);
   const [isTesting, setIsTesting] = useState(false);
 
   const filteredGuardrails = guardrailsList.filter((guardrail) =>
-    guardrail.guardrail_name?.toLowerCase().includes(searchQuery.toLowerCase())
+    guardrail.guardrail_name?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const toggleGuardrailSelection = (guardrailName: string) => {
@@ -79,7 +82,13 @@ const GuardrailTestPlayground: React.FC<GuardrailTestPlaygroundProps> = ({
       Array.from(selectedGuardrails).map(async (guardrailName) => {
         const startTime = Date.now();
         try {
-          const result = await applyGuardrail(accessToken, guardrailName, text, null, null);
+          const result = await applyGuardrail(
+            accessToken,
+            guardrailName,
+            text,
+            null,
+            null,
+          );
           const latency = Date.now() - startTime;
           results.push({
             guardrailName,
@@ -95,7 +104,7 @@ const GuardrailTestPlayground: React.FC<GuardrailTestPlaygroundProps> = ({
             latency,
           });
         }
-      })
+      }),
     );
 
     setTestResults(results);
@@ -104,19 +113,22 @@ const GuardrailTestPlayground: React.FC<GuardrailTestPlaygroundProps> = ({
 
     if (results.length > 0) {
       NotificationsManager.success(
-        `${results.length} guardrail${results.length > 1 ? "s" : ""} applied successfully`
+        `${results.length} guardrail${results.length > 1 ? "s" : ""} applied successfully`,
       );
     }
     if (errors.length > 0) {
       NotificationsManager.fromBackend(
-        `${errors.length} guardrail${errors.length > 1 ? "s" : ""} failed`
+        `${errors.length} guardrail${errors.length > 1 ? "s" : ""} failed`,
       );
     }
   };
 
   return (
     <div className="w-full h-[calc(100vh-200px)]">
-      <Card className="h-full" styles={{ body: { padding: 0, height: "100%" } }}>
+      <Card
+        className="h-full"
+        styles={{ body: { padding: 0, height: "100%" } }}
+      >
         <div className="flex h-full">
           {/* Left Sidebar - Guardrails List */}
           <div className="w-1/4 border-r border-gray-200 flex flex-col overflow-hidden">
@@ -141,7 +153,9 @@ const GuardrailTestPlayground: React.FC<GuardrailTestPlaygroundProps> = ({
                 <div className="p-4">
                   <Empty
                     description={
-                      searchQuery ? "No guardrails match your search" : "No guardrails available"
+                      searchQuery
+                        ? "No guardrails match your search"
+                        : "No guardrails available"
                     }
                   />
                 </div>
@@ -196,7 +210,8 @@ const GuardrailTestPlayground: React.FC<GuardrailTestPlaygroundProps> = ({
 
             <div className="p-3 border-t border-gray-200 bg-gray-50">
               <Typography.Text className="text-xs text-gray-600">
-                {selectedGuardrails.size} of {filteredGuardrails.length} selected
+                {selectedGuardrails.size} of {filteredGuardrails.length}{" "}
+                selected
               </Typography.Text>
             </div>
           </div>
@@ -204,7 +219,10 @@ const GuardrailTestPlayground: React.FC<GuardrailTestPlaygroundProps> = ({
           {/* Right Panel - Test Area */}
           <div className="w-3/4 flex flex-col bg-white">
             <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-              <Typography.Title level={2} className="text-xl font-semibold mb-0">
+              <Typography.Title
+                level={2}
+                className="text-xl font-semibold mb-0"
+              >
                 Guardrail Testing Playground
               </Typography.Title>
             </div>
@@ -212,13 +230,15 @@ const GuardrailTestPlayground: React.FC<GuardrailTestPlaygroundProps> = ({
             <div className="flex-1 overflow-auto p-4">
               {selectedGuardrails.size === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-gray-400">
-                  <ExperimentOutlined style={{ fontSize: "48px", marginBottom: "16px" }} />
+                  <ExperimentOutlined
+                    style={{ fontSize: "48px", marginBottom: "16px" }}
+                  />
                   <Typography.Paragraph className="text-lg font-medium text-gray-600 mb-2">
                     Select Guardrails to Test
                   </Typography.Paragraph>
                   <Typography.Paragraph className="text-center text-gray-500 max-w-md">
-                    Choose one or more guardrails from the left sidebar to start testing and
-                    comparing results.
+                    Choose one or more guardrails from the left sidebar to start
+                    testing and comparing results.
                   </Typography.Paragraph>
                 </div>
               ) : (
@@ -242,4 +262,3 @@ const GuardrailTestPlayground: React.FC<GuardrailTestPlaygroundProps> = ({
 };
 
 export default GuardrailTestPlayground;
-

@@ -1,7 +1,7 @@
 import * as useAuthorizedModule from "@/app/(dashboard)/hooks/useAuthorized";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { renderWithProviders } from "../../../../../tests/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import AllModelsTab from "./AllModelsTab";
 
 // Mock modelDeleteCall
@@ -21,7 +21,7 @@ vi.mock("@/components/molecules/notifications_manager", () => ({
 // Mock react-query
 const mockInvalidateQueries = vi.fn();
 vi.mock("@tanstack/react-query", async (importOriginal) => {
-  const actual = await importOriginal() as any;
+  const actual = (await importOriginal()) as any;
   return {
     ...actual,
     useQueryClient: () => ({
@@ -38,7 +38,8 @@ const mockUseModelsInfo = vi.fn(() => ({
 })) as any;
 
 vi.mock("../../hooks/models/useModels", () => ({
-  useModelsInfo: (page?: number, size?: number, search?: string) => mockUseModelsInfo(page, size, search),
+  useModelsInfo: (page?: number, size?: number, search?: string) =>
+    mockUseModelsInfo(page, size, search),
 }));
 
 // Mock the useModelCostMap hook
@@ -86,9 +87,9 @@ const createModelCostMapMock = (data: Record<string, any>) => ({
 const createPaginatedModelData = (
   models: any[],
   totalCount: number = models.length,
-  currentPage: number = 1,
-  totalPages: number = 1,
-  size: number = 50,
+  currentPage = 1,
+  totalPages = 1,
+  size = 50,
 ) => ({
   data: models,
   total_count: totalCount,
@@ -178,33 +179,45 @@ describe("AllModelsTab", () => {
       }),
     );
 
-    const modelData = createPaginatedModelData([
-      {
-        model_name: "gpt-4-accessible",
-        model_info: {
-          id: "model-1",
-          access_via_team_ids: ["team-456"],
-          access_groups: [],
+    const modelData = createPaginatedModelData(
+      [
+        {
+          model_name: "gpt-4-accessible",
+          model_info: {
+            id: "model-1",
+            access_via_team_ids: ["team-456"],
+            access_groups: [],
+          },
         },
-      },
-      {
-        model_name: "gpt-3.5-turbo-blocked",
-        model_info: {
-          id: "model-2",
-          access_via_team_ids: ["team-789"],
-          access_groups: [],
+        {
+          model_name: "gpt-3.5-turbo-blocked",
+          model_info: {
+            id: "model-2",
+            access_via_team_ids: ["team-789"],
+            access_groups: [],
+          },
         },
-      },
-    ], 2, 1, 1, 50);
+      ],
+      2,
+      1,
+      1,
+      50,
+    );
 
-    mockUseModelsInfo.mockReturnValue({ data: modelData, isLoading: false, error: null });
+    mockUseModelsInfo.mockReturnValue({
+      data: modelData,
+      isLoading: false,
+      error: null,
+    });
 
     renderWithProviders(<AllModelsTab {...defaultProps} />);
 
     // Component shows API total_count (2), not filtered count
     // Since default is "personal" team and models don't have direct_access, they're filtered out
     await waitFor(() => {
-      expect(screen.getByText("Showing 1 - 2 of 2 results")).toBeInTheDocument();
+      expect(
+        screen.getByText("Showing 1 - 2 of 2 results"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -239,33 +252,45 @@ describe("AllModelsTab", () => {
       }),
     );
 
-    const modelData = createPaginatedModelData([
-      {
-        model_name: "gpt-4-sales",
-        model_info: {
-          id: "model-sales-1",
-          access_via_team_ids: [],
-          access_groups: ["sales-model-group"],
+    const modelData = createPaginatedModelData(
+      [
+        {
+          model_name: "gpt-4-sales",
+          model_info: {
+            id: "model-sales-1",
+            access_via_team_ids: [],
+            access_groups: ["sales-model-group"],
+          },
         },
-      },
-      {
-        model_name: "gpt-4-engineering",
-        model_info: {
-          id: "model-eng-1",
-          access_via_team_ids: [],
-          access_groups: ["engineering-model-group"],
+        {
+          model_name: "gpt-4-engineering",
+          model_info: {
+            id: "model-eng-1",
+            access_via_team_ids: [],
+            access_groups: ["engineering-model-group"],
+          },
         },
-      },
-    ], 2, 1, 1, 50);
+      ],
+      2,
+      1,
+      1,
+      50,
+    );
 
-    mockUseModelsInfo.mockReturnValue({ data: modelData, isLoading: false, error: null });
+    mockUseModelsInfo.mockReturnValue({
+      data: modelData,
+      isLoading: false,
+      error: null,
+    });
 
     renderWithProviders(<AllModelsTab {...defaultProps} />);
 
     // Component shows API total_count (2), not filtered count
     // Since default is "personal" team and models don't have direct_access, they're filtered out
     await waitFor(() => {
-      expect(screen.getByText("Showing 1 - 2 of 2 results")).toBeInTheDocument();
+      expect(
+        screen.getByText("Showing 1 - 2 of 2 results"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -284,34 +309,46 @@ describe("AllModelsTab", () => {
       }),
     );
 
-    const modelData = createPaginatedModelData([
-      {
-        model_name: "gpt-4-personal",
-        model_info: {
-          id: "model-personal-1",
-          direct_access: true,
-          access_via_team_ids: [],
-          access_groups: [],
+    const modelData = createPaginatedModelData(
+      [
+        {
+          model_name: "gpt-4-personal",
+          model_info: {
+            id: "model-personal-1",
+            direct_access: true,
+            access_via_team_ids: [],
+            access_groups: [],
+          },
         },
-      },
-      {
-        model_name: "gpt-4-team-only",
-        model_info: {
-          id: "model-team-1",
-          direct_access: false,
-          access_via_team_ids: ["team-123"],
-          access_groups: [],
+        {
+          model_name: "gpt-4-team-only",
+          model_info: {
+            id: "model-team-1",
+            direct_access: false,
+            access_via_team_ids: ["team-123"],
+            access_groups: [],
+          },
         },
-      },
-    ], 2, 1, 1, 50);
+      ],
+      2,
+      1,
+      1,
+      50,
+    );
 
-    mockUseModelsInfo.mockReturnValue({ data: modelData, isLoading: false, error: null });
+    mockUseModelsInfo.mockReturnValue({
+      data: modelData,
+      isLoading: false,
+      error: null,
+    });
 
     renderWithProviders(<AllModelsTab {...defaultProps} />);
 
     // Component shows API total_count (2), but only 1 model has direct_access
     await waitFor(() => {
-      expect(screen.getByText("Showing 1 - 2 of 2 results")).toBeInTheDocument();
+      expect(
+        screen.getByText("Showing 1 - 2 of 2 results"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -330,40 +367,50 @@ describe("AllModelsTab", () => {
       }),
     );
 
-    const modelData = createPaginatedModelData([
-      {
-        model_name: "gpt-4-config",
-        litellm_model_name: "gpt-4-config",
-        provider: "openai",
-        model_info: {
-          id: "model-config-1",
-          db_model: false,
-          direct_access: true,
-          access_via_team_ids: [],
-          access_groups: [],
-          created_by: "user-123",
-          created_at: "2024-01-01",
-          updated_at: "2024-01-01",
+    const modelData = createPaginatedModelData(
+      [
+        {
+          model_name: "gpt-4-config",
+          litellm_model_name: "gpt-4-config",
+          provider: "openai",
+          model_info: {
+            id: "model-config-1",
+            db_model: false,
+            direct_access: true,
+            access_via_team_ids: [],
+            access_groups: [],
+            created_by: "user-123",
+            created_at: "2024-01-01",
+            updated_at: "2024-01-01",
+          },
         },
-      },
-      {
-        model_name: "gpt-4-db",
-        litellm_model_name: "gpt-4-db",
-        provider: "openai",
-        model_info: {
-          id: "model-db-1",
-          db_model: true,
-          direct_access: true,
-          access_via_team_ids: [],
-          access_groups: [],
-          created_by: "user-123",
-          created_at: "2024-01-01",
-          updated_at: "2024-01-01",
+        {
+          model_name: "gpt-4-db",
+          litellm_model_name: "gpt-4-db",
+          provider: "openai",
+          model_info: {
+            id: "model-db-1",
+            db_model: true,
+            direct_access: true,
+            access_via_team_ids: [],
+            access_groups: [],
+            created_by: "user-123",
+            created_at: "2024-01-01",
+            updated_at: "2024-01-01",
+          },
         },
-      },
-    ], 2, 1, 1, 50);
+      ],
+      2,
+      1,
+      1,
+      50,
+    );
 
-    mockUseModelsInfo.mockReturnValue({ data: modelData, isLoading: false, error: null });
+    mockUseModelsInfo.mockReturnValue({
+      data: modelData,
+      isLoading: false,
+      error: null,
+    });
 
     renderWithProviders(<AllModelsTab {...defaultProps} />);
 
@@ -387,25 +434,35 @@ describe("AllModelsTab", () => {
       }),
     );
 
-    const modelData = createPaginatedModelData([
-      {
-        model_name: "gpt-4-config",
-        litellm_model_name: "gpt-4-config",
-        provider: "openai",
-        model_info: {
-          id: "model-config-1",
-          db_model: false,
-          direct_access: true,
-          access_via_team_ids: [],
-          access_groups: [],
-          created_by: "user-123",
-          created_at: "2024-01-01",
-          updated_at: "2024-01-01",
+    const modelData = createPaginatedModelData(
+      [
+        {
+          model_name: "gpt-4-config",
+          litellm_model_name: "gpt-4-config",
+          provider: "openai",
+          model_info: {
+            id: "model-config-1",
+            db_model: false,
+            direct_access: true,
+            access_via_team_ids: [],
+            access_groups: [],
+            created_by: "user-123",
+            created_at: "2024-01-01",
+            updated_at: "2024-01-01",
+          },
         },
-      },
-    ], 1, 1, 1, 50);
+      ],
+      1,
+      1,
+      1,
+      50,
+    );
 
-    mockUseModelsInfo.mockReturnValue({ data: modelData, isLoading: false, error: null });
+    mockUseModelsInfo.mockReturnValue({
+      data: modelData,
+      isLoading: false,
+      error: null,
+    });
 
     renderWithProviders(<AllModelsTab {...defaultProps} />);
 
@@ -449,15 +506,19 @@ describe("AllModelsTab", () => {
     );
 
     // Set up mock to return page1Data for page 1
-    mockUseModelsInfo.mockImplementation((page: number = 1, size?: number, search?: string) => {
-      return { data: page1Data, isLoading: false, error: null };
-    });
+    mockUseModelsInfo.mockImplementation(
+      (page = 1, size?: number, search?: string) => {
+        return { data: page1Data, isLoading: false, error: null };
+      },
+    );
 
     renderWithProviders(<AllModelsTab {...defaultProps} />);
 
     await waitFor(() => {
       // Component calculates: ((1-1)*50)+1 = 1, Math.min(1*50, 2) = 2
-      expect(screen.getByText("Showing 1 - 2 of 2 results")).toBeInTheDocument();
+      expect(
+        screen.getByText("Showing 1 - 2 of 2 results"),
+      ).toBeInTheDocument();
     });
 
     // Check that Previous button is disabled on first page
@@ -502,14 +563,18 @@ describe("AllModelsTab", () => {
       50, // size
     );
 
-    mockUseModelsInfo.mockImplementation((page?: number, size?: number, search?: string) => {
-      return { data: singlePageData, isLoading: false, error: null };
-    });
+    mockUseModelsInfo.mockImplementation(
+      (page?: number, size?: number, search?: string) => {
+        return { data: singlePageData, isLoading: false, error: null };
+      },
+    );
 
     renderWithProviders(<AllModelsTab {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Showing 1 - 1 of 1 results")).toBeInTheDocument();
+      expect(
+        screen.getByText("Showing 1 - 1 of 1 results"),
+      ).toBeInTheDocument();
     });
 
     // When there's only 1 page (last page), Next should be disabled
@@ -537,25 +602,36 @@ describe("AllModelsTab", () => {
       }),
     );
 
-    const modelData = createPaginatedModelData([
-      {
-        model_name: "gpt-4-delete-test",
-        litellm_model_name: "gpt-4-delete-test",
-        provider: "openai",
-        model_info: {
-          id: "model-to-delete",
-          db_model: true,
-          direct_access: true,
-          access_via_team_ids: [],
-          access_groups: [],
-          created_by: "user-123",
-          created_at: "2024-01-01",
-          updated_at: "2024-01-01",
+    const modelData = createPaginatedModelData(
+      [
+        {
+          model_name: "gpt-4-delete-test",
+          litellm_model_name: "gpt-4-delete-test",
+          provider: "openai",
+          model_info: {
+            id: "model-to-delete",
+            db_model: true,
+            direct_access: true,
+            access_via_team_ids: [],
+            access_groups: [],
+            created_by: "user-123",
+            created_at: "2024-01-01",
+            updated_at: "2024-01-01",
+          },
         },
-      },
-    ], 1, 1, 1, 50);
+      ],
+      1,
+      1,
+      1,
+      50,
+    );
 
-    mockUseModelsInfo.mockReturnValue({ data: modelData, isLoading: false, error: null, refetch: vi.fn() });
+    mockUseModelsInfo.mockReturnValue({
+      data: modelData,
+      isLoading: false,
+      error: null,
+      refetch: vi.fn(),
+    });
 
     renderWithProviders(<AllModelsTab {...defaultProps} />);
 
@@ -581,25 +657,36 @@ describe("AllModelsTab", () => {
       }),
     );
 
-    const modelData = createPaginatedModelData([
-      {
-        model_name: "gpt-4-clickable",
-        litellm_model_name: "gpt-4-clickable",
-        provider: "openai",
-        model_info: {
-          id: "clickable-model-id",
-          db_model: true,
-          direct_access: true,
-          access_via_team_ids: [],
-          access_groups: [],
-          created_by: "user-123",
-          created_at: "2024-01-01",
-          updated_at: "2024-01-01",
+    const modelData = createPaginatedModelData(
+      [
+        {
+          model_name: "gpt-4-clickable",
+          litellm_model_name: "gpt-4-clickable",
+          provider: "openai",
+          model_info: {
+            id: "clickable-model-id",
+            db_model: true,
+            direct_access: true,
+            access_via_team_ids: [],
+            access_groups: [],
+            created_by: "user-123",
+            created_at: "2024-01-01",
+            updated_at: "2024-01-01",
+          },
         },
-      },
-    ], 1, 1, 1, 50);
+      ],
+      1,
+      1,
+      1,
+      50,
+    );
 
-    mockUseModelsInfo.mockReturnValue({ data: modelData, isLoading: false, error: null, refetch: vi.fn() });
+    mockUseModelsInfo.mockReturnValue({
+      data: modelData,
+      isLoading: false,
+      error: null,
+      refetch: vi.fn(),
+    });
 
     renderWithProviders(<AllModelsTab {...defaultProps} />);
 

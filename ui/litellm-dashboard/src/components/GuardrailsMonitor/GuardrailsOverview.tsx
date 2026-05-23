@@ -1,3 +1,4 @@
+import { getGuardrailsUsageOverview } from "@/components/networking";
 import {
   DownloadOutlined,
   RiseOutlined,
@@ -9,11 +10,10 @@ import { useQuery } from "@tanstack/react-query";
 import { Button, Card, Col, Row, Spin, Table, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import React, { useMemo, useState } from "react";
-import { getGuardrailsUsageOverview } from "@/components/networking";
-import { type PerformanceRow } from "./mockData";
 import { EvaluationSettingsModal } from "./EvaluationSettingsModal";
 import { MetricCard } from "./MetricCard";
 import { ScoreChart } from "./ScoreChart";
+import type { PerformanceRow } from "./mockData";
 
 interface GuardrailsOverviewProps {
   accessToken?: string | null;
@@ -40,16 +40,27 @@ function computeMetricsFromRows(data: PerformanceRow[]) {
   const totalRequests = data.reduce((sum, r) => sum + r.requestsEvaluated, 0);
   const totalBlocked = data.reduce(
     (sum, r) => sum + Math.round((r.requestsEvaluated * r.failRate) / 100),
-    0
+    0,
   );
   const passRate =
-    totalRequests > 0 ? ((1 - totalBlocked / totalRequests) * 100).toFixed(1) : "0";
+    totalRequests > 0
+      ? ((1 - totalBlocked / totalRequests) * 100).toFixed(1)
+      : "0";
   const withLat = data.filter((r) => r.avgLatency != null);
   const avgLatency =
     withLat.length > 0
-      ? Math.round(withLat.reduce((sum, r) => sum + (r.avgLatency ?? 0), 0) / withLat.length)
+      ? Math.round(
+          withLat.reduce((sum, r) => sum + (r.avgLatency ?? 0), 0) /
+            withLat.length,
+        )
       : 0;
-  return { totalRequests, totalBlocked, passRate, avgLatency, count: data.length };
+  return {
+    totalRequests,
+    totalBlocked,
+    passRate,
+    avgLatency,
+    count: data.length,
+  };
 }
 
 export function GuardrailsOverview({
@@ -62,7 +73,11 @@ export function GuardrailsOverview({
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [evaluationModalOpen, setEvaluationModalOpen] = useState(false);
 
-  const { data: guardrailsData, isLoading: guardrailsLoading, error: guardrailsError } = useQuery({
+  const {
+    data: guardrailsData,
+    isLoading: guardrailsLoading,
+    error: guardrailsError,
+  } = useQuery({
     queryKey: ["guardrails-usage-overview", startDate, endDate],
     queryFn: () => getGuardrailsUsageOverview(accessToken!, startDate, endDate),
     enabled: !!accessToken,
@@ -75,7 +90,12 @@ export function GuardrailsOverview({
         totalRequests: guardrailsData.totalRequests ?? 0,
         totalBlocked: guardrailsData.totalBlocked ?? 0,
         passRate: String(guardrailsData.passRate ?? 0),
-        avgLatency: activeData.length ? Math.round(activeData.reduce((s, r) => s + (r.avgLatency ?? 0), 0) / activeData.length) : 0,
+        avgLatency: activeData.length
+          ? Math.round(
+              activeData.reduce((s, r) => s + (r.avgLatency ?? 0), 0) /
+                activeData.length,
+            )
+          : 0,
         count: activeData.length,
       };
     }
@@ -128,7 +148,12 @@ export function GuardrailsOverview({
       key: "requestsEvaluated",
       align: "right",
       sorter: true,
-      sortOrder: sortBy === "requestsEvaluated" ? (sortDir === "desc" ? "descend" : "ascend") : null,
+      sortOrder:
+        sortBy === "requestsEvaluated"
+          ? sortDir === "desc"
+            ? "descend"
+            : "ascend"
+          : null,
       render: (v: number) => v.toLocaleString(),
     },
     {
@@ -137,16 +162,29 @@ export function GuardrailsOverview({
       key: "failRate",
       align: "right",
       sorter: true,
-      sortOrder: sortBy === "failRate" ? (sortDir === "desc" ? "descend" : "ascend") : null,
+      sortOrder:
+        sortBy === "failRate"
+          ? sortDir === "desc"
+            ? "descend"
+            : "ascend"
+          : null,
       render: (v: number, row) => (
         <span
           className={
-            v > 15 ? "text-red-600" : v > 5 ? "text-amber-600" : "text-green-600"
+            v > 15
+              ? "text-red-600"
+              : v > 5
+                ? "text-amber-600"
+                : "text-green-600"
           }
         >
           {v}%
-          {row.trend === "up" && <span className="ml-1 text-xs text-red-400">↑</span>}
-          {row.trend === "down" && <span className="ml-1 text-xs text-green-400">↓</span>}
+          {row.trend === "up" && (
+            <span className="ml-1 text-xs text-red-400">↑</span>
+          )}
+          {row.trend === "down" && (
+            <span className="ml-1 text-xs text-green-400">↓</span>
+          )}
         </span>
       ),
     },
@@ -156,11 +194,22 @@ export function GuardrailsOverview({
       key: "avgLatency",
       align: "right",
       sorter: true,
-      sortOrder: sortBy === "avgLatency" ? (sortDir === "desc" ? "descend" : "ascend") : null,
+      sortOrder:
+        sortBy === "avgLatency"
+          ? sortDir === "desc"
+            ? "descend"
+            : "ascend"
+          : null,
       render: (v?: number) => (
         <span
           className={
-            v == null ? "text-gray-400" : v > 150 ? "text-red-600" : v > 50 ? "text-amber-600" : "text-green-600"
+            v == null
+              ? "text-gray-400"
+              : v > 150
+                ? "text-red-600"
+                : v > 50
+                  ? "text-amber-600"
+                  : "text-green-600"
           }
         >
           {v != null ? `${v}ms` : "—"}
@@ -189,8 +238,16 @@ export function GuardrailsOverview({
     },
   ];
 
-  const sortableKeys: SortKey[] = ["failRate", "requestsEvaluated", "avgLatency"];
-  const handleTableChange = (_pagination: unknown, _filters: unknown, sorter: unknown) => {
+  const sortableKeys: SortKey[] = [
+    "failRate",
+    "requestsEvaluated",
+    "avgLatency",
+  ];
+  const handleTableChange = (
+    _pagination: unknown,
+    _filters: unknown,
+    sorter: unknown,
+  ) => {
     const s = sorter as { field?: keyof PerformanceRow; order?: string };
     if (s?.field && sortableKeys.includes(s.field as SortKey)) {
       setSortBy(s.field as SortKey);
@@ -204,14 +261,20 @@ export function GuardrailsOverview({
         <div>
           <div className="flex items-center gap-2 mb-1">
             <SafetyOutlined className="text-lg text-indigo-500" />
-            <h1 className="text-xl font-semibold text-gray-900">Guardrails Monitor</h1>
+            <h1 className="text-xl font-semibold text-gray-900">
+              Guardrails Monitor
+            </h1>
           </div>
           <p className="text-sm text-gray-500">
             Monitor guardrail performance across all requests
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Button type="default" icon={<DownloadOutlined />} title="Coming soon">
+          <Button
+            type="default"
+            icon={<DownloadOutlined />}
+            title="Coming soon"
+          >
             Export Data
           </Button>
         </div>
@@ -219,7 +282,10 @@ export function GuardrailsOverview({
 
       <Row gutter={[16, 16]} className="mb-6">
         <Col xs={12} sm={12} md={8} flex="1 0 20%">
-          <MetricCard label="Total Evaluations" value={metrics.totalRequests.toLocaleString()} />
+          <MetricCard
+            label="Total Evaluations"
+            value={metrics.totalRequests.toLocaleString()}
+          />
         </Col>
         <Col xs={12} sm={12} md={8} flex="1 0 20%">
           <MetricCard
@@ -266,7 +332,11 @@ export function GuardrailsOverview({
         {(isLoading || error) && (
           <div className="px-6 py-4 border-b border-gray-200 flex items-center gap-2">
             {isLoading && <Spin size="small" />}
-            {error && <span className="text-sm text-red-600">Failed to load data. Try again.</span>}
+            {error && (
+              <span className="text-sm text-red-600">
+                Failed to load data. Try again.
+              </span>
+            )}
           </div>
         )}
         <div className="px-6 py-4 border-b border-gray-200 flex items-start justify-between gap-4">
@@ -294,7 +364,11 @@ export function GuardrailsOverview({
           pagination={false}
           loading={isLoading}
           onChange={handleTableChange}
-          locale={activeData.length === 0 && !isLoading ? { emptyText: "No data for this period" } : undefined}
+          locale={
+            activeData.length === 0 && !isLoading
+              ? { emptyText: "No data for this period" }
+              : undefined
+          }
           onRow={(row) => ({
             onClick: () => onSelectGuardrail(row.id),
             style: { cursor: "pointer" },

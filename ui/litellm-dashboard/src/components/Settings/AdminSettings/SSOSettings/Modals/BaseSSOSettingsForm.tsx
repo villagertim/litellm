@@ -2,8 +2,8 @@
 
 import { TextInput } from "@tremor/react";
 import { Checkbox, Form, Input, Select } from "antd";
-import React from "react";
-import { ssoProviderLogoMap, ssoProviderDisplayNames } from "../constants";
+import type React from "react";
+import { ssoProviderDisplayNames, ssoProviderLogoMap } from "../constants";
 
 export interface BaseSSOSettingsFormProps {
   form: any; // Replace with proper Form type if available
@@ -60,7 +60,11 @@ export const ssoProviderConfigs: Record<string, SSOProviderConfig> = {
         name: "generic_authorization_endpoint",
         placeholder: "https://your-domain/authorize",
       },
-      { label: "Token Endpoint", name: "generic_token_endpoint", placeholder: "https://your-domain/token" },
+      {
+        label: "Token Endpoint",
+        name: "generic_token_endpoint",
+        placeholder: "https://your-domain/token",
+      },
       {
         label: "Userinfo Endpoint",
         name: "generic_userinfo_endpoint",
@@ -79,7 +83,10 @@ export const ssoProviderConfigs: Record<string, SSOProviderConfig> = {
     fields: [
       { label: "Generic Client ID", name: "generic_client_id" },
       { label: "Generic Client Secret", name: "generic_client_secret" },
-      { label: "Authorization Endpoint", name: "generic_authorization_endpoint" },
+      {
+        label: "Authorization Endpoint",
+        name: "generic_authorization_endpoint",
+      },
       { label: "Token Endpoint", name: "generic_token_endpoint" },
       { label: "Userinfo Endpoint", name: "generic_userinfo_endpoint" },
     ],
@@ -96,17 +103,35 @@ export const renderProviderFields = (provider: string) => {
       key={field.name}
       label={field.label}
       name={field.name}
-      rules={[{ required: true, message: `Please enter the ${field.label.toLowerCase()}` }]}
+      rules={[
+        {
+          required: true,
+          message: `Please enter the ${field.label.toLowerCase()}`,
+        },
+      ]}
     >
-      {field.name.includes("client") ? <Input.Password /> : <TextInput placeholder={field.placeholder} />}
+      {field.name.includes("client") ? (
+        <Input.Password />
+      ) : (
+        <TextInput placeholder={field.placeholder} />
+      )}
     </Form.Item>
   ));
 };
 
-const BaseSSOSettingsForm: React.FC<BaseSSOSettingsFormProps> = ({ form, onFormSubmit }) => {
+const BaseSSOSettingsForm: React.FC<BaseSSOSettingsFormProps> = ({
+  form,
+  onFormSubmit,
+}) => {
   return (
     <div>
-      <Form form={form} onFinish={onFormSubmit} labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} labelAlign="left">
+      <Form
+        form={form}
+        onFinish={onFormSubmit}
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 16 }}
+        labelAlign="left"
+      >
         <Form.Item
           label="SSO Provider"
           name="sso_provider"
@@ -115,16 +140,28 @@ const BaseSSOSettingsForm: React.FC<BaseSSOSettingsFormProps> = ({ form, onFormS
           <Select>
             {Object.entries(ssoProviderLogoMap).map(([value, logo]) => (
               <Select.Option key={value} value={value}>
-                <div style={{ display: "flex", alignItems: "center", padding: "4px 0" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    padding: "4px 0",
+                  }}
+                >
                   {logo && (
                     <img
                       src={logo}
                       alt={value}
-                      style={{ height: 24, width: 24, marginRight: 12, objectFit: "contain" }}
+                      style={{
+                        height: 24,
+                        width: 24,
+                        marginRight: 12,
+                        objectFit: "contain",
+                      }}
                     />
                   )}
                   <span>
-                    {ssoProviderDisplayNames[value] || value.charAt(0).toUpperCase() + value.slice(1) + " SSO"}
+                    {ssoProviderDisplayNames[value] ||
+                      value.charAt(0).toUpperCase() + value.slice(1) + " SSO"}
                   </span>
                 </div>
               </Select.Option>
@@ -134,7 +171,9 @@ const BaseSSOSettingsForm: React.FC<BaseSSOSettingsFormProps> = ({ form, onFormS
 
         <Form.Item
           noStyle
-          shouldUpdate={(prevValues, currentValues) => prevValues.sso_provider !== currentValues.sso_provider}
+          shouldUpdate={(prevValues, currentValues) =>
+            prevValues.sso_provider !== currentValues.sso_provider
+          }
         >
           {({ getFieldValue }) => {
             const provider = getFieldValue("sso_provider");
@@ -145,7 +184,12 @@ const BaseSSOSettingsForm: React.FC<BaseSSOSettingsFormProps> = ({ form, onFormS
         <Form.Item
           label="Proxy Admin Email"
           name="user_email"
-          rules={[{ required: true, message: "Please enter the email of the proxy admin" }]}
+          rules={[
+            {
+              required: true,
+              message: "Please enter the email of the proxy admin",
+            },
+          ]}
         >
           <TextInput />
         </Form.Item>
@@ -162,8 +206,14 @@ const BaseSSOSettingsForm: React.FC<BaseSSOSettingsFormProps> = ({ form, onFormS
             {
               validator: (_, value) => {
                 // Only check for trailing slash if the URL starts with http:// or https://
-                if (value && /^https?:\/\/.+/.test(value) && value.endsWith("/")) {
-                  return Promise.reject("URL must not end with a trailing slash");
+                if (
+                  value &&
+                  /^https?:\/\/.+/.test(value) &&
+                  value.endsWith("/")
+                ) {
+                  return Promise.reject(
+                    "URL must not end with a trailing slash",
+                  );
                 }
                 return Promise.resolve();
               },
@@ -175,12 +225,18 @@ const BaseSSOSettingsForm: React.FC<BaseSSOSettingsFormProps> = ({ form, onFormS
 
         <Form.Item
           noStyle
-          shouldUpdate={(prevValues, currentValues) => prevValues.sso_provider !== currentValues.sso_provider}
+          shouldUpdate={(prevValues, currentValues) =>
+            prevValues.sso_provider !== currentValues.sso_provider
+          }
         >
           {({ getFieldValue }) => {
             const provider = getFieldValue("sso_provider");
             return provider === "okta" || provider === "generic" ? (
-              <Form.Item label="Use Role Mappings" name="use_role_mappings" valuePropName="checked">
+              <Form.Item
+                label="Use Role Mappings"
+                name="use_role_mappings"
+                valuePropName="checked"
+              >
                 <Checkbox />
               </Form.Item>
             ) : null;
@@ -197,12 +253,15 @@ const BaseSSOSettingsForm: React.FC<BaseSSOSettingsFormProps> = ({ form, onFormS
           {({ getFieldValue }) => {
             const useRoleMappings = getFieldValue("use_role_mappings");
             const provider = getFieldValue("sso_provider");
-            const supportsRoleMappings = provider === "okta" || provider === "generic";
+            const supportsRoleMappings =
+              provider === "okta" || provider === "generic";
             return useRoleMappings && supportsRoleMappings ? (
               <Form.Item
                 label="Group Claim"
                 name="group_claim"
-                rules={[{ required: true, message: "Please enter the group claim" }]}
+                rules={[
+                  { required: true, message: "Please enter the group claim" },
+                ]}
               >
                 <TextInput />
               </Form.Item>
@@ -220,15 +279,28 @@ const BaseSSOSettingsForm: React.FC<BaseSSOSettingsFormProps> = ({ form, onFormS
           {({ getFieldValue }) => {
             const useRoleMappings = getFieldValue("use_role_mappings");
             const provider = getFieldValue("sso_provider");
-            const supportsRoleMappings = provider === "okta" || provider === "generic";
+            const supportsRoleMappings =
+              provider === "okta" || provider === "generic";
             return useRoleMappings && supportsRoleMappings ? (
               <>
-                <Form.Item label="Default Role" name="default_role" initialValue="Internal User">
+                <Form.Item
+                  label="Default Role"
+                  name="default_role"
+                  initialValue="Internal User"
+                >
                   <Select>
-                    <Select.Option value="internal_user_viewer">Internal Viewer</Select.Option>
-                    <Select.Option value="internal_user">Internal User</Select.Option>
-                    <Select.Option value="proxy_admin_viewer">Admin Viewer</Select.Option>
-                    <Select.Option value="proxy_admin">Proxy Admin</Select.Option>
+                    <Select.Option value="internal_user_viewer">
+                      Internal Viewer
+                    </Select.Option>
+                    <Select.Option value="internal_user">
+                      Internal User
+                    </Select.Option>
+                    <Select.Option value="proxy_admin_viewer">
+                      Admin Viewer
+                    </Select.Option>
+                    <Select.Option value="proxy_admin">
+                      Proxy Admin
+                    </Select.Option>
                   </Select>
                 </Form.Item>
 
@@ -240,11 +312,17 @@ const BaseSSOSettingsForm: React.FC<BaseSSOSettingsFormProps> = ({ form, onFormS
                   <TextInput />
                 </Form.Item>
 
-                <Form.Item label="Internal User Teams" name="internal_user_teams">
+                <Form.Item
+                  label="Internal User Teams"
+                  name="internal_user_teams"
+                >
                   <TextInput />
                 </Form.Item>
 
-                <Form.Item label="Internal Viewer Teams" name="internal_viewer_teams">
+                <Form.Item
+                  label="Internal Viewer Teams"
+                  name="internal_viewer_teams"
+                >
                   <TextInput />
                 </Form.Item>
               </>
@@ -254,12 +332,18 @@ const BaseSSOSettingsForm: React.FC<BaseSSOSettingsFormProps> = ({ form, onFormS
 
         <Form.Item
           noStyle
-          shouldUpdate={(prevValues, currentValues) => prevValues.sso_provider !== currentValues.sso_provider}
+          shouldUpdate={(prevValues, currentValues) =>
+            prevValues.sso_provider !== currentValues.sso_provider
+          }
         >
           {({ getFieldValue }) => {
             const provider = getFieldValue("sso_provider");
             return provider === "okta" || provider === "generic" ? (
-              <Form.Item label="Use Team Mappings" name="use_team_mappings" valuePropName="checked">
+              <Form.Item
+                label="Use Team Mappings"
+                name="use_team_mappings"
+                valuePropName="checked"
+              >
                 <Checkbox />
               </Form.Item>
             ) : null;
@@ -276,12 +360,18 @@ const BaseSSOSettingsForm: React.FC<BaseSSOSettingsFormProps> = ({ form, onFormS
           {({ getFieldValue }) => {
             const useTeamMappings = getFieldValue("use_team_mappings");
             const provider = getFieldValue("sso_provider");
-            const supportsTeamMappings = provider === "okta" || provider === "generic";
+            const supportsTeamMappings =
+              provider === "okta" || provider === "generic";
             return useTeamMappings && supportsTeamMappings ? (
               <Form.Item
                 label="Team IDs JWT Field"
                 name="team_ids_jwt_field"
-                rules={[{ required: true, message: "Please enter the team IDs JWT field" }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter the team IDs JWT field",
+                  },
+                ]}
               >
                 <TextInput />
               </Form.Item>

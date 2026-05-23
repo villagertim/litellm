@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { ReactNode } from "react";
-import { useProviderFields } from "./useProviderFields";
 import { getProviderCreateMetadata } from "@/components/networking";
 import type { ProviderCreateInfo } from "@/components/networking";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { renderHook, waitFor } from "@testing-library/react";
+import React, { type ReactNode } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useProviderFields } from "./useProviderFields";
 
 // Mock the networking function
 vi.mock("@/components/networking", () => ({
@@ -166,7 +166,9 @@ describe("useProviderFields", () => {
     ];
 
     // Mock successful API call with provider that has credential fields
-    (getProviderCreateMetadata as any).mockResolvedValue(mockFieldsWithCredentials);
+    (getProviderCreateMetadata as any).mockResolvedValue(
+      mockFieldsWithCredentials,
+    );
 
     const { result } = renderHook(() => useProviderFields(), { wrapper });
 

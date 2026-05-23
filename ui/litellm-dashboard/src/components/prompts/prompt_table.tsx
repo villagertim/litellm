@@ -1,18 +1,32 @@
-import React, { useState, useEffect } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, Button } from "@tremor/react";
-import { SwitchVerticalIcon, ChevronUpIcon, ChevronDownIcon, TrashIcon } from "@heroicons/react/outline";
-import { Tooltip } from "antd";
+import { type PromptSpec, modelHubCall } from "@/components/networking";
+import { getProviderLogoAndName } from "@/components/provider_info_helpers";
 import { CopyOutlined } from "@ant-design/icons";
-import { PromptSpec, modelHubCall } from "@/components/networking";
 import {
-  ColumnDef,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  SwitchVerticalIcon,
+  TrashIcon,
+} from "@heroicons/react/outline";
+import {
+  type ColumnDef,
+  type SortingState,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { getProviderLogoAndName } from "@/components/provider_info_helpers";
+import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+} from "@tremor/react";
+import { Tooltip } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { extractModel, getProviderFromModelHub } from "./prompt_utils";
 
 interface PromptTableProps {
@@ -38,13 +52,17 @@ const PromptTable: React.FC<PromptTableProps> = ({
   accessToken,
   isAdmin,
 }) => {
-  const [sorting, setSorting] = useState<SortingState>([{ id: "created_at", desc: true }]);
-  const [modelHubData, setModelHubData] = useState<Map<string, ModelGroupInfo>>(new Map());
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "created_at", desc: true },
+  ]);
+  const [modelHubData, setModelHubData] = useState<Map<string, ModelGroupInfo>>(
+    new Map(),
+  );
 
   useEffect(() => {
     const fetchModelHubData = async () => {
       if (!accessToken) return;
-      
+
       try {
         const response = await modelHubCall(accessToken);
         if (response?.data) {
@@ -79,7 +97,8 @@ const PromptTable: React.FC<PromptTableProps> = ({
       accessorKey: "prompt_id",
       cell: (info: any) => {
         const fullId = String(info.getValue() || "");
-        const displayId = fullId.length > 25 ? `${fullId.slice(0, 25)}...` : fullId;
+        const displayId =
+          fullId.length > 25 ? `${fullId.slice(0, 25)}...` : fullId;
         return (
           <div className="flex items-center gap-2">
             <Tooltip title={fullId}>
@@ -87,7 +106,9 @@ const PromptTable: React.FC<PromptTableProps> = ({
                 size="xs"
                 variant="light"
                 className="font-mono text-blue-500 bg-blue-50 hover:bg-blue-100 text-xs font-normal px-2 py-0.5 text-left overflow-hidden truncate min-w-[220px] justify-start"
-                onClick={() => info.getValue() && onPromptClick?.(info.getValue())}
+                onClick={() =>
+                  info.getValue() && onPromptClick?.(info.getValue())
+                }
               >
                 {displayId}
               </Button>
@@ -111,22 +132,22 @@ const PromptTable: React.FC<PromptTableProps> = ({
       cell: ({ row }) => {
         const prompt = row.original;
         const model = extractModel(prompt);
-        
+
         if (!model) {
           return <span className="text-xs text-gray-400">-</span>;
         }
-        
+
         const provider = getProviderFromModelHub(model, modelHubData);
         const { logo } = getProviderLogoAndName(provider || "");
-        
+
         return (
           <Tooltip title={model}>
             <div className="flex items-center space-x-2">
               {/* Provider Icon */}
               <div className="flex-shrink-0">
                 {provider && logo ? (
-                  <img 
-                    src={logo} 
+                  <img
+                    src={logo}
                     alt={`${provider} logo`}
                     className="w-4 h-4"
                     onError={(e) => {
@@ -137,12 +158,16 @@ const PromptTable: React.FC<PromptTableProps> = ({
                       }
 
                       try {
-                        const fallbackDiv = document.createElement('div');
-                        fallbackDiv.className = 'w-4 h-4 rounded-full bg-gray-200 flex items-center justify-center text-xs';
-                        fallbackDiv.textContent = provider?.charAt(0) || '-';
+                        const fallbackDiv = document.createElement("div");
+                        fallbackDiv.className =
+                          "w-4 h-4 rounded-full bg-gray-200 flex items-center justify-center text-xs";
+                        fallbackDiv.textContent = provider?.charAt(0) || "-";
                         parent.replaceChild(fallbackDiv, target);
                       } catch (error) {
-                        console.error('Failed to replace provider logo fallback:', error);
+                        console.error(
+                          "Failed to replace provider logo fallback:",
+                          error,
+                        );
                       }
                     }}
                   />
@@ -152,7 +177,7 @@ const PromptTable: React.FC<PromptTableProps> = ({
                   </div>
                 )}
               </div>
-              
+
               {/* Model Name */}
               <span className="max-w-[15ch] truncate block">{model}</span>
             </div>
@@ -196,7 +221,9 @@ const PromptTable: React.FC<PromptTableProps> = ({
           development: "text-green-600 bg-green-50",
         };
         return (
-          <span className={`text-xs px-2 py-0.5 rounded ${colorMap[env] || "text-gray-600 bg-gray-50"}`}>
+          <span
+            className={`text-xs px-2 py-0.5 rounded ${colorMap[env] || "text-gray-600 bg-gray-50"}`}
+          >
             {env}
           </span>
         );
@@ -286,13 +313,22 @@ const PromptTable: React.FC<PromptTableProps> = ({
                   >
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center">
-                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                       </div>
                       <div className="w-4">
                         {header.column.getIsSorted() ? (
                           {
-                            asc: <ChevronUpIcon className="h-4 w-4 text-blue-500" />,
-                            desc: <ChevronDownIcon className="h-4 w-4 text-blue-500" />,
+                            asc: (
+                              <ChevronUpIcon className="h-4 w-4 text-blue-500" />
+                            ),
+                            desc: (
+                              <ChevronDownIcon className="h-4 w-4 text-blue-500" />
+                            ),
                           }[header.column.getIsSorted() as string]
                         ) : (
                           <SwitchVerticalIcon className="h-4 w-4 text-gray-400" />
@@ -317,8 +353,14 @@ const PromptTable: React.FC<PromptTableProps> = ({
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} className="h-8">
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="py-0.5 max-h-8 overflow-hidden text-ellipsis whitespace-nowrap">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    <TableCell
+                      key={cell.id}
+                      className="py-0.5 max-h-8 overflow-hidden text-ellipsis whitespace-nowrap"
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>

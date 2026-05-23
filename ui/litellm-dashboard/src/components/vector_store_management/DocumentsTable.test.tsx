@@ -1,7 +1,7 @@
-import { render, screen, fireEvent, act } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import DocumentsTable from "./DocumentsTable";
-import { DocumentUpload } from "./types";
+import type { DocumentUpload } from "./types";
 
 // Mock antd message
 vi.mock("antd", async () => {

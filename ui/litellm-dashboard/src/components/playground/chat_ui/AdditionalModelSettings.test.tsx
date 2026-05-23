@@ -26,14 +26,18 @@ describe("AdditionalModelSettings", () => {
       />,
     );
 
-    const checkbox = screen.getByRole("checkbox", { name: /Use Advanced Parameters/i });
+    const checkbox = screen.getByRole("checkbox", {
+      name: /Use Advanced Parameters/i,
+    });
     expect(checkbox).toBeInTheDocument();
     expect(checkbox).not.toBeChecked();
 
     await user.click(checkbox);
 
     await waitFor(() => {
-      expect(screen.getByRole("checkbox", { name: /Use Advanced Parameters/i })).toBeChecked();
+      expect(
+        screen.getByRole("checkbox", { name: /Use Advanced Parameters/i }),
+      ).toBeChecked();
     });
 
     await waitFor(() => {
@@ -50,7 +54,9 @@ describe("AdditionalModelSettings", () => {
 
   it("should not show Simulate failure to test fallbacks when onMockTestFallbacksChange is not provided", () => {
     render(<AdditionalModelSettings />);
-    expect(screen.queryByText(/Simulate failure to test fallbacks/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Simulate failure to test fallbacks/i),
+    ).not.toBeInTheDocument();
   });
 
   it("should show and toggle Simulate failure to test fallbacks when callback is provided", async () => {
@@ -91,7 +97,11 @@ describe("AdditionalModelSettings", () => {
     );
 
     await act(async () => {
-      await user.click(screen.getByRole("checkbox", { name: /Simulate failure to test fallbacks/i }));
+      await user.click(
+        screen.getByRole("checkbox", {
+          name: /Simulate failure to test fallbacks/i,
+        }),
+      );
     });
 
     await waitFor(() => {

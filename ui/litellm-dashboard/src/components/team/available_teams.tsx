@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from "react";
 import {
+  Badge,
+  Button,
+  Card,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeaderCell,
   TableRow,
-  Card,
-  Button,
   Text,
-  Badge,
 } from "@tremor/react";
-import { availableTeamListCall, teamMemberAddCall } from "../networking";
+import type React from "react";
+import { useEffect, useState } from "react";
 import NotificationsManager from "../molecules/notifications_manager";
+import { availableTeamListCall, teamMemberAddCall } from "../networking";
 
 interface AvailableTeam {
   team_id: string;
@@ -27,7 +28,10 @@ interface AvailableTeamsProps {
   userID: string | null;
 }
 
-const AvailableTeamsPanel: React.FC<AvailableTeamsProps> = ({ accessToken, userID }) => {
+const AvailableTeamsPanel: React.FC<AvailableTeamsProps> = ({
+  accessToken,
+  userID,
+}) => {
   const [availableTeams, setAvailableTeams] = useState<AvailableTeam[]>([]);
 
   useEffect(() => {
@@ -57,7 +61,9 @@ const AvailableTeamsPanel: React.FC<AvailableTeamsProps> = ({ accessToken, userI
 
       NotificationsManager.success("Successfully joined team");
       // Update available teams list
-      setAvailableTeams((teams) => teams.filter((team) => team.team_id !== teamId));
+      setAvailableTeams((teams) =>
+        teams.filter((team) => team.team_id !== teamId),
+      );
     } catch (error) {
       console.error("Error joining team:", error);
       NotificationsManager.fromBackend("Failed to join team");
@@ -96,15 +102,28 @@ const AvailableTeamsPanel: React.FC<AvailableTeamsProps> = ({ accessToken, userI
                     </Badge>
                   ) : (
                     team.models.map((model, index) => (
-                      <Badge key={index} size="xs" className="mb-1" color="blue">
-                        <Text>{model.length > 30 ? `${model.slice(0, 30)}...` : model}</Text>
+                      <Badge
+                        key={index}
+                        size="xs"
+                        className="mb-1"
+                        color="blue"
+                      >
+                        <Text>
+                          {model.length > 30
+                            ? `${model.slice(0, 30)}...`
+                            : model}
+                        </Text>
                       </Badge>
                     ))
                   )}
                 </div>
               </TableCell>
               <TableCell>
-                <Button size="xs" variant="secondary" onClick={() => handleJoinTeam(team.team_id)}>
+                <Button
+                  size="xs"
+                  variant="secondary"
+                  onClick={() => handleJoinTeam(team.team_id)}
+                >
                   Join Team
                 </Button>
               </TableCell>
@@ -113,7 +132,8 @@ const AvailableTeamsPanel: React.FC<AvailableTeamsProps> = ({ accessToken, userI
           {availableTeams.length === 0 && (
             <TableRow>
               <TableCell colSpan={5} className="text-center">
-                <Text>No available teams to join. See how to set available teams{" "}
+                <Text>
+                  No available teams to join. See how to set available teams{" "}
                   <a
                     href="https://docs.litellm.ai/docs/proxy/self_serve#all-settings-for-self-serve--sso-flow"
                     target="_blank"
@@ -121,7 +141,8 @@ const AvailableTeamsPanel: React.FC<AvailableTeamsProps> = ({ accessToken, userI
                     className="text-blue-500 hover:text-blue-700 underline"
                   >
                     here
-                  </a>.
+                  </a>
+                  .
                 </Text>
               </TableCell>
             </TableRow>

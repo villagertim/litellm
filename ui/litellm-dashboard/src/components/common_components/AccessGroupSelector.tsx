@@ -1,11 +1,11 @@
-import React from "react";
-import { Select, Skeleton } from "antd";
+import {
+  type AccessGroupResponse,
+  useAccessGroups,
+} from "@/app/(dashboard)/hooks/accessGroups/useAccessGroups";
 import { TeamOutlined } from "@ant-design/icons";
 import { Text } from "@tremor/react";
-import {
-  useAccessGroups,
-  AccessGroupResponse,
-} from "@/app/(dashboard)/hooks/accessGroups/useAccessGroups";
+import { Select, Skeleton } from "antd";
+import type React from "react";
 
 export interface AccessGroupSelectorProps {
   value?: string[];
@@ -95,7 +95,8 @@ const AccessGroupSelector: React.FC<AccessGroupSelectorProps> = ({
         }
         filterOption={(input, option) => {
           const searchText =
-            options.find((opt) => opt.value === option?.value)?.searchText ?? "";
+            options.find((opt) => opt.value === option?.value)?.searchText ??
+            "";
           return searchText.toLowerCase().includes(input.toLowerCase());
         }}
         optionLabelProp="selectedLabel"

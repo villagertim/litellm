@@ -1,7 +1,7 @@
-// hooks/useDisableShowPrompts.ts
-import { useSyncExternalStore } from "react";
 import { getLocalStorageItem } from "@/utils/localStorageUtils";
 import { LOCAL_STORAGE_EVENT } from "@/utils/localStorageUtils";
+// hooks/useDisableShowPrompts.ts
+import { useSyncExternalStore } from "react";
 
 function subscribe(callback: () => void) {
   const onStorage = (e: StorageEvent) => {

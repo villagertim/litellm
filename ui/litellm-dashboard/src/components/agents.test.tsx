@@ -1,6 +1,12 @@
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import React from "react";
-import { render, screen, waitFor, act, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import AgentsPanel from "./agents";
 import * as networking from "./networking";
 
@@ -59,14 +65,18 @@ describe("AgentsPanel", () => {
   it("should show Actions column header for admin role", async () => {
     render(<AgentsPanel accessToken="test-token" userRole="Admin" />);
     await waitFor(() => {
-      expect(screen.getByRole("columnheader", { name: /actions/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("columnheader", { name: /actions/i }),
+      ).toBeInTheDocument();
     });
   });
 
   it("should not show Actions column header for internal user role", async () => {
     render(<AgentsPanel accessToken="test-token" userRole="Internal User" />);
     await waitFor(() => {
-      expect(screen.queryByRole("columnheader", { name: /actions/i })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("columnheader", { name: /actions/i }),
+      ).not.toBeInTheDocument();
       // confirm table is rendered (not still loading)
       expect(screen.getByRole("table")).toBeInTheDocument();
     });
@@ -85,14 +95,20 @@ describe("AgentsPanel", () => {
   it("should call getAgentsList with health_check=false on initial load", async () => {
     render(<AgentsPanel accessToken="test-token" userRole="Admin" />);
     await waitFor(() => {
-      expect(networking.getAgentsList).toHaveBeenCalledWith("test-token", false);
+      expect(networking.getAgentsList).toHaveBeenCalledWith(
+        "test-token",
+        false,
+      );
     });
   });
 
   it("should call getAgentsList with health_check=true when toggle is enabled", async () => {
     render(<AgentsPanel accessToken="test-token" userRole="Admin" />);
     await waitFor(() => {
-      expect(networking.getAgentsList).toHaveBeenCalledWith("test-token", false);
+      expect(networking.getAgentsList).toHaveBeenCalledWith(
+        "test-token",
+        false,
+      );
     });
 
     const toggle = screen.getByRole("switch");

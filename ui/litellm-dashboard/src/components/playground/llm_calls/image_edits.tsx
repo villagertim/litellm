@@ -1,6 +1,6 @@
-import openai from "openai";
-import { getProxyBaseUrl } from "@/components/networking";
 import NotificationManager from "@/components/molecules/notifications_manager";
+import { getProxyBaseUrl } from "@/components/networking";
+import openai from "openai";
 
 export async function makeOpenAIImageEditsRequest(
   imageFiles: File | File[],
@@ -15,7 +15,7 @@ export async function makeOpenAIImageEditsRequest(
   // base url should be the current base_url
   const isLocal = process.env.NODE_ENV === "development";
   if (isLocal !== true) {
-    console.log = function () {};
+    console.log = () => {};
   }
   console.log("isLocal:", isLocal);
   const proxyBaseUrl = customBaseUrl || getProxyBaseUrl();
@@ -24,12 +24,17 @@ export async function makeOpenAIImageEditsRequest(
     apiKey: accessToken,
     baseURL: proxyBaseUrl,
     dangerouslyAllowBrowser: true,
-    defaultHeaders: tags && tags.length > 0 ? { "x-litellm-tags": tags.join(",") } : undefined,
+    defaultHeaders:
+      tags && tags.length > 0
+        ? { "x-litellm-tags": tags.join(",") }
+        : undefined,
   });
 
   try {
     // handle single and multiple images
-    const imagesToProcess = Array.isArray(imageFiles) ? imageFiles : [imageFiles];
+    const imagesToProcess = Array.isArray(imageFiles)
+      ? imageFiles
+      : [imageFiles];
 
     // For multiple images, we'll make separate API calls for each image
     // since OpenAI's edit endpoint processes one image at a time
@@ -67,7 +72,9 @@ export async function makeOpenAIImageEditsRequest(
     }
 
     if (results.length > 1) {
-      NotificationManager.success(`Successfully processed ${results.length} images`);
+      NotificationManager.success(
+        `Successfully processed ${results.length} images`,
+      );
     }
   } catch (error: any) {
     console.error("Error making image edit request:", error);

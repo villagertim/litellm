@@ -8,7 +8,7 @@ import { transformKeyInfo } from "../../../key_team_helpers/transform_key_info";
 import { keyInfoV1Call } from "../../../networking";
 import KeyInfoView from "../../../templates/key_info_view";
 import { DataTable } from "../../../view_logs/table";
-import { TagUsage } from "../../types";
+import type { TagUsage } from "../../types";
 
 interface TopKeyViewProps {
   topKeys: any[];
@@ -18,8 +18,19 @@ interface TopKeyViewProps {
   setTopKeysLimit: (limit: number) => void;
 }
 
-const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = false, topKeysLimit, setTopKeysLimit }) => {
-  const { accessToken, userRole, userId: userID, premiumUser } = useAuthorized();
+const TopKeyView: React.FC<TopKeyViewProps> = ({
+  topKeys,
+  teams,
+  showTags = false,
+  topKeysLimit,
+  setTopKeysLimit,
+}) => {
+  const {
+    accessToken,
+    userRole,
+    userId: userID,
+    premiumUser,
+  } = useAuthorized();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [keyData, setKeyData] = useState<any | undefined>(undefined);
@@ -92,7 +103,9 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
               className="font-mono text-blue-500 bg-blue-50 hover:bg-blue-100 text-xs font-normal px-2 py-0.5 text-left overflow-hidden truncate max-w-[200px]"
               onClick={() => handleKeyClick(info.row.original)}
             >
-              {info.getValue() ? `${(info.getValue() as string).slice(0, 7)}...` : "-"}
+              {info.getValue()
+                ? `${(info.getValue() as string).slice(0, 7)}...`
+                : "-"}
             </Button>
           </Tooltip>
         </div>
@@ -134,12 +147,16 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
                     </div>
                     <div>
                       <span className="text-gray-300">Spend:</span>{" "}
-                      {tag.usage > 0 && tag.usage < 0.01 ? "<$0.01" : `$${formatNumberWithCommas(tag.usage, 2)}`}
+                      {tag.usage > 0 && tag.usage < 0.01
+                        ? "<$0.01"
+                        : `$${formatNumberWithCommas(tag.usage, 2)}`}
                     </div>
                   </div>
                 }
               >
-                <span className="px-2 py-1 bg-gray-100 rounded-full text-xs">{tag.tag.slice(0, 7)}...</span>
+                <span className="px-2 py-1 bg-gray-100 rounded-full text-xs">
+                  {tag.tag.slice(0, 7)}...
+                </span>
               </Tooltip>
             ))}
             {hasMoreTags && (
@@ -166,15 +183,22 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
     accessorKey: "spend",
     cell: (info: any) => {
       const value = info.getValue();
-      return value > 0 && value < 0.01 ? "<$0.01" : `$${formatNumberWithCommas(value, 2)}`;
+      return value > 0 && value < 0.01
+        ? "<$0.01"
+        : `$${formatNumberWithCommas(value, 2)}`;
     },
   };
 
-  const columns = showTags ? [...baseColumns, tagsColumn, spendColumn] : [...baseColumns, spendColumn];
+  const columns = showTags
+    ? [...baseColumns, tagsColumn, spendColumn]
+    : [...baseColumns, spendColumn];
 
   const processedTopKeys = topKeys.map((k) => ({
     ...k,
-    display_key_alias: k.key_alias && k.key_alias.length > 10 ? `${k.key_alias.slice(0, 10)}...` : k.key_alias || "-",
+    display_key_alias:
+      k.key_alias && k.key_alias.length > 10
+        ? `${k.key_alias.slice(0, 10)}...`
+        : k.key_alias || "-",
   }));
 
   return (
@@ -210,7 +234,9 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
         <div className="relative max-h-[600px] overflow-y-auto">
           <BarChart
             className="mt-4 cursor-pointer hover:opacity-90"
-            style={{ height: Math.min(processedTopKeys.length, topKeysLimit) * 52 }}
+            style={{
+              height: Math.min(processedTopKeys.length, topKeysLimit) * 52,
+            }}
             data={processedTopKeys}
             index="display_key_alias"
             categories={["spend"]}
@@ -229,15 +255,21 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
                   <div className="space-y-1.5">
                     <div className="text-sm">
                       <span className="text-gray-300">Key Alias: </span>
-                      <span className="font-mono text-gray-100 break-all">{item?.key_alias}</span>
+                      <span className="font-mono text-gray-100 break-all">
+                        {item?.key_alias}
+                      </span>
                     </div>
                     <div className="text-sm">
                       <span className="text-gray-300">Key ID: </span>
-                      <span className="font-mono text-gray-100 break-all">{item?.api_key}</span>
+                      <span className="font-mono text-gray-100 break-all">
+                        {item?.api_key}
+                      </span>
                     </div>
                     <div className="text-sm">
                       <span className="text-gray-300">Spend: </span>
-                      <span className="text-white font-medium">${formatNumberWithCommas(item?.spend, 2)}</span>
+                      <span className="text-white font-medium">
+                        ${formatNumberWithCommas(item?.spend, 2)}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -260,7 +292,11 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
       {isModalOpen &&
         selectedKey &&
         keyData &&
-        (console.log("Rendering modal with:", { isModalOpen, selectedKey, keyData }),
+        (console.log("Rendering modal with:", {
+          isModalOpen,
+          selectedKey,
+          keyData,
+        }),
         (
           <div
             className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
@@ -273,14 +309,29 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
                 className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 focus:outline-none"
                 aria-label="Close"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
 
               {/* Content */}
               <div className="p-6 h-full">
-                <KeyInfoView keyId={selectedKey} onClose={handleClose} keyData={keyData} teams={teams} />
+                <KeyInfoView
+                  keyId={selectedKey}
+                  onClose={handleClose}
+                  keyData={keyData}
+                  teams={teams}
+                />
               </div>
             </div>
           </div>

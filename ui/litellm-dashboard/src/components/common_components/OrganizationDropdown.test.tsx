@@ -49,7 +49,9 @@ describe("OrganizationDropdown", () => {
   it("should call onChange with the org id when an organization is selected", async () => {
     const onChange = vi.fn();
     const user = userEvent.setup();
-    render(<OrganizationDropdown organizations={MOCK_ORGS} onChange={onChange} />);
+    render(
+      <OrganizationDropdown organizations={MOCK_ORGS} onChange={onChange} />,
+    );
 
     await user.click(screen.getByRole("combobox"));
     await user.click(await screen.findByText("Engineering"));
@@ -58,7 +60,9 @@ describe("OrganizationDropdown", () => {
   });
 
   it("should add ant-select-disabled class when disabled prop is true", () => {
-    const { container } = render(<OrganizationDropdown organizations={MOCK_ORGS} disabled={true} />);
+    const { container } = render(
+      <OrganizationDropdown organizations={MOCK_ORGS} disabled={true} />,
+    );
     expect(container.querySelector(".ant-select-disabled")).toBeTruthy();
   });
 

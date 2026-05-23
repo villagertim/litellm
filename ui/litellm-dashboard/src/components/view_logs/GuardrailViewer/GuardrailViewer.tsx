@@ -1,11 +1,11 @@
-import React, { useState, useMemo } from "react";
-import { Tooltip } from "antd";
-import PresidioDetectedEntities from "./PresidioDetectedEntities";
 import BedrockGuardrailDetails, {
-  BedrockGuardrailResponse,
+  type BedrockGuardrailResponse,
 } from "@/components/view_logs/GuardrailViewer/BedrockGuardrailDetails";
-import ContentFilterDetails from "./ContentFilterDetails";
+import { Tooltip } from "antd";
+import React, { useState, useMemo } from "react";
 import CompliancePanel from "./CompliancePanel";
+import ContentFilterDetails from "./ContentFilterDetails";
+import PresidioDetectedEntities from "./PresidioDetectedEntities";
 
 // ── Interfaces ──────────────────────────────────────────────────────────────
 
@@ -81,7 +81,9 @@ const PROVIDERS_WITH_CUSTOM_RENDERERS = new Set([
  * Extracts a plain string from guardrail_mode for display purposes.
  * Returns the first mode when multiple are present.
  */
-const resolveMode = (mode: GuardrailInformation["guardrail_mode"]): string | null => {
+const resolveMode = (
+  mode: GuardrailInformation["guardrail_mode"],
+): string | null => {
   if (mode == null) return null;
   if (typeof mode === "string") return mode;
   if (Array.isArray(mode)) {
@@ -113,7 +115,8 @@ const modeMatches = (
   if (typeof mode === "object" && "default" in mode) {
     const def = mode.default;
     if (typeof def === "string") return def === target;
-    if (Array.isArray(def)) return def.some((x) => typeof x === "string" && x === target);
+    if (Array.isArray(def))
+      return def.some((x) => typeof x === "string" && x === target);
   }
   return false;
 };
@@ -192,22 +195,66 @@ const ShieldIcon = () => (
 );
 
 const CheckCircleIcon = ({ className }: { className?: string }) => (
-  <svg width="22" height="22" viewBox="0 0 22 22" fill="none" className={className}>
-    <circle cx="11" cy="11" r="10" stroke="#16A34A" strokeWidth="1.5" fill="#F0FDF4" />
-    <path d="M7 11l3 3 5-6" stroke="#16A34A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  <svg
+    width="22"
+    height="22"
+    viewBox="0 0 22 22"
+    fill="none"
+    className={className}
+  >
+    <circle
+      cx="11"
+      cy="11"
+      r="10"
+      stroke="#16A34A"
+      strokeWidth="1.5"
+      fill="#F0FDF4"
+    />
+    <path
+      d="M7 11l3 3 5-6"
+      stroke="#16A34A"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </svg>
 );
 
 const FailCircleIcon = ({ className }: { className?: string }) => (
-  <svg width="22" height="22" viewBox="0 0 22 22" fill="none" className={className}>
-    <circle cx="11" cy="11" r="10" stroke="#DC2626" strokeWidth="1.5" fill="#FEF2F2" />
-    <path d="M8 8l6 6M14 8l-6 6" stroke="#DC2626" strokeWidth="1.5" strokeLinecap="round" />
+  <svg
+    width="22"
+    height="22"
+    viewBox="0 0 22 22"
+    fill="none"
+    className={className}
+  >
+    <circle
+      cx="11"
+      cy="11"
+      r="10"
+      stroke="#DC2626"
+      strokeWidth="1.5"
+      fill="#FEF2F2"
+    />
+    <path
+      d="M8 8l6 6M14 8l-6 6"
+      stroke="#DC2626"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
   </svg>
 );
 
 const PlayCircleIcon = () => (
   <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-    <circle cx="11" cy="11" r="10" stroke="#3B82F6" strokeWidth="1.5" fill="#EFF6FF" />
+    <circle
+      cx="11"
+      cy="11"
+      r="10"
+      stroke="#3B82F6"
+      strokeWidth="1.5"
+      fill="#EFF6FF"
+    />
     <path d="M9 7.5l6 3.5-6 3.5V7.5z" fill="#3B82F6" />
   </svg>
 );
@@ -226,30 +273,58 @@ const ChevronIcon = ({ expanded }: { expanded: boolean }) => (
     fill="none"
     className={`transition-transform ${expanded ? "rotate-180" : ""}`}
   >
-    <path d="M6 8l4 4 4-4" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path
+      d="M6 8l4 4 4-4"
+      stroke="#6B7280"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </svg>
 );
 
 const DownloadIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <path d="M8 2v8m0 0l-3-3m3 3l3-3M3 12h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path
+      d="M8 2v8m0 0l-3-3m3 3l3-3M3 12h10"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </svg>
 );
 
 const ExternalLinkIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="inline ml-1">
-    <path d="M6 2H3a1 1 0 00-1 1v8a1 1 0 001 1h8a1 1 0 001-1V8M8 2h4m0 0v4m0-4L6.5 7.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 14 14"
+    fill="none"
+    className="inline ml-1"
+  >
+    <path
+      d="M6 2H3a1 1 0 00-1 1v8a1 1 0 001 1h8a1 1 0 001-1V8M8 2h4m0 0v4m0-4L6.5 7.5"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </svg>
 );
 
 // ── Sub-components ──────────────────────────────────────────────────────────
 
-const MatchDetailsTable = ({ matchDetails }: { matchDetails: MatchDetail[] }) => {
+const MatchDetailsTable = ({
+  matchDetails,
+}: { matchDetails: MatchDetail[] }) => {
   if (!matchDetails || matchDetails.length === 0) return null;
 
   return (
     <div className="mt-3">
-      <h5 className="text-sm font-medium mb-2 text-gray-700">Match Details ({matchDetails.length})</h5>
+      <h5 className="text-sm font-medium mb-2 text-gray-700">
+        Match Details ({matchDetails.length})
+      </h5>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
@@ -272,7 +347,9 @@ const MatchDetailsTable = ({ matchDetails }: { matchDetails: MatchDetail[] }) =>
                 <td className="py-2 pr-4">
                   <span
                     className={`px-2 py-0.5 rounded text-xs font-medium ${
-                      match.action_taken === "BLOCK" ? "bg-red-100 text-red-800" : "bg-blue-50 text-blue-700"
+                      match.action_taken === "BLOCK"
+                        ? "bg-red-100 text-red-800"
+                        : "bg-blue-50 text-blue-700"
                     }`}
                   >
                     {match.action_taken ?? "-"}
@@ -329,7 +406,8 @@ interface TimelineEntry {
 
 const RequestLifecycle = ({ entries }: { entries: GuardrailInformation[] }) => {
   const sorted = useMemo(
-    () => [...entries].sort((a, b) => (a.start_time ?? 0) - (b.start_time ?? 0)),
+    () =>
+      [...entries].sort((a, b) => (a.start_time ?? 0) - (b.start_time ?? 0)),
     [entries],
   );
 
@@ -344,11 +422,17 @@ const RequestLifecycle = ({ entries }: { entries: GuardrailInformation[] }) => {
 
     // Pre-call guardrails — use modeMatches so array modes (e.g. ["pre_call", "post_call"])
     // place the entry in every matching bucket.
-    const preCalls = sorted.filter((e) => modeMatches(e.guardrail_mode, "pre_call"));
-    const postCalls = sorted.filter(
-      (e) => modeMatches(e.guardrail_mode, "post_call") || modeMatches(e.guardrail_mode, "logging_only"),
+    const preCalls = sorted.filter((e) =>
+      modeMatches(e.guardrail_mode, "pre_call"),
     );
-    const duringCalls = sorted.filter((e) => modeMatches(e.guardrail_mode, "during_call"));
+    const postCalls = sorted.filter(
+      (e) =>
+        modeMatches(e.guardrail_mode, "post_call") ||
+        modeMatches(e.guardrail_mode, "logging_only"),
+    );
+    const duringCalls = sorted.filter((e) =>
+      modeMatches(e.guardrail_mode, "during_call"),
+    );
 
     for (const e of preCalls) {
       const offsetMs = Math.round((e.end_time - baseTime) * 1000);
@@ -362,9 +446,15 @@ const RequestLifecycle = ({ entries }: { entries: GuardrailInformation[] }) => {
     }
 
     // LLM call — infer from gap between pre-call end and post-call start
-    const lastPreEnd = preCalls.length > 0 ? Math.max(...preCalls.map((e) => e.end_time)) : baseTime;
-    const firstPostStart = postCalls.length > 0 ? Math.min(...postCalls.map((e) => e.start_time)) : undefined;
-    const llmEndTime = firstPostStart ?? (lastPreEnd + 1);
+    const lastPreEnd =
+      preCalls.length > 0
+        ? Math.max(...preCalls.map((e) => e.end_time))
+        : baseTime;
+    const firstPostStart =
+      postCalls.length > 0
+        ? Math.min(...postCalls.map((e) => e.start_time))
+        : undefined;
+    const llmEndTime = firstPostStart ?? lastPreEnd + 1;
     const llmOffsetMs = Math.round((llmEndTime - baseTime) * 1000);
 
     items.push({
@@ -400,7 +490,11 @@ const RequestLifecycle = ({ entries }: { entries: GuardrailInformation[] }) => {
     // Response returned
     const maxEnd = Math.max(...sorted.map((e) => e.end_time));
     const responseOffsetMs = Math.round((maxEnd - baseTime) * 1000) + 1;
-    items.push({ type: "response", label: "Response returned", offsetMs: responseOffsetMs });
+    items.push({
+      type: "response",
+      label: "Response returned",
+      offsetMs: responseOffsetMs,
+    });
 
     return items;
   }, [sorted]);
@@ -427,7 +521,10 @@ const RequestLifecycle = ({ entries }: { entries: GuardrailInformation[] }) => {
                 )}
               </div>
               {idx < timeline.length - 1 && (
-                <div className="w-0.5 bg-gray-200 flex-grow" style={{ minHeight: "24px" }} />
+                <div
+                  className="w-0.5 bg-gray-200 flex-grow"
+                  style={{ minHeight: "24px" }}
+                />
               )}
             </div>
 
@@ -436,7 +533,9 @@ const RequestLifecycle = ({ entries }: { entries: GuardrailInformation[] }) => {
               <div className="flex items-center gap-2 flex-wrap">
                 <span
                   className={`text-sm ${
-                    item.type === "llm" ? "text-blue-600 font-medium" : "text-gray-900"
+                    item.type === "llm"
+                      ? "text-blue-600 font-medium"
+                      : "text-gray-900"
                   }`}
                 >
                   {item.label}
@@ -477,7 +576,9 @@ const EvaluationCard = ({ entry }: { entry: GuardrailInformation }) => {
 
   const guardrailProvider = entry.guardrail_provider ?? "presidio";
   const guardrailResponse = entry.guardrail_response;
-  const presidioEntities = Array.isArray(guardrailResponse) ? guardrailResponse : [];
+  const presidioEntities = Array.isArray(guardrailResponse)
+    ? guardrailResponse
+    : [];
   const bedrockResponse =
     guardrailProvider === "bedrock" &&
     guardrailResponse !== null &&
@@ -508,7 +609,9 @@ const EvaluationCard = ({ entry }: { entry: GuardrailInformation }) => {
 
         {/* Name + badges */}
         <div className="flex items-center gap-2 flex-wrap flex-1 min-w-0">
-          <span className="font-semibold text-gray-900 text-sm truncate">{displayName}</span>
+          <span className="font-semibold text-gray-900 text-sm truncate">
+            {displayName}
+          </span>
 
           <span className="px-2 py-0.5 border border-blue-200 bg-blue-50 text-blue-700 rounded text-[11px] font-semibold uppercase flex-shrink-0">
             {modeStr}
@@ -516,7 +619,9 @@ const EvaluationCard = ({ entry }: { entry: GuardrailInformation }) => {
 
           <span
             className={`px-2 py-0.5 rounded text-[11px] font-semibold uppercase flex-shrink-0 ${
-              success ? "bg-green-100 text-green-700 border border-green-200" : "bg-red-100 text-red-700 border border-red-200"
+              success
+                ? "bg-green-100 text-green-700 border border-green-200"
+                : "bg-red-100 text-red-700 border border-red-200"
             }`}
           >
             {success ? "PASSED" : "FAILED"}
@@ -525,7 +630,9 @@ const EvaluationCard = ({ entry }: { entry: GuardrailInformation }) => {
           {matchCountStr && (
             <span
               className={`px-2 py-0.5 rounded text-[11px] font-medium flex-shrink-0 ${
-                totalMasked === 0 ? "bg-green-50 text-green-700 border border-green-200" : "bg-amber-50 text-amber-700 border border-amber-200"
+                totalMasked === 0
+                  ? "bg-green-50 text-green-700 border border-green-200"
+                  : "bg-amber-50 text-amber-700 border border-amber-200"
               }`}
             >
               {matchCountStr}
@@ -540,7 +647,9 @@ const EvaluationCard = ({ entry }: { entry: GuardrailInformation }) => {
 
           {riskScore != null && success && (
             <Tooltip title={`Risk score: ${riskScore}/10`}>
-              <span className={`px-2 py-0.5 border rounded text-[11px] font-semibold flex-shrink-0 ${getRiskColor(riskScore)}`}>
+              <span
+                className={`px-2 py-0.5 border rounded text-[11px] font-semibold flex-shrink-0 ${getRiskColor(riskScore)}`}
+              >
                 Risk {riskScore}/10
               </span>
             </Tooltip>
@@ -562,32 +671,45 @@ const EvaluationCard = ({ entry }: { entry: GuardrailInformation }) => {
       {/* Expanded details */}
       {expanded && (
         <div className="border-t border-gray-100 px-4 py-3">
-
           {/* Classification details for llm-judge */}
           {entry.classification && (
             <div className="mb-3 bg-gray-50 rounded-lg p-3 space-y-1">
-              <h5 className="text-sm font-medium text-gray-700 mb-2">Classification</h5>
+              <h5 className="text-sm font-medium text-gray-700 mb-2">
+                Classification
+              </h5>
               {entry.classification.category && (
                 <div className="flex text-sm">
-                  <span className="font-medium w-1/3 text-gray-500">Category:</span>
+                  <span className="font-medium w-1/3 text-gray-500">
+                    Category:
+                  </span>
                   <span>{entry.classification.category}</span>
                 </div>
               )}
               {entry.classification.article_reference && (
                 <div className="flex text-sm">
-                  <span className="font-medium w-1/3 text-gray-500">Reference:</span>
-                  <span className="font-mono">{entry.classification.article_reference}</span>
+                  <span className="font-medium w-1/3 text-gray-500">
+                    Reference:
+                  </span>
+                  <span className="font-mono">
+                    {entry.classification.article_reference}
+                  </span>
                 </div>
               )}
               {entry.classification.confidence != null && (
                 <div className="flex text-sm">
-                  <span className="font-medium w-1/3 text-gray-500">Confidence:</span>
-                  <span>{(entry.classification.confidence * 100).toFixed(0)}%</span>
+                  <span className="font-medium w-1/3 text-gray-500">
+                    Confidence:
+                  </span>
+                  <span>
+                    {(entry.classification.confidence * 100).toFixed(0)}%
+                  </span>
                 </div>
               )}
               {entry.classification.reason && (
                 <div className="flex text-sm">
-                  <span className="font-medium w-1/3 text-gray-500">Reason:</span>
+                  <span className="font-medium w-1/3 text-gray-500">
+                    Reason:
+                  </span>
                   <span>{entry.classification.reason}</span>
                 </div>
               )}
@@ -602,13 +724,20 @@ const EvaluationCard = ({ entry }: { entry: GuardrailInformation }) => {
           {/* Masked entity summary */}
           {totalMasked > 0 && (
             <div className="mt-3">
-              <h5 className="text-sm font-medium text-gray-700 mb-2">Masked Entities</h5>
+              <h5 className="text-sm font-medium text-gray-700 mb-2">
+                Masked Entities
+              </h5>
               <div className="flex flex-wrap gap-2">
-                {Object.entries(entry.masked_entity_count || {}).map(([entityType, count]) => (
-                  <span key={entityType} className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs font-medium">
-                    {entityType}: {count}
-                  </span>
-                ))}
+                {Object.entries(entry.masked_entity_count || {}).map(
+                  ([entityType, count]) => (
+                    <span
+                      key={entityType}
+                      className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs font-medium"
+                    >
+                      {entityType}: {count}
+                    </span>
+                  ),
+                )}
               </div>
             </div>
           )}
@@ -624,14 +753,17 @@ const EvaluationCard = ({ entry }: { entry: GuardrailInformation }) => {
               <BedrockGuardrailDetails response={bedrockResponse} />
             </div>
           )}
-          {guardrailProvider === "litellm_content_filter" && guardrailResponse && (
-            <div className="mt-3">
-              <ContentFilterDetails response={guardrailResponse} />
-            </div>
-          )}
+          {guardrailProvider === "litellm_content_filter" &&
+            guardrailResponse && (
+              <div className="mt-3">
+                <ContentFilterDetails response={guardrailResponse} />
+              </div>
+            )}
           {guardrailProvider &&
             !PROVIDERS_WITH_CUSTOM_RENDERERS.has(guardrailProvider) &&
-            guardrailResponse && <GenericGuardrailResponse response={guardrailResponse} />}
+            guardrailResponse && (
+              <GenericGuardrailResponse response={guardrailResponse} />
+            )}
         </div>
       )}
     </div>
@@ -640,7 +772,11 @@ const EvaluationCard = ({ entry }: { entry: GuardrailInformation }) => {
 
 // ── Main Component ──────────────────────────────────────────────────────────
 
-const GuardrailViewer = ({ data, accessToken, logEntry }: GuardrailViewerProps) => {
+const GuardrailViewer = ({
+  data,
+  accessToken,
+  logEntry,
+}: GuardrailViewerProps) => {
   const guardrailEntries = useMemo(() => {
     return Array.isArray(data)
       ? data.filter((entry): entry is GuardrailInformation => Boolean(entry))
@@ -653,11 +789,15 @@ const GuardrailViewer = ({ data, accessToken, logEntry }: GuardrailViewerProps) 
   const allPassed = passedCount === guardrailEntries.length;
 
   const totalOverheadMs = useMemo(() => {
-    return Math.round(guardrailEntries.reduce((sum, e) => sum + (e.duration ?? 0), 0) * 1000);
+    return Math.round(
+      guardrailEntries.reduce((sum, e) => sum + (e.duration ?? 0), 0) * 1000,
+    );
   }, [guardrailEntries]);
 
   const policyTemplates = useMemo(() => {
-    return Array.from(new Set(guardrailEntries.map((e) => e.policy_template).filter(Boolean)));
+    return Array.from(
+      new Set(guardrailEntries.map((e) => e.policy_template).filter(Boolean)),
+    );
   }, [guardrailEntries]);
 
   if (guardrailEntries.length === 0) {
@@ -688,7 +828,8 @@ const GuardrailViewer = ({ data, accessToken, logEntry }: GuardrailViewerProps) 
             </h3>
             <div className="flex items-center gap-2 mt-0.5">
               <span className="text-sm text-gray-500">
-                {guardrailEntries.length} guardrail{guardrailEntries.length !== 1 ? "s" : ""} evaluated
+                {guardrailEntries.length} guardrail
+                {guardrailEntries.length !== 1 ? "s" : ""} evaluated
               </span>
               <span className="text-gray-300">|</span>
               <span
@@ -700,7 +841,13 @@ const GuardrailViewer = ({ data, accessToken, logEntry }: GuardrailViewerProps) 
               >
                 {allPassed ? (
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                    <path d="M3 6l2.5 2.5L9 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <path
+                      d="M3 6l2.5 2.5L9 4"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 ) : null}
                 {passedCount} Passed

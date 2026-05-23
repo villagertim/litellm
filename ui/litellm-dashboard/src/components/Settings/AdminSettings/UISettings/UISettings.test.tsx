@@ -1,7 +1,7 @@
-import { render, screen, fireEvent, act } from "@testing-library/react";
+import NotificationManager from "@/components/molecules/notifications_manager";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import UISettings from "./UISettings";
-import NotificationManager from "@/components/molecules/notifications_manager";
 
 const mockUseAuthorized = vi.hoisted(() => vi.fn());
 const mockUseUISettings = vi.hoisted(() => vi.fn());
@@ -27,7 +27,9 @@ vi.mock("@/components/molecules/notifications_manager", () => ({
   },
 }));
 
-const buildSettingsResponse = (overrides?: Partial<Record<string, unknown>>) => ({
+const buildSettingsResponse = (
+  overrides?: Partial<Record<string, unknown>>,
+) => ({
   data: {
     field_schema: {
       description: "UI settings description",
@@ -71,9 +73,21 @@ describe("UISettings", () => {
     render(<UISettings />);
 
     expect(screen.getByText("UI Settings")).toBeInTheDocument();
-    expect(screen.getByRole("switch", { name: "Disable model add for internal users" })).toBeInTheDocument();
-    expect(screen.getByRole("switch", { name: "Disable team admin delete team user" })).toBeInTheDocument();
-    expect(screen.getByRole("switch", { name: "Require authentication for public AI Hub" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("switch", {
+        name: "Disable model add for internal users",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("switch", {
+        name: "Disable team admin delete team user",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("switch", {
+        name: "Require authentication for public AI Hub",
+      }),
+    ).toBeInTheDocument();
   });
 
   it("should toggle setting and call update", () => {
@@ -89,7 +103,9 @@ describe("UISettings", () => {
 
     render(<UISettings />);
 
-    const toggle = screen.getByRole("switch", { name: "Disable model add for internal users" });
+    const toggle = screen.getByRole("switch", {
+      name: "Disable model add for internal users",
+    });
 
     act(() => {
       fireEvent.click(toggle);
@@ -102,7 +118,9 @@ describe("UISettings", () => {
         onError: expect.any(Function),
       }),
     );
-    expect(NotificationManager.success).toHaveBeenCalledWith("UI settings updated successfully");
+    expect(NotificationManager.success).toHaveBeenCalledWith(
+      "UI settings updated successfully",
+    );
   });
 
   it("should toggle disable team admin delete team user setting and call update", () => {
@@ -118,7 +136,9 @@ describe("UISettings", () => {
 
     render(<UISettings />);
 
-    const toggle = screen.getByRole("switch", { name: "Disable team admin delete team user" });
+    const toggle = screen.getByRole("switch", {
+      name: "Disable team admin delete team user",
+    });
 
     act(() => {
       fireEvent.click(toggle);
@@ -131,7 +151,9 @@ describe("UISettings", () => {
         onError: expect.any(Function),
       }),
     );
-    expect(NotificationManager.success).toHaveBeenCalledWith("UI settings updated successfully");
+    expect(NotificationManager.success).toHaveBeenCalledWith(
+      "UI settings updated successfully",
+    );
   });
 
   it("should toggle require auth for public AI Hub setting and call update", () => {
@@ -147,7 +169,9 @@ describe("UISettings", () => {
 
     render(<UISettings />);
 
-    const toggle = screen.getByRole("switch", { name: "Require authentication for public AI Hub" });
+    const toggle = screen.getByRole("switch", {
+      name: "Require authentication for public AI Hub",
+    });
 
     act(() => {
       fireEvent.click(toggle);
@@ -160,6 +184,8 @@ describe("UISettings", () => {
         onError: expect.any(Function),
       }),
     );
-    expect(NotificationManager.success).toHaveBeenCalledWith("UI settings updated successfully");
+    expect(NotificationManager.success).toHaveBeenCalledWith(
+      "UI settings updated successfully",
+    );
   });
 });

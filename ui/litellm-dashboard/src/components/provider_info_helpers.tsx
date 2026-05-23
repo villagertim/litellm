@@ -303,7 +303,9 @@ export const providerLogoMap: Record<string, string> = {
   [Providers.XINFERENCE]: `${asset_logos_folder}xinference.svg`,
 };
 
-export const getProviderLogoAndName = (providerValue: string): { logo: string; displayName: string } => {
+export const getProviderLogoAndName = (
+  providerValue: string,
+): { logo: string; displayName: string } => {
   if (!providerValue) {
     return { logo: "", displayName: "-" };
   }
@@ -375,21 +377,29 @@ export const getPlaceholder = (selectedProvider: string): string => {
   }
 };
 
-export const getProviderModels = (provider: Providers, modelMap: any): Array<string> => {
-  let providerKey = provider;
+export const getProviderModels = (
+  provider: Providers,
+  modelMap: any,
+): Array<string> => {
+  const providerKey = provider;
   console.log(`Provider key: ${providerKey}`);
-  let custom_llm_provider = provider_map[providerKey];
+  const custom_llm_provider = provider_map[providerKey];
   console.log(`Provider mapped to: ${custom_llm_provider}`);
 
-  let providerModels: Array<string> = [];
+  const providerModels: Array<string> = [];
 
   if (providerKey && typeof modelMap === "object") {
     Object.entries(modelMap).forEach(([key, value]) => {
-      if (value !== null && typeof value === "object" && "litellm_provider" in (value as object)) {
+      if (
+        value !== null &&
+        typeof value === "object" &&
+        "litellm_provider" in (value as object)
+      ) {
         const litellmProvider = (value as any)["litellm_provider"];
         if (
           litellmProvider === custom_llm_provider ||
-          (typeof litellmProvider === "string" && litellmProvider.includes(custom_llm_provider))
+          (typeof litellmProvider === "string" &&
+            litellmProvider.includes(custom_llm_provider))
         ) {
           providerModels.push(key);
         }

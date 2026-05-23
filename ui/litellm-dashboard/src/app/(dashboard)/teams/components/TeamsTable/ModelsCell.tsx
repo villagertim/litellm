@@ -1,8 +1,8 @@
-import { Badge, Icon, TableCell, Text } from "@tremor/react";
-import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline";
 import { getModelDisplayName } from "@/components/key_team_helpers/fetch_available_models_team_key";
+import type { Team } from "@/components/key_team_helpers/key_list";
+import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline";
+import { Badge, Icon, TableCell, Text } from "@tremor/react";
 import React, { useMemo, useState } from "react";
-import { Team } from "@/components/key_team_helpers/key_list";
 
 interface ModelsCellProps {
   team: Team;
@@ -16,7 +16,10 @@ interface ModelEntry {
 const ModelsCell = ({ team }: ModelsCellProps) => {
   const [expandedAccordion, setExpandedAccordion] = useState<boolean>(false);
 
-  const isAllModels = !team.models || team.models.length === 0 || team.models.includes("all-proxy-models");
+  const isAllModels =
+    !team.models ||
+    team.models.length === 0 ||
+    team.models.includes("all-proxy-models");
 
   const modelEntries: ModelEntry[] = useMemo(() => {
     if (isAllModels) return [];
@@ -39,13 +42,18 @@ const ModelsCell = ({ team }: ModelsCellProps) => {
       );
     }
     const displayName = getModelDisplayName(entry.name);
-    const truncated = displayName.length > 30 ? `${displayName.slice(0, 30)}...` : displayName;
+    const truncated =
+      displayName.length > 30 ? `${displayName.slice(0, 30)}...` : displayName;
     return (
       <Badge
         key={index}
         size={"xs"}
         color={entry.source === "access_group" ? "green" : "blue"}
-        title={entry.source === "access_group" ? "From access group" : "Direct assignment"}
+        title={
+          entry.source === "access_group"
+            ? "From access group"
+            : "Direct assignment"
+        }
       >
         <Text>{truncated}</Text>
       </Badge>
@@ -72,7 +80,9 @@ const ModelsCell = ({ team }: ModelsCellProps) => {
               {modelEntries.length > 3 && (
                 <div>
                   <Icon
-                    icon={expandedAccordion ? ChevronDownIcon : ChevronRightIcon}
+                    icon={
+                      expandedAccordion ? ChevronDownIcon : ChevronRightIcon
+                    }
                     className="cursor-pointer"
                     size="xs"
                     onClick={() => {
@@ -82,17 +92,24 @@ const ModelsCell = ({ team }: ModelsCellProps) => {
                 </div>
               )}
               <div className="flex flex-wrap gap-1">
-                {modelEntries.slice(0, 3).map((entry, index) => renderBadge(entry, index))}
+                {modelEntries
+                  .slice(0, 3)
+                  .map((entry, index) => renderBadge(entry, index))}
                 {modelEntries.length > 3 && !expandedAccordion && (
                   <Badge size={"xs"} color="gray" className="cursor-pointer">
                     <Text>
-                      +{modelEntries.length - 3} {modelEntries.length - 3 === 1 ? "more model" : "more models"}
+                      +{modelEntries.length - 3}{" "}
+                      {modelEntries.length - 3 === 1
+                        ? "more model"
+                        : "more models"}
                     </Text>
                   </Badge>
                 )}
                 {expandedAccordion && (
                   <div className="flex flex-wrap gap-1">
-                    {modelEntries.slice(3).map((entry, index) => renderBadge(entry, index + 3))}
+                    {modelEntries
+                      .slice(3)
+                      .map((entry, index) => renderBadge(entry, index + 3))}
                   </div>
                 )}
               </div>

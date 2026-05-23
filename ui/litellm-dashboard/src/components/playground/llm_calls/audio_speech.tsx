@@ -1,6 +1,6 @@
-import openai from "openai";
-import { getProxyBaseUrl } from "@/components/networking";
 import NotificationManager from "@/components/molecules/notifications_manager";
+import { getProxyBaseUrl } from "@/components/networking";
+import openai from "openai";
 import type { OpenAIVoice } from "../chat_ui/chatConstants";
 
 export async function makeOpenAIAudioSpeechRequest(
@@ -18,7 +18,7 @@ export async function makeOpenAIAudioSpeechRequest(
   // base url should be the current base_url
   const isLocal = process.env.NODE_ENV === "development";
   if (isLocal !== true) {
-    console.log = function () {};
+    console.log = () => {};
   }
   console.log("isLocal:", isLocal);
   const proxyBaseUrl = customBaseUrl || getProxyBaseUrl();
@@ -26,7 +26,10 @@ export async function makeOpenAIAudioSpeechRequest(
     apiKey: accessToken,
     baseURL: proxyBaseUrl,
     dangerouslyAllowBrowser: true,
-    defaultHeaders: tags && tags.length > 0 ? { "x-litellm-tags": tags.join(",") } : undefined,
+    defaultHeaders:
+      tags && tags.length > 0
+        ? { "x-litellm-tags": tags.join(",") }
+        : undefined,
   });
 
   try {
@@ -51,7 +54,9 @@ export async function makeOpenAIAudioSpeechRequest(
     if (signal?.aborted) {
       console.log("Audio speech request was cancelled");
     } else {
-      NotificationManager.fromBackend(`Error occurred while generating speech. Please try again. Error: ${error}`);
+      NotificationManager.fromBackend(
+        `Error occurred while generating speech. Please try again. Error: ${error}`,
+      );
     }
     throw error; // Re-throw to allow the caller to handle the error
   }

@@ -1,13 +1,18 @@
 "use client";
 
-import Organizations, { fetchOrganizations } from "@/components/organizations";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { useEffect, useState } from "react";
-import { Organization } from "@/components/networking";
+import type { Organization } from "@/components/networking";
 import { fetchUserModels } from "@/components/organisms/create_key_button";
+import Organizations, { fetchOrganizations } from "@/components/organizations";
+import { useEffect, useState } from "react";
 
 const OrganizationsPage = () => {
-  const { userId: userID, accessToken, userRole, premiumUser } = useAuthorized();
+  const {
+    userId: userID,
+    accessToken,
+    userRole,
+    premiumUser,
+  } = useAuthorized();
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [userModels, setUserModels] = useState<string[]>([]);
 
@@ -16,7 +21,9 @@ const OrganizationsPage = () => {
   }, [accessToken]);
 
   useEffect(() => {
-    fetchUserModels(userID, userRole, accessToken, setUserModels).then(() => {});
+    fetchUserModels(userID, userRole, accessToken, setUserModels).then(
+      () => {},
+    );
   }, [userID, userRole, accessToken]);
 
   return (

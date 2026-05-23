@@ -1,8 +1,8 @@
-import { userListCall, UserListResponse } from "@/components/networking";
+import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { type UserListResponse, userListCall } from "@/components/networking";
+import { all_admin_roles } from "@/utils/roles";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { createQueryKeys } from "../common/queryKeysFactory";
-import { all_admin_roles } from "@/utils/roles";
-import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 
 const infiniteUsersKeys = createQueryKeys("infiniteUsers");
 
@@ -23,10 +23,10 @@ export const useInfiniteUsers = (
     queryFn: async ({ pageParam }) => {
       return await userListCall(
         accessToken!,
-        null,                       // userIDs
-        pageParam as number,        // page
-        pageSize,                   // page_size
-        searchEmail || null,        // userEmail
+        null, // userIDs
+        pageParam as number, // page
+        pageSize, // page_size
+        searchEmail || null, // userEmail
       );
     },
     initialPageParam: 1,

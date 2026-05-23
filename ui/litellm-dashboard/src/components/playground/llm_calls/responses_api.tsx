@@ -1,13 +1,13 @@
-import openai from "openai";
-import { MessageType } from "../chat_ui/types";
-import { TokenUsage } from "../chat_ui/ResponseMetrics";
-import { getProxyBaseUrl } from "@/components/networking";
 import NotificationManager from "@/components/molecules/notifications_manager";
+import { getProxyBaseUrl } from "@/components/networking";
+import openai from "openai";
 import type { MCPEvent } from "../../mcp_tools/types";
-import { MCPServer, MCPToolset } from "../../mcp_tools/types";
+import type { MCPServer, MCPToolset } from "../../mcp_tools/types";
+import type { TokenUsage } from "../chat_ui/ResponseMetrics";
+import type { MessageType } from "../chat_ui/types";
 import {
-  CodeInterpreterResult,
-  CodeInterpreterState,
+  type CodeInterpreterResult,
+  type CodeInterpreterState,
   handleCodeInterpreterCall,
   handleCodeInterpreterOutput,
 } from "./code_interpreter_handler";
@@ -44,13 +44,15 @@ export async function makeOpenAIResponsesRequest(
   }
 
   if (!selectedModel || selectedModel.trim() === "") {
-    throw new Error("Model is required. Please select a model before sending a request.");
+    throw new Error(
+      "Model is required. Please select a model before sending a request.",
+    );
   }
 
   // Base URL should be the current base_url
   const isLocal = process.env.NODE_ENV === "development";
   if (isLocal !== true) {
-    console.log = function () {};
+    console.log = () => {};
   }
 
   const proxyBaseUrl = customBaseUrl || getProxyBaseUrl();
@@ -108,7 +110,9 @@ export async function makeOpenAIResponsesRequest(
           if (serverId.startsWith("toolset:")) {
             // Toolset: same /{name}/mcp pattern as individual servers
             const toolsetId = serverId.slice("toolset:".length);
-            const toolset = mcpToolsets?.find((t) => t.toolset_id === toolsetId);
+            const toolset = mcpToolsets?.find(
+              (t) => t.toolset_id === toolsetId,
+            );
             const toolsetName = toolset?.toolset_name || toolsetId;
             tools.push({
               type: "mcp",
@@ -128,7 +132,9 @@ export async function makeOpenAIResponsesRequest(
               server_label: routeName, // unique per request — collisions cause silent tool-routing failures
               server_url: `${proxyBaseUrl}/mcp/${encodeURIComponent(routeName)}`,
               require_approval: "never",
-              ...(allowedTools.length > 0 ? { allowed_tools: allowedTools } : {}),
+              ...(allowedTools.length > 0
+                ? { allowed_tools: allowedTools }
+                : {}),
             });
           }
         });
@@ -151,7 +157,9 @@ export async function makeOpenAIResponsesRequest(
         input: formattedInput,
         stream: true,
         litellm_trace_id: traceId,
-        ...(previousResponseId ? { previous_response_id: previousResponseId } : {}),
+        ...(previousResponseId
+          ? { previous_response_id: previousResponseId }
+          : {}),
         ...(vector_store_ids ? { vector_store_ids } : {}),
         ...(guardrails ? { guardrails } : {}),
         ...(policies ? { policies } : {}),
@@ -161,7 +169,10 @@ export async function makeOpenAIResponsesRequest(
     );
 
     let mcpToolUsed = "";
-    let codeInterpreterState: CodeInterpreterState = { code: "", containerId: "" };
+    let codeInterpreterState: CodeInterpreterState = {
+      code: "",
+      containerId: "",
+    };
 
     for await (const event of response) {
       console.log("Response event:", event);
@@ -172,7 +183,8 @@ export async function makeOpenAIResponsesRequest(
         if (
           event.type?.startsWith("response.mcp_") ||
           (event.type === "response.output_item.done" &&
-            (event.item?.type === "mcp_list_tools" || event.item?.type === "mcp_call"))
+            (event.item?.type === "mcp_list_tools" ||
+              event.item?.type === "mcp_call"))
         ) {
           console.log("MCP event received:", event);
 
@@ -194,14 +206,25 @@ export async function makeOpenAIResponsesRequest(
         }
 
         // Check for MCP tool usage
-        if (event.type === "response.output_item.done" && event.item?.type === "mcp_call" && event.item?.name) {
+        if (
+          event.type === "response.output_item.done" &&
+          event.item?.type === "mcp_call" &&
+          event.item?.name
+        ) {
           mcpToolUsed = event.item.name;
           console.log("MCP tool used:", mcpToolUsed);
         }
 
         // Handle code interpreter events
-        codeInterpreterState = handleCodeInterpreterCall(event, codeInterpreterState);
-        handleCodeInterpreterOutput(event, codeInterpreterState, onCodeInterpreterResult);
+        codeInterpreterState = handleCodeInterpreterCall(
+          event,
+          codeInterpreterState,
+        );
+        handleCodeInterpreterOutput(
+          event,
+          codeInterpreterState,
+          onCodeInterpreterResult,
+        );
 
         // Handle output text delta
         // 1) drop any "role" streams
@@ -210,7 +233,10 @@ export async function makeOpenAIResponsesRequest(
         }
 
         // 2) only handle actual text deltas
-        if (event.type === "response.output_text.delta" && typeof event.delta === "string") {
+        if (
+          event.type === "response.output_text.delta" &&
+          typeof event.delta === "string"
+        ) {
           const delta = event.delta;
           console.log("Text delta", delta);
           if (delta.length > 0) {
@@ -220,7 +246,11 @@ export async function makeOpenAIResponsesRequest(
             if (!firstTokenReceived) {
               firstTokenReceived = true;
               const timeToFirstToken = Date.now() - startTime;
-              console.log("First token received! Time:", timeToFirstToken, "ms");
+              console.log(
+                "First token received! Time:",
+                timeToFirstToken,
+                "ms",
+              );
 
               if (onTimingData) {
                 onTimingData(timeToFirstToken);
@@ -262,7 +292,8 @@ export async function makeOpenAIResponsesRequest(
 
             // Add reasoning tokens if available
             if (usage.completion_tokens_details?.reasoning_tokens) {
-              usageData.reasoningTokens = usage.completion_tokens_details.reasoning_tokens;
+              usageData.reasoningTokens =
+                usage.completion_tokens_details.reasoning_tokens;
             }
 
             onUsageData(usageData, mcpToolUsed);

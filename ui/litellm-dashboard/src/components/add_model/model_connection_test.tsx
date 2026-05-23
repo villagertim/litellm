@@ -1,9 +1,13 @@
+import {
+  CopyOutlined,
+  InfoCircleOutlined,
+  WarningOutlined,
+} from "@ant-design/icons";
+import { Button, Divider, Typography } from "antd";
 import React from "react";
-import { Typography, Button, Divider } from "antd";
-import { WarningOutlined, InfoCircleOutlined, CopyOutlined } from "@ant-design/icons";
+import NotificationsManager from "../molecules/notifications_manager";
 import { testConnectionRequest } from "../networking";
 import { prepareModelAddRequest } from "./handle_add_model_submit";
-import NotificationsManager from "../molecules/notifications_manager";
 const { Text } = Typography;
 
 interface ModelConnectionTestProps {
@@ -43,11 +47,17 @@ const ModelConnectionTest: React.FC<ModelConnectionTestProps> = ({
 
     try {
       console.log("Testing connection with form values:", formValues);
-      const result = await prepareModelAddRequest(formValues, accessToken, null);
+      const result = await prepareModelAddRequest(
+        formValues,
+        accessToken,
+        null,
+      );
 
       if (!result) {
         console.log("No result from prepareModelAddRequest");
-        setError("Failed to prepare model data. Please check your form inputs.");
+        setError(
+          "Failed to prepare model data. Please check your form inputs.",
+        );
         setIsSuccess(false);
         setIsLoading(false);
         return;
@@ -55,15 +65,25 @@ const ModelConnectionTest: React.FC<ModelConnectionTestProps> = ({
 
       console.log("Result from prepareModelAddRequest:", result);
 
-      const { litellmParamsObj, modelInfoObj, modelName: returnedModelName } = result[0];
+      const {
+        litellmParamsObj,
+        modelInfoObj,
+        modelName: returnedModelName,
+      } = result[0];
 
-      const response = await testConnectionRequest(accessToken, litellmParamsObj, modelInfoObj, modelInfoObj?.mode);
+      const response = await testConnectionRequest(
+        accessToken,
+        litellmParamsObj,
+        modelInfoObj,
+        modelInfoObj?.mode,
+      );
       if (response.status === "success") {
         NotificationsManager.success("Connection test successful!");
         setError(null);
         setIsSuccess(true);
       } else {
-        const errorMessage = response.result?.error || response.message || "Unknown error";
+        const errorMessage =
+          response.result?.error || response.message || "Unknown error";
         setError(errorMessage);
         setRawRequest(litellmParamsObj);
         setRawResponse(response.result?.raw_request_typed_dict);
@@ -137,7 +157,9 @@ ${formattedBody}
     : "";
 
   return (
-    <div style={{ padding: "24px", borderRadius: "8px", backgroundColor: "#fff" }}>
+    <div
+      style={{ padding: "24px", borderRadius: "8px", backgroundColor: "#fff" }}
+    >
       {isLoading ? (
         <div style={{ textAlign: "center", padding: "32px 20px" }}>
           <div className="loading-spinner" style={{ marginBottom: "16px" }}>
@@ -154,7 +176,9 @@ ${formattedBody}
               }}
             />
           </div>
-          <Text style={{ fontSize: "16px" }}>Testing connection to {modelName}...</Text>
+          <Text style={{ fontSize: "16px" }}>
+            Testing connection to {modelName}...
+          </Text>
           <style jsx>{`
             @keyframes spin {
               0% {
@@ -167,8 +191,22 @@ ${formattedBody}
           `}</style>
         </div>
       ) : isSuccess ? (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "32px 20px" }}>
-          <div style={{ color: "#52c41a", fontSize: "24px", display: "flex", alignItems: "center" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "32px 20px",
+          }}
+        >
+          <div
+            style={{
+              color: "#52c41a",
+              fontSize: "24px",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
             <svg
               viewBox="64 64 896 896"
               focusable="false"
@@ -181,16 +219,36 @@ ${formattedBody}
               <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm193.5 301.7l-210.6 292a31.8 31.8 0 01-51.7 0L318.5 484.9c-3.8-5.3 0-12.7 6.5-12.7h46.9c10.2 0 19.9 4.9 25.9 13.3l71.2 98.8 157.2-218c6-8.3 15.6-13.3 25.9-13.3H699c6.5 0 10.3 7.4 6.5 12.7z"></path>
             </svg>
           </div>
-          <Text data-testid="connection-success-msg" type="success" style={{ fontSize: "18px", fontWeight: 500, marginLeft: "10px" }}>
+          <Text
+            data-testid="connection-success-msg"
+            type="success"
+            style={{ fontSize: "18px", fontWeight: 500, marginLeft: "10px" }}
+          >
             Connection to {modelName} successful!
           </Text>
         </div>
       ) : (
         <>
           <div>
-            <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
-              <WarningOutlined style={{ color: "#ff4d4f", fontSize: "24px", marginRight: "12px" }} />
-              <Text data-testid="connection-failure-msg" type="danger" style={{ fontSize: "18px", fontWeight: 500 }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "20px",
+              }}
+            >
+              <WarningOutlined
+                style={{
+                  color: "#ff4d4f",
+                  fontSize: "24px",
+                  marginRight: "12px",
+                }}
+              />
+              <Text
+                data-testid="connection-failure-msg"
+                type="danger"
+                style={{ fontSize: "18px", fontWeight: 500 }}
+              >
                 Connection to {modelName} failed
               </Text>
             </div>
@@ -208,7 +266,10 @@ ${formattedBody}
               <Text strong style={{ display: "block", marginBottom: "8px" }}>
                 Error:{" "}
               </Text>
-              <Text type="danger" style={{ fontSize: "14px", lineHeight: "1.5" }}>
+              <Text
+                type="danger"
+                style={{ fontSize: "14px", lineHeight: "1.5" }}
+              >
                 {errorMessage}
               </Text>
 
@@ -227,7 +288,14 @@ ${formattedBody}
 
             {showDetails && (
               <div style={{ marginBottom: "20px" }}>
-                <Text strong style={{ display: "block", marginBottom: "8px", fontSize: "15px" }}>
+                <Text
+                  strong
+                  style={{
+                    display: "block",
+                    marginBottom: "8px",
+                    fontSize: "15px",
+                  }}
+                >
                   Troubleshooting Details
                 </Text>
                 <pre
@@ -242,13 +310,22 @@ ${formattedBody}
                     lineHeight: "1.5",
                   }}
                 >
-                  {typeof error === "string" ? error : JSON.stringify(error, null, 2)}
+                  {typeof error === "string"
+                    ? error
+                    : JSON.stringify(error, null, 2)}
                 </pre>
               </div>
             )}
 
             <div>
-              <Text strong style={{ display: "block", marginBottom: "8px", fontSize: "15px" }}>
+              <Text
+                strong
+                style={{
+                  display: "block",
+                  marginBottom: "8px",
+                  fontSize: "15px",
+                }}
+              >
                 API Request
               </Text>
               <pre
@@ -280,8 +357,19 @@ ${formattedBody}
         </>
       )}
       <Divider style={{ margin: "24px 0 16px" }} />
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Button type="link" href="https://docs.litellm.ai/docs/providers" target="_blank" icon={<InfoCircleOutlined />}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Button
+          type="link"
+          href="https://docs.litellm.ai/docs/providers"
+          target="_blank"
+          icon={<InfoCircleOutlined />}
+        >
           View Documentation
         </Button>
       </div>

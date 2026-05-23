@@ -1,27 +1,40 @@
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { useReactTable, getCoreRowModel, flexRender } from "@tanstack/react-table";
-import { columns } from "./columns";
-import { ModelData } from "../../model_dashboard/types";
-import { Table, TableHead, TableHeaderCell, TableBody, TableRow, TableCell } from "@tremor/react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+} from "@tremor/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { ModelData } from "../../model_dashboard/types";
 import * as providerInfoHelpers from "../../provider_info_helpers";
+import { columns } from "./columns";
 
 vi.mock("../../provider_info_helpers");
 
 vi.mock("@tremor/react", async (importOriginal) => {
   const React = await import("react");
   const actual = await importOriginal<typeof import("@tremor/react")>();
-  const IconComponent = React.forwardRef<HTMLButtonElement, any>(({ icon: IconComp, onClick, className, ...props }, ref) => {
-    const ariaLabel = className?.includes("cursor-not-allowed")
-      ? "Config model cannot be deleted on the dashboard. Please delete it from the config file."
-      : "Delete model";
-    return React.createElement(
-      "button",
-      { ...props, onClick, className, ref, "aria-label": ariaLabel },
-      IconComp && React.createElement(IconComp, { className: "w-4 h-4" }),
-    );
-  });
+  const IconComponent = React.forwardRef<HTMLButtonElement, any>(
+    ({ icon: IconComp, onClick, className, ...props }, ref) => {
+      const ariaLabel = className?.includes("cursor-not-allowed")
+        ? "Config model cannot be deleted on the dashboard. Please delete it from the config file."
+        : "Delete model";
+      return React.createElement(
+        "button",
+        { ...props, onClick, className, ref, "aria-label": ariaLabel },
+        IconComp && React.createElement(IconComp, { className: "w-4 h-4" }),
+      );
+    },
+  );
   IconComponent.displayName = "Icon";
   return {
     ...actual,
@@ -76,7 +89,10 @@ const TestTable = ({
               <TableHeaderCell key={header.id}>
                 {header.isPlaceholder
                   ? null
-                  : flexRender(header.column.columnDef.header, header.getContext())}
+                  : flexRender(
+                      header.column.columnDef.header,
+                      header.getContext(),
+                    )}
               </TableHeaderCell>
             ))}
           </TableRow>
@@ -99,13 +115,23 @@ const TestTable = ({
 
 describe("columns", () => {
   beforeEach(() => {
-    vi.mocked(providerInfoHelpers.getProviderLogoAndName).mockImplementation((provider: string) => {
-      const providerMap: Record<string, { displayName: string; logo: string }> = {
-        openai: { displayName: "OpenAI", logo: "/openai-logo.png" },
-        anthropic: { displayName: "Anthropic", logo: "/anthropic-logo.png" },
-      };
-      return providerMap[provider] || { displayName: provider || "Unknown provider", logo: "" };
-    });
+    vi.mocked(providerInfoHelpers.getProviderLogoAndName).mockImplementation(
+      (provider: string) => {
+        const providerMap: Record<
+          string,
+          { displayName: string; logo: string }
+        > = {
+          openai: { displayName: "OpenAI", logo: "/openai-logo.png" },
+          anthropic: { displayName: "Anthropic", logo: "/anthropic-logo.png" },
+        };
+        return (
+          providerMap[provider] || {
+            displayName: provider || "Unknown provider",
+            logo: "",
+          }
+        );
+      },
+    );
   });
 
   const defaultProps = {
@@ -245,7 +271,9 @@ describe("columns", () => {
       expect(screen.getByText("Credentials")).toBeInTheDocument();
       // Info icon is in a flex container with Credentials - ant icons render as span with role="img"
       const credentialsHeader = screen.getByText("Credentials").closest("span");
-      expect(credentialsHeader?.parentElement?.querySelector('[role="img"]')).toBeInTheDocument();
+      expect(
+        credentialsHeader?.parentElement?.querySelector('[role="img"]'),
+      ).toBeInTheDocument();
     });
 
     it("should display reusable credential with SyncOutlined icon and credential name", () => {
@@ -271,9 +299,13 @@ describe("columns", () => {
       render(<TestTable data={[model]} columns={cols} />);
 
       expect(screen.getByText("my-reusable-credential")).toBeInTheDocument();
-      const credentialCell = screen.getByText("my-reusable-credential").closest("div");
+      const credentialCell = screen
+        .getByText("my-reusable-credential")
+        .closest("div");
       expect(credentialCell).toHaveClass("flex");
-      expect(screen.getByText("my-reusable-credential")).toHaveClass("text-blue-600");
+      expect(screen.getByText("my-reusable-credential")).toHaveClass(
+        "text-blue-600",
+      );
     });
 
     it("should display Manual with EditOutlined when no credential name", () => {
@@ -677,7 +709,6 @@ describe("columns", () => {
     expect(onDeleteClick).toHaveBeenCalledWith("user-model");
   });
 
-
   it("should disable delete for config models", () => {
     const cols = columns(
       "Admin",
@@ -700,7 +731,9 @@ describe("columns", () => {
     });
     render(<TestTable data={[model]} columns={cols} />);
 
-    const deleteButton = screen.getByRole("button", { name: /config model cannot be deleted/i });
+    const deleteButton = screen.getByRole("button", {
+      name: /config model cannot be deleted/i,
+    });
     expect(deleteButton).toBeInTheDocument();
     expect(deleteButton).toHaveClass("cursor-not-allowed");
   });
@@ -787,7 +820,6 @@ describe("columns", () => {
     expect(screen.getByText("group1")).toBeInTheDocument();
     expect(screen.queryByText(/\+/)).not.toBeInTheDocument();
   });
-
 
   it("should handle missing display name gracefully", () => {
     const getDisplayModelName = vi.fn(() => "");

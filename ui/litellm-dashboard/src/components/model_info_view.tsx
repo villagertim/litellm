@@ -1,8 +1,16 @@
 import { useModelCostMap } from "@/app/(dashboard)/hooks/models/useModelCostMap";
-import { useModelHub, useModelsInfo } from "@/app/(dashboard)/hooks/models/useModels";
+import {
+  useModelHub,
+  useModelsInfo,
+} from "@/app/(dashboard)/hooks/models/useModels";
 import { transformModelData } from "@/app/(dashboard)/models-and-endpoints/utils/modelDataTransformer";
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { ArrowLeftIcon, KeyIcon, RefreshIcon, TrashIcon } from "@heroicons/react/outline";
+import {
+  ArrowLeftIcon,
+  KeyIcon,
+  RefreshIcon,
+  TrashIcon,
+} from "@heroicons/react/outline";
 import {
   Card,
   Grid,
@@ -17,7 +25,6 @@ import {
   Button as TremorButton,
 } from "@tremor/react";
 import { Button, Form, Input, Modal, Select, Tooltip } from "antd";
-import VectorStoreSelector from "./vector_store_management/VectorStoreSelector";
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { copyToClipboard as utilCopyToClipboard } from "../utils/dataUtils";
@@ -28,7 +35,7 @@ import EditAutoRouterModal from "./edit_auto_router/edit_auto_router_modal";
 import ReuseCredentialsModal from "./model_add/reuse_credentials";
 import NotificationsManager from "./molecules/notifications_manager";
 import {
-  CredentialItem,
+  type CredentialItem,
   credentialCreateCall,
   credentialGetCall,
   credentialListCall,
@@ -41,7 +48,8 @@ import {
 } from "./networking";
 import { getProviderLogoAndName } from "./provider_info_helpers";
 import NumericalInput from "./shared/numerical_input";
-import { Tag } from "./tag_management/types";
+import type { Tag } from "./tag_management/types";
+import VectorStoreSelector from "./vector_store_management/VectorStoreSelector";
 import { getDisplayModelName } from "./view_model/model_name_display";
 
 interface ModelInfoViewProps {
@@ -71,7 +79,8 @@ export default function ModelInfoView({
   const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [existingCredential, setExistingCredential] = useState<CredentialItem | null>(null);
+  const [existingCredential, setExistingCredential] =
+    useState<CredentialItem | null>(null);
   const [showCacheControl, setShowCacheControl] = useState(false);
   const [copiedStates, setCopiedStates] = useState<Record<string, boolean>>({});
   const [isAutoRouterModalOpen, setIsAutoRouterModalOpen] = useState(false);
@@ -80,7 +89,8 @@ export default function ModelInfoView({
   const [credentialsList, setCredentialsList] = useState<CredentialItem[]>([]);
 
   // Fetch model data using hook
-  const { data: rawModelDataResponse, isLoading: isLoadingModel } = useModelsInfo(1, 50, undefined, modelId);
+  const { data: rawModelDataResponse, isLoading: isLoadingModel } =
+    useModelsInfo(1, 50, undefined, modelId);
   const { data: modelCostMapData } = useModelCostMap();
   const { data: modelHubData } = useModelHub();
 
@@ -98,7 +108,10 @@ export default function ModelInfoView({
     if (!rawModelDataResponse?.data || rawModelDataResponse.data.length === 0) {
       return null;
     }
-    const transformed = transformModelData(rawModelDataResponse, getProviderFromModel);
+    const transformed = transformModelData(
+      rawModelDataResponse,
+      getProviderFromModel,
+    );
     return transformed.data[0] || null;
   }, [rawModelDataResponse, modelCostMapData]);
 
@@ -106,7 +119,8 @@ export default function ModelInfoView({
   const modelData = transformedModelData;
 
   const canEditModel =
-    (userRole === "Admin" || modelData?.model_info?.created_by === userID) && modelData?.model_info?.db_model;
+    (userRole === "Admin" || modelData?.model_info?.created_by === userID) &&
+    modelData?.model_info?.db_model;
   const isAdmin = userRole === "Admin";
   const isAutoRouter = modelData?.litellm_params?.auto_router_config != null;
 
@@ -141,7 +155,11 @@ export default function ModelInfoView({
     const getExistingCredential = async () => {
       if (!accessToken) return;
       if (usingExistingCredential) return;
-      let existingCredentialResponse = await credentialGetCall(accessToken, null, modelId);
+      const existingCredentialResponse = await credentialGetCall(
+        accessToken,
+        null,
+        modelId,
+      );
       setExistingCredential({
         credential_name: existingCredentialResponse["credential_name"],
         credential_values: existingCredentialResponse["credential_values"],
@@ -153,7 +171,7 @@ export default function ModelInfoView({
       if (!accessToken) return;
       // Only fetch if we don't have modelData yet
       if (modelData) return;
-      let modelInfoResponse = await modelInfoV1Call(accessToken, modelId);
+      const modelInfoResponse = await modelInfoV1Call(accessToken, modelId);
       let specificModelData = modelInfoResponse.data[0];
       if (specificModelData && !specificModelData.litellm_model_name) {
         specificModelData = {
@@ -177,7 +195,9 @@ export default function ModelInfoView({
       if (!accessToken) return;
       try {
         const response = await getGuardrailsList(accessToken);
-        const guardrailNames = response.guardrails.map((g: { guardrail_name: string }) => g.guardrail_name);
+        const guardrailNames = response.guardrails.map(
+          (g: { guardrail_name: string }) => g.guardrail_name,
+        );
         setGuardrailsList(guardrailNames);
       } catch (error) {
         console.error("Failed to fetch guardrails:", error);
@@ -213,7 +233,7 @@ export default function ModelInfoView({
 
   const handleReuseCredential = async (values: any) => {
     if (!accessToken) return;
-    let credentialItem = {
+    const credentialItem = {
       credential_name: values.credential_name,
       model_id: modelId,
       credential_info: {
@@ -221,7 +241,10 @@ export default function ModelInfoView({
       },
     };
     NotificationsManager.info("Storing credential..");
-    let credentialResponse = await credentialCreateCall(accessToken, credentialItem);
+    const credentialResponse = await credentialCreateCall(
+      accessToken,
+      credentialItem,
+    );
     NotificationsManager.success("Credential stored successfully");
   };
 
@@ -233,7 +256,9 @@ export default function ModelInfoView({
       // Parse LiteLLM extra params from JSON text area
       let parsedExtraParams: Record<string, any> = {};
       try {
-        parsedExtraParams = values.litellm_extra_params ? JSON.parse(values.litellm_extra_params) : {};
+        parsedExtraParams = values.litellm_extra_params
+          ? JSON.parse(values.litellm_extra_params)
+          : {};
         delete parsedExtraParams.litellm_credential_name;
       } catch (e) {
         NotificationsManager.fromBackend("Invalid JSON in LiteLLM Params");
@@ -241,7 +266,7 @@ export default function ModelInfoView({
         return;
       }
 
-      let updatedLitellmParams = {
+      const updatedLitellmParams = {
         ...values.litellm_params,
         ...parsedExtraParams,
         model: values.litellm_model_name,
@@ -256,15 +281,26 @@ export default function ModelInfoView({
         tags: values.tags,
       };
 
-      if (form.isFieldTouched("input_cost") && values.input_cost !== undefined && values.input_cost !== null) {
-        updatedLitellmParams.input_cost_per_token = Number(values.input_cost) / 1_000_000;
+      if (
+        form.isFieldTouched("input_cost") &&
+        values.input_cost !== undefined &&
+        values.input_cost !== null
+      ) {
+        updatedLitellmParams.input_cost_per_token =
+          Number(values.input_cost) / 1_000_000;
       }
-      if (form.isFieldTouched("output_cost") && values.output_cost !== undefined && values.output_cost !== null) {
-        updatedLitellmParams.output_cost_per_token = Number(values.output_cost) / 1_000_000;
+      if (
+        form.isFieldTouched("output_cost") &&
+        values.output_cost !== undefined &&
+        values.output_cost !== null
+      ) {
+        updatedLitellmParams.output_cost_per_token =
+          Number(values.output_cost) / 1_000_000;
       }
 
       if (values.litellm_credential_name) {
-        updatedLitellmParams.litellm_credential_name = values.litellm_credential_name;
+        updatedLitellmParams.litellm_credential_name =
+          values.litellm_credential_name;
       } else {
         delete updatedLitellmParams.litellm_credential_name;
       }
@@ -281,8 +317,12 @@ export default function ModelInfoView({
       }
 
       // Handle cache control settings
-      if (values.cache_control && values.cache_control_injection_points?.length > 0) {
-        updatedLitellmParams.cache_control_injection_points = values.cache_control_injection_points;
+      if (
+        values.cache_control &&
+        values.cache_control_injection_points?.length > 0
+      ) {
+        updatedLitellmParams.cache_control_injection_points =
+          values.cache_control_injection_points;
       } else {
         delete updatedLitellmParams.cache_control_injection_points;
       }
@@ -290,7 +330,9 @@ export default function ModelInfoView({
       // Parse the model_info from the form values
       let updatedModelInfo;
       try {
-        updatedModelInfo = values.model_info ? JSON.parse(values.model_info) : modelData.model_info;
+        updatedModelInfo = values.model_info
+          ? JSON.parse(values.model_info)
+          : modelData.model_info;
         // Update access_groups from the form
         if (values.model_access_group) {
           updatedModelInfo = {
@@ -347,7 +389,12 @@ export default function ModelInfoView({
   if (isLoadingModel) {
     return (
       <div className="p-4">
-        <TremorButton icon={ArrowLeftIcon} variant="light" onClick={onClose} className="mb-4">
+        <TremorButton
+          icon={ArrowLeftIcon}
+          variant="light"
+          onClick={onClose}
+          className="mb-4"
+        >
           Back to Models
         </TremorButton>
         <Text>Loading...</Text>
@@ -359,7 +406,12 @@ export default function ModelInfoView({
   if (!modelData) {
     return (
       <div className="p-4">
-        <TremorButton icon={ArrowLeftIcon} variant="light" onClick={onClose} className="mb-4">
+        <TremorButton
+          icon={ArrowLeftIcon}
+          variant="light"
+          onClick={onClose}
+          className="mb-4"
+        >
           Back to Models
         </TremorButton>
         <Text>Model not found</Text>
@@ -374,8 +426,10 @@ export default function ModelInfoView({
       const response = await testConnectionRequest(
         accessToken,
         {
-          custom_llm_provider: localModelData.litellm_params.custom_llm_provider,
-          litellm_credential_name: localModelData.litellm_params.litellm_credential_name,
+          custom_llm_provider:
+            localModelData.litellm_params.custom_llm_provider,
+          litellm_credential_name:
+            localModelData.litellm_params.litellm_credential_name,
           model: localModelData.litellm_model_name,
         },
         {
@@ -393,13 +447,19 @@ export default function ModelInfoView({
       if (response.status === "success") {
         NotificationsManager.success("Connection test successful!");
       } else {
-        throw new Error(response?.result?.error || response?.message || "Unknown error");
+        throw new Error(
+          response?.result?.error || response?.message || "Unknown error",
+        );
       }
     } catch (error) {
       if (error instanceof Error) {
-        NotificationsManager.error("Error testing connection: " + truncateString(error.message, 100));
+        NotificationsManager.error(
+          "Error testing connection: " + truncateString(error.message, 100),
+        );
       } else {
-        NotificationsManager.error("Error testing connection: " + String(error));
+        NotificationsManager.error(
+          "Error testing connection: " + String(error),
+        );
       }
     }
   };
@@ -450,21 +510,37 @@ export default function ModelInfoView({
     <div className="p-4">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <TremorButton icon={ArrowLeftIcon} variant="light" onClick={onClose} className="mb-4">
+          <TremorButton
+            icon={ArrowLeftIcon}
+            variant="light"
+            onClick={onClose}
+            className="mb-4"
+          >
             Back to Models
           </TremorButton>
           <Title>Public Model Name: {getDisplayModelName(modelData)}</Title>
           <div className="flex items-center cursor-pointer">
-            <Text className="text-gray-500 font-mono">{modelData.model_info.id}</Text>
+            <Text className="text-gray-500 font-mono">
+              {modelData.model_info.id}
+            </Text>
             <Button
               type="text"
               size="small"
-              icon={copiedStates["model-id"] ? <CheckIcon size={12} /> : <CopyIcon size={12} />}
-              onClick={() => copyToClipboard(modelData.model_info.id, "model-id")}
-              className={`left-2 z-10 transition-all duration-200 ${copiedStates["model-id"]
-                ? "text-green-600 bg-green-50 border-green-200"
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
-                }`}
+              icon={
+                copiedStates["model-id"] ? (
+                  <CheckIcon size={12} />
+                ) : (
+                  <CopyIcon size={12} />
+                )
+              }
+              onClick={() =>
+                copyToClipboard(modelData.model_info.id, "model-id")
+              }
+              className={`left-2 z-10 transition-all duration-200 ${
+                copiedStates["model-id"]
+                  ? "text-green-600 bg-green-50 border-green-200"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+              }`}
             />
           </div>
         </div>
@@ -511,7 +587,12 @@ export default function ModelInfoView({
         <TabPanels>
           <TabPanel>
             {/* Overview Grid */}
-            <Grid numItems={1} numItemsSm={2} numItemsLg={3} className="gap-6 mb-6">
+            <Grid
+              numItems={1}
+              numItemsSm={2}
+              numItemsLg={3}
+              className="gap-6 mb-6"
+            >
               <Card>
                 <Text>Provider</Text>
                 <div className="mt-2 flex items-center space-x-2">
@@ -531,10 +612,14 @@ export default function ModelInfoView({
                           const fallbackDiv = document.createElement("div");
                           fallbackDiv.className =
                             "w-4 h-4 rounded-full bg-gray-200 flex items-center justify-center text-xs";
-                          fallbackDiv.textContent = modelData.provider?.charAt(0) || "-";
+                          fallbackDiv.textContent =
+                            modelData.provider?.charAt(0) || "-";
                           parent.replaceChild(fallbackDiv, target);
                         } catch (error) {
-                          console.error("Failed to replace provider logo fallback:", error);
+                          console.error(
+                            "Failed to replace provider logo fallback:",
+                            error,
+                          );
                         }
                       }}
                     />
@@ -564,7 +649,12 @@ export default function ModelInfoView({
             {/* Audit info shown as a subtle banner below the overview */}
             <div className="mb-6 text-sm text-gray-500 flex items-center gap-x-6">
               <div className="flex items-center gap-x-2">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -574,15 +664,22 @@ export default function ModelInfoView({
                 </svg>
                 Created At{" "}
                 {modelData.model_info.created_at
-                  ? new Date(modelData.model_info.created_at).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })
+                  ? new Date(
+                      modelData.model_info.created_at,
+                    ).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })
                   : "Not Set"}
               </div>
               <div className="flex items-center gap-x-2">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -600,13 +697,19 @@ export default function ModelInfoView({
                 <Title>Model Settings</Title>
                 <div className="flex gap-2">
                   {isAutoRouter && canEditModel && !isEditing && (
-                    <TremorButton onClick={() => setIsAutoRouterModalOpen(true)} className="flex items-center">
+                    <TremorButton
+                      onClick={() => setIsAutoRouterModalOpen(true)}
+                      className="flex items-center"
+                    >
                       Edit Auto Router
                     </TremorButton>
                   )}
                   {canEditModel ? (
                     !isEditing && (
-                      <TremorButton onClick={() => setIsEditing(true)} className="flex items-center">
+                      <TremorButton
+                        onClick={() => setIsEditing(true)}
+                        className="flex items-center"
+                      >
                         Edit Settings
                       </TremorButton>
                     )
@@ -625,40 +728,65 @@ export default function ModelInfoView({
                     model_name: localModelData.model_name,
                     litellm_model_name: localModelData.litellm_model_name,
                     api_base: localModelData.litellm_params.api_base,
-                    custom_llm_provider: localModelData.litellm_params.custom_llm_provider,
+                    custom_llm_provider:
+                      localModelData.litellm_params.custom_llm_provider,
                     organization: localModelData.litellm_params.organization,
                     tpm: localModelData.litellm_params.tpm,
                     rpm: localModelData.litellm_params.rpm,
                     max_retries: localModelData.litellm_params.max_retries,
                     timeout: localModelData.litellm_params.timeout,
-                    stream_timeout: localModelData.litellm_params.stream_timeout,
-                    input_cost: localModelData.litellm_params.input_cost_per_token
-                      ? localModelData.litellm_params.input_cost_per_token * 1_000_000
-                      : localModelData.model_info?.input_cost_per_token * 1_000_000 || null,
-                    output_cost: localModelData.litellm_params?.output_cost_per_token
-                      ? localModelData.litellm_params.output_cost_per_token * 1_000_000
-                      : localModelData.model_info?.output_cost_per_token * 1_000_000 || null,
-                    cache_control: localModelData.litellm_params?.cache_control_injection_points ? true : false,
-                    cache_control_injection_points: localModelData.litellm_params?.cache_control_injection_points || [],
-                    model_access_group: Array.isArray(localModelData.model_info?.access_groups)
+                    stream_timeout:
+                      localModelData.litellm_params.stream_timeout,
+                    input_cost: localModelData.litellm_params
+                      .input_cost_per_token
+                      ? localModelData.litellm_params.input_cost_per_token *
+                        1_000_000
+                      : localModelData.model_info?.input_cost_per_token *
+                          1_000_000 || null,
+                    output_cost: localModelData.litellm_params
+                      ?.output_cost_per_token
+                      ? localModelData.litellm_params.output_cost_per_token *
+                        1_000_000
+                      : localModelData.model_info?.output_cost_per_token *
+                          1_000_000 || null,
+                    cache_control: localModelData.litellm_params
+                      ?.cache_control_injection_points
+                      ? true
+                      : false,
+                    cache_control_injection_points:
+                      localModelData.litellm_params
+                        ?.cache_control_injection_points || [],
+                    model_access_group: Array.isArray(
+                      localModelData.model_info?.access_groups,
+                    )
                       ? localModelData.model_info.access_groups
                       : [],
-                    guardrails: Array.isArray(localModelData.litellm_params?.guardrails)
+                    guardrails: Array.isArray(
+                      localModelData.litellm_params?.guardrails,
+                    )
                       ? localModelData.litellm_params.guardrails
                       : [],
                     vector_store_ids:
-                      Array.isArray(localModelData.litellm_params?.vector_store_ids) &&
+                      Array.isArray(
+                        localModelData.litellm_params?.vector_store_ids,
+                      ) &&
                       localModelData.litellm_params.vector_store_ids.length > 0
                         ? localModelData.litellm_params.vector_store_ids
                         : undefined,
-                    tags: Array.isArray(localModelData.litellm_params?.tags) ? localModelData.litellm_params.tags : [],
-                    health_check_model: isWildcardModel ? localModelData.model_info?.health_check_model : null,
-                    litellm_credential_name: localModelData.litellm_params?.litellm_credential_name || "",
+                    tags: Array.isArray(localModelData.litellm_params?.tags)
+                      ? localModelData.litellm_params.tags
+                      : [],
+                    health_check_model: isWildcardModel
+                      ? localModelData.model_info?.health_check_model
+                      : null,
+                    litellm_credential_name:
+                      localModelData.litellm_params?.litellm_credential_name ||
+                      "",
                     litellm_extra_params: JSON.stringify(
                       Object.fromEntries(
-                        Object.entries(localModelData.litellm_params || {}).filter(
-                          ([key]) => key !== "litellm_credential_name",
-                        ),
+                        Object.entries(
+                          localModelData.litellm_params || {},
+                        ).filter(([key]) => key !== "litellm_credential_name"),
                       ),
                       null,
                       2,
@@ -676,7 +804,9 @@ export default function ModelInfoView({
                             <TextInput placeholder="Enter model name" />
                           </Form.Item>
                         ) : (
-                          <div className="mt-1 p-2 bg-gray-50 rounded">{localModelData.model_name}</div>
+                          <div className="mt-1 p-2 bg-gray-50 rounded">
+                            {localModelData.model_name}
+                          </div>
                         )}
                       </div>
 
@@ -687,39 +817,60 @@ export default function ModelInfoView({
                             <TextInput placeholder="Enter LiteLLM model name" />
                           </Form.Item>
                         ) : (
-                          <div className="mt-1 p-2 bg-gray-50 rounded">{localModelData.litellm_model_name}</div>
+                          <div className="mt-1 p-2 bg-gray-50 rounded">
+                            {localModelData.litellm_model_name}
+                          </div>
                         )}
                       </div>
 
                       <div>
-                        <Text className="font-medium">Input Cost (per 1M tokens)</Text>
+                        <Text className="font-medium">
+                          Input Cost (per 1M tokens)
+                        </Text>
                         {isEditing ? (
                           <Form.Item name="input_cost" className="mb-0">
                             <NumericalInput placeholder="Enter input cost" />
                           </Form.Item>
                         ) : (
                           <div className="mt-1 p-2 bg-gray-50 rounded">
-                            {localModelData?.litellm_params?.input_cost_per_token
-                              ? (localModelData.litellm_params?.input_cost_per_token * 1_000_000).toFixed(4)
+                            {localModelData?.litellm_params
+                              ?.input_cost_per_token
+                              ? (
+                                  localModelData.litellm_params
+                                    ?.input_cost_per_token * 1_000_000
+                                ).toFixed(4)
                               : localModelData?.model_info?.input_cost_per_token
-                                ? (localModelData.model_info.input_cost_per_token * 1_000_000).toFixed(4)
+                                ? (
+                                    localModelData.model_info
+                                      .input_cost_per_token * 1_000_000
+                                  ).toFixed(4)
                                 : "Not Set"}
                           </div>
                         )}
                       </div>
 
                       <div>
-                        <Text className="font-medium">Output Cost (per 1M tokens)</Text>
+                        <Text className="font-medium">
+                          Output Cost (per 1M tokens)
+                        </Text>
                         {isEditing ? (
                           <Form.Item name="output_cost" className="mb-0">
                             <NumericalInput placeholder="Enter output cost" />
                           </Form.Item>
                         ) : (
                           <div className="mt-1 p-2 bg-gray-50 rounded">
-                            {localModelData?.litellm_params?.output_cost_per_token
-                              ? (localModelData.litellm_params.output_cost_per_token * 1_000_000).toFixed(4)
-                              : localModelData?.model_info?.output_cost_per_token
-                                ? (localModelData.model_info.output_cost_per_token * 1_000_000).toFixed(4)
+                            {localModelData?.litellm_params
+                              ?.output_cost_per_token
+                              ? (
+                                  localModelData.litellm_params
+                                    .output_cost_per_token * 1_000_000
+                                ).toFixed(4)
+                              : localModelData?.model_info
+                                    ?.output_cost_per_token
+                                ? (
+                                    localModelData.model_info
+                                      .output_cost_per_token * 1_000_000
+                                  ).toFixed(4)
                                 : "Not Set"}
                           </div>
                         )}
@@ -733,7 +884,8 @@ export default function ModelInfoView({
                           </Form.Item>
                         ) : (
                           <div className="mt-1 p-2 bg-gray-50 rounded">
-                            {localModelData.litellm_params?.api_base || "Not Set"}
+                            {localModelData.litellm_params?.api_base ||
+                              "Not Set"}
                           </div>
                         )}
                       </div>
@@ -741,12 +893,16 @@ export default function ModelInfoView({
                       <div>
                         <Text className="font-medium">Custom LLM Provider</Text>
                         {isEditing ? (
-                          <Form.Item name="custom_llm_provider" className="mb-0">
+                          <Form.Item
+                            name="custom_llm_provider"
+                            className="mb-0"
+                          >
                             <TextInput placeholder="Enter custom LLM provider" />
                           </Form.Item>
                         ) : (
                           <div className="mt-1 p-2 bg-gray-50 rounded">
-                            {localModelData.litellm_params?.custom_llm_provider || "Not Set"}
+                            {localModelData.litellm_params
+                              ?.custom_llm_provider || "Not Set"}
                           </div>
                         )}
                       </div>
@@ -759,13 +915,16 @@ export default function ModelInfoView({
                           </Form.Item>
                         ) : (
                           <div className="mt-1 p-2 bg-gray-50 rounded">
-                            {localModelData.litellm_params?.organization || "Not Set"}
+                            {localModelData.litellm_params?.organization ||
+                              "Not Set"}
                           </div>
                         )}
                       </div>
 
                       <div>
-                        <Text className="font-medium">TPM (Tokens per Minute)</Text>
+                        <Text className="font-medium">
+                          TPM (Tokens per Minute)
+                        </Text>
                         {isEditing ? (
                           <Form.Item name="tpm" className="mb-0">
                             <NumericalInput placeholder="Enter TPM" />
@@ -778,7 +937,9 @@ export default function ModelInfoView({
                       </div>
 
                       <div>
-                        <Text className="font-medium">RPM (Requests per Minute)</Text>
+                        <Text className="font-medium">
+                          RPM (Requests per Minute)
+                        </Text>
                         {isEditing ? (
                           <Form.Item name="rpm" className="mb-0">
                             <NumericalInput placeholder="Enter RPM" />
@@ -798,7 +959,8 @@ export default function ModelInfoView({
                           </Form.Item>
                         ) : (
                           <div className="mt-1 p-2 bg-gray-50 rounded">
-                            {localModelData.litellm_params?.max_retries || "Not Set"}
+                            {localModelData.litellm_params?.max_retries ||
+                              "Not Set"}
                           </div>
                         )}
                       </div>
@@ -811,20 +973,24 @@ export default function ModelInfoView({
                           </Form.Item>
                         ) : (
                           <div className="mt-1 p-2 bg-gray-50 rounded">
-                            {localModelData.litellm_params?.timeout || "Not Set"}
+                            {localModelData.litellm_params?.timeout ||
+                              "Not Set"}
                           </div>
                         )}
                       </div>
 
                       <div>
-                        <Text className="font-medium">Stream Timeout (seconds)</Text>
+                        <Text className="font-medium">
+                          Stream Timeout (seconds)
+                        </Text>
                         {isEditing ? (
                           <Form.Item name="stream_timeout" className="mb-0">
                             <NumericalInput placeholder="Enter stream timeout" />
                           </Form.Item>
                         ) : (
                           <div className="mt-1 p-2 bg-gray-50 rounded">
-                            {localModelData.litellm_params?.stream_timeout || "Not Set"}
+                            {localModelData.litellm_params?.stream_timeout ||
+                              "Not Set"}
                           </div>
                         )}
                       </div>
@@ -851,17 +1017,22 @@ export default function ModelInfoView({
                         ) : (
                           <div className="mt-1 p-2 bg-gray-50 rounded">
                             {localModelData.model_info?.access_groups ? (
-                              Array.isArray(localModelData.model_info.access_groups) ? (
-                                localModelData.model_info.access_groups.length > 0 ? (
+                              Array.isArray(
+                                localModelData.model_info.access_groups,
+                              ) ? (
+                                localModelData.model_info.access_groups.length >
+                                0 ? (
                                   <div className="flex flex-wrap gap-1">
-                                    {localModelData.model_info.access_groups.map((group: string, index: number) => (
-                                      <span
-                                        key={index}
-                                        className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-                                      >
-                                        {group}
-                                      </span>
-                                    ))}
+                                    {localModelData.model_info.access_groups.map(
+                                      (group: string, index: number) => (
+                                        <span
+                                          key={index}
+                                          className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                                        >
+                                          {group}
+                                        </span>
+                                      ),
+                                    )}
                                   </div>
                                 ) : (
                                   "No groups assigned"
@@ -886,7 +1057,9 @@ export default function ModelInfoView({
                               rel="noopener noreferrer"
                               onClick={(e) => e.stopPropagation()}
                             >
-                              <InfoCircleOutlined style={{ marginLeft: "4px" }} />
+                              <InfoCircleOutlined
+                                style={{ marginLeft: "4px" }}
+                              />
                             </a>
                           </Tooltip>
                         </Text>
@@ -910,8 +1083,11 @@ export default function ModelInfoView({
                         ) : (
                           <div className="mt-1 p-2 bg-gray-50 rounded">
                             {localModelData.litellm_params?.guardrails ? (
-                              Array.isArray(localModelData.litellm_params.guardrails) ? (
-                                localModelData.litellm_params.guardrails.length > 0 ? (
+                              Array.isArray(
+                                localModelData.litellm_params.guardrails,
+                              ) ? (
+                                localModelData.litellm_params.guardrails
+                                  .length > 0 ? (
                                   <div className="flex flex-wrap gap-1">
                                     {localModelData.litellm_params.guardrails.map(
                                       (guardrail: string, index: number) => (
@@ -947,7 +1123,9 @@ export default function ModelInfoView({
                               rel="noopener noreferrer"
                               onClick={(e) => e.stopPropagation()}
                             >
-                              <InfoCircleOutlined style={{ marginLeft: "4px" }} />
+                              <InfoCircleOutlined
+                                style={{ marginLeft: "4px" }}
+                              />
                             </a>
                           </Tooltip>
                         </Text>
@@ -962,8 +1140,11 @@ export default function ModelInfoView({
                         ) : (
                           <div className="mt-1 p-2 bg-gray-50 rounded">
                             {localModelData.litellm_params?.vector_store_ids ? (
-                              Array.isArray(localModelData.litellm_params.vector_store_ids) ? (
-                                localModelData.litellm_params.vector_store_ids.length > 0 ? (
+                              Array.isArray(
+                                localModelData.litellm_params.vector_store_ids,
+                              ) ? (
+                                localModelData.litellm_params.vector_store_ids
+                                  .length > 0 ? (
                                   <div className="flex flex-wrap gap-1">
                                     {localModelData.litellm_params.vector_store_ids.map(
                                       (vsId: string, index: number) => (
@@ -973,14 +1154,17 @@ export default function ModelInfoView({
                                         >
                                           {vsId}
                                         </span>
-                                      )
+                                      ),
                                     )}
                                   </div>
                                 ) : (
                                   "No knowledge bases attached"
                                 )
                               ) : (
-                                String(localModelData.litellm_params.vector_store_ids)
+                                String(
+                                  localModelData.litellm_params
+                                    .vector_store_ids,
+                                )
                               )
                             ) : (
                               "Not Set"
@@ -1002,27 +1186,34 @@ export default function ModelInfoView({
                               maxTagCount="responsive"
                               allowClear
                               style={{ width: "100%" }}
-                              options={Object.values(tagsList).map((tag: Tag) => ({
-                                value: tag.name,
-                                label: tag.name,
-                                title: tag.description || tag.name,
-                              }))}
+                              options={Object.values(tagsList).map(
+                                (tag: Tag) => ({
+                                  value: tag.name,
+                                  label: tag.name,
+                                  title: tag.description || tag.name,
+                                }),
+                              )}
                             />
                           </Form.Item>
                         ) : (
                           <div className="mt-1 p-2 bg-gray-50 rounded">
                             {localModelData.litellm_params?.tags ? (
-                              Array.isArray(localModelData.litellm_params.tags) ? (
-                                localModelData.litellm_params.tags.length > 0 ? (
+                              Array.isArray(
+                                localModelData.litellm_params.tags,
+                              ) ? (
+                                localModelData.litellm_params.tags.length >
+                                0 ? (
                                   <div className="flex flex-wrap gap-1">
-                                    {localModelData.litellm_params.tags.map((tag: string, index: number) => (
-                                      <span
-                                        key={index}
-                                        className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800"
-                                      >
-                                        {tag}
-                                      </span>
-                                    ))}
+                                    {localModelData.litellm_params.tags.map(
+                                      (tag: string, index: number) => (
+                                        <span
+                                          key={index}
+                                          className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800"
+                                        >
+                                          {tag}
+                                        </span>
+                                      ),
+                                    )}
                                   </div>
                                 ) : (
                                   "No tags assigned"
@@ -1037,15 +1228,22 @@ export default function ModelInfoView({
                         )}
                       </div>
                       <div>
-                        <Text className="font-medium">Existing Credentials</Text>
+                        <Text className="font-medium">
+                          Existing Credentials
+                        </Text>
                         {isEditing ? (
-                          <Form.Item name="litellm_credential_name" className="mb-0">
+                          <Form.Item
+                            name="litellm_credential_name"
+                            className="mb-0"
+                          >
                             <Select
                               showSearch
                               placeholder="Select or search for existing credentials"
                               optionFilterProp="children"
                               filterOption={(input, option) =>
-                                (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                                (option?.label ?? "")
+                                  .toLowerCase()
+                                  .includes(input.toLowerCase())
                               }
                               options={[
                                 { value: "", label: "None" },
@@ -1059,41 +1257,54 @@ export default function ModelInfoView({
                           </Form.Item>
                         ) : (
                           <div className="mt-1 p-2 bg-gray-50 rounded">
-                            {localModelData.litellm_params?.litellm_credential_name || "Manual"}
+                            {localModelData.litellm_params
+                              ?.litellm_credential_name || "Manual"}
                           </div>
                         )}
                       </div>
 
                       {isWildcardModel && (
                         <div>
-                          <Text className="font-medium">Health Check Model</Text>
+                          <Text className="font-medium">
+                            Health Check Model
+                          </Text>
                           {isEditing ? (
-                            <Form.Item name="health_check_model" className="mb-0">
+                            <Form.Item
+                              name="health_check_model"
+                              className="mb-0"
+                            >
                               <Select
                                 showSearch
                                 placeholder="Select existing health check model"
                                 optionFilterProp="children"
                                 allowClear
                                 options={(() => {
-                                  const wildcardProvider = modelData.litellm_model_name.split("/")[0];
-                                  return modelHubData?.data
-                                    ?.filter((model: any) => {
-                                      // Filter by provider to match the wildcard provider
-                                      return (
-                                        model.providers?.includes(wildcardProvider) &&
-                                        model.model_group !== modelData.litellm_model_name
-                                      );
-                                    })
-                                    .map((model: any) => ({
-                                      value: model.model_group,
-                                      label: model.model_group,
-                                    })) || [];
+                                  const wildcardProvider =
+                                    modelData.litellm_model_name.split("/")[0];
+                                  return (
+                                    modelHubData?.data
+                                      ?.filter((model: any) => {
+                                        // Filter by provider to match the wildcard provider
+                                        return (
+                                          model.providers?.includes(
+                                            wildcardProvider,
+                                          ) &&
+                                          model.model_group !==
+                                            modelData.litellm_model_name
+                                        );
+                                      })
+                                      .map((model: any) => ({
+                                        value: model.model_group,
+                                        label: model.model_group,
+                                      })) || []
+                                  );
                                 })()}
                               />
                             </Form.Item>
                           ) : (
                             <div className="mt-1 p-2 bg-gray-50 rounded">
-                              {localModelData.model_info?.health_check_model || "Not Set"}
+                              {localModelData.model_info?.health_check_model ||
+                                "Not Set"}
                             </div>
                           )}
                         </div>
@@ -1104,21 +1315,32 @@ export default function ModelInfoView({
                         <CacheControlSettings
                           form={form}
                           showCacheControl={showCacheControl}
-                          onCacheControlChange={(checked) => setShowCacheControl(checked)}
+                          onCacheControlChange={(checked) =>
+                            setShowCacheControl(checked)
+                          }
                         />
                       ) : (
                         <div>
                           <Text className="font-medium">Cache Control</Text>
                           <div className="mt-1 p-2 bg-gray-50 rounded">
-                            {localModelData.litellm_params?.cache_control_injection_points ? (
+                            {localModelData.litellm_params
+                              ?.cache_control_injection_points ? (
                               <div>
                                 <p>Enabled</p>
                                 <div className="mt-2">
                                   {localModelData.litellm_params.cache_control_injection_points.map(
                                     (point: any, i: number) => (
-                                      <div key={i} className="text-sm text-gray-600 mb-1">
-                                        Location: {point.location},{point.role && <span> Role: {point.role}</span>}
-                                        {point.index !== undefined && <span> Index: {point.index}</span>}
+                                      <div
+                                        key={i}
+                                        className="text-sm text-gray-600 mb-1"
+                                      >
+                                        Location: {point.location},
+                                        {point.role && (
+                                          <span> Role: {point.role}</span>
+                                        )}
+                                        {point.index !== undefined && (
+                                          <span> Index: {point.index}</span>
+                                        )}
                                       </div>
                                     ),
                                   )}
@@ -1138,13 +1360,21 @@ export default function ModelInfoView({
                             <Input.TextArea
                               rows={4}
                               placeholder='{"gpt-4": 100, "claude-v1": 200}'
-                              defaultValue={JSON.stringify(modelData.model_info, null, 2)}
+                              defaultValue={JSON.stringify(
+                                modelData.model_info,
+                                null,
+                                2,
+                              )}
                             />
                           </Form.Item>
                         ) : (
                           <div className="mt-1 p-2 bg-gray-50 rounded">
                             <pre className="bg-gray-100 p-2 rounded text-xs overflow-auto mt-1">
-                              {JSON.stringify(localModelData.model_info, null, 2)}
+                              {JSON.stringify(
+                                localModelData.model_info,
+                                null,
+                                2,
+                              )}
                             </pre>
                           </div>
                         )}
@@ -1159,12 +1389,17 @@ export default function ModelInfoView({
                               rel="noopener noreferrer"
                               onClick={(e) => e.stopPropagation()}
                             >
-                              <InfoCircleOutlined style={{ marginLeft: "4px" }} />
+                              <InfoCircleOutlined
+                                style={{ marginLeft: "4px" }}
+                              />
                             </a>
                           </Tooltip>
                         </Text>
                         {isEditing ? (
-                          <Form.Item name="litellm_extra_params" rules={[{ validator: formItemValidateJSON }]}>
+                          <Form.Item
+                            name="litellm_extra_params"
+                            rules={[{ validator: formItemValidateJSON }]}
+                          >
                             <Input.TextArea
                               rows={4}
                               placeholder='{
@@ -1177,14 +1412,20 @@ export default function ModelInfoView({
                         ) : (
                           <div className="mt-1 p-2 bg-gray-50 rounded">
                             <pre className="bg-gray-100 p-2 rounded text-xs overflow-auto mt-1">
-                              {JSON.stringify(localModelData.litellm_params, null, 2)}
+                              {JSON.stringify(
+                                localModelData.litellm_params,
+                                null,
+                                2,
+                              )}
                             </pre>
                           </div>
                         )}
                       </div>
                       <div>
                         <Text className="font-medium">Team ID</Text>
-                        <div className="mt-1 p-2 bg-gray-50 rounded">{modelData.model_info.team_id || "Not Set"}</div>
+                        <div className="mt-1 p-2 bg-gray-50 rounded">
+                          {modelData.model_info.team_id || "Not Set"}
+                        </div>
                       </div>
                     </div>
 
@@ -1201,7 +1442,11 @@ export default function ModelInfoView({
                         >
                           Cancel
                         </TremorButton>
-                        <TremorButton variant="primary" onClick={() => form.submit()} loading={isSaving}>
+                        <TremorButton
+                          variant="primary"
+                          onClick={() => form.submit()}
+                          loading={isSaving}
+                        >
                           Save Changes
                         </TremorButton>
                       </div>
@@ -1216,7 +1461,9 @@ export default function ModelInfoView({
 
           <TabPanel>
             <Card>
-              <pre className="bg-gray-100 p-4 rounded text-xs overflow-auto">{JSON.stringify(modelData, null, 2)}</pre>
+              <pre className="bg-gray-100 p-4 rounded text-xs overflow-auto">
+                {JSON.stringify(modelData, null, 2)}
+              </pre>
             </Card>
           </TabPanel>
         </TabPanels>

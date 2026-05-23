@@ -1,17 +1,17 @@
-import { ColumnDef } from "@tanstack/react-table";
-import { Button, Badge, Text } from "@tremor/react";
-import { Tooltip } from "antd";
-import { CopyOutlined } from "@ant-design/icons";
-import { MarketplacePluginEntry } from "@/components/claude_code_plugins/types";
 import {
   formatInstallCommand,
   getCategoryBadgeColor,
   getSourceDisplayText,
 } from "@/components/claude_code_plugins/helpers";
+import type { MarketplacePluginEntry } from "@/components/claude_code_plugins/types";
+import { CopyOutlined } from "@ant-design/icons";
+import type { ColumnDef } from "@tanstack/react-table";
+import { Badge, Button, Text } from "@tremor/react";
+import { Tooltip } from "antd";
 
 export const getMarketplaceTableColumns = (
   copyToClipboard: (text: string) => void,
-  publicPage: boolean = false,
+  publicPage = false,
 ): ColumnDef<MarketplacePluginEntry>[] => {
   const allColumns: ColumnDef<MarketplacePluginEntry>[] = [
     {

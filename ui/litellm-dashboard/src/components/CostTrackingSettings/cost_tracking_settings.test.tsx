@@ -1,7 +1,7 @@
-import React from "react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../tests/test-utils";
 import CostTrackingSettings from "./cost_tracking_settings";
 
@@ -52,7 +52,11 @@ vi.mock("../provider_info_helpers", () => ({
 }));
 
 vi.mock("./provider_display_helpers", () => ({
-  getProviderDisplayInfo: vi.fn(() => ({ displayName: "OpenAI", logo: "", enumKey: "OpenAI" })),
+  getProviderDisplayInfo: vi.fn(() => ({
+    displayName: "OpenAI",
+    logo: "",
+    enumKey: "OpenAI",
+  })),
   handleImageError: vi.fn(),
 }));
 
@@ -71,7 +75,11 @@ describe("CostTrackingSettings", () => {
 
   it("should return nothing when accessToken is null", () => {
     const { container } = renderWithProviders(
-      <CostTrackingSettings userID="user-1" userRole="proxy_admin" accessToken={null} />
+      <CostTrackingSettings
+        userID="user-1"
+        userRole="proxy_admin"
+        accessToken={null}
+      />,
     );
     expect(container.firstChild).toBeNull();
   });
@@ -104,21 +112,33 @@ describe("CostTrackingSettings", () => {
 
   it("should not show Provider Discounts section for a non-admin role", () => {
     renderWithProviders(
-      <CostTrackingSettings userID="user-1" userRole="internal_user" accessToken="test-token" />
+      <CostTrackingSettings
+        userID="user-1"
+        userRole="internal_user"
+        accessToken="test-token"
+      />,
     );
     expect(screen.queryByText("Provider Discounts")).not.toBeInTheDocument();
   });
 
   it("should not show Fee/Price Margin section for a non-admin role", () => {
     renderWithProviders(
-      <CostTrackingSettings userID="user-1" userRole="internal_user" accessToken="test-token" />
+      <CostTrackingSettings
+        userID="user-1"
+        userRole="internal_user"
+        accessToken="test-token"
+      />,
     );
     expect(screen.queryByText("Fee/Price Margin")).not.toBeInTheDocument();
   });
 
   it("should show Provider Discounts for the 'Admin' role as well", () => {
     renderWithProviders(
-      <CostTrackingSettings userID="user-1" userRole="Admin" accessToken="test-token" />
+      <CostTrackingSettings
+        userID="user-1"
+        userRole="Admin"
+        accessToken="test-token"
+      />,
     );
     expect(screen.getByText("Provider Discounts")).toBeInTheDocument();
   });
@@ -126,7 +146,7 @@ describe("CostTrackingSettings", () => {
   it("should show the subtitle describing discount/margin configuration", () => {
     renderWithProviders(<CostTrackingSettings {...ADMIN_PROPS} />);
     expect(
-      screen.getByText(/configure cost discounts and margins/i)
+      screen.getByText(/configure cost discounts and margins/i),
     ).toBeInTheDocument();
   });
 
@@ -136,16 +156,20 @@ describe("CostTrackingSettings", () => {
       renderWithProviders(<CostTrackingSettings {...ADMIN_PROPS} />);
 
       // The button lives inside the Provider Discounts accordion — click the header to expand first
-      const accordionHeader = screen.getByText("Provider Discounts").closest("button");
+      const accordionHeader = screen
+        .getByText("Provider Discounts")
+        .closest("button");
       if (accordionHeader) {
         await user.click(accordionHeader);
       }
 
-      const addButton = await screen.findByRole("button", { name: /add provider discount/i });
+      const addButton = await screen.findByRole("button", {
+        name: /add provider discount/i,
+      });
       await user.click(addButton);
 
       expect(
-        await screen.findByText("Add Provider Discount", { selector: "h2" })
+        await screen.findByText("Add Provider Discount", { selector: "h2" }),
       ).toBeInTheDocument();
     });
   });
@@ -155,16 +179,20 @@ describe("CostTrackingSettings", () => {
       const user = userEvent.setup();
       renderWithProviders(<CostTrackingSettings {...ADMIN_PROPS} />);
 
-      const accordionHeader = screen.getByText("Fee/Price Margin").closest("button");
+      const accordionHeader = screen
+        .getByText("Fee/Price Margin")
+        .closest("button");
       if (accordionHeader) {
         await user.click(accordionHeader);
       }
 
-      const addButton = await screen.findByRole("button", { name: /add provider margin/i });
+      const addButton = await screen.findByRole("button", {
+        name: /add provider margin/i,
+      });
       await user.click(addButton);
 
       expect(
-        await screen.findByText("Add Provider Margin", { selector: "h2" })
+        await screen.findByText("Add Provider Margin", { selector: "h2" }),
       ).toBeInTheDocument();
     });
   });
@@ -174,13 +202,15 @@ describe("CostTrackingSettings", () => {
       mockDiscountConfig.mockReturnValue({});
       renderWithProviders(<CostTrackingSettings {...ADMIN_PROPS} />);
 
-      const accordionHeader = screen.getByText("Provider Discounts").closest("button");
+      const accordionHeader = screen
+        .getByText("Provider Discounts")
+        .closest("button");
       if (accordionHeader) {
         await userEvent.setup().click(accordionHeader);
       }
 
       expect(
-        await screen.findByText(/no provider discounts configured/i)
+        await screen.findByText(/no provider discounts configured/i),
       ).toBeInTheDocument();
     });
 
@@ -188,13 +218,15 @@ describe("CostTrackingSettings", () => {
       mockMarginConfig.mockReturnValue({});
       renderWithProviders(<CostTrackingSettings {...ADMIN_PROPS} />);
 
-      const accordionHeader = screen.getByText("Fee/Price Margin").closest("button");
+      const accordionHeader = screen
+        .getByText("Fee/Price Margin")
+        .closest("button");
       if (accordionHeader) {
         await userEvent.setup().click(accordionHeader);
       }
 
       expect(
-        await screen.findByText(/no provider margins configured/i)
+        await screen.findByText(/no provider margins configured/i),
       ).toBeInTheDocument();
     });
   });

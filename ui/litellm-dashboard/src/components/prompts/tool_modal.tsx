@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { Modal, Button } from "antd";
+import { Button, Modal } from "antd";
+import type React from "react";
+import { useState } from "react";
 
 interface ToolModalProps {
   visible: boolean;
@@ -30,7 +31,12 @@ const defaultToolJson = `{
   }
 }`;
 
-const ToolModal: React.FC<ToolModalProps> = ({ visible, initialJson, onSave, onClose }) => {
+const ToolModal: React.FC<ToolModalProps> = ({
+  visible,
+  initialJson,
+  onSave,
+  onClose,
+}) => {
   const [json, setJson] = useState(initialJson || defaultToolJson);
   const [error, setError] = useState<string | null>(null);
 
@@ -86,4 +92,3 @@ const ToolModal: React.FC<ToolModalProps> = ({ visible, initialJson, onSave, onC
 };
 
 export default ToolModal;
-

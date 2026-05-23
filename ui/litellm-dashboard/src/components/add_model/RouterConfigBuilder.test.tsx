@@ -1,4 +1,4 @@
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import RouterConfigBuilder from "./RouterConfigBuilder";
@@ -19,7 +19,9 @@ describe("RouterConfigBuilder", () => {
   it("should display Add Route button", () => {
     render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} />);
 
-    expect(screen.getByRole("button", { name: /add route/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /add route/i }),
+    ).toBeInTheDocument();
   });
 
   it("should show empty state when no routes are configured", () => {
@@ -40,7 +42,9 @@ describe("RouterConfigBuilder", () => {
   it("should call onChange when a route is added", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
-    render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} onChange={onChange} />);
+    render(
+      <RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} onChange={onChange} />,
+    );
 
     await user.click(screen.getByRole("button", { name: /add route/i }));
 
@@ -76,7 +80,14 @@ describe("RouterConfigBuilder", () => {
 
   it("should support both name and model fields in value prop", async () => {
     const value = {
-      routes: [{ model: "gpt-3.5-turbo", utterances: [], description: "", score_threshold: 0.5 }],
+      routes: [
+        {
+          model: "gpt-3.5-turbo",
+          utterances: [],
+          description: "",
+          score_threshold: 0.5,
+        },
+      ],
     };
     render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} />);
 
@@ -125,7 +136,13 @@ describe("RouterConfigBuilder", () => {
         },
       ],
     };
-    render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} onChange={onChange} />);
+    render(
+      <RouterConfigBuilder
+        modelInfo={MOCK_MODEL_INFO}
+        value={value}
+        onChange={onChange}
+      />,
+    );
 
     await waitFor(() => {
       expect(screen.getByText("Route 1: gpt-4")).toBeInTheDocument();
@@ -138,9 +155,6 @@ describe("RouterConfigBuilder", () => {
       expect(onChange).toHaveBeenCalledWith({ routes: [] });
     });
   });
-
-
-
 
   it("should update route when description is changed", async () => {
     const user = userEvent.setup();
@@ -155,13 +169,21 @@ describe("RouterConfigBuilder", () => {
         },
       ],
     };
-    render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} onChange={onChange} />);
+    render(
+      <RouterConfigBuilder
+        modelInfo={MOCK_MODEL_INFO}
+        value={value}
+        onChange={onChange}
+      />,
+    );
 
     await waitFor(() => {
       expect(screen.getByText("Route 1: gpt-4")).toBeInTheDocument();
     });
 
-    const descriptionInput = screen.getByPlaceholderText("Describe when this route should be used...");
+    const descriptionInput = screen.getByPlaceholderText(
+      "Describe when this route should be used...",
+    );
     await user.type(descriptionInput, "For code generation");
 
     await waitFor(() => {
@@ -182,7 +204,13 @@ describe("RouterConfigBuilder", () => {
         },
       ],
     };
-    render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} onChange={onChange} />);
+    render(
+      <RouterConfigBuilder
+        modelInfo={MOCK_MODEL_INFO}
+        value={value}
+        onChange={onChange}
+      />,
+    );
 
     await waitFor(() => {
       expect(screen.getByText("Route 1: gpt-4")).toBeInTheDocument();
@@ -210,7 +238,9 @@ describe("RouterConfigBuilder", () => {
 
   it("should toggle JSON preview visibility", async () => {
     const user = userEvent.setup();
-    const { container } = render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} />);
+    const { container } = render(
+      <RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} />,
+    );
 
     expect(screen.getByText("JSON Preview")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Show" })).toBeInTheDocument();
@@ -234,7 +264,12 @@ describe("RouterConfigBuilder", () => {
         modelInfo={MOCK_MODEL_INFO}
         value={{
           routes: [
-            { name: "gpt-4", utterances: ["hello"], description: "test", score_threshold: 0.8 },
+            {
+              name: "gpt-4",
+              utterances: ["hello"],
+              description: "test",
+              score_threshold: 0.8,
+            },
           ],
         }}
       />,
@@ -281,13 +316,20 @@ describe("RouterConfigBuilder", () => {
         },
       ],
     };
-    const { rerender } = render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} />);
+    const { rerender } = render(
+      <RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} />,
+    );
 
     await waitFor(() => {
       expect(screen.getByText("Route 1: gpt-4")).toBeInTheDocument();
     });
 
-    rerender(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={{ routes: [] }} />);
+    rerender(
+      <RouterConfigBuilder
+        modelInfo={MOCK_MODEL_INFO}
+        value={{ routes: [] }}
+      />,
+    );
 
     await waitFor(() => {
       expect(screen.getByText(/no routes configured/i)).toBeInTheDocument();

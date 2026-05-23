@@ -1,4 +1,7 @@
-import { useProjects, ProjectResponse } from "@/app/(dashboard)/hooks/projects/useProjects";
+import {
+  type ProjectResponse,
+  useProjects,
+} from "@/app/(dashboard)/hooks/projects/useProjects";
 import { useTeams } from "@/app/(dashboard)/hooks/teams/useTeams";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import {
@@ -12,15 +15,15 @@ import {
   Spin,
   Table,
   Tag,
-  theme,
   Tooltip,
   Typography,
+  theme,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { LayersIcon, SearchIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { CreateProjectModal } from "./ProjectModals/CreateProjectModal";
 import { ProjectDetail } from "./ProjectDetailsPage";
+import { CreateProjectModal } from "./ProjectModals/CreateProjectModal";
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -30,7 +33,9 @@ export function ProjectsPage() {
   const { data: projects, isLoading } = useProjects();
   const { data: teams, isLoading: isTeamsLoading } = useTeams();
 
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
+    null,
+  );
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -89,7 +94,8 @@ export function ProjectsPage() {
       title: "Name",
       dataIndex: "project_alias",
       key: "project_alias",
-      sorter: (a, b) => (a.project_alias ?? "").localeCompare(b.project_alias ?? ""),
+      sorter: (a, b) =>
+        (a.project_alias ?? "").localeCompare(b.project_alias ?? ""),
       render: (alias: string | null) => alias ?? "—",
     },
     {
@@ -104,7 +110,8 @@ export function ProjectsPage() {
         if (!record.team_id) return "—";
         const alias = teamAliasMap.get(record.team_id);
         if (alias) return alias;
-        if (isTeamsLoading) return <Spin indicator={<LoadingOutlined spin />} size="small" />;
+        if (isTeamsLoading)
+          return <Spin indicator={<LoadingOutlined spin />} size="small" />;
         return record.team_id;
       },
     },
@@ -115,7 +122,10 @@ export function ProjectsPage() {
         const models = record.models ?? [];
         return (
           <Tooltip title={models.length > 0 ? models.join(", ") : "No models"}>
-            <Tag color="blue" style={{ fontSize: 14, padding: "2px 8px", margin: 0 }}>
+            <Tag
+              color="blue"
+              style={{ fontSize: 14, padding: "2px 8px", margin: 0 }}
+            >
               <Flex align="center" gap={6}>
                 <LayersIcon size={14} />
                 {models.length}
@@ -139,7 +149,8 @@ export function ProjectsPage() {
       title: "Created",
       dataIndex: "created_at",
       key: "created_at",
-      sorter: (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+      sorter: (a, b) =>
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
       responsive: ["lg"],
       render: (date: string) => new Date(date).toLocaleDateString(),
     },
@@ -165,18 +176,12 @@ export function ProjectsPage() {
     <Content
       style={{ padding: token.paddingLG, paddingInline: token.paddingLG * 2 }}
     >
-      <Flex
-        justify="space-between"
-        align="center"
-        style={{ marginBottom: 16 }}
-      >
+      <Flex justify="space-between" align="center" style={{ marginBottom: 16 }}>
         <Space direction="vertical" size={0}>
           <Title level={2} style={{ margin: 0 }}>
             Projects
           </Title>
-          <Text type="secondary">
-            Manage projects within your teams
-          </Text>
+          <Text type="secondary">Manage projects within your teams</Text>
         </Space>
         <Button
           type="primary"
@@ -213,7 +218,10 @@ export function ProjectsPage() {
         </Flex>
         <Table
           columns={columns}
-          dataSource={filteredProjects.slice((currentPage - 1) * pageSize, currentPage * pageSize)}
+          dataSource={filteredProjects.slice(
+            (currentPage - 1) * pageSize,
+            currentPage * pageSize,
+          )}
           rowKey="project_id"
           loading={isLoading}
           pagination={false}

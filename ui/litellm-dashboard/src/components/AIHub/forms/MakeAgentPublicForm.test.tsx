@@ -1,7 +1,13 @@
-import { render, screen, fireEvent, act, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import type { AgentHubData } from "@/components/AIHub/AgentHubTableColumns";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import MakeAgentPublicForm from "./MakeAgentPublicForm";
-import { AgentHubData } from "@/components/AIHub/AgentHubTableColumns";
 
 // Mock the networking function
 vi.mock("../../networking", () => ({
@@ -22,18 +28,21 @@ vi.mock("antd", () => ({
         {footer}
       </div>
     ) : null,
-  Form: Object.assign(({ children, form }: any) => <form data-testid="form">{children}</form>, {
-    useForm: () => [
-      {
-        resetFields: vi.fn(),
-        validateFields: vi.fn(),
-        getFieldsValue: vi.fn(),
-        setFieldsValue: vi.fn(),
-      },
-      vi.fn(),
-    ],
-    Item: ({ children }: any) => <div>{children}</div>,
-  }),
+  Form: Object.assign(
+    ({ children, form }: any) => <form data-testid="form">{children}</form>,
+    {
+      useForm: () => [
+        {
+          resetFields: vi.fn(),
+          validateFields: vi.fn(),
+          getFieldsValue: vi.fn(),
+          setFieldsValue: vi.fn(),
+        },
+        vi.fn(),
+      ],
+      Item: ({ children }: any) => <div>{children}</div>,
+    },
+  ),
   Steps: Object.assign(
     ({ children, current, className }: any) => (
       <div data-testid="steps" className={className}>
@@ -45,7 +54,12 @@ vi.mock("antd", () => ({
     },
   ),
   Button: ({ children, onClick, disabled, loading, ...props }: any) => (
-    <button onClick={onClick} disabled={disabled || loading} data-loading={loading} {...props}>
+    <button
+      onClick={onClick}
+      disabled={disabled || loading}
+      data-loading={loading}
+      {...props}
+    >
       {children}
     </button>
   ),
@@ -65,7 +79,9 @@ vi.mock("antd", () => ({
 
 // Mock @tremor/react components
 vi.mock("@tremor/react", () => ({
-  Text: ({ children, className }: any) => <span className={className}>{children}</span>,
+  Text: ({ children, className }: any) => (
+    <span className={className}>{children}</span>
+  ),
   Title: ({ children }: any) => <h3>{children}</h3>,
   Badge: ({ children, color, size }: any) => (
     <span data-color={color} data-size={size}>
@@ -117,7 +133,9 @@ describe("MakeAgentPublicForm", () => {
     render(<MakeAgentPublicForm {...mockProps} />);
 
     expect(screen.getByText("Make Agents Public")).toBeInTheDocument();
-    expect(screen.getByText("Select Agents to Make Public")).toBeInTheDocument();
+    expect(
+      screen.getByText("Select Agents to Make Public"),
+    ).toBeInTheDocument();
   });
 
   it("should initialize with correct state", () => {
@@ -125,7 +143,9 @@ describe("MakeAgentPublicForm", () => {
 
     // Check that the component renders with the correct title and content
     expect(screen.getByText("Make Agents Public")).toBeInTheDocument();
-    expect(screen.getByText("Select Agents to Make Public")).toBeInTheDocument();
+    expect(
+      screen.getByText("Select Agents to Make Public"),
+    ).toBeInTheDocument();
 
     // Check that all agent checkboxes are present
     const checkboxes = screen.getAllByRole("checkbox");
@@ -140,7 +160,9 @@ describe("MakeAgentPublicForm", () => {
     render(<MakeAgentPublicForm {...mockProps} />);
 
     // Initially on step 1
-    expect(screen.getByText("Select Agents to Make Public")).toBeInTheDocument();
+    expect(
+      screen.getByText("Select Agents to Make Public"),
+    ).toBeInTheDocument();
 
     // Select all agents using the select all checkbox
     const selectAllCheckbox = screen.getByLabelText("Select All (2)");
@@ -159,7 +181,9 @@ describe("MakeAgentPublicForm", () => {
 
     // Should move to step 2
     await waitFor(() => {
-      expect(screen.getByText("Confirm Making Agents Public")).toBeInTheDocument();
+      expect(
+        screen.getByText("Confirm Making Agents Public"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -182,7 +206,9 @@ describe("MakeAgentPublicForm", () => {
 
     // Wait for navigation to complete
     await waitFor(() => {
-      expect(screen.getByText("Confirm Making Agents Public")).toBeInTheDocument();
+      expect(
+        screen.getByText("Confirm Making Agents Public"),
+      ).toBeInTheDocument();
     });
 
     // Submit
@@ -192,7 +218,10 @@ describe("MakeAgentPublicForm", () => {
     });
 
     await waitFor(() => {
-      expect(mockMakeAgentsPublicCall).toHaveBeenCalledWith("test-token", ["agent-1", "agent-2"]);
+      expect(mockMakeAgentsPublicCall).toHaveBeenCalledWith("test-token", [
+        "agent-1",
+        "agent-2",
+      ]);
       expect(mockProps.onSuccess).toHaveBeenCalled();
       expect(mockProps.onClose).toHaveBeenCalled();
     });
@@ -242,7 +271,9 @@ describe("MakeAgentPublicForm", () => {
     });
 
     // Should stay on same step
-    expect(screen.getByText("Select Agents to Make Public")).toBeInTheDocument();
+    expect(
+      screen.getByText("Select Agents to Make Public"),
+    ).toBeInTheDocument();
   });
 
   it("should display empty state when no agents are available", () => {
@@ -288,7 +319,9 @@ describe("MakeAgentPublicForm", () => {
 
     // Verify we're on step 1
     await waitFor(() => {
-      expect(screen.getByText("Confirm Making Agents Public")).toBeInTheDocument();
+      expect(
+        screen.getByText("Confirm Making Agents Public"),
+      ).toBeInTheDocument();
     });
 
     // Click Previous button
@@ -298,7 +331,9 @@ describe("MakeAgentPublicForm", () => {
     });
 
     // Should go back to step 0
-    expect(screen.getByText("Select Agents to Make Public")).toBeInTheDocument();
+    expect(
+      screen.getByText("Select Agents to Make Public"),
+    ).toBeInTheDocument();
   });
 
   it("should handle individual agent selection", async () => {
@@ -376,7 +411,9 @@ describe("MakeAgentPublicForm", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText("Confirm Making Agents Public")).toBeInTheDocument();
+      expect(
+        screen.getByText("Confirm Making Agents Public"),
+      ).toBeInTheDocument();
     });
 
     // Submit
@@ -387,7 +424,9 @@ describe("MakeAgentPublicForm", () => {
 
     // Should handle error and show error notification
     await waitFor(() => {
-      expect(mockMakeAgentsPublicCall).toHaveBeenCalledWith("test-token", ["agent-2"]);
+      expect(mockMakeAgentsPublicCall).toHaveBeenCalledWith("test-token", [
+        "agent-2",
+      ]);
     });
 
     // Should not call onSuccess or onClose on error
@@ -411,7 +450,9 @@ describe("MakeAgentPublicForm", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText("Confirm Making Agents Public")).toBeInTheDocument();
+      expect(
+        screen.getByText("Confirm Making Agents Public"),
+      ).toBeInTheDocument();
     });
 
     // Submit

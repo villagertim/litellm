@@ -1,28 +1,32 @@
 "use client";
+import type { DeletedTeam } from "@/app/(dashboard)/hooks/teams/useTeams";
+import { getModelDisplayName } from "@/components/key_team_helpers/fetch_available_models_team_key";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
-import { ChevronDownIcon, ChevronUpIcon, SwitchVerticalIcon } from "@heroicons/react/outline";
 import {
-  ColumnDef,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  SwitchVerticalIcon,
+} from "@heroicons/react/outline";
+import {
+  type ColumnDef,
+  type SortingState,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import {
+  Badge,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeaderCell,
   TableRow,
-  Badge,
   Text,
 } from "@tremor/react";
 import { Tooltip } from "antd";
 import React, { useState } from "react";
-import { DeletedTeam } from "@/app/(dashboard)/hooks/teams/useTeams";
-import { getModelDisplayName } from "@/components/key_team_helpers/fetch_available_models_team_key";
 
 interface DeletedTeamsTableProps {
   teams: DeletedTeam[];
@@ -53,9 +57,7 @@ export function DeletedTeamsTable({
         const value = info.getValue() as string;
         return (
           <Tooltip title={value || undefined}>
-            <span className="truncate block max-w-[200px]">
-              {value || "-"}
-            </span>
+            <span className="truncate block max-w-[200px]">{value || "-"}</span>
           </Tooltip>
         );
       },
@@ -117,7 +119,9 @@ export function DeletedTeamsTable({
         const maxBudget = info.getValue() as number | null;
         return (
           <span className="block max-w-[150px]">
-            {maxBudget === null || maxBudget === undefined ? "No limit" : `$${formatNumberWithCommas(maxBudget)}`}
+            {maxBudget === null || maxBudget === undefined
+              ? "No limit"
+              : `$${formatNumberWithCommas(maxBudget)}`}
           </span>
         );
       },
@@ -157,7 +161,8 @@ export function DeletedTeamsTable({
             {models.length > 3 && (
               <Badge size={"xs"} color="gray">
                 <Text>
-                  +{models.length - 3} {models.length - 3 === 1 ? "more model" : "more models"}
+                  +{models.length - 3}{" "}
+                  {models.length - 3 === 1 ? "more model" : "more models"}
                 </Text>
               </Badge>
             )}
@@ -175,9 +180,7 @@ export function DeletedTeamsTable({
         const value = info.getValue() as string;
         return (
           <Tooltip title={value || undefined}>
-            <span className="truncate block max-w-[200px]">
-              {value || "-"}
-            </span>
+            <span className="truncate block max-w-[200px]">{value || "-"}</span>
           </Tooltip>
         );
       },
@@ -189,7 +192,10 @@ export function DeletedTeamsTable({
       size: 120,
       maxSize: 140,
       cell: (info) => {
-        const value = (info.row.original as any).deleted_at as string | null | undefined;
+        const value = (info.row.original as any).deleted_at as
+          | string
+          | null
+          | undefined;
         return (
           <span className="block max-w-[140px]">
             {value ? new Date(value).toLocaleDateString() : "-"}
@@ -204,12 +210,13 @@ export function DeletedTeamsTable({
       size: 120,
       maxSize: 180,
       cell: (info) => {
-        const value = (info.row.original as any).deleted_by as string | null | undefined;
+        const value = (info.row.original as any).deleted_by as
+          | string
+          | null
+          | undefined;
         return (
           <Tooltip title={value || undefined}>
-            <span className="truncate block max-w-[180px]">
-              {value || "-"}
-            </span>
+            <span className="truncate block max-w-[180px]">{value || "-"}</span>
           </Tooltip>
         );
       },
@@ -236,7 +243,9 @@ export function DeletedTeamsTable({
       <div className="border-b py-4 flex-1 overflow-hidden">
         <div className="flex items-center justify-between w-full mb-4">
           {isLoading || isFetching ? (
-            <span className="inline-flex text-sm text-gray-700">Loading...</span>
+            <span className="inline-flex text-sm text-gray-700">
+              Loading...
+            </span>
           ) : (
             <span className="inline-flex text-sm text-gray-700">
               Showing {teams.length} {teams.length === 1 ? "team" : "teams"}
@@ -246,7 +255,10 @@ export function DeletedTeamsTable({
         <div className="h-[75vh] overflow-auto">
           <div className="rounded-lg custom-border relative">
             <div className="overflow-x-auto">
-              <Table className="[&_td]:py-0.5 [&_th]:py-1" style={{ width: table.getCenterTotalSize() }}>
+              <Table
+                className="[&_td]:py-0.5 [&_th]:py-1"
+                style={{ width: table.getCenterTotalSize() }}
+              >
                 <TableHead>
                   {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id}>
@@ -261,13 +273,17 @@ export function DeletedTeamsTable({
                             position: "relative",
                           }}
                           onMouseEnter={() => {
-                            const resizer = document.querySelector(`[data-header-id="${header.id}"] .resizer`);
+                            const resizer = document.querySelector(
+                              `[data-header-id="${header.id}"] .resizer`,
+                            );
                             if (resizer) {
                               (resizer as HTMLElement).style.opacity = "0.5";
                             }
                           }}
                           onMouseLeave={() => {
-                            const resizer = document.querySelector(`[data-header-id="${header.id}"] .resizer`);
+                            const resizer = document.querySelector(
+                              `[data-header-id="${header.id}"] .resizer`,
+                            );
                             if (resizer && !header.column.getIsResizing()) {
                               (resizer as HTMLElement).style.opacity = "0";
                             }
@@ -278,13 +294,20 @@ export function DeletedTeamsTable({
                             <div className="flex items-center">
                               {header.isPlaceholder
                                 ? null
-                                : flexRender(header.column.columnDef.header, header.getContext())}
+                                : flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext(),
+                                  )}
                             </div>
                             <div className="w-4">
                               {header.column.getIsSorted() ? (
                                 {
-                                  asc: <ChevronUpIcon className="h-4 w-4 text-blue-500" />,
-                                  desc: <ChevronDownIcon className="h-4 w-4 text-blue-500" />,
+                                  asc: (
+                                    <ChevronUpIcon className="h-4 w-4 text-blue-500" />
+                                  ),
+                                  desc: (
+                                    <ChevronDownIcon className="h-4 w-4 text-blue-500" />
+                                  ),
                                 }[header.column.getIsSorted() as string]
                               ) : (
                                 <SwitchVerticalIcon className="h-4 w-4 text-gray-400" />
@@ -301,7 +324,9 @@ export function DeletedTeamsTable({
                                 top: 0,
                                 height: "100%",
                                 width: "5px",
-                                background: header.column.getIsResizing() ? "#3b82f6" : "transparent",
+                                background: header.column.getIsResizing()
+                                  ? "#3b82f6"
+                                  : "transparent",
                                 cursor: "col-resize",
                                 userSelect: "none",
                                 touchAction: "none",
@@ -317,7 +342,10 @@ export function DeletedTeamsTable({
                 <TableBody>
                   {isLoading || isFetching ? (
                     <TableRow>
-                      <TableCell colSpan={columns.length} className="h-8 text-center">
+                      <TableCell
+                        colSpan={columns.length}
+                        className="h-8 text-center"
+                      >
                         <div className="text-center text-gray-500">
                           <p>🚅 Loading teams...</p>
                         </div>
@@ -337,14 +365,20 @@ export function DeletedTeamsTable({
                             }}
                             className="py-0.5 max-h-8 overflow-hidden text-ellipsis whitespace-nowrap"
                           >
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
                           </TableCell>
                         ))}
                       </TableRow>
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={columns.length} className="h-8 text-center">
+                      <TableCell
+                        colSpan={columns.length}
+                        className="h-8 text-center"
+                      >
                         <div className="text-center text-gray-500">
                           <p>No deleted teams found</p>
                         </div>

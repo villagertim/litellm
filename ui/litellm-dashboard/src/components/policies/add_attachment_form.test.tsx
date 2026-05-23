@@ -1,17 +1,21 @@
-import React from "react";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderWithProviders } from "../../../tests/test-utils";
+import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "../../../tests/test-utils";
 import * as networking from "../networking";
 import AddAttachmentForm from "./add_attachment_form";
-import { Policy } from "./types";
+import type { Policy } from "./types";
 
 vi.mock("../networking");
 
 vi.mock("./impact_preview_alert", () => ({
   default: ({ impactResult }: { impactResult: any }) =>
-    React.createElement("div", { "data-testid": "impact-preview" }, `${impactResult.affected_keys_count} keys`),
+    React.createElement(
+      "div",
+      { "data-testid": "impact-preview" },
+      `${impactResult.affected_keys_count} keys`,
+    ),
 }));
 
 const makePolicy = (overrides: Partial<Policy> = {}): Policy => ({
@@ -30,7 +34,10 @@ const defaultProps = {
   onClose: vi.fn(),
   onSuccess: vi.fn(),
   accessToken: "test-token",
-  policies: [makePolicy({ policy_name: "policy-alpha" }), makePolicy({ policy_name: "policy-beta", policy_id: "id-2" })],
+  policies: [
+    makePolicy({ policy_name: "policy-alpha" }),
+    makePolicy({ policy_name: "policy-beta", policy_id: "id-2" }),
+  ],
   createAttachment: vi.fn(),
 };
 
@@ -44,12 +51,18 @@ describe("AddAttachmentForm", () => {
 
   it("should render the modal title when visible", async () => {
     renderWithProviders(<AddAttachmentForm {...defaultProps} />);
-    expect(await screen.findByText("Create Policy Attachment")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Create Policy Attachment"),
+    ).toBeInTheDocument();
   });
 
   it("should not render modal content when visible is false", () => {
-    renderWithProviders(<AddAttachmentForm {...defaultProps} visible={false} />);
-    expect(screen.queryByText("Create Policy Attachment")).not.toBeInTheDocument();
+    renderWithProviders(
+      <AddAttachmentForm {...defaultProps} visible={false} />,
+    );
+    expect(
+      screen.queryByText("Create Policy Attachment"),
+    ).not.toBeInTheDocument();
   });
 
   it("should fetch teams, keys, and models on mount when visible and accessToken are provided", async () => {
@@ -62,7 +75,9 @@ describe("AddAttachmentForm", () => {
   });
 
   it("should not fetch teams, keys, or models when accessToken is null", () => {
-    renderWithProviders(<AddAttachmentForm {...defaultProps} accessToken={null} />);
+    renderWithProviders(
+      <AddAttachmentForm {...defaultProps} accessToken={null} />,
+    );
     expect(networking.teamListCall).not.toHaveBeenCalled();
     expect(networking.keyListCall).not.toHaveBeenCalled();
     expect(networking.modelAvailableCall).not.toHaveBeenCalled();
@@ -98,13 +113,19 @@ describe("AddAttachmentForm", () => {
     const user = userEvent.setup();
     renderWithProviders(<AddAttachmentForm {...defaultProps} />);
     await screen.findByText("Create Policy Attachment");
-    expect(screen.queryByRole("button", { name: /estimate impact/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /estimate impact/i }),
+    ).not.toBeInTheDocument();
     await user.click(screen.getByRole("radio", { name: /specific/i }));
-    expect(screen.getByRole("button", { name: /estimate impact/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /estimate impact/i }),
+    ).toBeInTheDocument();
   });
 
   it("should render a 'Create Attachment' submit button", async () => {
     renderWithProviders(<AddAttachmentForm {...defaultProps} />);
-    expect(await screen.findByRole("button", { name: /create attachment/i })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("button", { name: /create attachment/i }),
+    ).toBeInTheDocument();
   });
 });

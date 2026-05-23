@@ -1,6 +1,6 @@
-import React from "react";
-import { Button as TremorButton, Text } from "@tremor/react";
+import { Text, Button as TremorButton } from "@tremor/react";
 import { Input, Modal } from "antd";
+import type React from "react";
 
 interface PublishModalProps {
   visible: boolean;
@@ -32,7 +32,7 @@ const PublishModal: React.FC<PublishModalProps> = ({
           <TremorButton onClick={onPublish} loading={isSaving}>
             Publish
           </TremorButton>
-        </div>
+        </div>,
       ]}
     >
       <div className="py-4">
@@ -45,7 +45,8 @@ const PublishModal: React.FC<PublishModalProps> = ({
           autoFocus
         />
         <Text className="text-gray-500 text-xs mt-2">
-          Published prompts can be used in API calls and are versioned for easy tracking.
+          Published prompts can be used in API calls and are versioned for easy
+          tracking.
         </Text>
       </div>
     </Modal>
@@ -53,4 +54,3 @@ const PublishModal: React.FC<PublishModalProps> = ({
 };
 
 export default PublishModal;
-

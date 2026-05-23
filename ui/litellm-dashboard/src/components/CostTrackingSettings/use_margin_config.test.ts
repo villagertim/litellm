@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, act } from "@testing-library/react";
-import { useMarginConfig } from "./use_margin_config";
 import NotificationsManager from "@/components/molecules/notifications_manager";
+import { act, renderHook } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useMarginConfig } from "./use_margin_config";
 
 vi.mock("@/components/networking", () => ({
   getProxyBaseUrl: vi.fn(() => ""),
@@ -37,13 +37,18 @@ describe("useMarginConfig", () => {
         json: async () => ({ values: { openai: 0.1, global: 0.05 } }),
       } as Response);
 
-      const { result } = renderHook(() => useMarginConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() =>
+        useMarginConfig({ accessToken: "test-token" }),
+      );
 
       await act(async () => {
         await result.current.fetchMarginConfig();
       });
 
-      expect(result.current.marginConfig).toEqual({ openai: 0.1, global: 0.05 });
+      expect(result.current.marginConfig).toEqual({
+        openai: 0.1,
+        global: 0.05,
+      });
     });
 
     it("should set an empty config when the response has no values", async () => {
@@ -52,7 +57,9 @@ describe("useMarginConfig", () => {
         json: async () => ({ values: {} }),
       } as Response);
 
-      const { result } = renderHook(() => useMarginConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() =>
+        useMarginConfig({ accessToken: "test-token" }),
+      );
 
       await act(async () => {
         await result.current.fetchMarginConfig();
@@ -62,23 +69,29 @@ describe("useMarginConfig", () => {
     });
 
     it("should show an error notification when fetch throws", async () => {
-      vi.spyOn(global, "fetch").mockRejectedValueOnce(new Error("Network error"));
+      vi.spyOn(global, "fetch").mockRejectedValueOnce(
+        new Error("Network error"),
+      );
 
-      const { result } = renderHook(() => useMarginConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() =>
+        useMarginConfig({ accessToken: "test-token" }),
+      );
 
       await act(async () => {
         await result.current.fetchMarginConfig();
       });
 
       expect(NotificationsManager.fromBackend).toHaveBeenCalledWith(
-        expect.stringMatching(/failed to fetch/i)
+        expect.stringMatching(/failed to fetch/i),
       );
     });
   });
 
   describe("handleAddMargin", () => {
     it("should return false and notify when no provider is selected", async () => {
-      const { result } = renderHook(() => useMarginConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() =>
+        useMarginConfig({ accessToken: "test-token" }),
+      );
 
       let success: boolean;
       await act(async () => {
@@ -95,7 +108,9 @@ describe("useMarginConfig", () => {
     });
 
     it("should return false and notify when percentage is out of range", async () => {
-      const { result } = renderHook(() => useMarginConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() =>
+        useMarginConfig({ accessToken: "test-token" }),
+      );
 
       let success: boolean;
       await act(async () => {
@@ -109,7 +124,7 @@ describe("useMarginConfig", () => {
 
       expect(success!).toBe(false);
       expect(NotificationsManager.fromBackend).toHaveBeenCalledWith(
-        expect.stringMatching(/0%.*1000%/i)
+        expect.stringMatching(/0%.*1000%/i),
       );
     });
 
@@ -121,7 +136,9 @@ describe("useMarginConfig", () => {
         } as Response)
         .mockResolvedValue({ ok: true, json: async () => ({}) } as Response);
 
-      const { result } = renderHook(() => useMarginConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() =>
+        useMarginConfig({ accessToken: "test-token" }),
+      );
 
       await act(async () => {
         await result.current.fetchMarginConfig();
@@ -139,17 +156,25 @@ describe("useMarginConfig", () => {
 
       expect(success!).toBe(false);
       expect(NotificationsManager.fromBackend).toHaveBeenCalledWith(
-        expect.stringMatching(/already exists/i)
+        expect.stringMatching(/already exists/i),
       );
     });
 
     it("should save a percentage margin and return true for a valid new provider", async () => {
       vi.spyOn(global, "fetch")
-        .mockResolvedValueOnce({ ok: true, json: async () => ({ values: {} }) } as Response)
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ values: {} }),
+        } as Response)
         .mockResolvedValueOnce({ ok: true, json: async () => ({}) } as Response)
-        .mockResolvedValueOnce({ ok: true, json: async () => ({ values: { openai: 0.1 } }) } as Response);
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ values: { openai: 0.1 } }),
+        } as Response);
 
-      const { result } = renderHook(() => useMarginConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() =>
+        useMarginConfig({ accessToken: "test-token" }),
+      );
 
       await act(async () => {
         await result.current.fetchMarginConfig();
@@ -171,14 +196,19 @@ describe("useMarginConfig", () => {
 
     it("should save a fixed amount margin and return true for a valid new provider", async () => {
       vi.spyOn(global, "fetch")
-        .mockResolvedValueOnce({ ok: true, json: async () => ({ values: {} }) } as Response)
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ values: {} }),
+        } as Response)
         .mockResolvedValueOnce({ ok: true, json: async () => ({}) } as Response)
         .mockResolvedValueOnce({
           ok: true,
           json: async () => ({ values: { openai: { fixed_amount: 0.001 } } }),
         } as Response);
 
-      const { result } = renderHook(() => useMarginConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() =>
+        useMarginConfig({ accessToken: "test-token" }),
+      );
 
       await act(async () => {
         await result.current.fetchMarginConfig();
@@ -200,14 +230,19 @@ describe("useMarginConfig", () => {
 
     it("should accept the global provider without provider_map lookup", async () => {
       vi.spyOn(global, "fetch")
-        .mockResolvedValueOnce({ ok: true, json: async () => ({ values: {} }) } as Response)
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ values: {} }),
+        } as Response)
         .mockResolvedValueOnce({ ok: true, json: async () => ({}) } as Response)
         .mockResolvedValueOnce({
           ok: true,
           json: async () => ({ values: { global: 0.05 } }),
         } as Response);
 
-      const { result } = renderHook(() => useMarginConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() =>
+        useMarginConfig({ accessToken: "test-token" }),
+      );
 
       await act(async () => {
         await result.current.fetchMarginConfig();
@@ -240,7 +275,9 @@ describe("useMarginConfig", () => {
           json: async () => ({ values: { anthropic: 0.05 } }),
         } as Response);
 
-      const { result } = renderHook(() => useMarginConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() =>
+        useMarginConfig({ accessToken: "test-token" }),
+      );
 
       await act(async () => {
         await result.current.fetchMarginConfig();
@@ -269,7 +306,9 @@ describe("useMarginConfig", () => {
           json: async () => ({ values: { openai: 0.2 } }),
         } as Response);
 
-      const { result } = renderHook(() => useMarginConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() =>
+        useMarginConfig({ accessToken: "test-token" }),
+      );
 
       await act(async () => {
         await result.current.fetchMarginConfig();
@@ -297,14 +336,19 @@ describe("useMarginConfig", () => {
           }),
         } as Response);
 
-      const { result } = renderHook(() => useMarginConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() =>
+        useMarginConfig({ accessToken: "test-token" }),
+      );
 
       await act(async () => {
         await result.current.fetchMarginConfig();
       });
 
       await act(async () => {
-        await result.current.handleMarginChange("openai", { percentage: 0.05, fixed_amount: 0.001 });
+        await result.current.handleMarginChange("openai", {
+          percentage: 0.05,
+          fixed_amount: 0.001,
+        });
       });
 
       expect(result.current.marginConfig["openai"]).toEqual({

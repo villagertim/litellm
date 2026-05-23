@@ -1,6 +1,6 @@
 import { Badge, Button } from "antd";
 import { Filter } from "lucide-react";
-import React from "react";
+import type React from "react";
 
 interface FiltersButtonProps {
   onClick: () => void;
@@ -17,7 +17,12 @@ export const FiltersButton: React.FC<FiltersButtonProps> = ({
 }) => {
   return (
     <Badge color="blue" dot={hasActiveFilters}>
-      <Button type="default" onClick={onClick} icon={<Filter size={16} />} className={active ? "bg-gray-100" : ""}>
+      <Button
+        type="default"
+        onClick={onClick}
+        icon={<Filter size={16} />}
+        className={active ? "bg-gray-100" : ""}
+      >
         {label}
       </Button>
     </Badge>

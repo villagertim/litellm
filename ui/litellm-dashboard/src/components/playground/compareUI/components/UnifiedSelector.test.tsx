@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+import { ENDPOINT_CONFIGS, EndpointId } from "../endpoint_config";
 import { UnifiedSelector } from "./UnifiedSelector";
-import { EndpointId, ENDPOINT_CONFIGS } from "../endpoint_config";
 
 describe("UnifiedSelector", () => {
   it("should render", () => {
@@ -13,7 +13,15 @@ describe("UnifiedSelector", () => {
     ];
     const config = ENDPOINT_CONFIGS[EndpointId.CHAT_COMPLETIONS];
 
-    render(<UnifiedSelector value="" options={options} loading={false} config={config} onChange={onChange} />);
+    render(
+      <UnifiedSelector
+        value=""
+        options={options}
+        loading={false}
+        config={config}
+        onChange={onChange}
+      />,
+    );
 
     const select = screen.getByRole("combobox");
     expect(select).toBeInTheDocument();
@@ -25,10 +33,18 @@ describe("UnifiedSelector", () => {
     const config = ENDPOINT_CONFIGS[EndpointId.CHAT_COMPLETIONS];
 
     const { container } = render(
-      <UnifiedSelector value="" options={options} loading={false} config={config} onChange={onChange} />,
+      <UnifiedSelector
+        value=""
+        options={options}
+        loading={false}
+        config={config}
+        onChange={onChange}
+      />,
     );
 
-    const placeholder = container.querySelector(".ant-select-selection-placeholder");
+    const placeholder = container.querySelector(
+      ".ant-select-selection-placeholder",
+    );
     expect(placeholder).toHaveTextContent(config.selectorPlaceholder);
   });
 
@@ -38,11 +54,21 @@ describe("UnifiedSelector", () => {
     const config = ENDPOINT_CONFIGS[EndpointId.CHAT_COMPLETIONS];
 
     const { container } = render(
-      <UnifiedSelector value="" options={options} loading={true} config={config} onChange={onChange} />,
+      <UnifiedSelector
+        value=""
+        options={options}
+        loading={true}
+        config={config}
+        onChange={onChange}
+      />,
     );
 
-    const placeholder = container.querySelector(".ant-select-selection-placeholder");
-    expect(placeholder).toHaveTextContent(`Loading ${config.selectorLabel.toLowerCase()}s...`);
+    const placeholder = container.querySelector(
+      ".ant-select-selection-placeholder",
+    );
+    expect(placeholder).toHaveTextContent(
+      `Loading ${config.selectorLabel.toLowerCase()}s...`,
+    );
   });
 
   it("should call onChange when option is selected", async () => {
@@ -54,7 +80,15 @@ describe("UnifiedSelector", () => {
     ];
     const config = ENDPOINT_CONFIGS[EndpointId.CHAT_COMPLETIONS];
 
-    render(<UnifiedSelector value="" options={options} loading={false} config={config} onChange={onChange} />);
+    render(
+      <UnifiedSelector
+        value=""
+        options={options}
+        loading={false}
+        config={config}
+        onChange={onChange}
+      />,
+    );
 
     const select = screen.getByRole("combobox");
     await user.click(select);
@@ -83,7 +117,13 @@ describe("UnifiedSelector", () => {
     const config = ENDPOINT_CONFIGS[EndpointId.CHAT_COMPLETIONS];
 
     const { container } = render(
-      <UnifiedSelector value="option1" options={options} loading={false} config={config} onChange={onChange} />,
+      <UnifiedSelector
+        value="option1"
+        options={options}
+        loading={false}
+        config={config}
+        onChange={onChange}
+      />,
     );
 
     const selectedValue = container.querySelector(".ant-select-selection-item");
@@ -100,7 +140,15 @@ describe("UnifiedSelector", () => {
     ];
     const config = ENDPOINT_CONFIGS[EndpointId.CHAT_COMPLETIONS];
 
-    render(<UnifiedSelector value="" options={options} loading={false} config={config} onChange={onChange} />);
+    render(
+      <UnifiedSelector
+        value=""
+        options={options}
+        loading={false}
+        config={config}
+        onChange={onChange}
+      />,
+    );
 
     const select = screen.getByRole("combobox");
     await user.click(select);
@@ -119,7 +167,15 @@ describe("UnifiedSelector", () => {
     const options: { value: string; label: string }[] = [];
     const config = ENDPOINT_CONFIGS[EndpointId.CHAT_COMPLETIONS];
 
-    render(<UnifiedSelector value="" options={options} loading={true} config={config} onChange={onChange} />);
+    render(
+      <UnifiedSelector
+        value=""
+        options={options}
+        loading={true}
+        config={config}
+        onChange={onChange}
+      />,
+    );
 
     const select = screen.getByRole("combobox");
     await user.click(select);
@@ -136,13 +192,23 @@ describe("UnifiedSelector", () => {
     const options: { value: string; label: string }[] = [];
     const config = ENDPOINT_CONFIGS[EndpointId.CHAT_COMPLETIONS];
 
-    render(<UnifiedSelector value="" options={options} loading={false} config={config} onChange={onChange} />);
+    render(
+      <UnifiedSelector
+        value=""
+        options={options}
+        loading={false}
+        config={config}
+        onChange={onChange}
+      />,
+    );
 
     const select = screen.getByRole("combobox");
     await user.click(select);
 
     await waitFor(() => {
-      expect(screen.getByText(`No ${config.selectorLabel.toLowerCase()}s available`)).toBeInTheDocument();
+      expect(
+        screen.getByText(`No ${config.selectorLabel.toLowerCase()}s available`),
+      ).toBeInTheDocument();
     });
   });
 
@@ -152,10 +218,18 @@ describe("UnifiedSelector", () => {
     const config = ENDPOINT_CONFIGS[EndpointId.A2A_AGENTS];
 
     const { container } = render(
-      <UnifiedSelector value="" options={options} loading={false} config={config} onChange={onChange} />,
+      <UnifiedSelector
+        value=""
+        options={options}
+        loading={false}
+        config={config}
+        onChange={onChange}
+      />,
     );
 
-    const placeholder = container.querySelector(".ant-select-selection-placeholder");
+    const placeholder = container.querySelector(
+      ".ant-select-selection-placeholder",
+    );
     expect(placeholder).toHaveTextContent(config.selectorPlaceholder);
   });
 });

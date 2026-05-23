@@ -1,5 +1,5 @@
-import React from "react";
 import { Switch } from "antd";
+import type React from "react";
 
 interface TagFilteringToggleProps {
   enabled: boolean;
@@ -17,10 +17,12 @@ const TagFilteringToggle: React.FC<TagFilteringToggleProps> = ({
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <label className="text-xs font-medium text-gray-700 uppercase tracking-wide">
-            {routerFieldsMetadata["enable_tag_filtering"]?.ui_field_name || "Enable Tag Filtering"}
+            {routerFieldsMetadata["enable_tag_filtering"]?.ui_field_name ||
+              "Enable Tag Filtering"}
           </label>
           <p className="text-xs text-gray-500 mt-0.5">
-            {routerFieldsMetadata["enable_tag_filtering"]?.field_description || ""}
+            {routerFieldsMetadata["enable_tag_filtering"]?.field_description ||
+              ""}
             {routerFieldsMetadata["enable_tag_filtering"]?.link && (
               <>
                 {" "}
@@ -36,15 +38,10 @@ const TagFilteringToggle: React.FC<TagFilteringToggleProps> = ({
             )}
           </p>
         </div>
-        <Switch
-          checked={enabled}
-          onChange={onToggle}
-          className="ml-4"
-        />
+        <Switch checked={enabled} onChange={onToggle} className="ml-4" />
       </div>
     </div>
   );
 };
 
 export default TagFilteringToggle;
-

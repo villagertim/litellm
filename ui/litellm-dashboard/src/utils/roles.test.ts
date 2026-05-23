@@ -1,4 +1,5 @@
-import { describe, it, expect } from "vitest";
+import type { Team } from "@/components/networking";
+import { describe, expect, it } from "vitest";
 import {
   isAdminRole,
   isProxyAdminRole,
@@ -7,7 +8,6 @@ import {
   rolesAllowedToViewWriteScopedPages,
   rolesWithWriteAccess,
 } from "./roles";
-import { Team } from "@/components/networking";
 
 describe("roles", () => {
   describe("isAdminRole", () => {
@@ -53,7 +53,9 @@ describe("roles", () => {
         { user_id: "user-1", user_email: "user1@test.com", role: "admin" },
         { user_id: "user-2", user_email: "user2@test.com", role: "user" },
       ];
-      expect(isUserTeamAdminForSingleTeam(members_with_roles, "user-1")).toBe(true);
+      expect(isUserTeamAdminForSingleTeam(members_with_roles, "user-1")).toBe(
+        true,
+      );
     });
 
     it("should return false when user is not team admin", () => {
@@ -61,12 +63,18 @@ describe("roles", () => {
         { user_id: "user-1", user_email: "user1@test.com", role: "user" },
         { user_id: "user-2", user_email: "user2@test.com", role: "user" },
       ];
-      expect(isUserTeamAdminForSingleTeam(members_with_roles, "user-1")).toBe(false);
+      expect(isUserTeamAdminForSingleTeam(members_with_roles, "user-1")).toBe(
+        false,
+      );
     });
 
     it("should return false when user is not in team", () => {
-      const members_with_roles = [{ user_id: "user-2", user_email: "user2@test.com", role: "admin" }];
-      expect(isUserTeamAdminForSingleTeam(members_with_roles, "user-1")).toBe(false);
+      const members_with_roles = [
+        { user_id: "user-2", user_email: "user2@test.com", role: "admin" },
+      ];
+      expect(isUserTeamAdminForSingleTeam(members_with_roles, "user-1")).toBe(
+        false,
+      );
     });
 
     it("should return false when members_with_roles is null", () => {
@@ -92,7 +100,9 @@ describe("roles", () => {
           organization_id: "org-1",
           created_at: "2024-01-01",
           keys: [],
-          members_with_roles: [{ user_id: "user-1", user_email: "user1@test.com", role: "user" }],
+          members_with_roles: [
+            { user_id: "user-1", user_email: "user1@test.com", role: "user" },
+          ],
         },
         {
           team_id: "team-2",
@@ -105,7 +115,9 @@ describe("roles", () => {
           organization_id: "org-1",
           created_at: "2024-01-01",
           keys: [],
-          members_with_roles: [{ user_id: "user-1", user_email: "user1@test.com", role: "admin" }],
+          members_with_roles: [
+            { user_id: "user-1", user_email: "user1@test.com", role: "admin" },
+          ],
         },
       ];
       expect(isUserTeamAdminForAnyTeam(teams, "user-1")).toBe(true);
@@ -124,7 +136,9 @@ describe("roles", () => {
           organization_id: "org-1",
           created_at: "2024-01-01",
           keys: [],
-          members_with_roles: [{ user_id: "user-1", user_email: "user1@test.com", role: "user" }],
+          members_with_roles: [
+            { user_id: "user-1", user_email: "user1@test.com", role: "user" },
+          ],
         },
         {
           team_id: "team-2",
@@ -137,7 +151,9 @@ describe("roles", () => {
           organization_id: "org-1",
           created_at: "2024-01-01",
           keys: [],
-          members_with_roles: [{ user_id: "user-2", user_email: "user2@test.com", role: "admin" }],
+          members_with_roles: [
+            { user_id: "user-2", user_email: "user2@test.com", role: "admin" },
+          ],
         },
       ];
       expect(isUserTeamAdminForAnyTeam(teams, "user-1")).toBe(false);
@@ -157,7 +173,9 @@ describe("roles", () => {
       // Admin Viewer follows the read-parity rule — they must be able to
       // see Models + Endpoints and Agents read-only.
       expect(rolesAllowedToViewWriteScopedPages).toContain("Admin Viewer");
-      expect(rolesAllowedToViewWriteScopedPages).toContain("proxy_admin_viewer");
+      expect(rolesAllowedToViewWriteScopedPages).toContain(
+        "proxy_admin_viewer",
+      );
     });
 
     it("includes everything in rolesWithWriteAccess (read parity is a superset)", () => {

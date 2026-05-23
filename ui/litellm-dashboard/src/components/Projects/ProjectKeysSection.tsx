@@ -60,7 +60,11 @@ export function ProjectKeysSection({ projectId }: ProjectKeysSectionProps) {
       </Flex>
       <ProjectKeysTable
         keys={keys}
-        loading={isLoading ? { indicator: <Spin indicator={<LoadingOutlined spin />} /> } : false}
+        loading={
+          isLoading
+            ? { indicator: <Spin indicator={<LoadingOutlined spin />} /> }
+            : false
+        }
       />
     </Card>
   );

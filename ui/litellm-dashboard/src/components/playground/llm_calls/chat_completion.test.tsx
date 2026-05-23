@@ -63,7 +63,12 @@ describe("chat_completion", () => {
   });
 
   it("should make a basic chat completion request", async () => {
-    await makeOpenAIChatCompletionRequest(mockChatHistory, mockUpdateUI, "gpt-4", "test-token");
+    await makeOpenAIChatCompletionRequest(
+      mockChatHistory,
+      mockUpdateUI,
+      "gpt-4",
+      "test-token",
+    );
 
     expect(mockCreate).toHaveBeenCalledTimes(1);
     expect(mockCreate).toHaveBeenCalledWith(

@@ -1,16 +1,20 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import ChatMessageBubble from "./ChatMessageBubble";
 import { EndpointType } from "./mode_endpoint_mapping";
-import { MessageType } from "./types";
+import type { MessageType } from "./types";
 
 // Mock child components to isolate bubble rendering logic
 vi.mock("react-markdown", () => ({
-  default: ({ children }: { children: string }) => <div data-testid="react-markdown">{children}</div>,
+  default: ({ children }: { children: string }) => (
+    <div data-testid="react-markdown">{children}</div>
+  ),
 }));
 
 vi.mock("react-syntax-highlighter", () => ({
-  Prism: ({ children }: { children: string }) => <pre data-testid="syntax-highlighter">{children}</pre>,
+  Prism: ({ children }: { children: string }) => (
+    <pre data-testid="syntax-highlighter">{children}</pre>
+  ),
 }));
 
 vi.mock("react-syntax-highlighter/dist/esm/styles/prism", () => ({
@@ -31,7 +35,9 @@ vi.mock("./MCPEventsDisplay", () => ({
 
 vi.mock("./SearchResultsDisplay", () => ({
   SearchResultsDisplay: ({ searchResults }: { searchResults: unknown[] }) => (
-    <div data-testid="search-results-display">{searchResults.length} results</div>
+    <div data-testid="search-results-display">
+      {searchResults.length} results
+    </div>
   ),
 }));
 
@@ -48,12 +54,16 @@ vi.mock("./A2AMetrics", () => ({
 }));
 
 vi.mock("./CodeInterpreterOutput", () => ({
-  default: ({ code }: { code: string }) => <div data-testid="code-interpreter-output">{code}</div>,
+  default: ({ code }: { code: string }) => (
+    <div data-testid="code-interpreter-output">{code}</div>
+  ),
 }));
 
 vi.mock("./AudioRenderer", () => ({
   default: ({ message }: { message: MessageType }) => (
-    <div data-testid="audio-renderer">{typeof message.content === "string" ? message.content : ""}</div>
+    <div data-testid="audio-renderer">
+      {typeof message.content === "string" ? message.content : ""}
+    </div>
   ),
 }));
 
@@ -128,18 +138,27 @@ describe("ChatMessageBubble", () => {
       />,
     );
 
-    expect(screen.getByTestId("react-markdown")).toHaveTextContent("**bold text**");
+    expect(screen.getByTestId("react-markdown")).toHaveTextContent(
+      "**bold text**",
+    );
   });
 
   it("should render an image when isImage is true", () => {
     render(
       <ChatMessageBubble
         {...defaultProps}
-        message={{ role: "assistant", content: "https://example.com/img.png", isImage: true }}
+        message={{
+          role: "assistant",
+          content: "https://example.com/img.png",
+          isImage: true,
+        }}
       />,
     );
 
-    expect(screen.getByAltText("Generated image")).toHaveAttribute("src", "https://example.com/img.png");
+    expect(screen.getByAltText("Generated image")).toHaveAttribute(
+      "src",
+      "https://example.com/img.png",
+    );
   });
 
   it("should render AudioRenderer when isAudio is true", () => {
@@ -157,11 +176,17 @@ describe("ChatMessageBubble", () => {
     render(
       <ChatMessageBubble
         {...defaultProps}
-        message={{ role: "assistant", content: "answer", reasoningContent: "thinking..." }}
+        message={{
+          role: "assistant",
+          content: "answer",
+          reasoningContent: "thinking...",
+        }}
       />,
     );
 
-    expect(screen.getByTestId("reasoning-content")).toHaveTextContent("thinking...");
+    expect(screen.getByTestId("reasoning-content")).toHaveTextContent(
+      "thinking...",
+    );
   });
 
   it("should show MCP events on the last assistant message for RESPONSES endpoint", () => {
@@ -177,7 +202,9 @@ describe("ChatMessageBubble", () => {
       />,
     );
 
-    expect(screen.getByTestId("mcp-events-display")).toHaveTextContent("1 events");
+    expect(screen.getByTestId("mcp-events-display")).toHaveTextContent(
+      "1 events",
+    );
   });
 
   it("should show MCP events on the last assistant message for CHAT endpoint", () => {
@@ -193,7 +220,9 @@ describe("ChatMessageBubble", () => {
       />,
     );
 
-    expect(screen.getByTestId("mcp-events-display")).toHaveTextContent("1 events");
+    expect(screen.getByTestId("mcp-events-display")).toHaveTextContent(
+      "1 events",
+    );
   });
 
   it("should not show MCP events when isLastMessage is false", () => {
@@ -275,7 +304,9 @@ describe("ChatMessageBubble", () => {
       />,
     );
 
-    expect(screen.getByTestId("code-interpreter-output")).toHaveTextContent("print('hello')");
+    expect(screen.getByTestId("code-interpreter-output")).toHaveTextContent(
+      "print('hello')",
+    );
   });
 
   it("should render generated image from chat completions via message.image", () => {
@@ -291,6 +322,11 @@ describe("ChatMessageBubble", () => {
     );
 
     const images = screen.getAllByAltText("Generated image");
-    expect(images.some((img) => img.getAttribute("src") === "https://example.com/generated.png")).toBe(true);
+    expect(
+      images.some(
+        (img) =>
+          img.getAttribute("src") === "https://example.com/generated.png",
+      ),
+    ).toBe(true);
   });
 });

@@ -1,7 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { Select, Button, Card, Typography, Spin, Tag } from "antd";
-import { SaveOutlined, PlusOutlined } from "@ant-design/icons";
-import { getGeneralSettingsCall, updateConfigFieldSetting, deleteConfigFieldSetting, fetchMCPClientIp } from "../networking";
+import { PlusOutlined, SaveOutlined } from "@ant-design/icons";
+import { Button, Card, Select, Spin, Tag, Typography } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
+import {
+  deleteConfigFieldSetting,
+  fetchMCPClientIp,
+  getGeneralSettingsCall,
+  updateConfigFieldSetting,
+} from "../networking";
 
 const { Text } = Typography;
 
@@ -18,7 +24,9 @@ function ipToSlash24(ip: string): string {
   return `${parts[0]}.${parts[1]}.${parts[2]}.0/24`;
 }
 
-const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) => {
+const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({
+  accessToken,
+}) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [privateRanges, setPrivateRanges] = useState<string[]>([]);
@@ -35,7 +43,10 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
     try {
       const settings = await getGeneralSettingsCall(accessToken);
       for (const field of settings) {
-        if (field.field_name === "mcp_internal_ip_ranges" && field.field_value) {
+        if (
+          field.field_name === "mcp_internal_ip_ranges" &&
+          field.field_value
+        ) {
           setPrivateRanges(field.field_value);
         }
       }
@@ -59,7 +70,11 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
     setSaving(true);
     try {
       if (privateRanges.length > 0) {
-        await updateConfigFieldSetting(accessToken, "mcp_internal_ip_ranges", privateRanges);
+        await updateConfigFieldSetting(
+          accessToken,
+          "mcp_internal_ip_ranges",
+          privateRanges,
+        );
       } else {
         await deleteConfigFieldSetting(accessToken, "mcp_internal_ip_ranges");
       }
@@ -91,7 +106,9 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
       <div>
         <Text className="text-lg font-semibold">Private IP Ranges</Text>
         <p className="text-sm text-gray-500 mt-1">
-          Define which IP ranges are part of your private network. Callers from these IPs can see all MCP servers. Callers from any other IP can only see servers marked &quot;Available on Public Internet&quot;.
+          Define which IP ranges are part of your private network. Callers from
+          these IPs can see all MCP servers. Callers from any other IP can only
+          see servers marked &quot;Available on Public Internet&quot;.
         </p>
       </div>
 
@@ -99,7 +116,8 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
         {currentIp && (
           <div className="mb-4 p-3 bg-blue-50 rounded-lg">
             <Text className="text-sm text-blue-700">
-              Your current IP: <span className="font-mono font-medium">{currentIp}</span>
+              Your current IP:{" "}
+              <span className="font-mono font-medium">{currentIp}</span>
             </Text>
             {suggestedRange && !privateRanges.includes(suggestedRange) && (
               <div className="mt-1">
@@ -131,7 +149,8 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
           allowClear
         />
         <p className="text-xs text-gray-400 mt-2">
-          Enter CIDR ranges (e.g., 10.0.0.0/8). When empty, standard private IP ranges are used.
+          Enter CIDR ranges (e.g., 10.0.0.0/8). When empty, standard private IP
+          ranges are used.
         </p>
       </Card>
 

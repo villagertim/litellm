@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import RedactableField from "./RedactableField";
 
@@ -26,7 +26,9 @@ describe("RedactableField", () => {
       render(<RedactableField value={testValue} />);
 
       // Should show dots equal to the length of the value
-      expect(screen.getByText("•".repeat(testValue.length))).toBeInTheDocument();
+      expect(
+        screen.getByText("•".repeat(testValue.length)),
+      ).toBeInTheDocument();
       expect(screen.queryByText(testValue)).not.toBeInTheDocument();
     });
 
@@ -34,7 +36,9 @@ describe("RedactableField", () => {
       render(<RedactableField value={testValue} defaultHidden={false} />);
 
       expect(screen.getByText(testValue)).toBeInTheDocument();
-      expect(screen.queryByText("•".repeat(testValue.length))).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("•".repeat(testValue.length)),
+      ).not.toBeInTheDocument();
     });
 
     it("should display toggle button with eye icon when hidden", () => {
@@ -64,7 +68,9 @@ describe("RedactableField", () => {
       render(<RedactableField value={testValue} />);
 
       // Initially hidden
-      expect(screen.getByText("•".repeat(testValue.length))).toBeInTheDocument();
+      expect(
+        screen.getByText("•".repeat(testValue.length)),
+      ).toBeInTheDocument();
       expect(screen.queryByText(testValue)).not.toBeInTheDocument();
 
       // Click to show
@@ -73,13 +79,17 @@ describe("RedactableField", () => {
 
       // Should now show the actual value
       expect(screen.getByText(testValue)).toBeInTheDocument();
-      expect(screen.queryByText("•".repeat(testValue.length))).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("•".repeat(testValue.length)),
+      ).not.toBeInTheDocument();
 
       // Click again to hide
       fireEvent.click(button);
 
       // Should be hidden again
-      expect(screen.getByText("•".repeat(testValue.length))).toBeInTheDocument();
+      expect(
+        screen.getByText("•".repeat(testValue.length)),
+      ).toBeInTheDocument();
       expect(screen.queryByText(testValue)).not.toBeInTheDocument();
     });
 
@@ -102,7 +112,9 @@ describe("RedactableField", () => {
       expect(screen.getByText("••")).toBeInTheDocument();
 
       rerender(<RedactableField value={longValue} />);
-      expect(screen.getByText("•".repeat(longValue.length))).toBeInTheDocument();
+      expect(
+        screen.getByText("•".repeat(longValue.length)),
+      ).toBeInTheDocument();
     });
   });
 });

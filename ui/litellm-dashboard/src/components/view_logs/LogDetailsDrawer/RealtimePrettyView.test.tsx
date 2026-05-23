@@ -1,7 +1,13 @@
-import React from "react";
-import { render, screen, fireEvent, act, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { RealtimePrettyView, isRealtimeResponse } from "./RealtimePrettyView";
 
 vi.mock("antd", async () => {
@@ -238,12 +244,12 @@ describe("RealtimePrettyView", () => {
   it("should display transcript text from response turns", () => {
     render(<RealtimePrettyView response={sampleRealtimeResponse} />);
     expect(
-      screen.getByText("Hello! How's your day going?")
+      screen.getByText("Hello! How's your day going?"),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "I'm here to help with information and general questions."
-      )
+        "I'm here to help with information and general questions.",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -279,7 +285,7 @@ describe("RealtimePrettyView", () => {
     await waitFor(() => {
       expect(screen.getByText("Instructions")).toBeInTheDocument();
       expect(
-        screen.getByText("You are a helpful assistant.")
+        screen.getByText("You are a helpful assistant."),
       ).toBeInTheDocument();
     });
   });
@@ -308,7 +314,7 @@ describe("RealtimePrettyView", () => {
     };
     render(<RealtimePrettyView response={emptyResponse} />);
     expect(
-      screen.getByText("No recognized realtime events found")
+      screen.getByText("No recognized realtime events found"),
     ).toBeInTheDocument();
   });
 
@@ -334,7 +340,7 @@ describe("RealtimePrettyView", () => {
       <RealtimePrettyView
         response={sampleRealtimeResponse}
         metrics={{ completion_tokens: 500, output_cost: 0.005 }}
-      />
+      />,
     );
     expect(screen.getByText(/Tokens: 500/)).toBeInTheDocument();
     expect(screen.getByText(/Cost: \$0\.005000/)).toBeInTheDocument();

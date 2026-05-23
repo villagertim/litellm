@@ -1,6 +1,10 @@
-import { useEffect, useState } from "react";
+import { useTeams } from "@/app/(dashboard)/hooks/teams/useTeams";
+import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { getGuardrailsList } from "@/components/networking";
+import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   Alert,
+  Button,
   Col,
   Collapse,
   Divider,
@@ -13,16 +17,12 @@ import {
   Space,
   Switch,
   Typography,
-  Button,
 } from "antd";
 import type { FormInstance } from "antd";
-import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
-import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { useTeams } from "@/app/(dashboard)/hooks/teams/useTeams";
-import { Team } from "../../key_team_helpers/key_list";
-import { fetchTeamModels } from "../../organisms/create_key_button";
+import { useEffect, useState } from "react";
 import { getModelDisplayName } from "../../key_team_helpers/fetch_available_models_team_key";
-import { getGuardrailsList } from "@/components/networking";
+import type { Team } from "../../key_team_helpers/key_list";
+import { fetchTeamModels } from "../../organisms/create_key_button";
 
 export interface ProjectFormValues {
   project_alias: string;
@@ -40,9 +40,7 @@ interface ProjectBaseFormProps {
   form: FormInstance<ProjectFormValues>;
 }
 
-export function ProjectBaseForm({
-  form,
-}: ProjectBaseFormProps) {
+export function ProjectBaseForm({ form }: ProjectBaseFormProps) {
   const { accessToken, userId, userRole } = useAuthorized();
   const { data: teams } = useTeams();
 
@@ -56,7 +54,7 @@ export function ProjectBaseForm({
       try {
         const response = await getGuardrailsList(accessToken);
         const names = response.guardrails.map(
-          (g: { guardrail_name: string }) => g.guardrail_name
+          (g: { guardrail_name: string }) => g.guardrail_name,
         );
         setGuardrailsList(names);
       } catch (error) {
@@ -126,9 +124,7 @@ export function ProjectBaseForm({
           <Form.Item
             name="project_alias"
             label="Project Name"
-            rules={[
-              { required: true, message: "Please enter a project name" },
-            ]}
+            rules={[{ required: true, message: "Please enter a project name" }]}
           >
             <Input placeholder="e.g. Customer Support Bot" />
           </Form.Item>
@@ -255,13 +251,19 @@ export function ProjectBaseForm({
                   <>
                     <Flex align="center" gap={12}>
                       <Typography.Text strong>Block Project</Typography.Text>
-                      <Form.Item name="isBlocked" valuePropName="checked" noStyle>
+                      <Form.Item
+                        name="isBlocked"
+                        valuePropName="checked"
+                        noStyle
+                      >
                         <Switch />
                       </Form.Item>
                     </Flex>
                     <Form.Item
                       noStyle
-                      shouldUpdate={(prev, cur) => prev.isBlocked !== cur.isBlocked}
+                      shouldUpdate={(prev, cur) =>
+                        prev.isBlocked !== cur.isBlocked
+                      }
                     >
                       {({ getFieldValue }) =>
                         getFieldValue("isBlocked") ? (
@@ -319,12 +321,16 @@ export function ProjectBaseForm({
                                   {
                                     validator: (_, value) => {
                                       if (!value) return Promise.resolve();
-                                      const all = form.getFieldValue("modelLimits") ?? [];
+                                      const all =
+                                        form.getFieldValue("modelLimits") ?? [];
                                       const dupes = all.filter(
-                                        (entry: { model?: string }) => entry?.model === value,
+                                        (entry: { model?: string }) =>
+                                          entry?.model === value,
                                       );
                                       if (dupes.length > 1) {
-                                        return Promise.reject(new Error("Duplicate model"));
+                                        return Promise.reject(
+                                          new Error("Duplicate model"),
+                                        );
                                       }
                                       return Promise.resolve();
                                     },
@@ -384,12 +390,16 @@ export function ProjectBaseForm({
                                   {
                                     validator: (_, value) => {
                                       if (!value) return Promise.resolve();
-                                      const all = form.getFieldValue("metadata") ?? [];
+                                      const all =
+                                        form.getFieldValue("metadata") ?? [];
                                       const dupes = all.filter(
-                                        (entry: { key?: string }) => entry?.key === value,
+                                        (entry: { key?: string }) =>
+                                          entry?.key === value,
                                       );
                                       if (dupes.length > 1) {
-                                        return Promise.reject(new Error("Duplicate key"));
+                                        return Promise.reject(
+                                          new Error("Duplicate key"),
+                                        );
                                       }
                                       return Promise.resolve();
                                     },

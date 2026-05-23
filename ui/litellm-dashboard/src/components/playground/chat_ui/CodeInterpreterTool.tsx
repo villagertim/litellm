@@ -1,8 +1,12 @@
-import React from "react";
-import { Switch, Tooltip } from "antd";
 import MessageManager from "@/components/molecules/message_manager";
-import { CodeOutlined, InfoCircleOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import {
+  CodeOutlined,
+  ExclamationCircleOutlined,
+  InfoCircleOutlined,
+} from "@ant-design/icons";
 import { Text } from "@tremor/react";
+import { Switch, Tooltip } from "antd";
+import type React from "react";
 
 interface CodeInterpreterToolProps {
   accessToken: string;
@@ -14,7 +18,8 @@ interface CodeInterpreterToolProps {
   disabled?: boolean;
 }
 
-const GITHUB_FEATURE_REQUEST_URL = "https://github.com/BerriAI/litellm/issues/new?template=feature_request.yml";
+const GITHUB_FEATURE_REQUEST_URL =
+  "https://github.com/BerriAI/litellm/issues/new?template=feature_request.yml";
 
 const isOpenAIModel = (model: string): boolean => {
   if (!model) return false;
@@ -39,7 +44,9 @@ const CodeInterpreterTool: React.FC<CodeInterpreterToolProps> = ({
 
   const handleToggle = (checked: boolean) => {
     if (checked && !isOpenAI) {
-      MessageManager.warning("Code Interpreter is only available for OpenAI models");
+      MessageManager.warning(
+        "Code Interpreter is only available for OpenAI models",
+      );
       return;
     }
     onEnabledChange(checked);
@@ -63,13 +70,15 @@ const CodeInterpreterTool: React.FC<CodeInterpreterToolProps> = ({
           className={enabled && isOpenAI ? "bg-blue-500" : ""}
         />
       </div>
-      
+
       {!isOpenAI && (
         <div className="mt-2 pt-2 border-t border-gray-200">
           <div className="flex items-start gap-2">
             <ExclamationCircleOutlined className="text-amber-500 mt-0.5" />
             <div className="text-xs text-gray-600">
-              <span>Code Interpreter is currently only supported for OpenAI models. </span>
+              <span>
+                Code Interpreter is currently only supported for OpenAI models.{" "}
+              </span>
               <a
                 href={GITHUB_FEATURE_REQUEST_URL}
                 target="_blank"

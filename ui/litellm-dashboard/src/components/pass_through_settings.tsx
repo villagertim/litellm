@@ -1,14 +1,22 @@
-import React, { useState, useEffect } from "react";
-import { Text, Button, Icon, Title } from "@tremor/react";
-import { deletePassThroughEndpointsCall, getPassThroughEndpointsCall } from "./networking";
+import {
+  InformationCircleIcon,
+  PencilAltIcon,
+  TrashIcon,
+} from "@heroicons/react/outline";
+import type { ColumnDef } from "@tanstack/react-table";
+import { Button, Icon, Text, Title } from "@tremor/react";
 import { Badge, Tooltip } from "antd";
-import { PencilAltIcon, TrashIcon, InformationCircleIcon } from "@heroicons/react/outline";
+import { Eye, EyeOff } from "lucide-react";
+import type React from "react";
+import { useEffect, useState } from "react";
 import AddPassThroughEndpoint from "./add_pass_through";
+import NotificationsManager from "./molecules/notifications_manager";
+import {
+  deletePassThroughEndpointsCall,
+  getPassThroughEndpointsCall,
+} from "./networking";
 import PassThroughInfoView from "./pass_through_info";
 import { DataTable } from "./view_logs/table";
-import { ColumnDef } from "@tanstack/react-table";
-import { Eye, EyeOff } from "lucide-react";
-import NotificationsManager from "./molecules/notifications_manager";
 
 interface GeneralSettingsPageProps {
   accessToken: string | null;
@@ -40,7 +48,10 @@ export interface passThroughItem {
   cost_per_request?: number;
   auth?: boolean;
   methods?: string[];
-  guardrails?: Record<string, { request_fields?: string[]; response_fields?: string[] } | null>;
+  guardrails?: Record<
+    string,
+    { request_fields?: string[]; response_fields?: string[] } | null
+  >;
   default_query_params?: Record<string, string>;
 }
 
@@ -51,17 +62,35 @@ const PasswordField: React.FC<{ value: object }> = ({ value }) => {
 
   return (
     <div className="flex items-center space-x-2">
-      <span className="font-mono text-xs">{showPassword ? headerString : "••••••••"}</span>
-      <button onClick={() => setShowPassword(!showPassword)} className="p-1 hover:bg-gray-100 rounded" type="button">
-        {showPassword ? <EyeOff className="w-4 h-4 text-gray-500" /> : <Eye className="w-4 h-4 text-gray-500" />}
+      <span className="font-mono text-xs">
+        {showPassword ? headerString : "••••••••"}
+      </span>
+      <button
+        onClick={() => setShowPassword(!showPassword)}
+        className="p-1 hover:bg-gray-100 rounded"
+        type="button"
+      >
+        {showPassword ? (
+          <EyeOff className="w-4 h-4 text-gray-500" />
+        ) : (
+          <Eye className="w-4 h-4 text-gray-500" />
+        )}
       </button>
     </div>
   );
 };
 
-const PassThroughSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, userRole, userID, modelData, premiumUser }) => {
+const PassThroughSettings: React.FC<GeneralSettingsPageProps> = ({
+  accessToken,
+  userRole,
+  userID,
+  modelData,
+  premiumUser,
+}) => {
   const [generalSettings, setGeneralSettings] = useState<passThroughItem[]>([]);
-  const [selectedEndpointId, setSelectedEndpointId] = useState<string | null>(null);
+  const [selectedEndpointId, setSelectedEndpointId] = useState<string | null>(
+    null,
+  );
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [endpointToDelete, setEndpointToDelete] = useState<string | null>(null);
 
@@ -70,7 +99,7 @@ const PassThroughSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, 
       return;
     }
     getPassThroughEndpointsCall(accessToken).then((data) => {
-      let general_settings = data["endpoints"];
+      const general_settings = data["endpoints"];
       setGeneralSettings(general_settings);
     });
   }, [accessToken, userRole, userID]);
@@ -79,7 +108,7 @@ const PassThroughSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, 
     // Refresh the endpoints list when an endpoint is updated
     if (accessToken) {
       getPassThroughEndpointsCall(accessToken).then((data) => {
-        let general_settings = data["endpoints"];
+        const general_settings = data["endpoints"];
         setGeneralSettings(general_settings);
       });
     }
@@ -99,7 +128,9 @@ const PassThroughSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, 
     try {
       await deletePassThroughEndpointsCall(accessToken, endpointToDelete);
 
-      const updatedSettings = generalSettings.filter((setting) => setting.id !== endpointToDelete);
+      const updatedSettings = generalSettings.filter(
+        (setting) => setting.id !== endpointToDelete,
+      );
       setGeneralSettings(updatedSettings);
 
       NotificationsManager.success("Endpoint deleted successfully.");
@@ -133,7 +164,10 @@ const PassThroughSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, 
         <Tooltip title={info.row.original.id}>
           <div
             className="font-mono text-blue-500 bg-blue-50 hover:bg-blue-100 text-xs font-normal px-2 py-0.5 text-left w-full truncate whitespace-nowrap cursor-pointer max-w-[15ch]"
-            onClick={() => info.row.original.id && setSelectedEndpointId(info.row.original.id)}
+            onClick={() =>
+              info.row.original.id &&
+              setSelectedEndpointId(info.row.original.id)
+            }
           >
             {info.row.original.id}
           </div>
@@ -185,7 +219,11 @@ const PassThroughSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, 
         </div>
       ),
       accessorKey: "auth",
-      cell: (info: any) => <Badge color={info.getValue() ? "green" : "gray"}>{info.getValue() ? "Yes" : "No"}</Badge>,
+      cell: (info: any) => (
+        <Badge color={info.getValue() ? "green" : "gray"}>
+          {info.getValue() ? "Yes" : "No"}
+        </Badge>
+      ),
     },
     {
       header: "Headers",
@@ -200,7 +238,9 @@ const PassThroughSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, 
           <Icon
             icon={PencilAltIcon}
             size="sm"
-            onClick={() => row.original.id && setSelectedEndpointId(row.original.id)}
+            onClick={() =>
+              row.original.id && setSelectedEndpointId(row.original.id)
+            }
             title="Edit"
           />
           <Icon
@@ -223,7 +263,9 @@ const PassThroughSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, 
     // Find the endpoint by ID to get the endpoint data for the info view
     console.log("selectedEndpointId", selectedEndpointId);
     console.log("generalSettings", generalSettings);
-    const selectedEndpoint = generalSettings.find((endpoint) => endpoint.id === selectedEndpointId);
+    const selectedEndpoint = generalSettings.find(
+      (endpoint) => endpoint.id === selectedEndpointId,
+    );
 
     if (!selectedEndpoint) {
       return <div>Endpoint not found</div>;
@@ -245,7 +287,9 @@ const PassThroughSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, 
     <div>
       <div>
         <Title>Pass Through Endpoints</Title>
-        <Text className="text-tremor-content">Configure and manage your pass-through endpoints</Text>
+        <Text className="text-tremor-content">
+          Configure and manage your pass-through endpoints
+        </Text>
       </div>
 
       <AddPassThroughEndpoint
@@ -267,12 +311,18 @@ const PassThroughSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, 
       {isDeleteModalOpen && (
         <div className="fixed z-10 inset-0 overflow-y-auto">
           <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div
+              className="fixed inset-0 transition-opacity"
+              aria-hidden="true"
+            >
               <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
             </div>
 
             {/* Modal Panel */}
-            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
+            <span
+              className="hidden sm:inline-block sm:align-middle sm:h-screen"
+              aria-hidden="true"
+            >
               &#8203;
             </span>
 
@@ -281,10 +331,13 @@ const PassThroughSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, 
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div className="sm:flex sm:items-start">
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900">Delete Pass-Through Endpoint</h3>
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">
+                      Delete Pass-Through Endpoint
+                    </h3>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        Are you sure you want to delete this pass-through endpoint? This action cannot be undone.
+                        Are you sure you want to delete this pass-through
+                        endpoint? This action cannot be undone.
                       </p>
                     </div>
                   </div>

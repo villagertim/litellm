@@ -1,14 +1,34 @@
-import React, { useState, useEffect } from "react";
-import { Button, Popconfirm, Modal, InputNumber, Space, Typography, Tag, Card, Tooltip, Divider } from "antd";
-import { ReloadOutlined, ClockCircleOutlined, StopOutlined, CloudOutlined, DatabaseOutlined, InfoCircleOutlined, WarningOutlined } from "@ant-design/icons";
 import {
-  reloadModelCostMap,
-  scheduleModelCostMapReload,
+  ClockCircleOutlined,
+  CloudOutlined,
+  DatabaseOutlined,
+  InfoCircleOutlined,
+  ReloadOutlined,
+  StopOutlined,
+  WarningOutlined,
+} from "@ant-design/icons";
+import {
+  Button,
+  Card,
+  Divider,
+  InputNumber,
+  Modal,
+  Popconfirm,
+  Space,
+  Tag,
+  Tooltip,
+  Typography,
+} from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
+import NotificationsManager from "./molecules/notifications_manager";
+import {
   cancelModelCostMapReload,
   getModelCostMapReloadStatus,
   getModelCostMapSource,
+  reloadModelCostMap,
+  scheduleModelCostMapReload,
 } from "./networking";
-import NotificationsManager from "./molecules/notifications_manager";
 
 const { Text } = Typography;
 
@@ -118,7 +138,9 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
       const response = await reloadModelCostMap(accessToken);
 
       if (response.status === "success") {
-        NotificationsManager.success(`Price data reloaded successfully! ${response.models_count || 0} models updated.`);
+        NotificationsManager.success(
+          `Price data reloaded successfully! ${response.models_count || 0} models updated.`,
+        );
         onReloadSuccess?.();
         // Refresh status and source info after successful reload
         await fetchReloadStatus();
@@ -128,7 +150,9 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
       }
     } catch (error) {
       console.error("Error reloading price data:", error);
-      NotificationsManager.fromBackend("Failed to reload price data. Please try again.");
+      NotificationsManager.fromBackend(
+        "Failed to reload price data. Please try again.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -149,7 +173,9 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
       const response = await scheduleModelCostMapReload(accessToken, hours);
 
       if (response.status === "success") {
-        NotificationsManager.success(`Periodic reload scheduled for every ${hours} hours`);
+        NotificationsManager.success(
+          `Periodic reload scheduled for every ${hours} hours`,
+        );
         setShowScheduleModal(false);
         await fetchReloadStatus();
       } else {
@@ -157,7 +183,9 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
       }
     } catch (error) {
       console.error("Error scheduling reload:", error);
-      NotificationsManager.fromBackend("Failed to schedule periodic reload. Please try again.");
+      NotificationsManager.fromBackend(
+        "Failed to schedule periodic reload. Please try again.",
+      );
     } finally {
       setIsScheduling(false);
     }
@@ -181,7 +209,9 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
       }
     } catch (error) {
       console.error("Error cancelling reload:", error);
-      NotificationsManager.fromBackend("Failed to cancel periodic reload. Please try again.");
+      NotificationsManager.fromBackend(
+        "Failed to cancel periodic reload. Please try again.",
+      );
     } finally {
       setIsCancelling(false);
     }
@@ -317,7 +347,8 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
         <Card
           size="small"
           style={{
-            backgroundColor: sourceInfo.source === "remote" ? "#f0f7ff" : "#fff8f0",
+            backgroundColor:
+              sourceInfo.source === "remote" ? "#f0f7ff" : "#fff8f0",
             border: `1px solid ${sourceInfo.source === "remote" ? "#bae0ff" : "#ffd591"}`,
             borderRadius: 8,
             marginBottom: 12,
@@ -336,7 +367,12 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
               </Text>
               <Tag
                 color={sourceInfo.source === "remote" ? "blue" : "orange"}
-                style={{ marginLeft: "auto", fontWeight: 600, textTransform: "uppercase", fontSize: "11px" }}
+                style={{
+                  marginLeft: "auto",
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  fontSize: "11px",
+                }}
               >
                 {sourceInfo.source === "remote" ? "Remote" : "Local"}
               </Tag>
@@ -345,7 +381,13 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
             <Divider style={{ margin: "6px 0" }} />
 
             {/* Model count */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
               <Text type="secondary" style={{ fontSize: "12px" }}>
                 Models loaded:
               </Text>
@@ -356,9 +398,21 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
 
             {/* URL (when remote or attempted) */}
             {sourceInfo.url && (
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
-                <Text type="secondary" style={{ fontSize: "12px", whiteSpace: "nowrap" }}>
-                  {sourceInfo.source === "remote" ? "Loaded from:" : "Attempted URL:"}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  gap: 8,
+                }}
+              >
+                <Text
+                  type="secondary"
+                  style={{ fontSize: "12px", whiteSpace: "nowrap" }}
+                >
+                  {sourceInfo.source === "remote"
+                    ? "Loaded from:"
+                    : "Attempted URL:"}
                 </Text>
                 <Tooltip title={sourceInfo.url}>
                   <Text
@@ -381,10 +435,20 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
 
             {/* Env forced notice */}
             {sourceInfo.is_env_forced && (
-              <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 2 }}>
-                <InfoCircleOutlined style={{ color: "#fa8c16", fontSize: 12 }} />
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  marginTop: 2,
+                }}
+              >
+                <InfoCircleOutlined
+                  style={{ color: "#fa8c16", fontSize: 12 }}
+                />
                 <Text type="secondary" style={{ fontSize: "11px" }}>
-                  Local mode forced via <code>LITELLM_LOCAL_MODEL_COST_MAP=True</code>
+                  Local mode forced via{" "}
+                  <code>LITELLM_LOCAL_MODEL_COST_MAP=True</code>
                 </Text>
               </div>
             )}
@@ -403,7 +467,9 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
                   marginTop: 2,
                 }}
               >
-                <WarningOutlined style={{ color: "#fa8c16", fontSize: 12, marginTop: 2 }} />
+                <WarningOutlined
+                  style={{ color: "#fa8c16", fontSize: 12, marginTop: 2 }}
+                />
                 <Text style={{ fontSize: "11px", color: "#614700" }}>
                   Fell back to local: {sourceInfo.fallback_reason}
                 </Text>
@@ -434,24 +500,46 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
               <Text type="secondary">No periodic reload scheduled</Text>
             )}
 
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
               <Text type="secondary" style={{ fontSize: "12px" }}>
                 Last run:
               </Text>
-              <Text style={{ fontSize: "12px" }}>{formatDateTime(reloadStatus.last_run)}</Text>
+              <Text style={{ fontSize: "12px" }}>
+                {formatDateTime(reloadStatus.last_run)}
+              </Text>
             </div>
 
             {reloadStatus.scheduled && (
               <>
                 {reloadStatus.next_run && (
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
                     <Text type="secondary" style={{ fontSize: "12px" }}>
                       Next run:
                     </Text>
-                    <Text style={{ fontSize: "12px" }}>{formatDateTime(reloadStatus.next_run)}</Text>
+                    <Text style={{ fontSize: "12px" }}>
+                      {formatDateTime(reloadStatus.next_run)}
+                    </Text>
                   </div>
                 )}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
                   <Text type="secondary" style={{ fontSize: "12px" }}>
                     Status:
                   </Text>
@@ -495,7 +583,8 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
         </div>
         <div>
           <Text type="secondary">
-            This will automatically fetch the latest pricing data from the remote source every {hours} hours.
+            This will automatically fetch the latest pricing data from the
+            remote source every {hours} hours.
           </Text>
         </div>
       </Modal>

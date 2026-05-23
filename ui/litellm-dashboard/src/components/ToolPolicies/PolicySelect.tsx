@@ -1,17 +1,47 @@
 "use client";
 
-import React from "react";
 import { Select } from "antd";
+import type React from "react";
 
 export const INPUT_POLICY_OPTIONS = [
-  { value: "untrusted", label: "untrusted", color: "#92400e", bg: "#fef3c7", border: "#fcd34d" },
-  { value: "trusted", label: "trusted", color: "#065f46", bg: "#d1fae5", border: "#6ee7b7" },
-  { value: "blocked", label: "blocked", color: "#991b1b", bg: "#fee2e2", border: "#fca5a5" },
+  {
+    value: "untrusted",
+    label: "untrusted",
+    color: "#92400e",
+    bg: "#fef3c7",
+    border: "#fcd34d",
+  },
+  {
+    value: "trusted",
+    label: "trusted",
+    color: "#065f46",
+    bg: "#d1fae5",
+    border: "#6ee7b7",
+  },
+  {
+    value: "blocked",
+    label: "blocked",
+    color: "#991b1b",
+    bg: "#fee2e2",
+    border: "#fca5a5",
+  },
 ] as const;
 
 export const OUTPUT_POLICY_OPTIONS = [
-  { value: "untrusted", label: "untrusted", color: "#92400e", bg: "#fef3c7", border: "#fcd34d" },
-  { value: "trusted", label: "trusted", color: "#065f46", bg: "#d1fae5", border: "#6ee7b7" },
+  {
+    value: "untrusted",
+    label: "untrusted",
+    color: "#92400e",
+    bg: "#fef3c7",
+    border: "#fcd34d",
+  },
+  {
+    value: "trusted",
+    label: "trusted",
+    color: "#065f46",
+    bg: "#d1fae5",
+    border: "#6ee7b7",
+  },
 ] as const;
 
 export const POLICY_OPTIONS = INPUT_POLICY_OPTIONS;
@@ -40,7 +70,8 @@ export const PolicySelect: React.FC<PolicySelectProps> = ({
   minWidth = 110,
   stopPropagation = true,
 }) => {
-  const options = policyType === "output" ? OUTPUT_POLICY_OPTIONS : INPUT_POLICY_OPTIONS;
+  const options =
+    policyType === "output" ? OUTPUT_POLICY_OPTIONS : INPUT_POLICY_OPTIONS;
   const style = policyStyle(value);
   return (
     <Select

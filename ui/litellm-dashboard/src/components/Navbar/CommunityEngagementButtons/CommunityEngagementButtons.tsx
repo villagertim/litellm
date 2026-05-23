@@ -1,7 +1,7 @@
 import { useDisableShowPrompts } from "@/app/(dashboard)/hooks/useDisableShowPrompts";
 import { GithubOutlined, SlackOutlined } from "@ant-design/icons";
 import { Button } from "antd";
-import React from "react";
+import type React from "react";
 
 export const CommunityEngagementButtons: React.FC = () => {
   const disableShowPrompts = useDisableShowPrompts();

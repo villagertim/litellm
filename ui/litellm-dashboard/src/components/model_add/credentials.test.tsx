@@ -1,7 +1,13 @@
-import { CredentialItem } from "@/components/networking";
+import type { CredentialItem } from "@/components/networking";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { UploadProps } from "antd/es/upload";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import type { UploadProps } from "antd/es/upload";
 import { describe, expect, it, vi } from "vitest";
 import CredentialsPanel from "./credentials";
 
@@ -30,7 +36,10 @@ const createQueryClient = () =>
 
 describe("CredentialsPanel", () => {
   it("should render", () => {
-    mockUseAuthorized.mockReturnValue({ accessToken: "test-token", userRole: "Admin" });
+    mockUseAuthorized.mockReturnValue({
+      accessToken: "test-token",
+      userRole: "Admin",
+    });
     mockUseCredentials.mockReturnValue({
       data: { credentials: [] },
       refetch: vi.fn(),
@@ -42,7 +51,9 @@ describe("CredentialsPanel", () => {
       </QueryClientProvider>,
     );
 
-    expect(screen.getByRole("button", { name: /add credential/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /add credential/i }),
+    ).toBeInTheDocument();
   });
 
   it("should display provided credentials", () => {
@@ -54,7 +65,10 @@ describe("CredentialsPanel", () => {
       },
     ];
 
-    mockUseAuthorized.mockReturnValue({ accessToken: "test-token", userRole: "Admin" });
+    mockUseAuthorized.mockReturnValue({
+      accessToken: "test-token",
+      userRole: "Admin",
+    });
     mockUseCredentials.mockReturnValue({
       data: { credentials },
       refetch: vi.fn(),
@@ -70,7 +84,10 @@ describe("CredentialsPanel", () => {
   });
 
   it("should display empty state when no credentials are provided", () => {
-    mockUseAuthorized.mockReturnValue({ accessToken: "test-token", userRole: "Admin" });
+    mockUseAuthorized.mockReturnValue({
+      accessToken: "test-token",
+      userRole: "Admin",
+    });
     mockUseCredentials.mockReturnValue({
       data: { credentials: [] },
       refetch: vi.fn(),
@@ -86,7 +103,10 @@ describe("CredentialsPanel", () => {
   });
 
   it("should open add modal when add button is clicked", async () => {
-    mockUseAuthorized.mockReturnValue({ accessToken: "test-token", userRole: "Admin" });
+    mockUseAuthorized.mockReturnValue({
+      accessToken: "test-token",
+      userRole: "Admin",
+    });
     mockUseCredentials.mockReturnValue({
       data: { credentials: [] },
       refetch: vi.fn(),

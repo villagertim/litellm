@@ -1,9 +1,11 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { extractErrorMessage } from "./errorUtils";
 
 describe("extractErrorMessage", () => {
   it("should return the message from an Error instance", () => {
-    expect(extractErrorMessage(new Error("Something broke"))).toBe("Something broke");
+    expect(extractErrorMessage(new Error("Something broke"))).toBe(
+      "Something broke",
+    );
   });
 
   it("should return detail when it is a string", () => {
@@ -21,11 +23,15 @@ describe("extractErrorMessage", () => {
   });
 
   it("should extract error from nested detail object", () => {
-    expect(extractErrorMessage({ detail: { error: "bad request" } })).toBe("bad request");
+    expect(extractErrorMessage({ detail: { error: "bad request" } })).toBe(
+      "bad request",
+    );
   });
 
   it("should fall back to message property on plain objects", () => {
-    expect(extractErrorMessage({ message: "fallback msg" })).toBe("fallback msg");
+    expect(extractErrorMessage({ message: "fallback msg" })).toBe(
+      "fallback msg",
+    );
   });
 
   it("should JSON.stringify unknown object shapes", () => {

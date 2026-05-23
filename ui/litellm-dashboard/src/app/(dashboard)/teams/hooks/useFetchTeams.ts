@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
-import { fetchTeams } from "@/components/common_components/fetch_teams";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { Organization, Team } from "@/components/networking";
+import { fetchTeams } from "@/components/common_components/fetch_teams";
+import type { Organization, Team } from "@/components/networking";
+import { useCallback, useEffect, useState } from "react";
 
 interface useFetchTeamsProps {
   currentOrg: Organization | null;
@@ -22,7 +22,15 @@ const useFetchTeams = ({ currentOrg, setTeams }: useFetchTeamsProps) => {
       fetchTeams(accessToken, userId, userRole, currentOrg, setTeams).then();
     }
     onRefreshClick();
-  }, [accessToken, currentOrg, lastRefreshed, onRefreshClick, setTeams, userId, userRole]);
+  }, [
+    accessToken,
+    currentOrg,
+    lastRefreshed,
+    onRefreshClick,
+    setTeams,
+    userId,
+    userRole,
+  ]);
 
   return { lastRefreshed, setLastRefreshed, onRefreshClick };
 };

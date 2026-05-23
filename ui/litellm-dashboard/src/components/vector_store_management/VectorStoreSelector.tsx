@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
 import { Select } from "antd";
-import { VectorStore } from "./types";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { vectorStoreListCall } from "../networking";
+import type { VectorStore } from "./types";
 interface VectorStoreSelectorProps {
   onChange: (selectedVectorStores: string[]) => void;
   value?: string[];

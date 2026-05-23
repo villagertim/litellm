@@ -1,6 +1,5 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
 import NotificationsManager from "@/components/molecules/notifications_manager";
 import {
   buildMcpOAuthAuthorizeUrl,
@@ -13,16 +12,24 @@ import {
 import { extractErrorMessage } from "@/utils/errorUtils";
 import { generateCodeChallenge, generateCodeVerifier } from "@/utils/pkce";
 import { getSecureItem, setSecureItem } from "@/utils/secureStorage";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-export type McpOAuthStatus = "idle" | "authorizing" | "exchanging" | "success" | "error";
+export type McpOAuthStatus =
+  | "idle"
+  | "authorizing"
+  | "exchanging"
+  | "success"
+  | "error";
 
 interface UseMcpOAuthFlowOptions {
   accessToken: string | null;
-  getCredentials: () => {
-    client_id?: string;
-    client_secret?: string;
-    scopes?: string[];
-  } | undefined;
+  getCredentials: () =>
+    | {
+        client_id?: string;
+        client_secret?: string;
+        scopes?: string[];
+      }
+    | undefined;
   getTemporaryPayload: () => Record<string, any> | null;
   onTokenReceived: (tokenResponse: Record<string, any>) => void;
   onBeforeRedirect?: () => void;
@@ -44,7 +51,10 @@ export const useMcpOAuthFlow = ({
 }: UseMcpOAuthFlowOptions): UseMcpOAuthFlowResult => {
   const [status, setStatus] = useState<McpOAuthStatus>("idle");
   const [error, setError] = useState<string | null>(null);
-  const [tokenResponse, setTokenResponse] = useState<Record<string, any> | null>(null);
+  const [tokenResponse, setTokenResponse] = useState<Record<
+    string,
+    any
+  > | null>(null);
   const processingRef = useRef(false);
 
   const FLOW_STATE_KEY = "litellm-mcp-oauth-flow-state";
@@ -101,7 +111,8 @@ export const useMcpOAuthFlow = ({
     }
 
     const base = (getProxyBaseUrl() || "").replace(/\/+$/, "");
-    const rootPrefix = serverRootPath && serverRootPath !== "/" ? serverRootPath : "";
+    const rootPrefix =
+      serverRootPath && serverRootPath !== "/" ? serverRootPath : "";
     return `${base}${rootPrefix}/ui/mcp/oauth/callback`;
   };
 
@@ -112,13 +123,20 @@ export const useMcpOAuthFlow = ({
 
     if (!accessToken) {
       setError("Missing admin token");
-      NotificationsManager.error("Access token missing. Please re-authenticate and try again.");
+      NotificationsManager.error(
+        "Access token missing. Please re-authenticate and try again.",
+      );
       return;
     }
 
     const temporaryPayload = getTemporaryPayload();
-    if (!temporaryPayload || !temporaryPayload.url || !temporaryPayload.transport) {
-      const message = "Please complete server URL and transport before starting OAuth.";
+    if (
+      !temporaryPayload ||
+      !temporaryPayload.url ||
+      !temporaryPayload.transport
+    ) {
+      const message =
+        "Please complete server URL and transport before starting OAuth.";
       setError(message);
       NotificationsManager.error(message);
       return;
@@ -127,23 +145,41 @@ export const useMcpOAuthFlow = ({
       setStatus("authorizing");
       setError(null);
 
-      const cachedServer = await cacheTemporaryMcpServer(accessToken, temporaryPayload);
+      const cachedServer = await cacheTemporaryMcpServer(
+        accessToken,
+        temporaryPayload,
+      );
       const serverId = cachedServer?.server_id?.trim();
       if (!serverId) {
-        throw new Error("Temporary MCP server identifier missing. Please retry.");
+        throw new Error(
+          "Temporary MCP server identifier missing. Please retry.",
+        );
       }
 
       let registeredClient: { clientId?: string; clientSecret?: string } = {};
-      const hasPreconfiguredCredentials = Boolean(temporaryPayload.credentials?.client_id && temporaryPayload.credentials?.client_secret);
+      const hasPreconfiguredCredentials = Boolean(
+        temporaryPayload.credentials?.client_id &&
+          temporaryPayload.credentials?.client_secret,
+      );
 
       if (!hasPreconfiguredCredentials) {
-        const registration = await registerMcpOAuthClient(accessToken, serverId, {
-          client_name: temporaryPayload.alias || temporaryPayload.server_name || serverId,
-          grant_types: ["authorization_code", "refresh_token"],
-          response_types: ["code"],
-          token_endpoint_auth_method:
-            temporaryPayload.credentials && temporaryPayload.credentials.client_secret ? "client_secret_post" : "none",
-        });
+        const registration = await registerMcpOAuthClient(
+          accessToken,
+          serverId,
+          {
+            client_name:
+              temporaryPayload.alias ||
+              temporaryPayload.server_name ||
+              serverId,
+            grant_types: ["authorization_code", "refresh_token"],
+            response_types: ["code"],
+            token_endpoint_auth_method:
+              temporaryPayload.credentials &&
+              temporaryPayload.credentials.client_secret
+                ? "client_secret_post"
+                : "none",
+          },
+        );
         registeredClient = {
           clientId: registration?.client_id,
           clientSecret: registration?.client_secret,
@@ -172,7 +208,8 @@ export const useMcpOAuthFlow = ({
         state,
         codeVerifier: verifier,
         clientId,
-        clientSecret: registeredClient.clientSecret || credentials.client_secret,
+        clientSecret:
+          registeredClient.clientSecret || credentials.client_secret,
         serverId,
         redirectUri: callbackUrl(),
       };
@@ -193,7 +230,9 @@ export const useMcpOAuthFlow = ({
         setStorageItem(FLOW_STATE_KEY, JSON.stringify(flowState));
         setStorageItem(RETURN_URL_KEY, window.location.href);
       } catch (storageErr) {
-        throw new Error("Unable to access browser storage for OAuth. Please enable storage and retry.");
+        throw new Error(
+          "Unable to access browser storage for OAuth. Please enable storage and retry.",
+        );
       }
 
       window.location.href = authorizeUrl;
@@ -224,7 +263,7 @@ export const useMcpOAuthFlow = ({
       if (!storedPayload) {
         return;
       }
-      
+
       // Mark as processing
       processingRef.current = true;
       payload = JSON.parse(storedPayload);
@@ -255,10 +294,15 @@ export const useMcpOAuthFlow = ({
     }
 
     try {
-      if (!flowState || !flowState.state || !flowState.codeVerifier || !flowState.serverId) {
+      if (
+        !flowState ||
+        !flowState.state ||
+        !flowState.codeVerifier ||
+        !flowState.serverId
+      ) {
         throw new Error(
           "OAuth session state was lost. This can happen if you have strict browser privacy settings. " +
-          "Please try again and ensure cookies/storage is enabled."
+            "Please try again and ensure cookies/storage is enabled.",
         );
       }
       if (!payload.state || payload.state !== flowState.state) {

@@ -15,9 +15,27 @@ interface GuardrailConfigProps {
 }
 
 const versions = [
-  { id: "v3", label: "v3 (current)", date: "2026-02-18", author: "admin@company.com", changes: "Adjusted sensitivity for medical terms" },
-  { id: "v2", label: "v2", date: "2026-02-10", author: "admin@company.com", changes: "Added custom categories list" },
-  { id: "v1", label: "v1", date: "2026-01-28", author: "admin@company.com", changes: "Initial configuration" },
+  {
+    id: "v3",
+    label: "v3 (current)",
+    date: "2026-02-18",
+    author: "admin@company.com",
+    changes: "Adjusted sensitivity for medical terms",
+  },
+  {
+    id: "v2",
+    label: "v2",
+    date: "2026-02-10",
+    author: "admin@company.com",
+    changes: "Added custom categories list",
+  },
+  {
+    id: "v1",
+    label: "v1",
+    date: "2026-01-28",
+    author: "admin@company.com",
+    changes: "Initial configuration",
+  },
 ];
 
 export function GuardrailConfig({
@@ -29,7 +47,9 @@ export function GuardrailConfig({
   const [enabled, setEnabled] = useState(true);
   const [customCode, setCustomCode] = useState("");
   const [useCustomCode, setUseCustomCode] = useState(false);
-  const [rerunStatus, setRerunStatus] = useState<"idle" | "running" | "success" | "error">("idle");
+  const [rerunStatus, setRerunStatus] = useState<
+    "idle" | "running" | "success" | "error"
+  >("idle");
   const [version, setVersion] = useState("v3");
   const [showVersionHistory, setShowVersionHistory] = useState(false);
 
@@ -54,14 +74,18 @@ export function GuardrailConfig({
               options={versions.map((v) => ({ value: v.id, label: v.label }))}
               style={{ width: 140 }}
             />
-            <Button type="link" size="small" onClick={() => setShowVersionHistory(!showVersionHistory)}>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => setShowVersionHistory(!showVersionHistory)}
+            >
               {showVersionHistory ? "Hide history" : "View history"}
             </Button>
           </div>
           <div className="flex items-center gap-2">
             <Button icon={<RollbackOutlined />}>Revert</Button>
             <Button type="primary" icon={<SaveOutlined />}>
-              Save as v{parseInt(version.replace("v", ""), 10) + 1}
+              Save as v{Number.parseInt(version.replace("v", ""), 10) + 1}
             </Button>
           </div>
         </div>
@@ -72,11 +96,15 @@ export function GuardrailConfig({
               <div
                 key={v.id}
                 className={`flex items-center justify-between p-2.5 rounded-md text-sm ${
-                  v.id === version ? "bg-blue-50 border border-blue-200" : "bg-gray-50"
+                  v.id === version
+                    ? "bg-blue-50 border border-blue-200"
+                    : "bg-gray-50"
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <span className={`font-mono text-xs font-medium ${v.id === version ? "text-blue-600" : "text-gray-500"}`}>
+                  <span
+                    className={`font-mono text-xs font-medium ${v.id === version ? "text-blue-600" : "text-gray-500"}`}
+                  >
                     {v.id}
                   </span>
                   <span className="text-gray-700">{v.changes}</span>
@@ -93,12 +121,18 @@ export function GuardrailConfig({
 
       {/* Parameters */}
       <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <h3 className="text-base font-semibold text-gray-900 mb-1">Parameters</h3>
-        <p className="text-xs text-gray-500 mb-5">Configure {guardrailName} behavior</p>
+        <h3 className="text-base font-semibold text-gray-900 mb-1">
+          Parameters
+        </h3>
+        <p className="text-xs text-gray-500 mb-5">
+          Configure {guardrailName} behavior
+        </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Action on Failure</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              Action on Failure
+            </label>
             <Select
               value={action}
               onChange={setAction}
@@ -113,7 +147,9 @@ export function GuardrailConfig({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Provider</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              Provider
+            </label>
             <Select
               style={{ width: "100%" }}
               defaultValue={provider}
@@ -127,7 +163,9 @@ export function GuardrailConfig({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Guardrail Type</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              Guardrail Type
+            </label>
             <Select
               style={{ width: "100%" }}
               defaultValue={guardrailType}
@@ -142,13 +180,17 @@ export function GuardrailConfig({
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Categories (comma-separated)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              Categories (comma-separated)
+            </label>
             <Input defaultValue="violence, hate_speech, sexual_content, self_harm, illegal_activity" />
           </div>
 
           <div className="md:col-span-2 flex items-center gap-3">
             <Switch checked={enabled} onChange={setEnabled} />
-            <span className="text-sm text-gray-700">Guardrail enabled in production</span>
+            <span className="text-sm text-gray-700">
+              Guardrail enabled in production
+            </span>
           </div>
         </div>
       </div>
@@ -186,7 +228,9 @@ export function GuardrailConfig({
 
       {/* Re-run on Failing Logs */}
       <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <h3 className="text-base font-semibold text-gray-900 mb-1">Test Configuration</h3>
+        <h3 className="text-base font-semibold text-gray-900 mb-1">
+          Test Configuration
+        </h3>
         <p className="text-xs text-gray-500 mb-4">
           Re-run this guardrail on recent failing logs to validate your changes
         </p>
@@ -194,11 +238,15 @@ export function GuardrailConfig({
         <div className="flex items-center gap-3">
           <Button
             type="primary"
-            icon={rerunStatus === "running" ? undefined : <PlayCircleOutlined />}
+            icon={
+              rerunStatus === "running" ? undefined : <PlayCircleOutlined />
+            }
             loading={rerunStatus === "running"}
             onClick={handleRerun}
           >
-            {rerunStatus === "running" ? "Running on 10 samples..." : "Re-run on failing logs"}
+            {rerunStatus === "running"
+              ? "Running on 10 samples..."
+              : "Re-run on failing logs"}
           </Button>
 
           {rerunStatus === "success" && (

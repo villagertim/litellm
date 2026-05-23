@@ -1,26 +1,35 @@
 "use client";
 
-import { Layout, Menu, ConfigProvider } from "antd";
+import UsageIndicator from "@/components/UsageIndicator";
+import { serverRootPath } from "@/components/networking";
 import {
-  KeyOutlined,
-  PlayCircleOutlined,
-  BlockOutlined,
-  BarChartOutlined,
-  TeamOutlined,
-  BankOutlined,
-  UserOutlined,
-  SettingOutlined,
+  all_admin_roles,
+  internalUserRoles,
+  isAdminRole,
+  rolesWithWriteAccess,
+} from "@/utils/roles";
+import {
   ApiOutlined,
   AppstoreOutlined,
-  DatabaseOutlined,
-  FileTextOutlined,
-  LineChartOutlined,
-  SafetyOutlined,
-  ExperimentOutlined,
-  ToolOutlined,
-  TagsOutlined,
   AuditOutlined,
+  BankOutlined,
+  BarChartOutlined,
+  BlockOutlined,
+  DatabaseOutlined,
+  ExperimentOutlined,
+  FileTextOutlined,
+  KeyOutlined,
+  LineChartOutlined,
+  PlayCircleOutlined,
+  SafetyOutlined,
+  SettingOutlined,
+  TagsOutlined,
+  TeamOutlined,
+  ToolOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
+import { ConfigProvider, Layout, Menu } from "antd";
+import { usePathname, useRouter } from "next/navigation";
 // import {
 //   all_admin_roles,
 //   rolesWithWriteAccess,
@@ -29,10 +38,6 @@ import {
 // } from "../utils/roles";
 // import UsageIndicator from "./usage_indicator";
 import * as React from "react";
-import { useRouter, usePathname } from "next/navigation";
-import { all_admin_roles, internalUserRoles, isAdminRole, rolesWithWriteAccess } from "@/utils/roles";
-import UsageIndicator from "@/components/UsageIndicator";
-import { serverRootPath } from "@/components/networking";
 
 const { Sider } = Layout;
 
@@ -158,7 +163,12 @@ const toHref = (slugOrPath: string) => {
 
 // ----- Menu config (unchanged labels/icons; same appearance) -----
 const menuItems: MenuItemCfg[] = [
-  { key: "1", page: "api-keys", label: "Virtual Keys", icon: <KeyOutlined style={{ fontSize: 18 }} /> },
+  {
+    key: "1",
+    page: "api-keys",
+    label: "Virtual Keys",
+    icon: <KeyOutlined style={{ fontSize: 18 }} />,
+  },
   {
     key: "3",
     page: "llm-playground",
@@ -180,7 +190,12 @@ const menuItems: MenuItemCfg[] = [
     icon: <BarChartOutlined style={{ fontSize: 18 }} />,
     roles: [...all_admin_roles, ...internalUserRoles],
   },
-  { key: "6", page: "teams", label: "Teams", icon: <TeamOutlined style={{ fontSize: 18 }} /> },
+  {
+    key: "6",
+    page: "teams",
+    label: "Teams",
+    icon: <TeamOutlined style={{ fontSize: 18 }} />,
+  },
   {
     key: "17",
     page: "organizations",
@@ -195,14 +210,24 @@ const menuItems: MenuItemCfg[] = [
     icon: <UserOutlined style={{ fontSize: 18 }} />,
     roles: all_admin_roles,
   },
-  { key: "14", page: "api-reference", label: "API Reference", icon: <ApiOutlined style={{ fontSize: 18 }} /> },
+  {
+    key: "14",
+    page: "api-reference",
+    label: "API Reference",
+    icon: <ApiOutlined style={{ fontSize: 18 }} />,
+  },
   {
     key: "16",
     page: "model-hub-table",
     label: "Model Hub",
     icon: <AppstoreOutlined style={{ fontSize: 18 }} />,
   },
-  { key: "15", page: "logs", label: "Logs", icon: <LineChartOutlined style={{ fontSize: 18 }} /> },
+  {
+    key: "15",
+    page: "logs",
+    label: "Logs",
+    icon: <LineChartOutlined style={{ fontSize: 18 }} />,
+  },
   {
     key: "11",
     page: "guardrails",
@@ -223,7 +248,12 @@ const menuItems: MenuItemCfg[] = [
     label: "Tools",
     icon: <ToolOutlined style={{ fontSize: 18 }} />,
     children: [
-      { key: "18", page: "mcp-servers", label: "MCP Servers", icon: <ToolOutlined style={{ fontSize: 18 }} /> },
+      {
+        key: "18",
+        page: "mcp-servers",
+        label: "MCP Servers",
+        icon: <ToolOutlined style={{ fontSize: 18 }} />,
+      },
       {
         key: "21",
         page: "vector-stores",
@@ -281,7 +311,12 @@ const menuItems: MenuItemCfg[] = [
         icon: <ToolOutlined style={{ fontSize: 18 }} />,
         roles: all_admin_roles,
       },
-      { key: "4", page: "usage", label: "Old Usage", icon: <BarChartOutlined style={{ fontSize: 18 }} /> },
+      {
+        key: "4",
+        page: "usage",
+        label: "Old Usage",
+        icon: <BarChartOutlined style={{ fontSize: 18 }} />,
+      },
     ],
   },
   {
@@ -323,7 +358,12 @@ const menuItems: MenuItemCfg[] = [
   },
 ];
 
-const Sidebar2: React.FC<SidebarProps> = ({ accessToken, userRole, defaultSelectedKey, collapsed = false }) => {
+const Sidebar2: React.FC<SidebarProps> = ({
+  accessToken,
+  userRole,
+  defaultSelectedKey,
+  collapsed = false,
+}) => {
   const router = useRouter();
   const pathname = usePathname() || "/";
 
@@ -333,7 +373,9 @@ const Sidebar2: React.FC<SidebarProps> = ({ accessToken, userRole, defaultSelect
       .filter((item) => !item.roles || item.roles.includes(userRole))
       .map((item) => ({
         ...item,
-        children: item.children ? item.children.filter((c) => !c.roles || c.roles.includes(userRole)) : undefined,
+        children: item.children
+          ? item.children.filter((c) => !c.roles || c.roles.includes(userRole))
+          : undefined,
       }));
   }, [userRole]);
 
@@ -341,7 +383,9 @@ const Sidebar2: React.FC<SidebarProps> = ({ accessToken, userRole, defaultSelect
   const selectedMenuKey = React.useMemo(() => {
     const base = getBasePath();
     // strip base prefix and leading slash -> "virtual-keys", "tools/mcp-servers", etc.
-    const rel = pathname.startsWith(base) ? pathname.slice(base.length) : pathname.replace(/^\/+/, "");
+    const rel = pathname.startsWith(base)
+      ? pathname.slice(base.length)
+      : pathname.replace(/^\/+/, "");
     const relLower = rel.toLowerCase();
 
     const matchesPath = (slug: string) => {
@@ -360,7 +404,9 @@ const Sidebar2: React.FC<SidebarProps> = ({ accessToken, userRole, defaultSelect
     }
 
     // fallback to legacy defaultSelectedKey mapping
-    const fallback = filteredMenuItems.find((i) => i.page === defaultSelectedKey)?.key;
+    const fallback = filteredMenuItems.find(
+      (i) => i.page === defaultSelectedKey,
+    )?.key;
     if (fallback) return fallback;
 
     for (const item of filteredMenuItems) {
@@ -385,7 +431,11 @@ const Sidebar2: React.FC<SidebarProps> = ({ accessToken, userRole, defaultSelect
 
   // Wrap label in <a> so every nav item supports right-click → "Open in new tab"
   // and Ctrl/Cmd+click to open in a new tab, while preserving SPA navigation for normal clicks.
-  const renderNavLink = (label: string, page: string, newTab?: boolean): React.ReactNode => {
+  const renderNavLink = (
+    label: string,
+    page: string,
+    newTab?: boolean,
+  ): React.ReactNode => {
     const href = toHref(page);
     return (
       <a
@@ -459,12 +509,15 @@ const Sidebar2: React.FC<SidebarProps> = ({ accessToken, userRole, defaultSelect
                 label: renderNavLink(child.label, child.page, child.newTab),
                 onClick: () => goTo(child.page, child.newTab),
               })),
-              onClick: !item.children ? () => goTo(item.page, item.newTab) : undefined,
+              onClick: !item.children
+                ? () => goTo(item.page, item.newTab)
+                : undefined,
             }))}
           />
         </ConfigProvider>
-        {isAdminRole(userRole) && !collapsed && <UsageIndicator accessToken={accessToken} width={220} />}
-
+        {isAdminRole(userRole) && !collapsed && (
+          <UsageIndicator accessToken={accessToken} width={220} />
+        )}
       </Sider>
     </Layout>
   );

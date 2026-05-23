@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { ReactNode } from "react";
+import { renderHook, waitFor } from "@testing-library/react";
+import React, { type ReactNode } from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useCloudZeroExport } from "./useCloudZeroExport";
 
 const {
@@ -61,7 +61,9 @@ describe("useCloudZeroExport", () => {
     React.createElement(QueryClientProvider, { client: queryClient }, children);
 
   it("should render", () => {
-    const { result } = renderHook(() => useCloudZeroExport(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroExport(mockAccessToken), {
+      wrapper,
+    });
 
     expect(result.current).toBeDefined();
   });
@@ -73,7 +75,9 @@ describe("useCloudZeroExport", () => {
       json: async () => mockResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroExport(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroExport(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({ operation: "replace_daily" });
 
@@ -82,16 +86,19 @@ describe("useCloudZeroExport", () => {
     });
 
     expect(result.current.data).toEqual(mockResponse);
-    expect(fetchSpy).toHaveBeenCalledWith(`${mockProxyBaseUrl}/cloudzero/export`, {
-      method: "POST",
-      headers: {
-        [mockHeaderName]: `Bearer ${mockAccessToken}`,
-        "Content-Type": "application/json",
+    expect(fetchSpy).toHaveBeenCalledWith(
+      `${mockProxyBaseUrl}/cloudzero/export`,
+      {
+        method: "POST",
+        headers: {
+          [mockHeaderName]: `Bearer ${mockAccessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          operation: "replace_daily",
+        }),
       },
-      body: JSON.stringify({
-        operation: "replace_daily",
-      }),
-    });
+    );
   });
 
   it("should use default operation of replace_hourly when operation is not provided", async () => {
@@ -101,7 +108,9 @@ describe("useCloudZeroExport", () => {
       json: async () => mockResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroExport(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroExport(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({});
 
@@ -121,7 +130,9 @@ describe("useCloudZeroExport", () => {
       json: async () => errorResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroExport(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroExport(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({ operation: "replace_daily" });
 
@@ -139,7 +150,9 @@ describe("useCloudZeroExport", () => {
       json: async () => errorResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroExport(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroExport(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({ operation: "invalid_op" });
 
@@ -157,7 +170,9 @@ describe("useCloudZeroExport", () => {
       json: async () => errorResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroExport(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroExport(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({ operation: "replace_daily" });
 
@@ -176,7 +191,9 @@ describe("useCloudZeroExport", () => {
       },
     });
 
-    const { result } = renderHook(() => useCloudZeroExport(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroExport(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({ operation: "replace_daily" });
 
@@ -191,7 +208,9 @@ describe("useCloudZeroExport", () => {
     const networkError = new Error("Network request failed");
     (fetchSpy as any).mockRejectedValue(networkError);
 
-    const { result } = renderHook(() => useCloudZeroExport(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroExport(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({ operation: "replace_daily" });
 
@@ -206,7 +225,10 @@ describe("useCloudZeroExport", () => {
     ["empty string", ""],
     ["null", null],
   ])("should throw error when accessToken is %s", async (_, invalidToken) => {
-    const { result } = renderHook(() => useCloudZeroExport(invalidToken as any), { wrapper });
+    const { result } = renderHook(
+      () => useCloudZeroExport(invalidToken as any),
+      { wrapper },
+    );
 
     result.current.mutate({ operation: "replace_daily" });
 
@@ -226,7 +248,9 @@ describe("useCloudZeroExport", () => {
       json: async () => mockResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroExport(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroExport(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({ operation: "replace_daily" });
 
@@ -234,6 +258,9 @@ describe("useCloudZeroExport", () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(fetchSpy).toHaveBeenCalledWith("/cloudzero/export", expect.any(Object));
+    expect(fetchSpy).toHaveBeenCalledWith(
+      "/cloudzero/export",
+      expect.any(Object),
+    );
   });
 });

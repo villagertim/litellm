@@ -1,9 +1,15 @@
-import React from "react";
-import { render, screen, waitFor, fireEvent, act } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { OutputCard } from "./OutputCard";
-import { ParsedMessage } from "./prettyMessagesTypes";
+import type { ParsedMessage } from "./prettyMessagesTypes";
 
 vi.mock("antd", async () => {
   const actual = await vi.importActual<typeof import("antd")>("antd");
@@ -73,7 +79,7 @@ describe("OutputCard", () => {
     });
 
     expect(copyButton).toBeInTheDocument();
-    
+
     await act(async () => {
       fireEvent.click(copyButton!);
     });
@@ -147,7 +153,13 @@ describe("OutputCard", () => {
   });
 
   it("should display both token count and cost when both are provided", () => {
-    render(<OutputCard message={mockMessage} completionTokens={300} outputCost={0.003} />);
+    render(
+      <OutputCard
+        message={mockMessage}
+        completionTokens={300}
+        outputCost={0.003}
+      />,
+    );
     expect(screen.getByText(/Tokens: 300/)).toBeInTheDocument();
     expect(screen.getByText(/Cost: \$0\.003000/)).toBeInTheDocument();
   });

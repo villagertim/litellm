@@ -1,5 +1,8 @@
 import NotificationManager from "@/components/molecules/notifications_manager";
-import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "@/components/networking";
+import {
+  getGlobalLitellmHeaderName,
+  getProxyBaseUrl,
+} from "@/components/networking";
 
 export async function makeOpenAIEmbeddingsRequest(
   input: string,
@@ -16,7 +19,7 @@ export async function makeOpenAIEmbeddingsRequest(
   // Base URL should be the current base_url
   const isLocal = process.env.NODE_ENV === "development";
   if (isLocal !== true) {
-    console.log = function () {};
+    console.log = () => {};
   }
 
   const proxyBaseUrl = customBaseUrl || getProxyBaseUrl();
@@ -27,7 +30,9 @@ export async function makeOpenAIEmbeddingsRequest(
   }
 
   try {
-    const normalizedBaseUrl = proxyBaseUrl.endsWith("/") ? proxyBaseUrl.slice(0, -1) : proxyBaseUrl;
+    const normalizedBaseUrl = proxyBaseUrl.endsWith("/")
+      ? proxyBaseUrl.slice(0, -1)
+      : proxyBaseUrl;
     const requestUrl = `${normalizedBaseUrl}/embeddings`;
 
     const response = await fetch(requestUrl, {
@@ -45,7 +50,9 @@ export async function makeOpenAIEmbeddingsRequest(
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(errorText || `Request failed with status ${response.status}`);
+      throw new Error(
+        errorText || `Request failed with status ${response.status}`,
+      );
     }
 
     const responseData = await response.json();
@@ -55,7 +62,10 @@ export async function makeOpenAIEmbeddingsRequest(
       throw new Error("No embedding returned from server");
     }
 
-    updateEmbeddingsUI(JSON.stringify(embedding), responseData?.model ?? selectedModel);
+    updateEmbeddingsUI(
+      JSON.stringify(embedding),
+      responseData?.model ?? selectedModel,
+    );
   } catch (error: unknown) {
     NotificationManager.fromBackend(
       `Error occurred while making embeddings request. Please try again. Error: ${error}`,

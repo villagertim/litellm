@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
 import { Form } from "antd";
 import { describe, expect, it } from "vitest";
-import { getPlaceholder, Providers } from "../provider_info_helpers";
+import { Providers, getPlaceholder } from "../provider_info_helpers";
 import LiteLLMModelNameField from "./litellm_model_name";
 
 describe("LitellmModelNameField", () => {
@@ -21,7 +21,11 @@ describe("LitellmModelNameField", () => {
   it("should show Azure placeholder as 'my-deployment'", () => {
     const { getByPlaceholderText, queryByPlaceholderText } = render(
       <Form>
-        <LiteLLMModelNameField selectedProvider={Providers.Azure} providerModels={[]} getPlaceholder={getPlaceholder} />
+        <LiteLLMModelNameField
+          selectedProvider={Providers.Azure}
+          providerModels={[]}
+          getPlaceholder={getPlaceholder}
+        />
       </Form>,
     );
     expect(getByPlaceholderText("my-deployment")).toBeInTheDocument();

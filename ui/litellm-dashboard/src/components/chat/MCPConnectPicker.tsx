@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Switch, Spin } from "antd";
 import MessageManager from "@/components/molecules/message_manager";
+import { Spin, Switch } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
+import type { MCPServer } from "../mcp_tools/types";
 import { fetchMCPServers, listMCPTools } from "../networking";
-import { MCPServer } from "../mcp_tools/types";
 
 interface Props {
   accessToken: string;
@@ -10,7 +11,11 @@ interface Props {
   onChange: (servers: string[]) => void;
 }
 
-const MCPConnectPicker: React.FC<Props> = ({ accessToken, selectedServers, onChange }) => {
+const MCPConnectPicker: React.FC<Props> = ({
+  accessToken,
+  selectedServers,
+  onChange,
+}) => {
   const [servers, setServers] = useState<MCPServer[]>([]);
   const [loadingServers, setLoadingServers] = useState(true);
   // Track which individual servers are being toggled on (verifying tools)
@@ -25,7 +30,7 @@ const MCPConnectPicker: React.FC<Props> = ({ accessToken, selectedServers, onCha
         const data = await fetchMCPServers(accessToken);
         if (cancelled) return;
         // API returns { data: MCPServer[] } or MCPServer[]
-        const list: MCPServer[] = Array.isArray(data) ? data : (data?.data ?? []);
+        const list: MCPServer[] = Array.isArray(data) ? data : data?.data ?? [];
         setServers(list);
       } catch {
         if (!cancelled) {
@@ -59,7 +64,7 @@ const MCPConnectPicker: React.FC<Props> = ({ accessToken, selectedServers, onCha
       // listMCPTools never throws; it returns { tools, error, message } on failure
       if (result?.error) {
         MessageManager.warning(
-          `Could not load tools for ${serverName} — it will be excluded from this message.`
+          `Could not load tools for ${serverName} — it will be excluded from this message.`,
         );
         // Do not add to selectedServers
         return;
@@ -67,7 +72,7 @@ const MCPConnectPicker: React.FC<Props> = ({ accessToken, selectedServers, onCha
       onChange([...selectedServers, serverName]);
     } catch {
       MessageManager.warning(
-        `Could not load tools for ${serverName} — it will be excluded from this message.`
+        `Could not load tools for ${serverName} — it will be excluded from this message.`,
       );
       // Do not add to selectedServers
     } finally {
@@ -89,11 +94,24 @@ const MCPConnectPicker: React.FC<Props> = ({ accessToken, selectedServers, onCha
       }}
     >
       {loadingServers ? (
-        <div style={{ display: "flex", justifyContent: "center", padding: "24px 0" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            padding: "24px 0",
+          }}
+        >
           <Spin />
         </div>
       ) : servers.length === 0 ? (
-        <div style={{ padding: "16px 12px", color: "#8c8c8c", fontSize: 13, textAlign: "center" }}>
+        <div
+          style={{
+            padding: "16px 12px",
+            color: "#8c8c8c",
+            fontSize: 13,
+            textAlign: "center",
+          }}
+        >
           No MCP servers configured
         </div>
       ) : (
@@ -118,11 +136,16 @@ const MCPConnectPicker: React.FC<Props> = ({ accessToken, selectedServers, onCha
                   src={server.mcp_info.logo_url}
                   alt={`${name} logo`}
                   style={{
-                    width: 24, height: 24, borderRadius: 6,
-                    objectFit: "contain", flexShrink: 0,
+                    width: 24,
+                    height: 24,
+                    borderRadius: 6,
+                    objectFit: "contain",
+                    flexShrink: 0,
                     marginTop: 1,
                   }}
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = "none";
+                  }}
                 />
               )}
               <div style={{ flex: 1, minWidth: 0 }}>

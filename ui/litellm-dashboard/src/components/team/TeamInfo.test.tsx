@@ -45,7 +45,9 @@ vi.mock("@/app/(dashboard)/hooks/users/useCurrentUser", () => ({
 vi.mock("@/components/team/TeamMemberTab", () => ({
   default: vi.fn(({ setIsAddMemberModalVisible }) => (
     <div>
-      <button onClick={() => setIsAddMemberModalVisible(true)}>Add Member</button>
+      <button onClick={() => setIsAddMemberModalVisible(true)}>
+        Add Member
+      </button>
     </div>
   )),
 }));
@@ -55,11 +57,19 @@ vi.mock("@/components/common_components/user_search_modal", () => ({
     isVisible ? (
       <div>
         <button onClick={onCancel}>Cancel</button>
-        <button onClick={() => onSubmit({ user_email: "new@test.com", user_id: "new-user", role: "user" })}>
+        <button
+          onClick={() =>
+            onSubmit({
+              user_email: "new@test.com",
+              user_id: "new-user",
+              role: "user",
+            })
+          }
+        >
           Submit
         </button>
       </div>
-    ) : null
+    ) : null,
   ),
 }));
 
@@ -68,11 +78,19 @@ vi.mock("@/components/team/EditMembership", () => ({
     visible ? (
       <div>
         <button onClick={onCancel}>Cancel</button>
-        <button onClick={() => onSubmit({ user_email: "edit@test.com", user_id: "edit-user", role: "admin" })}>
+        <button
+          onClick={() =>
+            onSubmit({
+              user_email: "edit@test.com",
+              user_id: "edit-user",
+              role: "admin",
+            })
+          }
+        >
           Submit
         </button>
       </div>
-    ) : null
+    ) : null,
   ),
 }));
 
@@ -83,7 +101,7 @@ vi.mock("@/components/common_components/DeleteResourceModal", () => ({
         <button onClick={onCancel}>Cancel</button>
         <button onClick={onOk}>Confirm Delete</button>
       </div>
-    ) : null
+    ) : null,
   ),
 }));
 
@@ -121,8 +139,8 @@ vi.mock("../key_team_helpers/filter_helpers", () => ({
   fetchAllOrganizations: vi.fn().mockResolvedValue([]),
 }));
 
-import { useAllProxyModels } from "@/app/(dashboard)/hooks/models/useModels";
 import { useKeys } from "@/app/(dashboard)/hooks/keys/useKeys";
+import { useAllProxyModels } from "@/app/(dashboard)/hooks/models/useModels";
 import { useOrganization } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
 import { useTeam } from "@/app/(dashboard)/hooks/teams/useTeams";
 import { useCurrentUser } from "@/app/(dashboard)/hooks/users/useCurrentUser";
@@ -210,7 +228,9 @@ describe("TeamInfoView", () => {
       refetch: vi.fn(),
     } as any);
 
-    vi.mocked(networking.getGuardrailsList).mockResolvedValue({ guardrails: [] });
+    vi.mocked(networking.getGuardrailsList).mockResolvedValue({
+      guardrails: [],
+    });
     vi.mocked(networking.getPoliciesList).mockResolvedValue({ policies: [] });
     vi.mocked(networking.fetchMCPAccessGroups).mockResolvedValue([]);
     vi.mocked(networking.getTeamPermissionsCall).mockResolvedValue({
@@ -225,7 +245,9 @@ describe("TeamInfoView", () => {
 
   describe("display and rendering", () => {
     it("should render", async () => {
-      vi.mocked(networking.teamInfoCall).mockResolvedValue(createMockTeamData());
+      vi.mocked(networking.teamInfoCall).mockResolvedValue(
+        createMockTeamData(),
+      );
 
       renderWithProviders(<TeamInfoView {...defaultProps} />);
 
@@ -236,7 +258,9 @@ describe("TeamInfoView", () => {
     });
 
     it("should display loading state while fetching team data", () => {
-      vi.mocked(networking.teamInfoCall).mockImplementation(() => new Promise(() => {}));
+      vi.mocked(networking.teamInfoCall).mockImplementation(
+        () => new Promise(() => {}),
+      );
 
       renderWithProviders(<TeamInfoView {...defaultProps} />);
 
@@ -264,7 +288,7 @@ describe("TeamInfoView", () => {
           max_budget: 1000,
           spend: 250.5,
           budget_duration: "30d",
-        })
+        }),
       );
 
       renderWithProviders(<TeamInfoView {...defaultProps} />);
@@ -278,7 +302,7 @@ describe("TeamInfoView", () => {
       vi.mocked(networking.teamInfoCall).mockResolvedValue(
         createMockTeamData({
           metadata: { guardrails: ["guardrail1", "guardrail2"] },
-        })
+        }),
       );
 
       renderWithProviders(<TeamInfoView {...defaultProps} />);
@@ -294,7 +318,7 @@ describe("TeamInfoView", () => {
       vi.mocked(networking.teamInfoCall).mockResolvedValue(
         createMockTeamData({
           policies: ["policy1"],
-        })
+        }),
       );
       vi.mocked(networking.getPolicyInfoWithGuardrails).mockResolvedValue({
         resolved_guardrails: ["guardrail1"],
@@ -316,7 +340,7 @@ describe("TeamInfoView", () => {
             tpm_limit: 5000,
             rpm_limit: 50,
           },
-        })
+        }),
       );
 
       renderWithProviders(<TeamInfoView {...defaultProps} />);
@@ -329,16 +353,15 @@ describe("TeamInfoView", () => {
     it("should display virtual keys information", async () => {
       vi.mocked(networking.teamInfoCall).mockResolvedValue({
         ...createMockTeamData(),
-        keys: [
-          { user_id: "user1", token: "key1" },
-          { token: "key2" },
-        ],
+        keys: [{ user_id: "user1", token: "key1" }, { token: "key2" }],
       });
 
       renderWithProviders(<TeamInfoView {...defaultProps} />);
 
       await waitFor(() => {
-        expect(screen.getByRole("tab", { name: "Virtual Keys" })).toBeInTheDocument();
+        expect(
+          screen.getByRole("tab", { name: "Virtual Keys" }),
+        ).toBeInTheDocument();
       });
     });
 
@@ -350,7 +373,7 @@ describe("TeamInfoView", () => {
             mcp_servers: ["server1"],
             vector_stores: ["store1"],
           },
-        })
+        }),
       );
 
       renderWithProviders(<TeamInfoView {...defaultProps} />);
@@ -362,7 +385,9 @@ describe("TeamInfoView", () => {
     });
 
     it("should open Settings tab by default when editTeam is true and user can edit", async () => {
-      vi.mocked(networking.teamInfoCall).mockResolvedValue(createMockTeamData());
+      vi.mocked(networking.teamInfoCall).mockResolvedValue(
+        createMockTeamData(),
+      );
 
       renderWithProviders(<TeamInfoView {...defaultProps} editTeam={true} />);
 
@@ -375,7 +400,9 @@ describe("TeamInfoView", () => {
     });
 
     it("should open Overview tab by default when editTeam is false", async () => {
-      vi.mocked(networking.teamInfoCall).mockResolvedValue(createMockTeamData());
+      vi.mocked(networking.teamInfoCall).mockResolvedValue(
+        createMockTeamData(),
+      );
 
       renderWithProviders(<TeamInfoView {...defaultProps} editTeam={false} />);
 
@@ -388,10 +415,17 @@ describe("TeamInfoView", () => {
     });
 
     it("should open Overview tab by default when editTeam is true but user cannot edit", async () => {
-      vi.mocked(networking.teamInfoCall).mockResolvedValue(createMockTeamData());
+      vi.mocked(networking.teamInfoCall).mockResolvedValue(
+        createMockTeamData(),
+      );
 
       renderWithProviders(
-        <TeamInfoView {...defaultProps} editTeam={true} is_team_admin={false} is_proxy_admin={false} />
+        <TeamInfoView
+          {...defaultProps}
+          editTeam={true}
+          is_team_admin={false}
+          is_proxy_admin={false}
+        />,
       );
 
       await waitFor(() => {
@@ -405,41 +439,61 @@ describe("TeamInfoView", () => {
 
   describe("tabs and navigation", () => {
     it("should show members tab when user can edit team", async () => {
-      vi.mocked(networking.teamInfoCall).mockResolvedValue(createMockTeamData());
+      vi.mocked(networking.teamInfoCall).mockResolvedValue(
+        createMockTeamData(),
+      );
 
       renderWithProviders(<TeamInfoView {...defaultProps} />);
 
       await waitFor(() => {
-        expect(screen.getByRole("tab", { name: "Members" })).toBeInTheDocument();
+        expect(
+          screen.getByRole("tab", { name: "Members" }),
+        ).toBeInTheDocument();
       });
     });
 
     it("should not show members tab when user cannot edit team", async () => {
-      vi.mocked(networking.teamInfoCall).mockResolvedValue(createMockTeamData());
+      vi.mocked(networking.teamInfoCall).mockResolvedValue(
+        createMockTeamData(),
+      );
 
-      renderWithProviders(<TeamInfoView {...defaultProps} is_team_admin={false} is_proxy_admin={false} />);
+      renderWithProviders(
+        <TeamInfoView
+          {...defaultProps}
+          is_team_admin={false}
+          is_proxy_admin={false}
+        />,
+      );
 
       await waitFor(() => {
         const teamNameElements = screen.queryAllByText("Test Team");
         expect(teamNameElements.length).toBeGreaterThan(0);
       });
 
-      expect(screen.queryByRole("tab", { name: "Members" })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("tab", { name: "Members" }),
+      ).not.toBeInTheDocument();
     });
 
     it("should show settings tab when user can edit team", async () => {
-      vi.mocked(networking.teamInfoCall).mockResolvedValue(createMockTeamData());
+      vi.mocked(networking.teamInfoCall).mockResolvedValue(
+        createMockTeamData(),
+      );
 
       renderWithProviders(<TeamInfoView {...defaultProps} />);
 
       await waitFor(() => {
-        expect(screen.getByRole("tab", { name: "Settings" })).toBeInTheDocument();
+        expect(
+          screen.getByRole("tab", { name: "Settings" }),
+        ).toBeInTheDocument();
       });
     });
 
     it("should navigate to settings tab when clicked", async () => {
       const user = userEvent.setup({ delay: null });
-      vi.mocked(networking.teamInfoCall).mockResolvedValue(createMockTeamData());
+      vi.mocked(networking.teamInfoCall).mockResolvedValue(
+        createMockTeamData(),
+      );
 
       renderWithProviders(<TeamInfoView {...defaultProps} />);
 
@@ -459,7 +513,9 @@ describe("TeamInfoView", () => {
     it("should call onClose when back button is clicked", async () => {
       const user = userEvent.setup({ delay: null });
       const onClose = vi.fn();
-      vi.mocked(networking.teamInfoCall).mockResolvedValue(createMockTeamData());
+      vi.mocked(networking.teamInfoCall).mockResolvedValue(
+        createMockTeamData(),
+      );
 
       renderWithProviders(<TeamInfoView {...defaultProps} onClose={onClose} />);
 
@@ -476,7 +532,9 @@ describe("TeamInfoView", () => {
 
     it("should copy team ID to clipboard when copy button is clicked", async () => {
       const user = userEvent.setup({ delay: null });
-      vi.mocked(networking.teamInfoCall).mockResolvedValue(createMockTeamData());
+      vi.mocked(networking.teamInfoCall).mockResolvedValue(
+        createMockTeamData(),
+      );
 
       renderWithProviders(<TeamInfoView {...defaultProps} />);
 
@@ -495,18 +553,30 @@ describe("TeamInfoView", () => {
     });
 
     it("should show Virtual Keys tab when user cannot edit team", async () => {
-      vi.mocked(networking.teamInfoCall).mockResolvedValue(createMockTeamData());
+      vi.mocked(networking.teamInfoCall).mockResolvedValue(
+        createMockTeamData(),
+      );
 
-      renderWithProviders(<TeamInfoView {...defaultProps} is_team_admin={false} is_proxy_admin={false} />);
+      renderWithProviders(
+        <TeamInfoView
+          {...defaultProps}
+          is_team_admin={false}
+          is_proxy_admin={false}
+        />,
+      );
 
       await waitFor(() => {
-        expect(screen.getByRole("tab", { name: "Virtual Keys" })).toBeInTheDocument();
+        expect(
+          screen.getByRole("tab", { name: "Virtual Keys" }),
+        ).toBeInTheDocument();
       });
     });
 
     it("should display X Members in Virtual Keys tab when navigated to", async () => {
       const user = userEvent.setup();
-      vi.mocked(networking.teamInfoCall).mockResolvedValue(createMockTeamData());
+      vi.mocked(networking.teamInfoCall).mockResolvedValue(
+        createMockTeamData(),
+      );
       const fiveKeys = Array.from({ length: 5 }, (_, i) => ({
         token: `sk-${i}`,
         token_id: `key-${i}`,
@@ -522,7 +592,12 @@ describe("TeamInfoView", () => {
         models: ["gpt-4"],
       }));
       mockUseKeys.mockReturnValue({
-        data: { keys: fiveKeys, total_count: 5, current_page: 1, total_pages: 1 },
+        data: {
+          keys: fiveKeys,
+          total_count: 5,
+          current_page: 1,
+          total_pages: 1,
+        },
         isPending: false,
         isFetching: false,
         refetch: vi.fn(),
@@ -545,7 +620,9 @@ describe("TeamInfoView", () => {
 
     it("should show Filters and pagination controls in Virtual Keys tab", async () => {
       const user = userEvent.setup();
-      vi.mocked(networking.teamInfoCall).mockResolvedValue(createMockTeamData());
+      vi.mocked(networking.teamInfoCall).mockResolvedValue(
+        createMockTeamData(),
+      );
       mockUseKeys.mockReturnValue({
         data: {
           keys: [
@@ -584,11 +661,17 @@ describe("TeamInfoView", () => {
       await user.click(virtualKeysTab);
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: "Filters" })).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: "Filters" }),
+        ).toBeInTheDocument();
       });
-      expect(screen.getByRole("button", { name: "Reset Filters" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Reset Filters" }),
+      ).toBeInTheDocument();
       expect(screen.getByText("Page 1 of 1")).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Previous" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Previous" }),
+      ).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "Next" })).toBeInTheDocument();
     });
   });
@@ -596,7 +679,9 @@ describe("TeamInfoView", () => {
   describe("settings and editing", () => {
     it("should open edit mode when edit button is clicked", async () => {
       const user = userEvent.setup({ delay: null });
-      vi.mocked(networking.teamInfoCall).mockResolvedValue(createMockTeamData());
+      vi.mocked(networking.teamInfoCall).mockResolvedValue(
+        createMockTeamData(),
+      );
 
       renderWithProviders(<TeamInfoView {...defaultProps} />);
 
@@ -609,7 +694,9 @@ describe("TeamInfoView", () => {
       await user.click(settingsTab);
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: /edit settings/i }),
+        ).toBeInTheDocument();
       });
 
       const editButton = screen.getByRole("button", { name: /edit settings/i });
@@ -622,7 +709,9 @@ describe("TeamInfoView", () => {
 
     it("should close edit mode when cancel button is clicked", async () => {
       const user = userEvent.setup({ delay: null });
-      vi.mocked(networking.teamInfoCall).mockResolvedValue(createMockTeamData());
+      vi.mocked(networking.teamInfoCall).mockResolvedValue(
+        createMockTeamData(),
+      );
 
       renderWithProviders(<TeamInfoView {...defaultProps} />);
 
@@ -635,7 +724,9 @@ describe("TeamInfoView", () => {
       await user.click(settingsTab);
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: /edit settings/i }),
+        ).toBeInTheDocument();
       });
 
       const editButton = screen.getByRole("button", { name: /edit settings/i });
@@ -660,10 +751,12 @@ describe("TeamInfoView", () => {
           metadata: {
             secret_manager_settings: { provider: "aws", secret_id: "abc" },
           },
-        })
+        }),
       );
 
-      renderWithProviders(<TeamInfoView {...defaultProps} premiumUser={false} />);
+      renderWithProviders(
+        <TeamInfoView {...defaultProps} premiumUser={false} />,
+      );
 
       await waitFor(() => {
         const teamNameElements = screen.queryAllByText("Test Team");
@@ -674,14 +767,16 @@ describe("TeamInfoView", () => {
       await user.click(settingsTab);
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: /edit settings/i }),
+        ).toBeInTheDocument();
       });
 
       const editButton = screen.getByRole("button", { name: /edit settings/i });
       await user.click(editButton);
 
       const secretField = await screen.findByPlaceholderText(
-        '{"namespace": "admin", "mount": "secret", "path_prefix": "litellm"}'
+        '{"namespace": "admin", "mount": "secret", "path_prefix": "litellm"}',
       );
       expect(secretField).toBeDisabled();
     });
@@ -693,11 +788,16 @@ describe("TeamInfoView", () => {
           metadata: {
             secret_manager_settings: { provider: "aws", secret_id: "abc" },
           },
-        })
+        }),
       );
-      vi.mocked(networking.teamUpdateCall).mockResolvedValue({ data: {}, team_id: "123" } as any);
+      vi.mocked(networking.teamUpdateCall).mockResolvedValue({
+        data: {},
+        team_id: "123",
+      } as any);
 
-      renderWithProviders(<TeamInfoView {...defaultProps} premiumUser={true} />);
+      renderWithProviders(
+        <TeamInfoView {...defaultProps} premiumUser={true} />,
+      );
 
       await waitFor(() => {
         const teamNameElements = screen.queryAllByText("Test Team");
@@ -708,14 +808,16 @@ describe("TeamInfoView", () => {
       await user.click(settingsTab);
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: /edit settings/i }),
+        ).toBeInTheDocument();
       });
 
       const editButton = screen.getByRole("button", { name: /edit settings/i });
       await user.click(editButton);
 
       const secretField = await screen.findByPlaceholderText(
-        '{"namespace": "admin", "mount": "secret", "path_prefix": "litellm"}'
+        '{"namespace": "admin", "mount": "secret", "path_prefix": "litellm"}',
       );
       expect(secretField).not.toBeDisabled();
     });
@@ -727,7 +829,9 @@ describe("TeamInfoView", () => {
       vi.mocked(networking.teamInfoCall).mockResolvedValue(teamData);
       vi.mocked(networking.teamMemberAddCall).mockResolvedValue({} as any);
 
-      renderWithProviders(<TeamInfoView {...defaultProps} onUpdate={onUpdate} />);
+      renderWithProviders(
+        <TeamInfoView {...defaultProps} onUpdate={onUpdate} />,
+      );
 
       await waitFor(() => {
         const teamNameElements = screen.queryAllByText("Test Team");
@@ -738,14 +842,18 @@ describe("TeamInfoView", () => {
       await user.click(membersTab);
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /add member/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: /add member/i }),
+        ).toBeInTheDocument();
       });
 
       const addButton = screen.getByRole("button", { name: /add member/i });
       await user.click(addButton);
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: "Submit" }),
+        ).toBeInTheDocument();
       });
 
       const submitButton = screen.getByRole("button", { name: "Submit" });
@@ -762,7 +870,7 @@ describe("TeamInfoView", () => {
         createMockTeamData({
           soft_budget: 500.75,
           max_budget: 1000,
-        })
+        }),
       );
 
       renderWithProviders(<TeamInfoView {...defaultProps} />);
@@ -792,7 +900,7 @@ describe("TeamInfoView", () => {
           metadata: {
             soft_budget_alerting_emails: ["alert1@test.com", "alert2@test.com"],
           },
-        })
+        }),
       );
 
       renderWithProviders(<TeamInfoView {...defaultProps} />);
@@ -810,8 +918,12 @@ describe("TeamInfoView", () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText(/Soft Budget Alerting Emails:/)).toBeInTheDocument();
-        expect(screen.getByText(/alert1@test\.com, alert2@test\.com/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Soft Budget Alerting Emails:/),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(/alert1@test\.com, alert2@test\.com/),
+        ).toBeInTheDocument();
       });
     });
 
@@ -822,9 +934,12 @@ describe("TeamInfoView", () => {
         createMockTeamData({
           access_group_ids: accessGroupIds,
           models: ["gpt-4"],
-        })
+        }),
       );
-      vi.mocked(networking.teamUpdateCall).mockResolvedValue({ data: {}, team_id: "123" } as any);
+      vi.mocked(networking.teamUpdateCall).mockResolvedValue({
+        data: {},
+        team_id: "123",
+      } as any);
 
       renderWithProviders(<TeamInfoView {...defaultProps} />);
 
@@ -837,7 +952,9 @@ describe("TeamInfoView", () => {
       await user.click(settingsTab);
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: /edit settings/i }),
+        ).toBeInTheDocument();
       });
 
       const editButton = screen.getByRole("button", { name: /edit settings/i });
@@ -856,7 +973,7 @@ describe("TeamInfoView", () => {
           expect.objectContaining({
             access_group_ids: accessGroupIds,
             team_id: "123",
-          })
+          }),
         );
       });
     });

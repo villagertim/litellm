@@ -1,9 +1,9 @@
-import openai from "openai";
-import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
-import { TokenUsage } from "../chat_ui/ResponseMetrics";
-import { VectorStoreSearchResponse } from "../chat_ui/types";
 import { getProxyBaseUrl } from "@/components/networking";
-import { MCPServer, MCPToolset, type MCPEvent } from "../../mcp_tools/types";
+import openai from "openai";
+import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
+import type { MCPEvent, MCPServer, MCPToolset } from "../../mcp_tools/types";
+import type { TokenUsage } from "../chat_ui/ResponseMetrics";
+import type { VectorStoreSearchResponse } from "../chat_ui/types";
 
 export async function makeOpenAIChatCompletionRequest(
   chatHistory: { role: string; content: string | any[] }[],
@@ -35,7 +35,7 @@ export async function makeOpenAIChatCompletionRequest(
   // base url should be the current base_url
   const isLocal = process.env.NODE_ENV === "development";
   if (isLocal !== true) {
-    console.log = function () { };
+    console.log = () => {};
   }
   console.log("isLocal:", isLocal);
   const proxyBaseUrl = customBaseUrl || getProxyBaseUrl();
@@ -62,7 +62,7 @@ export async function makeOpenAIChatCompletionRequest(
     let fullReasoningContent = "";
 
     // Track MCP metadata cumulatively across chunks
-    let mcpMetadata: {
+    const mcpMetadata: {
       mcp_list_tools?: any[];
       mcp_tool_calls?: any[];
       mcp_call_results?: any[];
@@ -87,7 +87,9 @@ export async function makeOpenAIChatCompletionRequest(
         selectedMCPServers.forEach((serverId) => {
           if (serverId.startsWith("toolset:")) {
             const toolsetId = serverId.slice("toolset:".length);
-            const toolset = mcpToolsets?.find((t) => t.toolset_id === toolsetId);
+            const toolset = mcpToolsets?.find(
+              (t) => t.toolset_id === toolsetId,
+            );
             const toolsetName = toolset?.toolset_name || toolsetId;
             tools.push({
               type: "mcp",
@@ -105,7 +107,9 @@ export async function makeOpenAIChatCompletionRequest(
               server_label: "litellm",
               server_url: `litellm_proxy/mcp/${serverName}`,
               require_approval: "never",
-              ...(allowedTools.length > 0 ? { allowed_tools: allowedTools } : {}),
+              ...(allowedTools.length > 0
+                ? { allowed_tools: allowedTools }
+                : {}),
             });
           }
         });
@@ -144,7 +148,10 @@ export async function makeOpenAIChatCompletionRequest(
       console.log("Delta reasoning content:", delta?.reasoning_content);
 
       // Measure time to first token for either content or reasoning_content
-      if (!firstTokenReceived && (chunk.choices[0]?.delta?.content || (delta && delta.reasoning_content))) {
+      if (
+        !firstTokenReceived &&
+        (chunk.choices[0]?.delta?.content || (delta && delta.reasoning_content))
+      ) {
         firstTokenReceived = true;
         timeToFirstToken = Date.now() - startTime;
         console.log("First token received! Time:", timeToFirstToken, "ms");
@@ -179,15 +186,22 @@ export async function makeOpenAIChatCompletionRequest(
       }
 
       // Check for search results in provider_specific_fields
-      if (delta && delta.provider_specific_fields?.search_results && onSearchResults) {
-        console.log("Search results found:", delta.provider_specific_fields.search_results);
+      if (
+        delta &&
+        delta.provider_specific_fields?.search_results &&
+        onSearchResults
+      ) {
+        console.log(
+          "Search results found:",
+          delta.provider_specific_fields.search_results,
+        );
         onSearchResults(delta.provider_specific_fields.search_results);
       }
 
       // Check for MCP metadata in provider_specific_fields
       if (delta && delta.provider_specific_fields) {
         const providerFields = delta.provider_specific_fields;
-        
+
         // Merge MCP metadata cumulatively (don't overwrite)
         if (providerFields.mcp_list_tools && !mcpMetadata.mcp_list_tools) {
           mcpMetadata.mcp_list_tools = providerFields.mcp_list_tools;
@@ -201,8 +215,10 @@ export async function makeOpenAIChatCompletionRequest(
                 type: "mcp_list_tools",
                 tools: providerFields.mcp_list_tools.map((tool: any) => ({
                   name: tool.function?.name || tool.name || "",
-                  description: tool.function?.description || tool.description || "",
-                  input_schema: tool.function?.parameters || tool.input_schema || {},
+                  description:
+                    tool.function?.description || tool.description || "",
+                  input_schema:
+                    tool.function?.parameters || tool.input_schema || {},
                 })),
               },
               timestamp: Date.now(),
@@ -211,20 +227,30 @@ export async function makeOpenAIChatCompletionRequest(
             console.log("MCP list_tools event sent:", toolsEvent);
           }
         }
-        
+
         if (providerFields.mcp_tool_calls) {
           mcpMetadata.mcp_tool_calls = providerFields.mcp_tool_calls;
         }
-        
+
         if (providerFields.mcp_call_results) {
           mcpMetadata.mcp_call_results = providerFields.mcp_call_results;
         }
-        
-        if (providerFields.mcp_list_tools || providerFields.mcp_tool_calls || providerFields.mcp_call_results) {
+
+        if (
+          providerFields.mcp_list_tools ||
+          providerFields.mcp_tool_calls ||
+          providerFields.mcp_call_results
+        ) {
           console.log("MCP metadata found in chunk:", {
-            mcp_list_tools: providerFields.mcp_list_tools ? "present" : "absent",
-            mcp_tool_calls: providerFields.mcp_tool_calls ? "present" : "absent",
-            mcp_call_results: providerFields.mcp_call_results ? "present" : "absent",
+            mcp_list_tools: providerFields.mcp_list_tools
+              ? "present"
+              : "absent",
+            mcp_tool_calls: providerFields.mcp_tool_calls
+              ? "present"
+              : "absent",
+            mcp_call_results: providerFields.mcp_call_results
+              ? "present"
+              : "absent",
           });
         }
       }
@@ -241,12 +267,16 @@ export async function makeOpenAIChatCompletionRequest(
 
         // Check for reasoning tokens
         if (chunkWithUsage.usage.completion_tokens_details?.reasoning_tokens) {
-          usageData.reasoningTokens = chunkWithUsage.usage.completion_tokens_details.reasoning_tokens;
+          usageData.reasoningTokens =
+            chunkWithUsage.usage.completion_tokens_details.reasoning_tokens;
         }
 
         // Extract cost from usage object if available
-        if (chunkWithUsage.usage.cost !== undefined && chunkWithUsage.usage.cost !== null) {
-          usageData.cost = parseFloat(chunkWithUsage.usage.cost);
+        if (
+          chunkWithUsage.usage.cost !== undefined &&
+          chunkWithUsage.usage.cost !== null
+        ) {
+          usageData.cost = Number.parseFloat(chunkWithUsage.usage.cost);
         }
 
         onUsageData(usageData);
@@ -255,25 +285,39 @@ export async function makeOpenAIChatCompletionRequest(
 
     // Process remaining MCP metadata (mcp_tool_calls and mcp_call_results) after stream completes
     // Note: mcp_list_tools is already processed when found in the first chunk
-    if (onMCPEvent && (mcpMetadata.mcp_tool_calls || mcpMetadata.mcp_call_results)) {
+    if (
+      onMCPEvent &&
+      (mcpMetadata.mcp_tool_calls || mcpMetadata.mcp_call_results)
+    ) {
       // Convert mcp_tool_calls and mcp_call_results to MCPEvent[]
       if (mcpMetadata.mcp_tool_calls && mcpMetadata.mcp_tool_calls.length > 0) {
         mcpMetadata.mcp_tool_calls.forEach((toolCall: any, index: number) => {
           const functionName = toolCall.function?.name || toolCall.name || "";
-          const functionArgs = toolCall.function?.arguments || toolCall.arguments || "{}";
+          const functionArgs =
+            toolCall.function?.arguments || toolCall.arguments || "{}";
 
           // Find corresponding result
-          const result = mcpMetadata.mcp_call_results?.find(
-            (r: any) => r.tool_call_id === toolCall.id || r.tool_call_id === toolCall.call_id
-          ) || mcpMetadata.mcp_call_results?.[index];
+          const result =
+            mcpMetadata.mcp_call_results?.find(
+              (r: any) =>
+                r.tool_call_id === toolCall.id ||
+                r.tool_call_id === toolCall.call_id,
+            ) || mcpMetadata.mcp_call_results?.[index];
 
           const callEvent: MCPEvent = {
             type: "response.output_item.done",
             item: {
               type: "mcp_call",
               name: functionName,
-              arguments: typeof functionArgs === "string" ? functionArgs : JSON.stringify(functionArgs),
-              output: result?.result ? (typeof result.result === "string" ? result.result : JSON.stringify(result.result)) : undefined,
+              arguments:
+                typeof functionArgs === "string"
+                  ? functionArgs
+                  : JSON.stringify(functionArgs),
+              output: result?.result
+                ? typeof result.result === "string"
+                  ? result.result
+                  : JSON.stringify(result.result)
+                : undefined,
             },
             item_id: toolCall.id || toolCall.call_id,
             timestamp: Date.now(),

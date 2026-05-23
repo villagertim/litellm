@@ -35,16 +35,26 @@ vi.mock("./NudgePrompt", () => ({
 describe("ClaudeCodePrompt", () => {
   it("should render with the Claude Code Feedback title when visible", () => {
     renderWithProviders(
-      <ClaudeCodePrompt isVisible={true} onOpen={vi.fn()} onDismiss={vi.fn()} />
+      <ClaudeCodePrompt
+        isVisible={true}
+        onOpen={vi.fn()}
+        onDismiss={vi.fn()}
+      />,
     );
     expect(screen.getByText("Claude Code Feedback")).toBeInTheDocument();
   });
 
   it("should render the correct description text", () => {
     renderWithProviders(
-      <ClaudeCodePrompt isVisible={true} onOpen={vi.fn()} onDismiss={vi.fn()} />
+      <ClaudeCodePrompt
+        isVisible={true}
+        onOpen={vi.fn()}
+        onDismiss={vi.fn()}
+      />,
     );
-    expect(screen.getByText(/Help us improve your Claude Code experience/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Help us improve your Claude Code experience/i),
+    ).toBeInTheDocument();
   });
 
   it("should call onOpen when the share feedback button is clicked", async () => {
@@ -52,7 +62,7 @@ describe("ClaudeCodePrompt", () => {
     const user = userEvent.setup();
 
     renderWithProviders(
-      <ClaudeCodePrompt isVisible={true} onOpen={onOpen} onDismiss={vi.fn()} />
+      <ClaudeCodePrompt isVisible={true} onOpen={onOpen} onDismiss={vi.fn()} />,
     );
 
     await user.click(screen.getByRole("button", { name: /Share feedback/i }));
@@ -65,7 +75,11 @@ describe("ClaudeCodePrompt", () => {
     const user = userEvent.setup();
 
     renderWithProviders(
-      <ClaudeCodePrompt isVisible={true} onOpen={vi.fn()} onDismiss={onDismiss} />
+      <ClaudeCodePrompt
+        isVisible={true}
+        onOpen={vi.fn()}
+        onDismiss={onDismiss}
+      />,
     );
 
     await user.click(screen.getByRole("button", { name: /Dismiss/i }));
@@ -75,7 +89,11 @@ describe("ClaudeCodePrompt", () => {
 
   it("should not render when isVisible is false", () => {
     renderWithProviders(
-      <ClaudeCodePrompt isVisible={false} onOpen={vi.fn()} onDismiss={vi.fn()} />
+      <ClaudeCodePrompt
+        isVisible={false}
+        onOpen={vi.fn()}
+        onDismiss={vi.fn()}
+      />,
     );
     expect(screen.queryByText("Claude Code Feedback")).not.toBeInTheDocument();
   });

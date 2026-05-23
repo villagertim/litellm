@@ -1,7 +1,7 @@
-import React from "react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { screen, fireEvent } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import React from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../../tests/test-utils";
 import MultiExportDropdown from "./multi_export_dropdown";
 import type { MultiModelResult } from "./types";
@@ -11,13 +11,18 @@ vi.mock("./multi_export_utils", () => ({
   exportMultiToCSV: vi.fn(),
 }));
 
-import { exportMultiToPDF, exportMultiToCSV } from "./multi_export_utils";
+import { exportMultiToCSV, exportMultiToPDF } from "./multi_export_utils";
 
 function makeMultiResult(hasResult: boolean): MultiModelResult {
   return {
     entries: [
       {
-        entry: { id: "e1", model: "gpt-4", input_tokens: 1000, output_tokens: 500 },
+        entry: {
+          id: "e1",
+          model: "gpt-4",
+          input_tokens: 1000,
+          output_tokens: 500,
+        },
         result: hasResult
           ? {
               model: "gpt-4",
@@ -64,19 +69,25 @@ describe("MultiExportDropdown", () => {
 
   it("should not render anything when no entries have results", () => {
     const { container } = renderWithProviders(
-      <MultiExportDropdown multiResult={makeMultiResult(false)} />
+      <MultiExportDropdown multiResult={makeMultiResult(false)} />,
     );
     expect(container.firstChild).toBeNull();
   });
 
   it("should render the Export button when at least one entry has a result", () => {
-    renderWithProviders(<MultiExportDropdown multiResult={makeMultiResult(true)} />);
-    expect(screen.getByRole("button", { name: /^export$/i })).toBeInTheDocument();
+    renderWithProviders(
+      <MultiExportDropdown multiResult={makeMultiResult(true)} />,
+    );
+    expect(
+      screen.getByRole("button", { name: /^export$/i }),
+    ).toBeInTheDocument();
   });
 
   it("should show the export menu when the Export button is clicked", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<MultiExportDropdown multiResult={makeMultiResult(true)} />);
+    renderWithProviders(
+      <MultiExportDropdown multiResult={makeMultiResult(true)} />,
+    );
 
     await user.click(screen.getByRole("button", { name: /^export$/i }));
 
@@ -86,7 +97,9 @@ describe("MultiExportDropdown", () => {
 
   it("should hide the export menu when the Export button is clicked again", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<MultiExportDropdown multiResult={makeMultiResult(true)} />);
+    renderWithProviders(
+      <MultiExportDropdown multiResult={makeMultiResult(true)} />,
+    );
 
     await user.click(screen.getByRole("button", { name: /^export$/i }));
     expect(screen.getByText("Export as PDF")).toBeInTheDocument();
@@ -97,7 +110,9 @@ describe("MultiExportDropdown", () => {
 
   it("should call exportMultiToPDF and close the menu when Export as PDF is clicked", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<MultiExportDropdown multiResult={makeMultiResult(true)} />);
+    renderWithProviders(
+      <MultiExportDropdown multiResult={makeMultiResult(true)} />,
+    );
 
     await user.click(screen.getByRole("button", { name: /^export$/i }));
     await user.click(screen.getByText("Export as PDF"));
@@ -108,7 +123,9 @@ describe("MultiExportDropdown", () => {
 
   it("should call exportMultiToCSV and close the menu when Export as CSV is clicked", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<MultiExportDropdown multiResult={makeMultiResult(true)} />);
+    renderWithProviders(
+      <MultiExportDropdown multiResult={makeMultiResult(true)} />,
+    );
 
     await user.click(screen.getByRole("button", { name: /^export$/i }));
     await user.click(screen.getByText("Export as CSV"));
@@ -134,7 +151,7 @@ describe("MultiExportDropdown", () => {
       <div>
         <MultiExportDropdown multiResult={makeMultiResult(true)} />
         <div data-testid="outside">Outside</div>
-      </div>
+      </div>,
     );
 
     await user.click(screen.getByRole("button", { name: /^export$/i }));

@@ -1,6 +1,6 @@
-import { teamListCall, organizationListCall, keyListCall } from "../networking";
-import { Team } from "./key_list";
-import { Organization } from "../networking";
+import { keyListCall, organizationListCall, teamListCall } from "../networking";
+import type { Organization } from "../networking";
+import type { Team } from "./key_list";
 
 export interface TeamFilterOptions {
   keyAliases: string[];
@@ -28,7 +28,8 @@ const processKeysIntoOptions = (
     }
     const userId = key?.user_id;
     if (userId && typeof userId === "string") {
-      const email = (key?.user as { user_email?: string })?.user_email || userId;
+      const email =
+        (key?.user as { user_email?: string })?.user_email || userId;
       userMap.set(userId, email);
     }
   }
@@ -94,7 +95,12 @@ export const fetchTeamFilterOptions = async (
       const results = await Promise.allSettled(pagePromises);
       for (const result of results) {
         if (result.status === "fulfilled") {
-          processKeysIntoOptions(result.value?.keys || [], keyAliases, organizationIds, userMap);
+          processKeysIntoOptions(
+            result.value?.keys || [],
+            keyAliases,
+            organizationIds,
+            userMap,
+          );
         }
       }
     }
@@ -102,7 +108,10 @@ export const fetchTeamFilterOptions = async (
     return {
       keyAliases: Array.from(keyAliases).sort(),
       organizationIds: Array.from(organizationIds).sort(),
-      userIds: Array.from(userMap.entries()).map(([id, email]) => ({ id, email })),
+      userIds: Array.from(userMap.entries()).map(([id, email]) => ({
+        id,
+        email,
+      })),
     };
   } catch (error) {
     console.error("Error fetching team filter options:", error);
@@ -116,7 +125,10 @@ export const fetchTeamFilterOptions = async (
  * @param organizationId Optional organization ID to filter teams
  * @returns Array of all teams
  */
-export const fetchAllTeams = async (accessToken: string | null, organizationId?: string | null): Promise<Team[]> => {
+export const fetchAllTeams = async (
+  accessToken: string | null,
+  organizationId?: string | null,
+): Promise<Team[]> => {
   if (!accessToken) return [];
 
   try {
@@ -125,7 +137,11 @@ export const fetchAllTeams = async (accessToken: string | null, organizationId?:
     let hasMorePages = true;
 
     while (hasMorePages) {
-      const response = await teamListCall(accessToken, organizationId || null, null);
+      const response = await teamListCall(
+        accessToken,
+        organizationId || null,
+        null,
+      );
 
       // Add teams from this page
       allTeams = [...allTeams, ...response];
@@ -150,7 +166,9 @@ export const fetchAllTeams = async (accessToken: string | null, organizationId?:
  * @param accessToken The access token for API authentication
  * @returns Array of all organizations
  */
-export const fetchAllOrganizations = async (accessToken: string | null): Promise<Organization[]> => {
+export const fetchAllOrganizations = async (
+  accessToken: string | null,
+): Promise<Organization[]> => {
   if (!accessToken) return [];
 
   try {

@@ -1,4 +1,4 @@
-import { render, screen, act } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
 import { GuardrailConfig } from "./GuardrailConfig";
@@ -21,7 +21,9 @@ describe("GuardrailConfig", () => {
 
   it("should display the guardrail name in the parameters description", () => {
     render(<GuardrailConfig {...defaultProps} />);
-    expect(screen.getByText(/Configure Content Safety behavior/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Configure Content Safety behavior/),
+    ).toBeInTheDocument();
   });
 
   // Note: Version history entries are hardcoded placeholders in the component.
@@ -31,7 +33,9 @@ describe("GuardrailConfig", () => {
     render(<GuardrailConfig {...defaultProps} />);
     await user.click(screen.getByRole("button", { name: /view history/i }));
     expect(screen.getByText("Initial configuration")).toBeInTheDocument();
-    expect(screen.getByText("Added custom categories list")).toBeInTheDocument();
+    expect(
+      screen.getByText("Added custom categories list"),
+    ).toBeInTheDocument();
   });
 
   it("should toggle version history text between View/Hide", async () => {
@@ -39,7 +43,9 @@ describe("GuardrailConfig", () => {
     render(<GuardrailConfig {...defaultProps} />);
     const button = screen.getByRole("button", { name: /view history/i });
     await user.click(button);
-    expect(screen.getByRole("button", { name: /hide history/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /hide history/i }),
+    ).toBeInTheDocument();
   });
 
   it("should show custom code textarea when custom code override is toggled on", async () => {
@@ -55,28 +61,38 @@ describe("GuardrailConfig", () => {
       container = container.parentElement;
     }
     if (!customCodeSwitch) {
-      throw new Error("Could not find the Custom Code Override switch via DOM traversal");
+      throw new Error(
+        "Could not find the Custom Code Override switch via DOM traversal",
+      );
     }
     await user.click(customCodeSwitch);
-    expect(screen.getByPlaceholderText(/async def evaluate/)).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText(/async def evaluate/),
+    ).toBeInTheDocument();
   });
 
   it("should hide custom code textarea when custom code override is off", () => {
     render(<GuardrailConfig {...defaultProps} />);
     // There's an input for categories, but no textarea
-    expect(screen.queryByPlaceholderText(/async def evaluate/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText(/async def evaluate/),
+    ).not.toBeInTheDocument();
   });
 
   it("should show the re-run button in idle state", () => {
     render(<GuardrailConfig {...defaultProps} />);
-    expect(screen.getByRole("button", { name: /re-run on failing logs/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /re-run on failing logs/i }),
+    ).toBeInTheDocument();
   });
 
   it("should show loading state when re-run is clicked", async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     render(<GuardrailConfig {...defaultProps} />);
-    await user.click(screen.getByRole("button", { name: /re-run on failing logs/i }));
+    await user.click(
+      screen.getByRole("button", { name: /re-run on failing logs/i }),
+    );
     expect(screen.getByText(/Running on 10 samples/)).toBeInTheDocument();
   });
 
@@ -84,8 +100,12 @@ describe("GuardrailConfig", () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     render(<GuardrailConfig {...defaultProps} />);
-    await user.click(screen.getByRole("button", { name: /re-run on failing logs/i }));
-    await act(async () => { vi.advanceTimersByTime(2500); });
+    await user.click(
+      screen.getByRole("button", { name: /re-run on failing logs/i }),
+    );
+    await act(async () => {
+      vi.advanceTimersByTime(2500);
+    });
     expect(screen.getByText(/7\/10 would now pass/)).toBeInTheDocument();
   });
 
@@ -93,6 +113,8 @@ describe("GuardrailConfig", () => {
     render(<GuardrailConfig {...defaultProps} />);
     expect(screen.getByRole("button", { name: /revert/i })).toBeInTheDocument();
     // The component's hardcoded default version is "v3", so Save shows "v4"
-    expect(screen.getByRole("button", { name: /save as v\d+/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /save as v\d+/i }),
+    ).toBeInTheDocument();
   });
 });

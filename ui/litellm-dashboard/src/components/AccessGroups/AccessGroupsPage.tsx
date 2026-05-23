@@ -1,16 +1,18 @@
 import {
-  AccessGroupResponse,
+  type AccessGroupResponse,
   useAccessGroups,
 } from "@/app/(dashboard)/hooks/accessGroups/useAccessGroups";
 import { useDeleteAccessGroup } from "@/app/(dashboard)/hooks/accessGroups/useDeleteAccessGroup";
+import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { isProxyAdminRole } from "@/utils/roles";
 import { PlusOutlined } from "@ant-design/icons";
 import {
-  ColumnDef,
+  type ColumnDef,
+  type Row,
+  type SortingState,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  Row,
-  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import {
@@ -23,28 +25,21 @@ import {
   Space,
   Table,
   Tag,
-  theme,
   Tooltip,
   Typography,
+  theme,
 } from "antd";
-import {
-  BotIcon,
-  LayersIcon,
-  SearchIcon,
-  ServerIcon
-} from "lucide-react";
+import { BotIcon, LayersIcon, SearchIcon, ServerIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import DeleteResourceModal from "../common_components/DeleteResourceModal";
 import TableIconActionButton from "../common_components/IconActionButton/TableIconActionButtons/TableIconActionButton";
 import {
-  SortState,
+  type SortState,
   TableHeaderSortDropdown,
 } from "../common_components/TableHeaderSortDropdown/TableHeaderSortDropdown";
 import { AccessGroupDetail } from "./AccessGroupsDetailsPage";
 import { AccessGroupCreateModal } from "./AccessGroupsModal/AccessGroupCreateModal";
-import { AccessGroup } from "./types";
-import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { isProxyAdminRole } from "@/utils/roles";
+import type { AccessGroup } from "./types";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -210,7 +205,10 @@ export function AccessGroupsPage() {
           return (
             <Flex gap={12} align="center">
               <Tooltip title={`${modelIds?.length} Models`}>
-                <Tag color="blue" style={{ fontSize: 14, padding: "2px 8px", margin: 0 }}>
+                <Tag
+                  color="blue"
+                  style={{ fontSize: 14, padding: "2px 8px", margin: 0 }}
+                >
                   <Flex align="center" gap={6}>
                     <LayersIcon size={14} />
                     {modelIds?.length}
@@ -218,7 +216,10 @@ export function AccessGroupsPage() {
                 </Tag>
               </Tooltip>
               <Tooltip title={`${mcpServerIds?.length} MCP Servers`}>
-                <Tag color="cyan" style={{ fontSize: 14, padding: "2px 8px", margin: 0 }}>
+                <Tag
+                  color="cyan"
+                  style={{ fontSize: 14, padding: "2px 8px", margin: 0 }}
+                >
                   <Flex align="center" gap={6}>
                     <ServerIcon size={14} />
                     {mcpServerIds?.length}
@@ -226,7 +227,10 @@ export function AccessGroupsPage() {
                 </Tag>
               </Tooltip>
               <Tooltip title={`${agentIds?.length} Agents`}>
-                <Tag color="purple" style={{ fontSize: 14, padding: "2px 8px", margin: 0 }}>
+                <Tag
+                  color="purple"
+                  style={{ fontSize: 14, padding: "2px 8px", margin: 0 }}
+                >
                   <Flex align="center" gap={6}>
                     <BotIcon size={14} />
                     {agentIds?.length}
@@ -325,11 +329,7 @@ export function AccessGroupsPage() {
     <Content
       style={{ padding: token.paddingLG, paddingInline: token.paddingLG * 2 }}
     >
-      <Flex
-        justify="space-between"
-        align="center"
-        style={{ marginBottom: 16 }}
-      >
+      <Flex justify="space-between" align="center" style={{ marginBottom: 16 }}>
         <Space direction="vertical" size={0}>
           <Title level={2} style={{ margin: 0 }}>
             Access Groups

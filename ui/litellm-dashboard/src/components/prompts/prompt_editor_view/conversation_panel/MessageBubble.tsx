@@ -1,10 +1,10 @@
-import React from "react";
 import { RobotOutlined, UserOutlined } from "@ant-design/icons";
+import type React from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coy } from "react-syntax-highlighter/dist/esm/styles/prism";
 import ResponseMetrics from "../../../playground/chat_ui/ResponseMetrics";
-import { Message } from "./types";
+import type { Message } from "./types";
 
 interface MessageBubbleProps {
   message: Message;
@@ -12,12 +12,15 @@ interface MessageBubbleProps {
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
   return (
-    <div className={`mb-4 flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
+    <div
+      className={`mb-4 flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+    >
       <div
         className="max-w-[85%] rounded-lg shadow-sm p-3.5 px-4"
         style={{
           backgroundColor: message.role === "user" ? "#f0f8ff" : "#ffffff",
-          border: message.role === "user" ? "1px solid #e6f0fa" : "1px solid #f0f0f0",
+          border:
+            message.role === "user" ? "1px solid #e6f0fa" : "1px solid #f0f0f0",
         }}
       >
         <div className="flex items-center gap-2 mb-1.5">
@@ -87,7 +90,10 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                   );
                 },
                 pre: ({ node, ...props }) => (
-                  <pre style={{ overflowX: "auto", maxWidth: "100%" }} {...props} />
+                  <pre
+                    style={{ overflowX: "auto", maxWidth: "100%" }}
+                    {...props}
+                  />
                 ),
               }}
             >
@@ -98,7 +104,9 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
           )}
 
           {message.role === "assistant" &&
-            (message.timeToFirstToken || message.totalLatency || message.usage) && (
+            (message.timeToFirstToken ||
+              message.totalLatency ||
+              message.usage) && (
               <ResponseMetrics
                 timeToFirstToken={message.timeToFirstToken}
                 totalLatency={message.totalLatency}
@@ -112,4 +120,3 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
 };
 
 export default MessageBubble;
-

@@ -40,7 +40,11 @@ describe("splitWildcardModels", () => {
   });
 
   it("should correctly identify wildcard models ending with /*", () => {
-    const models: string[] = ["provider/*", "not-wildcard", "also-not/*/wildcard"];
+    const models: string[] = [
+      "provider/*",
+      "not-wildcard",
+      "also-not/*/wildcard",
+    ];
 
     const result = splitWildcardModels(models);
 

@@ -2,7 +2,7 @@
  * Helper utilities for Claude Code Marketplace
  */
 
-import { PluginSource, MarketplacePluginEntry } from "./types";
+import type { MarketplacePluginEntry, PluginSource } from "./types";
 
 /**
  * Generate install command for Claude Code CLI
@@ -26,7 +26,7 @@ export const formatInstallCommand = (plugin: {
  * Returns array with "All" first, then sorted categories, then "Other"
  */
 export const extractCategories = (
-  plugins: Array<{ category?: string }>
+  plugins: Array<{ category?: string }>,
 ): string[] => {
   const categories = new Set<string>();
 
@@ -82,7 +82,7 @@ export const getSourceLink = (source: PluginSource): string | null => {
  * Get badge color based on category
  */
 export const getCategoryBadgeColor = (
-  category?: string
+  category?: string,
 ): "blue" | "green" | "purple" | "red" | "orange" | "yellow" | "gray" => {
   if (!category) {
     return "gray";
@@ -158,7 +158,7 @@ export const truncateText = (text: string, maxLength: number): string => {
  */
 export const filterPluginsBySearch = (
   plugins: MarketplacePluginEntry[],
-  searchTerm: string
+  searchTerm: string,
 ): MarketplacePluginEntry[] => {
   if (!searchTerm || searchTerm.trim() === "") {
     return plugins;
@@ -172,7 +172,7 @@ export const filterPluginsBySearch = (
       plugin.description?.toLowerCase().includes(term) || false;
     const keywordsMatch =
       plugin.keywords?.some((keyword) =>
-        keyword.toLowerCase().includes(term)
+        keyword.toLowerCase().includes(term),
       ) || false;
 
     return nameMatch || descriptionMatch || keywordsMatch;
@@ -184,7 +184,7 @@ export const filterPluginsBySearch = (
  */
 export const filterPluginsByCategory = (
   plugins: MarketplacePluginEntry[],
-  category: string
+  category: string,
 ): MarketplacePluginEntry[] => {
   if (category === "All") {
     return plugins;

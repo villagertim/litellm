@@ -1,27 +1,28 @@
-import React, { useState, useEffect } from "react";
+import { copyToClipboard as utilCopyToClipboard } from "@/utils/dataUtils";
+import { InfoCircleOutlined } from "@ant-design/icons";
 import {
+  Accordion,
+  AccordionBody,
+  AccordionHeader,
+  Badge,
+  Button,
   Card,
   Text,
   Title,
-  Button,
-  Badge,
-  Accordion,
-  AccordionHeader,
-  AccordionBody,
   Title as TremorTitle,
 } from "@tremor/react";
 import { Form, Input, Select as Select2, Tooltip } from "antd";
-import { InfoCircleOutlined } from "@ant-design/icons";
-import { fetchUserModels } from "../organisms/create_key_button";
-import { getModelDisplayName } from "../key_team_helpers/fetch_available_models_team_key";
-import { tagInfoCall, tagUpdateCall } from "../networking";
-import { Tag } from "./types";
-import NotificationsManager from "../molecules/notifications_manager";
-import NumericalInput from "../shared/numerical_input";
-import BudgetDurationDropdown from "../common_components/budget_duration_dropdown";
-import { copyToClipboard as utilCopyToClipboard } from "@/utils/dataUtils";
-import { CheckIcon, CopyIcon } from "lucide-react";
 import { Button as AntdButton } from "antd";
+import { CheckIcon, CopyIcon } from "lucide-react";
+import type React from "react";
+import { useEffect, useState } from "react";
+import BudgetDurationDropdown from "../common_components/budget_duration_dropdown";
+import { getModelDisplayName } from "../key_team_helpers/fetch_available_models_team_key";
+import NotificationsManager from "../molecules/notifications_manager";
+import { tagInfoCall, tagUpdateCall } from "../networking";
+import { fetchUserModels } from "../organisms/create_key_button";
+import NumericalInput from "../shared/numerical_input";
+import type { Tag } from "./types";
 
 interface TagInfoViewProps {
   tagId: string;
@@ -31,14 +32,23 @@ interface TagInfoViewProps {
   editTag: boolean;
 }
 
-const TagInfoView: React.FC<TagInfoViewProps> = ({ tagId, onClose, accessToken, is_admin, editTag }) => {
+const TagInfoView: React.FC<TagInfoViewProps> = ({
+  tagId,
+  onClose,
+  accessToken,
+  is_admin,
+  editTag,
+}) => {
   const [form] = Form.useForm();
   const [tagDetails, setTagDetails] = useState<Tag | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(editTag);
   const [userModels, setUserModels] = useState<string[]>([]);
   const [copiedStates, setCopiedStates] = useState<Record<string, boolean>>({});
 
-  const copyToClipboard = async (text: string | null | undefined, key: string) => {
+  const copyToClipboard = async (
+    text: string | null | undefined,
+    key: string,
+  ) => {
     const success = await utilCopyToClipboard(text);
     if (success) {
       setCopiedStates((prev) => ({ ...prev, [key]: true }));
@@ -123,7 +133,13 @@ const TagInfoView: React.FC<TagInfoViewProps> = ({ tagId, onClose, accessToken, 
             <AntdButton
               type="text"
               size="small"
-              icon={copiedStates["tag-name"] ? <CheckIcon size={12} /> : <CopyIcon size={12} />}
+              icon={
+                copiedStates["tag-name"] ? (
+                  <CheckIcon size={12} />
+                ) : (
+                  <CopyIcon size={12} />
+                )
+              }
               onClick={() => copyToClipboard(tagDetails.name, "tag-name")}
               className={`transition-all duration-200 ${
                 copiedStates["tag-name"]
@@ -132,15 +148,28 @@ const TagInfoView: React.FC<TagInfoViewProps> = ({ tagId, onClose, accessToken, 
               }`}
             />
           </div>
-          <Text className="text-gray-500">{tagDetails.description || "No description"}</Text>
+          <Text className="text-gray-500">
+            {tagDetails.description || "No description"}
+          </Text>
         </div>
-        {is_admin && !isEditing && <Button onClick={() => setIsEditing(true)}>Edit Tag</Button>}
+        {is_admin && !isEditing && (
+          <Button onClick={() => setIsEditing(true)}>Edit Tag</Button>
+        )}
       </div>
 
       {isEditing ? (
         <Card>
-          <Form form={form} onFinish={handleSave} layout="vertical" initialValues={tagDetails}>
-            <Form.Item label="Tag Name" name="name" rules={[{ required: true, message: "Please input a tag name" }]}>
+          <Form
+            form={form}
+            onFinish={handleSave}
+            layout="vertical"
+            initialValues={tagDetails}
+          >
+            <Form.Item
+              label="Tag Name"
+              name="name"
+              rules={[{ required: true, message: "Please input a tag name" }]}
+            >
               <Input className="rounded-md border-gray-300" />
             </Form.Item>
 
@@ -198,12 +227,17 @@ const TagInfoView: React.FC<TagInfoViewProps> = ({ tagId, onClose, accessToken, 
                   }
                   name="budget_duration"
                 >
-                  <BudgetDurationDropdown onChange={(value) => form.setFieldValue("budget_duration", value)} />
+                  <BudgetDurationDropdown
+                    onChange={(value) =>
+                      form.setFieldValue("budget_duration", value)
+                    }
+                  />
                 </Form.Item>
 
                 <div className="mt-4 p-3 bg-gray-50 rounded-md border border-gray-200">
                   <p className="text-sm text-gray-600">
-                    TPM/RPM limits for tags are not currently supported. If you need this feature, please{" "}
+                    TPM/RPM limits for tags are not currently supported. If you
+                    need this feature, please{" "}
                     <a
                       href="https://github.com/BerriAI/litellm/issues/new"
                       target="_blank"
@@ -245,7 +279,9 @@ const TagInfoView: React.FC<TagInfoViewProps> = ({ tagId, onClose, accessToken, 
                   ) : (
                     tagDetails.models.map((modelId) => (
                       <Badge key={modelId} color="blue">
-                        <Tooltip title={`ID: ${modelId}`}>{tagDetails.model_info?.[modelId] || modelId}</Tooltip>
+                        <Tooltip title={`ID: ${modelId}`}>
+                          {tagDetails.model_info?.[modelId] || modelId}
+                        </Tooltip>
                       </Badge>
                     ))
                   )}
@@ -253,11 +289,19 @@ const TagInfoView: React.FC<TagInfoViewProps> = ({ tagId, onClose, accessToken, 
               </div>
               <div>
                 <Text className="font-medium">Created</Text>
-                <Text>{tagDetails.created_at ? new Date(tagDetails.created_at).toLocaleString() : "-"}</Text>
+                <Text>
+                  {tagDetails.created_at
+                    ? new Date(tagDetails.created_at).toLocaleString()
+                    : "-"}
+                </Text>
               </div>
               <div>
                 <Text className="font-medium">Last Updated</Text>
-                <Text>{tagDetails.updated_at ? new Date(tagDetails.updated_at).toLocaleString() : "-"}</Text>
+                <Text>
+                  {tagDetails.updated_at
+                    ? new Date(tagDetails.updated_at).toLocaleString()
+                    : "-"}
+                </Text>
               </div>
             </div>
           </Card>
@@ -276,21 +320,27 @@ const TagInfoView: React.FC<TagInfoViewProps> = ({ tagId, onClose, accessToken, 
                 {tagDetails.litellm_budget_table.budget_duration && (
                   <div>
                     <Text className="font-medium">Budget Duration</Text>
-                    <Text>{tagDetails.litellm_budget_table.budget_duration}</Text>
+                    <Text>
+                      {tagDetails.litellm_budget_table.budget_duration}
+                    </Text>
                   </div>
                 )}
                 {tagDetails.litellm_budget_table.tpm_limit !== undefined &&
                   tagDetails.litellm_budget_table.tpm_limit !== null && (
                     <div>
                       <Text className="font-medium">TPM Limit</Text>
-                      <Text>{tagDetails.litellm_budget_table.tpm_limit.toLocaleString()}</Text>
+                      <Text>
+                        {tagDetails.litellm_budget_table.tpm_limit.toLocaleString()}
+                      </Text>
                     </div>
                   )}
                 {tagDetails.litellm_budget_table.rpm_limit !== undefined &&
                   tagDetails.litellm_budget_table.rpm_limit !== null && (
                     <div>
                       <Text className="font-medium">RPM Limit</Text>
-                      <Text>{tagDetails.litellm_budget_table.rpm_limit.toLocaleString()}</Text>
+                      <Text>
+                        {tagDetails.litellm_budget_table.rpm_limit.toLocaleString()}
+                      </Text>
                     </div>
                   )}
               </div>

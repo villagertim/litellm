@@ -2,8 +2,9 @@ import { formatNumberWithCommas } from "@/utils/dataUtils";
 import { BarChart, Card, Title } from "@tremor/react";
 import { Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import React, { useState } from "react";
-import { TopModelData } from "../types";
+import type React from "react";
+import { useState } from "react";
+import type { TopModelData } from "../types";
 
 interface KeyModelUsageViewProps {
   topModels: TopModelData[];
@@ -30,13 +31,17 @@ const columns: ColumnsType<TopModelData> = [
     title: "Successful",
     dataIndex: "successful_requests",
     key: "successful_requests",
-    render: (value) => <span className="text-green-600">{value?.toLocaleString() || 0}</span>,
+    render: (value) => (
+      <span className="text-green-600">{value?.toLocaleString() || 0}</span>
+    ),
   },
   {
     title: "Failed",
     dataIndex: "failed_requests",
     key: "failed_requests",
-    render: (value) => <span className="text-red-600">{value?.toLocaleString() || 0}</span>,
+    render: (value) => (
+      <span className="text-red-600">{value?.toLocaleString() || 0}</span>
+    ),
   },
   {
     title: "Tokens",

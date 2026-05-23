@@ -1,10 +1,16 @@
-import { ChevronDownIcon, ChevronUpIcon, PencilAltIcon, SwitchVerticalIcon, TrashIcon } from "@heroicons/react/outline";
 import {
-  ColumnDef,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  PencilAltIcon,
+  SwitchVerticalIcon,
+  TrashIcon,
+} from "@heroicons/react/outline";
+import {
+  type ColumnDef,
+  type SortingState,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import {
@@ -21,7 +27,7 @@ import {
 } from "@tremor/react";
 import { Tooltip } from "antd";
 import React from "react";
-import { Tag } from "./types";
+import type { Tag } from "./types";
 
 interface TagTableProps {
   data: Tag[];
@@ -33,8 +39,15 @@ interface TagTableProps {
 const DYNAMIC_SPEND_TAG_DESCRIPTION =
   "This is just a spend tag that was passed dynamically in a request. It does not control any LLM models.";
 
-const TagTable: React.FC<TagTableProps> = ({ data, onEdit, onDelete, onSelectTag }) => {
-  const [sorting, setSorting] = React.useState<SortingState>([{ id: "created_at", desc: true }]);
+const TagTable: React.FC<TagTableProps> = ({
+  data,
+  onEdit,
+  onDelete,
+  onSelectTag,
+}) => {
+  const [sorting, setSorting] = React.useState<SortingState>([
+    { id: "created_at", desc: true },
+  ]);
 
   const columns: ColumnDef<Tag>[] = [
     {
@@ -42,12 +55,15 @@ const TagTable: React.FC<TagTableProps> = ({ data, onEdit, onDelete, onSelectTag
       accessorKey: "name",
       cell: ({ row }) => {
         const tag = row.original;
-        const isDynamicSpendTag = tag.description === DYNAMIC_SPEND_TAG_DESCRIPTION;
+        const isDynamicSpendTag =
+          tag.description === DYNAMIC_SPEND_TAG_DESCRIPTION;
         return (
           <div className="overflow-hidden">
             <Tooltip
               title={
-                isDynamicSpendTag ? "You cannot view the information of a dynamically generated spend tag" : tag.name
+                isDynamicSpendTag
+                  ? "You cannot view the information of a dynamically generated spend tag"
+                  : tag.name
               }
             >
               <Button
@@ -106,7 +122,11 @@ const TagTable: React.FC<TagTableProps> = ({ data, onEdit, onDelete, onSelectTag
       sortingFn: "datetime",
       cell: ({ row }) => {
         const tag = row.original;
-        return <span className="text-xs">{new Date(tag.created_at).toLocaleDateString()}</span>;
+        return (
+          <span className="text-xs">
+            {new Date(tag.created_at).toLocaleDateString()}
+          </span>
+        );
       },
     },
     {
@@ -114,7 +134,8 @@ const TagTable: React.FC<TagTableProps> = ({ data, onEdit, onDelete, onSelectTag
       header: "Actions",
       cell: ({ row }) => {
         const tag = row.original;
-        const isDynamicSpendTag = tag.description === DYNAMIC_SPEND_TAG_DESCRIPTION;
+        const isDynamicSpendTag =
+          tag.description === DYNAMIC_SPEND_TAG_DESCRIPTION;
         return (
           <div className="flex space-x-2">
             {isDynamicSpendTag ? (
@@ -184,20 +205,31 @@ const TagTable: React.FC<TagTableProps> = ({ data, onEdit, onDelete, onSelectTag
                   <TableHeaderCell
                     key={header.id}
                     className={`py-1 h-8 ${
-                      header.id === "actions" ? "sticky right-0 bg-white shadow-[-4px_0_8px_-6px_rgba(0,0,0,0.1)]" : ""
+                      header.id === "actions"
+                        ? "sticky right-0 bg-white shadow-[-4px_0_8px_-6px_rgba(0,0,0,0.1)]"
+                        : ""
                     }`}
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center">
-                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                       </div>
                       {header.id !== "actions" && (
                         <div className="w-4">
                           {header.column.getIsSorted() ? (
                             {
-                              asc: <ChevronUpIcon className="h-4 w-4 text-blue-500" />,
-                              desc: <ChevronDownIcon className="h-4 w-4 text-blue-500" />,
+                              asc: (
+                                <ChevronUpIcon className="h-4 w-4 text-blue-500" />
+                              ),
+                              desc: (
+                                <ChevronDownIcon className="h-4 w-4 text-blue-500" />
+                              ),
                             }[header.column.getIsSorted() as string]
                           ) : (
                             <SwitchVerticalIcon className="h-4 w-4 text-gray-400" />
@@ -223,7 +255,10 @@ const TagTable: React.FC<TagTableProps> = ({ data, onEdit, onDelete, onSelectTag
                           : ""
                       }`}
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>

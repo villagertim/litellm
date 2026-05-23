@@ -1,4 +1,4 @@
-import { EmailEvent } from "../../types";
+import type { EmailEvent } from "../../types";
 
 export interface EmailEventSetting {
   event: EmailEvent;

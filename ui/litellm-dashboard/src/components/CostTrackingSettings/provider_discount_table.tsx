@@ -1,9 +1,18 @@
-import React, { useState } from "react";
-import { TextInput, Icon, Text } from "@tremor/react";
-import { TrashIcon, PencilAltIcon, CheckIcon, XIcon } from "@heroicons/react/outline";
+import {
+  CheckIcon,
+  PencilAltIcon,
+  TrashIcon,
+  XIcon,
+} from "@heroicons/react/outline";
+import { Icon, Text, TextInput } from "@tremor/react";
+import type React from "react";
+import { useState } from "react";
 import { SimpleTable } from "../common_components/simple_table";
-import { DiscountConfig } from "./types";
-import { getProviderDisplayInfo, handleImageError } from "./provider_display_helpers";
+import {
+  getProviderDisplayInfo,
+  handleImageError,
+} from "./provider_display_helpers";
+import type { DiscountConfig } from "./types";
 
 interface ProviderDiscountTableProps {
   discountConfig: DiscountConfig;
@@ -30,7 +39,7 @@ const ProviderDiscountTable: React.FC<ProviderDiscountTableProps> = ({
   };
 
   const handleSaveEdit = (provider: string) => {
-    const percentValue = parseFloat(editValue);
+    const percentValue = Number.parseFloat(editValue);
     if (!isNaN(percentValue) && percentValue >= 0 && percentValue <= 100) {
       onDiscountChange(provider, (percentValue / 100).toString());
     }
@@ -44,9 +53,9 @@ const ProviderDiscountTable: React.FC<ProviderDiscountTableProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent, provider: string) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSaveEdit(provider);
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       handleCancelEdit();
     }
   };
@@ -113,7 +122,9 @@ const ProviderDiscountTable: React.FC<ProviderDiscountTableProps> = ({
                 </>
               ) : (
                 <>
-                  <Text className="font-medium">{(row.discount * 100).toFixed(1)}%</Text>
+                  <Text className="font-medium">
+                    {(row.discount * 100).toFixed(1)}%
+                  </Text>
                   <Icon
                     icon={PencilAltIcon}
                     size="sm"
@@ -149,4 +160,3 @@ const ProviderDiscountTable: React.FC<ProviderDiscountTableProps> = ({
 };
 
 export default ProviderDiscountTable;
-

@@ -1,9 +1,9 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import Fallbacks from "./Fallbacks";
 import * as networkingModule from "../../../networking";
 import * as fetchModelsModule from "../../../playground/llm_calls/fetch_models";
+import Fallbacks from "./Fallbacks";
 
 vi.mock("../../../networking", () => ({
   getCallbacksCall: vi.fn(),
@@ -32,7 +32,15 @@ vi.mock("openai", () => ({
 
 vi.mock("../../../common_components/DeleteResourceModal", () => ({
   __esModule: true,
-  default: ({ isOpen, onOk, onCancel, title, message, resourceInformation, confirmLoading }: any) => {
+  default: ({
+    isOpen,
+    onOk,
+    onCancel,
+    title,
+    message,
+    resourceInformation,
+    confirmLoading,
+  }: any) => {
     if (!isOpen) return null;
     return (
       <div data-testid="delete-modal">
@@ -60,7 +68,10 @@ vi.mock("./AddFallbacks", () => ({
     const handleClick = async () => {
       if (onChange) {
         try {
-          const newFallbacks = [...(value || []), { "test-model": ["test-fallback"] }];
+          const newFallbacks = [
+            ...(value || []),
+            { "test-model": ["test-fallback"] },
+          ];
           await onChange(newFallbacks);
         } catch (error) {
           // Error is handled by the component
@@ -128,7 +139,9 @@ describe("Fallbacks", () => {
   });
 
   it("should not render when accessToken is null", () => {
-    const { container } = render(<Fallbacks {...defaultProps} accessToken={null} />);
+    const { container } = render(
+      <Fallbacks {...defaultProps} accessToken={null} />,
+    );
     expect(container.firstChild).toBeNull();
   });
 
@@ -301,7 +314,9 @@ describe("Fallbacks", () => {
     await waitFor(() => {
       expect(screen.getByTestId("add-fallbacks-button")).toBeInTheDocument();
       expect(
-        screen.getByText(/No fallbacks configured. Add fallbacks to automatically try another model/),
+        screen.getByText(
+          /No fallbacks configured. Add fallbacks to automatically try another model/,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -317,7 +332,9 @@ describe("Fallbacks", () => {
     await waitFor(() => {
       expect(screen.getByTestId("add-fallbacks-button")).toBeInTheDocument();
       expect(
-        screen.getByText(/No fallbacks configured. Add fallbacks to automatically try another model/),
+        screen.getByText(
+          /No fallbacks configured. Add fallbacks to automatically try another model/,
+        ),
       ).toBeInTheDocument();
     });
   });

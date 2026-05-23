@@ -1,13 +1,14 @@
-import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
-import { vi, describe, it, beforeEach, afterEach, expect } from "vitest";
+import React from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 /** ----------------------------
  * Hoisted helpers for mocks (required by Vitest)
  * --------------------------- */
 const { stub, jwtDecodeMock, consumeReturnUrlMock } = vi.hoisted(() => {
   const React = require("react");
-  const stub = (name: string) => () => React.createElement("div", { "data-testid": name });
+  const stub = (name: string) => () =>
+    React.createElement("div", { "data-testid": name });
   return {
     stub,
     jwtDecodeMock: vi.fn(),
@@ -78,13 +79,27 @@ vi.mock("@/components/networking", () => {
     setGlobalLitellmHeaderName: vi.fn(),
     Organization: {},
     // Daily activity calls used by UsagePage components in the render tree
-    tagDailyActivityCall: vi.fn().mockResolvedValue({ results: [], metadata: {} }),
-    teamDailyActivityCall: vi.fn().mockResolvedValue({ results: [], metadata: {} }),
-    organizationDailyActivityCall: vi.fn().mockResolvedValue({ results: [], metadata: {} }),
-    customerDailyActivityCall: vi.fn().mockResolvedValue({ results: [], metadata: {} }),
-    agentDailyActivityCall: vi.fn().mockResolvedValue({ results: [], metadata: {} }),
-    userDailyActivityCall: vi.fn().mockResolvedValue({ results: [], metadata: {} }),
-    userDailyActivityAggregatedCall: vi.fn().mockResolvedValue({ results: [], metadata: {} }),
+    tagDailyActivityCall: vi
+      .fn()
+      .mockResolvedValue({ results: [], metadata: {} }),
+    teamDailyActivityCall: vi
+      .fn()
+      .mockResolvedValue({ results: [], metadata: {} }),
+    organizationDailyActivityCall: vi
+      .fn()
+      .mockResolvedValue({ results: [], metadata: {} }),
+    customerDailyActivityCall: vi
+      .fn()
+      .mockResolvedValue({ results: [], metadata: {} }),
+    agentDailyActivityCall: vi
+      .fn()
+      .mockResolvedValue({ results: [], metadata: {} }),
+    userDailyActivityCall: vi
+      .fn()
+      .mockResolvedValue({ results: [], metadata: {} }),
+    userDailyActivityAggregatedCall: vi
+      .fn()
+      .mockResolvedValue({ results: [], metadata: {} }),
   };
 });
 
@@ -94,7 +109,8 @@ vi.mock("jwt-decode", () => ({
 }));
 
 vi.mock("@/utils/returnUrlUtils", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/utils/returnUrlUtils")>();
+  const actual =
+    await importOriginal<typeof import("@/utils/returnUrlUtils")>();
   return {
     ...actual,
     consumeReturnUrl: consumeReturnUrlMock,
@@ -103,8 +119,12 @@ vi.mock("@/utils/returnUrlUtils", async (importOriginal) => {
 
 // Super-light stubs for all heavy components so rendering doesn't explode
 vi.mock("@/components/navbar", () => ({ default: stub("navbar") }));
-vi.mock("@/components/user_dashboard", () => ({ default: stub("user-dashboard") }));
-vi.mock("@/components/templates/model_dashboard", () => ({ default: stub("model-dashboard") }));
+vi.mock("@/components/user_dashboard", () => ({
+  default: stub("user-dashboard"),
+}));
+vi.mock("@/components/templates/model_dashboard", () => ({
+  default: stub("model-dashboard"),
+}));
 vi.mock("@/components/view_users", () => ({ default: stub("view-users") }));
 vi.mock("@/components/teams", () => ({ default: stub("teams") }));
 vi.mock("@/components/organizations", () => ({
@@ -113,33 +133,56 @@ vi.mock("@/components/organizations", () => ({
 }));
 vi.mock("@/components/admins", () => ({ default: stub("admin-panel") }));
 vi.mock("@/components/settings", () => ({ default: stub("settings") }));
-vi.mock("@/components/general_settings", () => ({ default: stub("general-settings") }));
-vi.mock("@/components/pass_through_settings", () => ({ default: stub("pass-through-settings") }));
-vi.mock("@/components/budgets/budget_panel", () => ({ default: stub("budget-panel") }));
+vi.mock("@/components/general_settings", () => ({
+  default: stub("general-settings"),
+}));
+vi.mock("@/components/pass_through_settings", () => ({
+  default: stub("pass-through-settings"),
+}));
+vi.mock("@/components/budgets/budget_panel", () => ({
+  default: stub("budget-panel"),
+}));
 vi.mock("@/components/view_logs", () => ({ default: stub("spend-logs") }));
-vi.mock("@/components/model_hub_table", () => ({ default: stub("model-hub-table") }));
+vi.mock("@/components/model_hub_table", () => ({
+  default: stub("model-hub-table"),
+}));
 vi.mock("@/components/new_usage", () => ({ default: stub("new-usage") }));
 vi.mock("@/components/api_ref", () => ({ default: stub("api-ref") }));
 vi.mock("@/components/chat_ui/ChatUI", () => ({ default: stub("chat-ui") }));
 vi.mock("@/components/leftnav", () => ({ default: stub("sidebar") }));
 vi.mock("@/components/usage", () => ({ default: stub("usage") }));
-vi.mock("@/components/cache_dashboard", () => ({ default: stub("cache-dashboard") }));
+vi.mock("@/components/cache_dashboard", () => ({
+  default: stub("cache-dashboard"),
+}));
 vi.mock("@/components/guardrails", () => ({ default: stub("guardrails") }));
 vi.mock("@/components/prompts", () => ({ default: stub("prompts") }));
-vi.mock("@/components/transform_request", () => ({ default: stub("transform-request") }));
+vi.mock("@/components/transform_request", () => ({
+  default: stub("transform-request"),
+}));
 vi.mock("@/components/mcp_tools", () => ({ MCPServers: stub("mcp-servers") }));
-vi.mock("@/components/tag_management", () => ({ default: stub("tag-management") }));
-vi.mock("@/components/vector_store_management", () => ({ default: stub("vector-stores") }));
-vi.mock("@/components/ui_theme_settings", () => ({ default: stub("ui-theme-settings") }));
-vi.mock("@/components/organisms/create_key_button", () => ({ fetchUserModels: vi.fn() }));
-vi.mock("@/components/common_components/fetch_teams", () => ({ fetchTeams: vi.fn() }));
+vi.mock("@/components/tag_management", () => ({
+  default: stub("tag-management"),
+}));
+vi.mock("@/components/vector_store_management", () => ({
+  default: stub("vector-stores"),
+}));
+vi.mock("@/components/ui_theme_settings", () => ({
+  default: stub("ui-theme-settings"),
+}));
+vi.mock("@/components/organisms/create_key_button", () => ({
+  fetchUserModels: vi.fn(),
+}));
+vi.mock("@/components/common_components/fetch_teams", () => ({
+  fetchTeams: vi.fn(),
+}));
 vi.mock("@/components/ui/ui-loading-spinner", () => ({
   UiLoadingSpinner: stub("spinner"),
 }));
 vi.mock("@/contexts/ThemeContext", () => {
   const React = require("react");
   return {
-    ThemeProvider: ({ children }: any) => React.createElement(React.Fragment, null, children),
+    ThemeProvider: ({ children }: any) =>
+      React.createElement(React.Fragment, null, children),
   };
 });
 vi.mock("@/lib/cva.config", () => ({
@@ -212,13 +255,16 @@ describe("CreateKeyPage auth behavior", () => {
     // Assert: we eventually redirect to SSO login with return URL (single replace, not assign/href)
     await waitFor(() => {
       expect(window.location.replace).toHaveBeenCalledWith(
-        expect.stringContaining("https://example.com/ui/login?redirect_to=")
+        expect.stringContaining("https://example.com/ui/login?redirect_to="),
       );
     });
 
     // And we attempted to clear the cookie (defensive deletion)
     const wroteDeletion = cookieSetSpy.mock.calls.some(
-      (args) => typeof args[0] === "string" && args[0].includes("Max-Age=0") && args[0].startsWith("token="),
+      (args) =>
+        typeof args[0] === "string" &&
+        args[0].includes("Max-Age=0") &&
+        args[0].startsWith("token="),
     );
     expect(wroteDeletion).toBe(true);
   });

@@ -1,19 +1,19 @@
-import { describe, expect, it, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import {
-  populateGuardrailProviders,
-  populateGuardrailProviderMap,
-  getGuardrailProviders,
-  shouldRenderPIIConfigSettings,
-  shouldRenderContentFilterConfigSettings,
-  shouldRenderAzureTextModerationConfigSettings,
-  getGuardrailLogoAndName,
   DynamicGuardrailProviders,
-  guardrail_provider_map,
   GuardrailProviders,
-  skipSystemMessageToChoice,
   choiceToSkipSystemForCreate,
-  skipToolMessageToChoice,
   choiceToSkipToolForCreate,
+  getGuardrailLogoAndName,
+  getGuardrailProviders,
+  guardrail_provider_map,
+  populateGuardrailProviderMap,
+  populateGuardrailProviders,
+  shouldRenderAzureTextModerationConfigSettings,
+  shouldRenderContentFilterConfigSettings,
+  shouldRenderPIIConfigSettings,
+  skipSystemMessageToChoice,
+  skipToolMessageToChoice,
 } from "./guardrail_info_helpers";
 
 describe("guardrail_info_helpers", () => {
@@ -21,7 +21,7 @@ describe("guardrail_info_helpers", () => {
   beforeEach(() => {
     // Clear DynamicGuardrailProviders by repopulating with empty
     Object.keys(DynamicGuardrailProviders).forEach(
-      (key) => delete DynamicGuardrailProviders[key]
+      (key) => delete DynamicGuardrailProviders[key],
     );
     // Remove any dynamically added keys from guardrail_provider_map
     const staticKeys = new Set([
@@ -124,13 +124,13 @@ describe("guardrail_info_helpers", () => {
       });
 
       expect(
-        shouldRenderContentFilterConfigSettings("LitellmContentFilter")
+        shouldRenderContentFilterConfigSettings("LitellmContentFilter"),
       ).toBe(true);
     });
 
     it("should return false for unrelated providers", () => {
       expect(shouldRenderContentFilterConfigSettings("PresidioPII")).toBe(
-        false
+        false,
       );
     });
 
@@ -148,7 +148,7 @@ describe("guardrail_info_helpers", () => {
       });
 
       expect(
-        shouldRenderAzureTextModerationConfigSettings("AzureContentSafety")
+        shouldRenderAzureTextModerationConfigSettings("AzureContentSafety"),
       ).toBe(true);
     });
 

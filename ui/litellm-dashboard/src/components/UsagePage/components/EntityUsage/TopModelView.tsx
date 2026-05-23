@@ -18,8 +18,14 @@ interface TopModelViewProps {
   setTopModelsLimit: (limit: number) => void;
 }
 
-export default function TopModelView({ topModels, topModelsLimit, setTopModelsLimit }: TopModelViewProps) {
-  const [modelViewMode, setModelViewMode] = useState<"chart" | "table">("table");
+export default function TopModelView({
+  topModels,
+  topModelsLimit,
+  setTopModelsLimit,
+}: TopModelViewProps) {
+  const [modelViewMode, setModelViewMode] = useState<"chart" | "table">(
+    "table",
+  );
 
   const columns = [
     {
@@ -38,12 +44,20 @@ export default function TopModelView({ topModels, topModelsLimit, setTopModelsLi
     {
       header: "Successful",
       accessorKey: "successful_requests",
-      cell: (info: any) => <span className="text-green-600">{info.getValue()?.toLocaleString() || 0}</span>,
+      cell: (info: any) => (
+        <span className="text-green-600">
+          {info.getValue()?.toLocaleString() || 0}
+        </span>
+      ),
     },
     {
       header: "Failed",
       accessorKey: "failed_requests",
-      cell: (info: any) => <span className="text-red-600">{info.getValue()?.toLocaleString() || 0}</span>,
+      cell: (info: any) => (
+        <span className="text-red-600">
+          {info.getValue()?.toLocaleString() || 0}
+        </span>
+      ),
     },
     {
       header: "Tokens",
@@ -85,7 +99,9 @@ export default function TopModelView({ topModels, topModelsLimit, setTopModelsLi
         <div className="relative max-h-[600px] overflow-y-auto">
           <BarChart
             className="mt-4 cursor-pointer hover:opacity-90"
-            style={{ height: Math.min(processedTopModels.length, topModelsLimit) * 52 }}
+            style={{
+              height: Math.min(processedTopModels.length, topModelsLimit) * 52,
+            }}
             data={processedTopModels}
             index="key"
             categories={["spend"]}

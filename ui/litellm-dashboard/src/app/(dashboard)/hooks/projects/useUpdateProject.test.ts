@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { ReactNode } from "react";
+import { renderHook, waitFor } from "@testing-library/react";
+import React, { type ReactNode } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { type ProjectResponse, projectKeys } from "./useProjects";
 import { useUpdateProject } from "./useUpdateProject";
-import { projectKeys, ProjectResponse } from "./useProjects";
 
 vi.mock("@/components/networking", () => ({
   getProxyBaseUrl: vi.fn(() => ""),
@@ -48,11 +48,17 @@ describe("useUpdateProject", () => {
 
   beforeEach(() => {
     queryClient = new QueryClient({
-      defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
     });
     vi.clearAllMocks();
     global.fetch = vi.fn();
-    mockUseAuthorized.mockReturnValue({ accessToken: "test-token", userRole: "Admin" });
+    mockUseAuthorized.mockReturnValue({
+      accessToken: "test-token",
+      userRole: "Admin",
+    });
   });
 
   it("should render", () => {
@@ -64,7 +70,10 @@ describe("useUpdateProject", () => {
 
   it("should POST to /project/update and return the updated project", async () => {
     const updated = { ...mockProject, project_alias: "Updated Name" };
-    (global.fetch as any).mockResolvedValue({ ok: true, json: async () => updated });
+    (global.fetch as any).mockResolvedValue({
+      ok: true,
+      json: async () => updated,
+    });
     const { result } = renderHook(() => useUpdateProject(), {
       wrapper: makeWrapper(queryClient),
     });
@@ -82,7 +91,10 @@ describe("useUpdateProject", () => {
   });
 
   it("should invalidate project queries on success", async () => {
-    (global.fetch as any).mockResolvedValue({ ok: true, json: async () => mockProject });
+    (global.fetch as any).mockResolvedValue({
+      ok: true,
+      json: async () => mockProject,
+    });
     const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
     const { result } = renderHook(() => useUpdateProject(), {
       wrapper: makeWrapper(queryClient),
@@ -99,7 +111,9 @@ describe("useUpdateProject", () => {
     const { result } = renderHook(() => useUpdateProject(), {
       wrapper: makeWrapper(queryClient),
     });
-    result.current.mutateAsync({ projectId: "proj-1", params: {} }).catch(() => {});
+    result.current
+      .mutateAsync({ projectId: "proj-1", params: {} })
+      .catch(() => {});
     await waitFor(() => expect(result.current.isError).toBe(true));
   });
 
@@ -109,7 +123,7 @@ describe("useUpdateProject", () => {
       wrapper: makeWrapper(queryClient),
     });
     await expect(
-      result.current.mutateAsync({ projectId: "proj-1", params: {} })
+      result.current.mutateAsync({ projectId: "proj-1", params: {} }),
     ).rejects.toThrow("Access token is required");
     expect(global.fetch).not.toHaveBeenCalled();
   });

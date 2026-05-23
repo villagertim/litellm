@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { Form, Select, Spin, Input, Slider } from "antd";
-import {
-  guardrail_provider_map,
-  populateGuardrailProviders,
-  populateGuardrailProviderMap,
-  shouldRenderContentFilterConfigSettings,
-} from "./guardrail_info_helpers";
+import { Form, Input, Select, Slider, Spin } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { getGuardrailProviderSpecificParams } from "../networking";
 import NumericalInput from "../shared/numerical_input";
+import {
+  guardrail_provider_map,
+  populateGuardrailProviderMap,
+  populateGuardrailProviders,
+  shouldRenderContentFilterConfigSettings,
+} from "./guardrail_info_helpers";
 
 interface GuardrailProviderFieldsProps {
   selectedProvider: string | null;
@@ -42,7 +43,8 @@ const GuardrailProviderFields: React.FC<GuardrailProviderFieldsProps> = ({
   value = null,
 }) => {
   const [loading, setLoading] = useState(false);
-  const [providerParams, setProviderParams] = useState<ProviderParamsResponse | null>(providerParamsProp);
+  const [providerParams, setProviderParams] =
+    useState<ProviderParamsResponse | null>(providerParamsProp);
   const [error, setError] = useState<string | null>(null);
 
   // Fetch provider-specific parameters when component mounts
@@ -110,7 +112,7 @@ const GuardrailProviderFields: React.FC<GuardrailProviderFieldsProps> = ({
   }
 
   console.log("Value:", value);
-  
+
   // Fields to skip for content filter provider (handled in dedicated steps)
   const contentFilterFieldsToSkip = new Set([
     "patterns",
@@ -121,14 +123,21 @@ const GuardrailProviderFields: React.FC<GuardrailProviderFieldsProps> = ({
     "pattern_redaction_format",
     "keyword_redaction_tag",
   ]);
-  
-  const isContentFilterProvider = shouldRenderContentFilterConfigSettings(selectedProvider);
-  
+
+  const isContentFilterProvider =
+    shouldRenderContentFilterConfigSettings(selectedProvider);
+
   // Convert object to array of entries and render fields
-  const renderFields = (fields: { [key: string]: ProviderParam }, parentKey = "", parentValue?: any) => {
+  const renderFields = (
+    fields: { [key: string]: ProviderParam },
+    parentKey = "",
+    parentValue?: any,
+  ) => {
     return Object.entries(fields).map(([fieldKey, field]) => {
       const fullFieldKey = parentKey ? `${parentKey}.${fieldKey}` : fieldKey;
-      const fieldValue = parentValue ? parentValue[fieldKey] : value?.[fieldKey];
+      const fieldValue = parentValue
+        ? parentValue[fieldKey]
+        : value?.[fieldKey];
       console.log("Field value:", fieldValue);
       // Skip ui_friendly_name - it's metadata for the UI dropdown, not a user configuration field
       if (fieldKey === "ui_friendly_name") {
@@ -136,7 +145,11 @@ const GuardrailProviderFields: React.FC<GuardrailProviderFieldsProps> = ({
       }
 
       // Skip optional_params - they are handled in a separate step
-      if (fieldKey === "optional_params" && field.type === "nested" && field.fields) {
+      if (
+        fieldKey === "optional_params" &&
+        field.type === "nested" &&
+        field.fields
+      ) {
         return null;
       }
 
@@ -160,7 +173,8 @@ const GuardrailProviderFields: React.FC<GuardrailProviderFieldsProps> = ({
       const resolvedInitialValue =
         fieldValue !== undefined
           ? fieldValue
-          : (field.default_value ?? (field.type === "percentage" ? 0.5 : undefined));
+          : field.default_value ??
+            (field.type === "percentage" ? 0.5 : undefined);
 
       return (
         <Form.Item
@@ -168,11 +182,18 @@ const GuardrailProviderFields: React.FC<GuardrailProviderFieldsProps> = ({
           name={fullFieldKey}
           label={fieldKey}
           tooltip={field.description}
-          rules={field.required ? [{ required: true, message: `${fieldKey} is required` }] : undefined}
+          rules={
+            field.required
+              ? [{ required: true, message: `${fieldKey} is required` }]
+              : undefined
+          }
           initialValue={resolvedInitialValue}
         >
           {field.type === "select" && field.options ? (
-            <Select placeholder={field.description} defaultValue={fieldValue || field.default_value}>
+            <Select
+              placeholder={field.description}
+              defaultValue={fieldValue || field.default_value}
+            >
               {field.options.map((option) => (
                 <Select.Option key={option} value={option}>
                   {option}
@@ -180,7 +201,11 @@ const GuardrailProviderFields: React.FC<GuardrailProviderFieldsProps> = ({
               ))}
             </Select>
           ) : field.type === "multiselect" && field.options ? (
-            <Select mode="multiple" placeholder={field.description} defaultValue={fieldValue || field.default_value}>
+            <Select
+              mode="multiple"
+              placeholder={field.description}
+              defaultValue={fieldValue || field.default_value}
+            >
               {field.options.map((option) => (
                 <Select.Option key={option} value={option}>
                   {option}
@@ -192,7 +217,9 @@ const GuardrailProviderFields: React.FC<GuardrailProviderFieldsProps> = ({
               <Select.Option value={true}>True</Select.Option>
               <Select.Option value={false}>False</Select.Option>
             </Select>
-          ) : field.type === "percentage" && field.min != null && field.max != null ? (
+          ) : field.type === "percentage" &&
+            field.min != null &&
+            field.max != null ? (
             <Slider
               min={field.min}
               max={field.max}
@@ -208,12 +235,22 @@ const GuardrailProviderFields: React.FC<GuardrailProviderFieldsProps> = ({
               step={1}
               width={400}
               placeholder={field.description}
-              defaultValue={fieldValue !== undefined ? Number(fieldValue) : undefined}
+              defaultValue={
+                fieldValue !== undefined ? Number(fieldValue) : undefined
+              }
             />
-          ) : fieldKey.includes("password") || fieldKey.includes("secret") || fieldKey.includes("key") ? (
-            <Input.Password placeholder={field.description} defaultValue={fieldValue || ""} />
+          ) : fieldKey.includes("password") ||
+            fieldKey.includes("secret") ||
+            fieldKey.includes("key") ? (
+            <Input.Password
+              placeholder={field.description}
+              defaultValue={fieldValue || ""}
+            />
           ) : (
-            <Input placeholder={field.description} defaultValue={fieldValue || ""} />
+            <Input
+              placeholder={field.description}
+              defaultValue={fieldValue || ""}
+            />
           )}
         </Form.Item>
       );

@@ -6,13 +6,19 @@
  * Works at 1m+ spend logs, by querying an aggregate table instead.
  */
 
-import { DownOutlined, ExportOutlined, InfoCircleOutlined, LoadingOutlined, RightOutlined } from "@ant-design/icons";
+import {
+  DownOutlined,
+  ExportOutlined,
+  InfoCircleOutlined,
+  LoadingOutlined,
+  RightOutlined,
+} from "@ant-design/icons";
 import { useDebouncedState } from "@tanstack/react-pacer/debouncer";
 import {
   BarChart,
   Card,
   Col,
-  DateRangePickerValue,
+  type DateRangePickerValue,
   Grid,
   Tab,
   TabGroup,
@@ -23,7 +29,15 @@ import {
   Title,
 } from "@tremor/react";
 import { Alert, Button, Segmented, Select, Tooltip, Typography } from "antd";
-import React, { useCallback, useEffect, useMemo, useRef, useState, type UIEvent } from "react";
+import type React from "react";
+import {
+  type UIEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { useAgents } from "@/app/(dashboard)/hooks/agents/useAgents";
 import { useCustomers } from "@/app/(dashboard)/hooks/customers/useCustomers";
@@ -32,25 +46,37 @@ import { useCurrentUser } from "@/app/(dashboard)/hooks/users/useCurrentUser";
 import { useInfiniteUsers } from "@/app/(dashboard)/hooks/users/useUsers";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
 import { all_admin_roles, internalUserRoles } from "../../../utils/roles";
+import EntityUsageExportModal from "../../EntityUsageExport";
 import { ActivityMetrics, processActivityData } from "../../activity_metrics";
 import CloudZeroExportModal from "../../cloudzero_export_modal";
-import EntityUsageExportModal from "../../EntityUsageExport";
-import { Team } from "../../key_team_helpers/key_list";
-import { Organization, tagListCall, userDailyActivityAggregatedCall, userDailyActivityCall } from "../../networking";
+import type { Team } from "../../key_team_helpers/key_list";
+import {
+  type Organization,
+  tagListCall,
+  userDailyActivityAggregatedCall,
+  userDailyActivityCall,
+} from "../../networking";
 import AdvancedDatePicker from "../../shared/advanced_date_picker";
 import { ChartLoader } from "../../shared/chart_loader";
-import { Tag } from "../../tag_management/types";
+import type { Tag } from "../../tag_management/types";
 import UserAgentActivity from "../../user_agent_activity";
 import ViewUserSpend from "../../view_user_spend";
 import { usePaginatedDailyActivity } from "../hooks/usePaginatedDailyActivity";
-import { DailyData, KeyMetricWithMetadata, MetricWithMetadata } from "../types";
+import type {
+  DailyData,
+  KeyMetricWithMetadata,
+  MetricWithMetadata,
+} from "../types";
 import { valueFormatterSpend } from "../utils/value_formatters";
 import EndpointUsage from "./EndpointUsage/EndpointUsage";
-import EntityUsage, { EntityList } from "./EntityUsage/EntityUsage";
+import EntityUsage, { type EntityList } from "./EntityUsage/EntityUsage";
 import SpendByProvider from "./EntityUsage/SpendByProvider";
 import TopKeyView from "./EntityUsage/TopKeyView";
 import UsageAIChatPanel from "./UsageAIChatPanel";
-import { UsageOption, UsageViewSelect } from "./UsageViewSelect/UsageViewSelect";
+import {
+  type UsageOption,
+  UsageViewSelect,
+} from "./UsageViewSelect/UsageViewSelect";
 
 interface UsagePageProps {
   teams: Team[];
@@ -58,9 +84,17 @@ interface UsagePageProps {
 }
 
 const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
-  const { accessToken, userRole, userId: userID, premiumUser } = useAuthorized();
+  const {
+    accessToken,
+    userRole,
+    userId: userID,
+    premiumUser,
+  } = useAuthorized();
   // Aggregated endpoint: try first, fall back to paginated if unavailable
-  const [aggregatedData, setAggregatedData] = useState<{ results: DailyData[]; metadata: any } | null>(null);
+  const [aggregatedData, setAggregatedData] = useState<{
+    results: DailyData[];
+    metadata: any;
+  } | null>(null);
   const [aggregatedFailed, setAggregatedFailed] = useState(false);
   const [aggregatedLoading, setAggregatedLoading] = useState(false);
 
@@ -68,7 +102,10 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
   const [isDateChanging, setIsDateChanging] = useState(false);
 
   // Create initial dates outside of state to prevent recreation
-  const initialFromDate = useMemo(() => new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), []);
+  const initialFromDate = useMemo(
+    () => new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+    [],
+  );
   const initialToDate = useMemo(() => new Date(), []);
 
   // Single date state that directly triggers data fetching
@@ -128,7 +165,8 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
 
   const handleUserPopupScroll = (e: UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
-    const scrollRatio = (target.scrollTop + target.clientHeight) / target.scrollHeight;
+    const scrollRatio =
+      (target.scrollTop + target.clientHeight) / target.scrollHeight;
     if (scrollRatio >= 0.8 && hasNextUsersPage && !isFetchingNextUsersPage) {
       fetchNextUsersPage();
     }
@@ -136,8 +174,12 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
 
   // For admins: null means global view (all users), a string means filter by that user
   // For non-admins: always set to their own user ID
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(isAdmin ? null : userID || null);
-  const [modelViewType, setModelViewType] = useState<"groups" | "individual">("groups");
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(
+    isAdmin ? null : userID || null,
+  );
+  const [modelViewType, setModelViewType] = useState<"groups" | "individual">(
+    "groups",
+  );
   const [isCloudZeroModalOpen, setIsCloudZeroModalOpen] = useState(false);
   const [isGlobalExportModalOpen, setIsGlobalExportModalOpen] = useState(false);
   const [isAiChatOpen, setIsAiChatOpen] = useState(false);
@@ -154,10 +196,17 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
   }, [isAdmin, userID]);
 
   // For non-admins or "my-usage" view, always pass their own user_id
-  const effectiveUserId = usageView === "my-usage" || !isAdmin ? userID || null : selectedUserId;
+  const effectiveUserId =
+    usageView === "my-usage" || !isAdmin ? userID || null : selectedUserId;
 
-  const startTime = useMemo(() => (dateValue.from ? new Date(dateValue.from) : null), [dateValue.from]);
-  const endTime = useMemo(() => (dateValue.to ? new Date(dateValue.to) : null), [dateValue.to]);
+  const startTime = useMemo(
+    () => (dateValue.from ? new Date(dateValue.from) : null),
+    [dateValue.from],
+  );
+  const endTime = useMemo(
+    () => (dateValue.to ? new Date(dateValue.to) : null),
+    [dateValue.to],
+  );
 
   useEffect(() => {
     if (!accessToken) return;
@@ -192,7 +241,12 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
     setAggregatedFailed(false);
     setAggregatedData(null);
 
-    userDailyActivityAggregatedCall(accessToken, startTime, endTime, effectiveUserId)
+    userDailyActivityAggregatedCall(
+      accessToken,
+      startTime,
+      endTime,
+      effectiveUserId,
+    )
       .then((data) => {
         if (aggregatedFetchIdRef.current !== fetchId) return;
         setAggregatedData(data);
@@ -224,10 +278,18 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
 
   // Clear isDateChanging when paginated data starts arriving
   useEffect(() => {
-    if (aggregatedFailed && !paginatedResult.loading && paginatedResult.data.results.length > 0) {
+    if (
+      aggregatedFailed &&
+      !paginatedResult.loading &&
+      paginatedResult.data.results.length > 0
+    ) {
       setIsDateChanging(false);
     }
-  }, [aggregatedFailed, paginatedResult.loading, paginatedResult.data.results.length]);
+  }, [
+    aggregatedFailed,
+    paginatedResult.loading,
+    paginatedResult.data.results.length,
+  ]);
 
   // Super responsive date change handler
   const handleDateChange = useCallback((newValue: DateRangePickerValue) => {
@@ -264,14 +326,20 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
           };
         }
         modelSpend[model].metrics.spend += metrics.metrics.spend;
-        modelSpend[model].metrics.prompt_tokens += metrics.metrics.prompt_tokens;
-        modelSpend[model].metrics.completion_tokens += metrics.metrics.completion_tokens;
+        modelSpend[model].metrics.prompt_tokens +=
+          metrics.metrics.prompt_tokens;
+        modelSpend[model].metrics.completion_tokens +=
+          metrics.metrics.completion_tokens;
         modelSpend[model].metrics.total_tokens += metrics.metrics.total_tokens;
         modelSpend[model].metrics.api_requests += metrics.metrics.api_requests;
-        modelSpend[model].metrics.successful_requests += metrics.metrics.successful_requests || 0;
-        modelSpend[model].metrics.failed_requests += metrics.metrics.failed_requests || 0;
-        modelSpend[model].metrics.cache_read_input_tokens += metrics.metrics.cache_read_input_tokens || 0;
-        modelSpend[model].metrics.cache_creation_input_tokens += metrics.metrics.cache_creation_input_tokens || 0;
+        modelSpend[model].metrics.successful_requests +=
+          metrics.metrics.successful_requests || 0;
+        modelSpend[model].metrics.failed_requests +=
+          metrics.metrics.failed_requests || 0;
+        modelSpend[model].metrics.cache_read_input_tokens +=
+          metrics.metrics.cache_read_input_tokens || 0;
+        modelSpend[model].metrics.cache_creation_input_tokens +=
+          metrics.metrics.cache_creation_input_tokens || 0;
       });
     });
 
@@ -291,35 +359,44 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
   const topModelGroups = useMemo(() => {
     const modelGroupSpend: { [key: string]: MetricWithMetadata } = {};
     userSpendData.results.forEach((day) => {
-      Object.entries(day.breakdown.model_groups || {}).forEach(([modelGroup, metrics]) => {
-        if (!modelGroupSpend[modelGroup]) {
-          modelGroupSpend[modelGroup] = {
-            metrics: {
-              spend: 0,
-              prompt_tokens: 0,
-              completion_tokens: 0,
-              total_tokens: 0,
-              api_requests: 0,
-              successful_requests: 0,
-              failed_requests: 0,
-              cache_read_input_tokens: 0,
-              cache_creation_input_tokens: 0,
-            },
-            metadata: {},
-            api_key_breakdown: {},
-          };
-        }
-        modelGroupSpend[modelGroup].metrics.spend += metrics.metrics.spend;
-        modelGroupSpend[modelGroup].metrics.prompt_tokens += metrics.metrics.prompt_tokens;
-        modelGroupSpend[modelGroup].metrics.completion_tokens += metrics.metrics.completion_tokens;
-        modelGroupSpend[modelGroup].metrics.total_tokens += metrics.metrics.total_tokens;
-        modelGroupSpend[modelGroup].metrics.api_requests += metrics.metrics.api_requests;
-        modelGroupSpend[modelGroup].metrics.successful_requests += metrics.metrics.successful_requests || 0;
-        modelGroupSpend[modelGroup].metrics.failed_requests += metrics.metrics.failed_requests || 0;
-        modelGroupSpend[modelGroup].metrics.cache_read_input_tokens += metrics.metrics.cache_read_input_tokens || 0;
-        modelGroupSpend[modelGroup].metrics.cache_creation_input_tokens +=
-          metrics.metrics.cache_creation_input_tokens || 0;
-      });
+      Object.entries(day.breakdown.model_groups || {}).forEach(
+        ([modelGroup, metrics]) => {
+          if (!modelGroupSpend[modelGroup]) {
+            modelGroupSpend[modelGroup] = {
+              metrics: {
+                spend: 0,
+                prompt_tokens: 0,
+                completion_tokens: 0,
+                total_tokens: 0,
+                api_requests: 0,
+                successful_requests: 0,
+                failed_requests: 0,
+                cache_read_input_tokens: 0,
+                cache_creation_input_tokens: 0,
+              },
+              metadata: {},
+              api_key_breakdown: {},
+            };
+          }
+          modelGroupSpend[modelGroup].metrics.spend += metrics.metrics.spend;
+          modelGroupSpend[modelGroup].metrics.prompt_tokens +=
+            metrics.metrics.prompt_tokens;
+          modelGroupSpend[modelGroup].metrics.completion_tokens +=
+            metrics.metrics.completion_tokens;
+          modelGroupSpend[modelGroup].metrics.total_tokens +=
+            metrics.metrics.total_tokens;
+          modelGroupSpend[modelGroup].metrics.api_requests +=
+            metrics.metrics.api_requests;
+          modelGroupSpend[modelGroup].metrics.successful_requests +=
+            metrics.metrics.successful_requests || 0;
+          modelGroupSpend[modelGroup].metrics.failed_requests +=
+            metrics.metrics.failed_requests || 0;
+          modelGroupSpend[modelGroup].metrics.cache_read_input_tokens +=
+            metrics.metrics.cache_read_input_tokens || 0;
+          modelGroupSpend[modelGroup].metrics.cache_creation_input_tokens +=
+            metrics.metrics.cache_creation_input_tokens || 0;
+        },
+      );
     });
 
     return Object.entries(modelGroupSpend)
@@ -339,35 +416,44 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
   const providerSpend = useMemo(() => {
     const providerSpendMap: { [key: string]: MetricWithMetadata } = {};
     userSpendData.results.forEach((day) => {
-      Object.entries(day.breakdown.providers || {}).forEach(([provider, metrics]) => {
-        if (!providerSpendMap[provider]) {
-          providerSpendMap[provider] = {
-            metrics: {
-              spend: 0,
-              prompt_tokens: 0,
-              completion_tokens: 0,
-              total_tokens: 0,
-              api_requests: 0,
-              successful_requests: 0,
-              failed_requests: 0,
-              cache_read_input_tokens: 0,
-              cache_creation_input_tokens: 0,
-            },
-            metadata: {},
-            api_key_breakdown: {},
-          };
-        }
-        providerSpendMap[provider].metrics.spend += metrics.metrics.spend;
-        providerSpendMap[provider].metrics.prompt_tokens += metrics.metrics.prompt_tokens;
-        providerSpendMap[provider].metrics.completion_tokens += metrics.metrics.completion_tokens;
-        providerSpendMap[provider].metrics.total_tokens += metrics.metrics.total_tokens;
-        providerSpendMap[provider].metrics.api_requests += metrics.metrics.api_requests;
-        providerSpendMap[provider].metrics.successful_requests += metrics.metrics.successful_requests || 0;
-        providerSpendMap[provider].metrics.failed_requests += metrics.metrics.failed_requests || 0;
-        providerSpendMap[provider].metrics.cache_read_input_tokens += metrics.metrics.cache_read_input_tokens || 0;
-        providerSpendMap[provider].metrics.cache_creation_input_tokens +=
-          metrics.metrics.cache_creation_input_tokens || 0;
-      });
+      Object.entries(day.breakdown.providers || {}).forEach(
+        ([provider, metrics]) => {
+          if (!providerSpendMap[provider]) {
+            providerSpendMap[provider] = {
+              metrics: {
+                spend: 0,
+                prompt_tokens: 0,
+                completion_tokens: 0,
+                total_tokens: 0,
+                api_requests: 0,
+                successful_requests: 0,
+                failed_requests: 0,
+                cache_read_input_tokens: 0,
+                cache_creation_input_tokens: 0,
+              },
+              metadata: {},
+              api_key_breakdown: {},
+            };
+          }
+          providerSpendMap[provider].metrics.spend += metrics.metrics.spend;
+          providerSpendMap[provider].metrics.prompt_tokens +=
+            metrics.metrics.prompt_tokens;
+          providerSpendMap[provider].metrics.completion_tokens +=
+            metrics.metrics.completion_tokens;
+          providerSpendMap[provider].metrics.total_tokens +=
+            metrics.metrics.total_tokens;
+          providerSpendMap[provider].metrics.api_requests +=
+            metrics.metrics.api_requests;
+          providerSpendMap[provider].metrics.successful_requests +=
+            metrics.metrics.successful_requests || 0;
+          providerSpendMap[provider].metrics.failed_requests +=
+            metrics.metrics.failed_requests || 0;
+          providerSpendMap[provider].metrics.cache_read_input_tokens +=
+            metrics.metrics.cache_read_input_tokens || 0;
+          providerSpendMap[provider].metrics.cache_creation_input_tokens +=
+            metrics.metrics.cache_creation_input_tokens || 0;
+        },
+      );
     });
 
     return Object.entries(providerSpendMap).map(([provider, metrics]) => ({
@@ -407,13 +493,18 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
         }
         keySpend[key].metrics.spend += metrics.metrics.spend;
         keySpend[key].metrics.prompt_tokens += metrics.metrics.prompt_tokens;
-        keySpend[key].metrics.completion_tokens += metrics.metrics.completion_tokens;
+        keySpend[key].metrics.completion_tokens +=
+          metrics.metrics.completion_tokens;
         keySpend[key].metrics.total_tokens += metrics.metrics.total_tokens;
         keySpend[key].metrics.api_requests += metrics.metrics.api_requests;
-        keySpend[key].metrics.successful_requests += metrics.metrics.successful_requests;
-        keySpend[key].metrics.failed_requests += metrics.metrics.failed_requests;
-        keySpend[key].metrics.cache_read_input_tokens += metrics.metrics.cache_read_input_tokens || 0;
-        keySpend[key].metrics.cache_creation_input_tokens += metrics.metrics.cache_creation_input_tokens || 0;
+        keySpend[key].metrics.successful_requests +=
+          metrics.metrics.successful_requests;
+        keySpend[key].metrics.failed_requests +=
+          metrics.metrics.failed_requests;
+        keySpend[key].metrics.cache_read_input_tokens +=
+          metrics.metrics.cache_read_input_tokens || 0;
+        keySpend[key].metrics.cache_creation_input_tokens +=
+          metrics.metrics.cache_creation_input_tokens || 0;
       });
     });
 
@@ -429,11 +520,20 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
   }, [userSpendData.results, topKeysLimit]);
 
   const sortedDailyResults = useMemo(
-    () => [...userSpendData.results].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
+    () =>
+      [...userSpendData.results].sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+      ),
     [userSpendData.results],
   );
-  const modelMetrics = useMemo(() => processActivityData(userSpendData, "models", teams), [userSpendData, teams]);
-  const keyMetrics = useMemo(() => processActivityData(userSpendData, "api_keys", teams), [userSpendData, teams]);
+  const modelMetrics = useMemo(
+    () => processActivityData(userSpendData, "models", teams),
+    [userSpendData, teams],
+  );
+  const keyMetrics = useMemo(
+    () => processActivityData(userSpendData, "api_keys", teams),
+    [userSpendData, teams],
+  );
   const mcpServerMetrics = useMemo(
     () => processActivityData(userSpendData, "mcp_servers", teams),
     [userSpendData, teams],
@@ -451,7 +551,10 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
               isAdmin={isAdmin}
               canViewTagUsage={canViewTagUsage}
             />
-            <AdvancedDatePicker value={dateValue} onValueChange={handleDateChange} />
+            <AdvancedDatePicker
+              value={dateValue}
+              onValueChange={handleDateChange}
+            />
           </div>
           {paginatedResult.isFetchingMore && (
             <Alert
@@ -462,15 +565,26 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                 <div className="flex items-center justify-between">
                   <span>
                     <LoadingOutlined spin className="mr-2" />
-                    Currently fetching spend data: fetched {paginatedResult.progress.currentPage} /{" "}
-                    {paginatedResult.progress.totalPages} pages. Charts will update periodically as data loads. Moving
-                    off of this page will stop and reset this. To continue using the UI in the meantime,{" "}
-                    <a href={window.location.href} target="_blank" rel="noopener noreferrer">
+                    Currently fetching spend data: fetched{" "}
+                    {paginatedResult.progress.currentPage} /{" "}
+                    {paginatedResult.progress.totalPages} pages. Charts will
+                    update periodically as data loads. Moving off of this page
+                    will stop and reset this. To continue using the UI in the
+                    meantime,{" "}
+                    <a
+                      href={window.location.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       open a new tab <ExportOutlined />
                     </a>
                     .
                   </span>
-                  <Button type="primary" danger onClick={paginatedResult.cancel}>
+                  <Button
+                    type="primary"
+                    danger
+                    onClick={paginatedResult.cancel}
+                  >
                     Stop
                   </Button>
                 </div>
@@ -484,8 +598,8 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
               className="mb-2"
               message={
                 <span>
-                  Showing partial data ({paginatedResult.progress.currentPage}/{paginatedResult.progress.totalPages}{" "}
-                  pages loaded)
+                  Showing partial data ({paginatedResult.progress.currentPage}/
+                  {paginatedResult.progress.totalPages} pages loaded)
                 </span>
               }
             />
@@ -508,7 +622,13 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                     searchValue={userSearchInput}
                     onPopupScroll={handleUserPopupScroll}
                     loading={isLoadingUsers}
-                    notFoundContent={isLoadingUsers ? <LoadingOutlined spin /> : "No users found"}
+                    notFoundContent={
+                      isLoadingUsers ? (
+                        <LoadingOutlined spin />
+                      ) : (
+                        "No users found"
+                      )
+                    }
                     options={userOptions}
                     popupRender={(menu) => (
                       <>
@@ -536,7 +656,11 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                     <Button
                       onClick={() => setIsAiChatOpen(true)}
                       icon={
-                        <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
+                        <svg
+                          className="w-4 h-4"
+                          viewBox="0 0 16 16"
+                          fill="currentColor"
+                        >
                           <path d="M8 1l1.5 3.5L13 6l-3.5 1.5L8 11 6.5 7.5 3 6l3.5-1.5L8 1zm4 7l.75 1.75L14.5 10.5l-1.75.75L12 13l-.75-1.75L9.5 10.5l1.75-.75L12 8zM4 9l.75 1.75L6.5 11.5l-1.75.75L4 14l-.75-1.75L1.5 11.5l1.75-.75L4 9z" />
                         </svg>
                       }
@@ -546,7 +670,12 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                     <Button
                       onClick={() => setIsGlobalExportModalOpen(true)}
                       icon={
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -575,7 +704,10 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                                   month: "short",
                                   day: "numeric",
                                   year:
-                                    dateValue.from.getFullYear() !== dateValue.to.getFullYear() ? "numeric" : undefined,
+                                    dateValue.from.getFullYear() !==
+                                    dateValue.to.getFullYear()
+                                      ? "numeric"
+                                      : undefined,
                                 })}
                                 {" - "}
                                 {dateValue.to.toLocaleDateString("en-US", {
@@ -602,13 +734,15 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                             <Card>
                               <Title>Total Requests</Title>
                               <Text className="text-2xl font-bold mt-2">
-                                {userSpendData.metadata?.total_api_requests?.toLocaleString() || 0}
+                                {userSpendData.metadata?.total_api_requests?.toLocaleString() ||
+                                  0}
                               </Text>
                             </Card>
                             <Card>
                               <Title>Successful Requests</Title>
                               <Text className="text-2xl font-bold mt-2 text-green-600">
-                                {userSpendData.metadata?.total_successful_requests?.toLocaleString() || 0}
+                                {userSpendData.metadata?.total_successful_requests?.toLocaleString() ||
+                                  0}
                               </Text>
                             </Card>
                             <Card>
@@ -619,7 +753,8 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                                 </Tooltip>
                               </div>
                               <Text className="text-2xl font-bold mt-2 text-red-600">
-                                {userSpendData.metadata?.total_failed_requests?.toLocaleString() || 0}
+                                {userSpendData.metadata?.total_failed_requests?.toLocaleString() ||
+                                  0}
                               </Text>
                             </Card>
                             <Card>
@@ -627,14 +762,18 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                               <Text className="text-2xl font-bold mt-2">
                                 $
                                 {formatNumberWithCommas(
-                                  (totalSpend || 0) / (userSpendData.metadata?.total_api_requests || 1),
+                                  (totalSpend || 0) /
+                                    (userSpendData.metadata
+                                      ?.total_api_requests || 1),
                                   4,
                                 )}
                               </Text>
                             </Card>
                             <Card
                               className="cursor-pointer hover:bg-gray-50 transition-colors"
-                              onClick={() => setShowTokenBreakdown(!showTokenBreakdown)}
+                              onClick={() =>
+                                setShowTokenBreakdown(!showTokenBreakdown)
+                              }
                             >
                               <div className="flex items-center gap-2">
                                 <Title>Total Tokens</Title>
@@ -645,7 +784,8 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                                 )}
                               </div>
                               <Text className="text-2xl font-bold mt-2">
-                                {userSpendData.metadata?.total_tokens?.toLocaleString() || 0}
+                                {userSpendData.metadata?.total_tokens?.toLocaleString() ||
+                                  0}
                               </Text>
                             </Card>
                           </Grid>
@@ -656,28 +796,35 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                                 <Text className="text-2xl font-bold mt-2 text-blue-600">
                                   {Math.max(
                                     0,
-                                    (userSpendData.metadata?.total_prompt_tokens || 0) -
-                                      (userSpendData.metadata?.total_cache_read_input_tokens || 0) -
-                                      (userSpendData.metadata?.total_cache_creation_input_tokens || 0)
+                                    (userSpendData.metadata
+                                      ?.total_prompt_tokens || 0) -
+                                      (userSpendData.metadata
+                                        ?.total_cache_read_input_tokens || 0) -
+                                      (userSpendData.metadata
+                                        ?.total_cache_creation_input_tokens ||
+                                        0),
                                   ).toLocaleString()}
                                 </Text>
                               </Card>
                               <Card>
                                 <Title>Output Tokens</Title>
                                 <Text className="text-2xl font-bold mt-2 text-cyan-600">
-                                  {userSpendData.metadata?.total_completion_tokens?.toLocaleString() || 0}
+                                  {userSpendData.metadata?.total_completion_tokens?.toLocaleString() ||
+                                    0}
                                 </Text>
                               </Card>
                               <Card>
                                 <Title>Cache Read Tokens</Title>
                                 <Text className="text-2xl font-bold mt-2 text-green-600">
-                                  {userSpendData.metadata?.total_cache_read_input_tokens?.toLocaleString() || 0}
+                                  {userSpendData.metadata?.total_cache_read_input_tokens?.toLocaleString() ||
+                                    0}
                                 </Text>
                               </Card>
                               <Card>
                                 <Title>Cache Write Tokens</Title>
                                 <Text className="text-2xl font-bold mt-2 text-purple-600">
-                                  {userSpendData.metadata?.total_cache_creation_input_tokens?.toLocaleString() || 0}
+                                  {userSpendData.metadata?.total_cache_creation_input_tokens?.toLocaleString() ||
+                                    0}
                                 </Text>
                               </Card>
                             </Grid>
@@ -707,12 +854,25 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                                   <div className="bg-white p-4 shadow-lg rounded-lg border">
                                     <p className="font-bold">{data.date}</p>
                                     <p className="text-cyan-500">
-                                      Spend: ${formatNumberWithCommas(data.metrics.spend, 2)}
+                                      Spend: $
+                                      {formatNumberWithCommas(
+                                        data.metrics.spend,
+                                        2,
+                                      )}
                                     </p>
-                                    <p className="text-gray-600">Requests: {data.metrics.api_requests}</p>
-                                    <p className="text-gray-600">Successful: {data.metrics.successful_requests}</p>
-                                    <p className="text-gray-600">Failed: {data.metrics.failed_requests}</p>
-                                    <p className="text-gray-600">Tokens: {data.metrics.total_tokens}</p>
+                                    <p className="text-gray-600">
+                                      Requests: {data.metrics.api_requests}
+                                    </p>
+                                    <p className="text-gray-600">
+                                      Successful:{" "}
+                                      {data.metrics.successful_requests}
+                                    </p>
+                                    <p className="text-gray-600">
+                                      Failed: {data.metrics.failed_requests}
+                                    </p>
+                                    <p className="text-gray-600">
+                                      Tokens: {data.metrics.total_tokens}
+                                    </p>
                                   </div>
                                 );
                               }}
@@ -736,7 +896,11 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                       {/* Top Models */}
                       <Col numColSpan={1}>
                         <Card className="h-full">
-                          <Title>{modelViewType === "groups" ? "Top Public Model Names" : "Top Litellm Models"}</Title>
+                          <Title>
+                            {modelViewType === "groups"
+                              ? "Top Public Model Names"
+                              : "Top Litellm Models"}
+                          </Title>
                           <div className="flex justify-between items-center mb-4">
                             <Segmented
                               options={[
@@ -746,7 +910,9 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                                 { label: "50", value: 50 },
                               ]}
                               value={topModelsLimit}
-                              onChange={(value) => setTopModelsLimit(value as number)}
+                              onChange={(value) =>
+                                setTopModelsLimit(value as number)
+                              }
                             />
                             <div className="flex bg-gray-100 rounded-lg p-1">
                               <button
@@ -776,11 +942,20 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                           ) : (
                             <div className="relative max-h-[600px] overflow-y-auto">
                               {(() => {
-                                const modelData = modelViewType === "groups" ? topModelGroups : topModels;
+                                const modelData =
+                                  modelViewType === "groups"
+                                    ? topModelGroups
+                                    : topModels;
                                 return (
                                   <BarChart
                                     className="mt-4"
-                                    style={{ height: Math.min(modelData.length, topModelsLimit) * 52 }}
+                                    style={{
+                                      height:
+                                        Math.min(
+                                          modelData.length,
+                                          topModelsLimit,
+                                        ) * 52,
+                                    }}
                                     data={modelData}
                                     index="key"
                                     categories={["spend"]}
@@ -794,20 +969,32 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                                       const data = payload[0].payload;
                                       return (
                                         <div className="bg-white p-4 shadow-lg rounded-lg border">
-                                          <p className="font-bold">{data.key}</p>
+                                          <p className="font-bold">
+                                            {data.key}
+                                          </p>
                                           <p className="text-cyan-500">
-                                            Spend: ${formatNumberWithCommas(data.spend, 2)}
+                                            Spend: $
+                                            {formatNumberWithCommas(
+                                              data.spend,
+                                              2,
+                                            )}
                                           </p>
                                           <p className="text-gray-600">
-                                            Total Requests: {data.requests.toLocaleString()}
+                                            Total Requests:{" "}
+                                            {data.requests.toLocaleString()}
                                           </p>
                                           <p className="text-green-600">
-                                            Successful: {data.successful_requests.toLocaleString()}
+                                            Successful:{" "}
+                                            {data.successful_requests.toLocaleString()}
                                           </p>
                                           <p className="text-red-600">
-                                            Failed: {data.failed_requests.toLocaleString()}
+                                            Failed:{" "}
+                                            {data.failed_requests.toLocaleString()}
                                           </p>
-                                          <p className="text-gray-600">Tokens: {data.tokens.toLocaleString()}</p>
+                                          <p className="text-gray-600">
+                                            Tokens:{" "}
+                                            {data.tokens.toLocaleString()}
+                                          </p>
                                         </div>
                                       );
                                     }}
@@ -913,7 +1100,8 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                   message="Reusable credentials are automatically tracked as tags"
                   description={
                     <Typography.Text>
-                      When a reusable credential is used, it will appear as a tag prefixed with{" "}
+                      When a reusable credential is used, it will appear as a
+                      tag prefixed with{" "}
                       <Typography.Text code>Credential: </Typography.Text>
                       in this view.
                     </Typography.Text>
@@ -941,7 +1129,10 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
               userID={userID}
               userRole={userRole}
               entityList={
-                agentsResponse?.agents?.map((agent) => ({ label: agent.agent_name, value: agent.agent_id })) || null
+                agentsResponse?.agents?.map((agent) => ({
+                  label: agent.agent_name,
+                  value: agent.agent_id,
+                })) || null
               }
               premiumUser={premiumUser}
               dateValue={dateValue}
@@ -961,7 +1152,11 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
           )}
           {/* User Agent Activity Panel */}
           {usageView === "user-agent-activity" && (
-            <UserAgentActivity accessToken={accessToken} userRole={userRole} dateValue={dateValue} />
+            <UserAgentActivity
+              accessToken={accessToken}
+              userRole={userRole}
+              dateValue={dateValue}
+            />
           )}
         </div>
       </div>
@@ -988,13 +1183,20 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
       />
 
       {/* AI Chat Panel */}
-      <UsageAIChatPanel open={isAiChatOpen} onClose={() => setIsAiChatOpen(false)} accessToken={accessToken} />
+      <UsageAIChatPanel
+        open={isAiChatOpen}
+        onClose={() => setIsAiChatOpen(false)}
+        accessToken={accessToken}
+      />
     </div>
   );
 };
 
 // Add this helper function to process model-specific activity data
-const getModelActivityData = (userSpendData: { results: DailyData[]; metadata: any }) => {
+const getModelActivityData = (userSpendData: {
+  results: DailyData[];
+  metadata: any;
+}) => {
   const modelData: {
     [key: string]: {
       total_requests: number;

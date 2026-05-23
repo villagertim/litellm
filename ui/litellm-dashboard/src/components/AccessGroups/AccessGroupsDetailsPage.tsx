@@ -12,8 +12,8 @@ import {
   Spin,
   Tabs,
   Tag,
+  Typography,
   theme,
-  Typography
 } from "antd";
 import {
   ArrowLeftIcon,
@@ -40,8 +40,7 @@ export function AccessGroupDetail({
   accessGroupId,
   onBack,
 }: AccessGroupDetailProps) {
-  const { data: accessGroup, isLoading } =
-    useAccessGroupDetails(accessGroupId);
+  const { data: accessGroup, isLoading } = useAccessGroupDetails(accessGroupId);
   const { token } = theme.useToken();
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [showAllKeys, setShowAllKeys] = useState(false);
@@ -90,9 +89,7 @@ export function AccessGroupDetail({
   const teamIds = accessGroup.assigned_team_ids ?? [];
 
   const displayedKeys = showAllKeys ? keyIds : keyIds.slice(0, MAX_PREVIEW);
-  const displayedTeams = showAllTeams
-    ? teamIds
-    : teamIds.slice(0, MAX_PREVIEW);
+  const displayedTeams = showAllTeams ? teamIds : teamIds.slice(0, MAX_PREVIEW);
 
   const handleEdit = () => {
     setIsEditModalVisible(true);
@@ -302,9 +299,7 @@ export function AccessGroupDetail({
                   type="link"
                   onClick={() => setShowAllTeams(!showAllTeams)}
                 >
-                  {showAllTeams
-                    ? "Show Less"
-                    : `View All (${teamIds?.length})`}
+                  {showAllTeams ? "Show Less" : `View All (${teamIds?.length})`}
                 </Button>
               ) : null
             }

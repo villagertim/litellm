@@ -1,7 +1,7 @@
-import { ColumnDef } from "@tanstack/react-table";
-import { Button, Badge, Text } from "@tremor/react";
-import { Tooltip, Tag } from "antd";
 import { CopyOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import type { ColumnDef } from "@tanstack/react-table";
+import { Badge, Button, Text } from "@tremor/react";
+import { Tag, Tooltip } from "antd";
 
 export interface AgentHubData {
   agent_id?: string;
@@ -31,7 +31,7 @@ export interface AgentHubData {
 export const getAgentHubTableColumns = (
   showModal: (agent: AgentHubData) => void,
   copyToClipboard: (text: string) => void,
-  publicPage: boolean = false,
+  publicPage = false,
 ): ColumnDef<AgentHubData>[] => {
   const allColumns: ColumnDef<AgentHubData>[] = [
     {
@@ -69,7 +69,11 @@ export const getAgentHubTableColumns = (
       cell: ({ row }) => {
         const agent = row.original;
 
-        return <Text className="text-xs line-clamp-2">{agent.description || "-"}</Text>;
+        return (
+          <Text className="text-xs line-clamp-2">
+            {agent.description || "-"}
+          </Text>
+        );
       },
       meta: {
         className: "hidden md:table-cell",
@@ -127,7 +131,11 @@ export const getAgentHubTableColumns = (
                     {skill.name}
                   </Tag>
                 ))}
-                {skills.length > 2 && <Text className="text-xs text-gray-500">+{skills.length - 2}</Text>}
+                {skills.length > 2 && (
+                  <Text className="text-xs text-gray-500">
+                    +{skills.length - 2}
+                  </Text>
+                )}
               </div>
             )}
           </div>
@@ -172,10 +180,12 @@ export const getAgentHubTableColumns = (
         return (
           <div className="space-y-1">
             <Text className="text-xs">
-              <span className="font-medium">In:</span> {inputModes.join(", ") || "-"}
+              <span className="font-medium">In:</span>{" "}
+              {inputModes.join(", ") || "-"}
             </Text>
             <Text className="text-xs">
-              <span className="font-medium">Out:</span> {outputModes.join(", ") || "-"}
+              <span className="font-medium">Out:</span>{" "}
+              {outputModes.join(", ") || "-"}
             </Text>
           </div>
         );
@@ -218,7 +228,12 @@ export const getAgentHubTableColumns = (
         const agent = row.original;
 
         return (
-          <Button size="xs" variant="secondary" onClick={() => showModal(agent)} icon={InfoCircleOutlined}>
+          <Button
+            size="xs"
+            variant="secondary"
+            onClick={() => showModal(agent)}
+            icon={InfoCircleOutlined}
+          >
             <span className="hidden lg:inline">Details</span>
             <span className="lg:hidden">Info</span>
           </Button>

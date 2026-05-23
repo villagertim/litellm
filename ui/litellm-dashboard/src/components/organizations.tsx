@@ -1,6 +1,12 @@
-import OrganizationFilters, { FilterState } from "@/app/(dashboard)/organizations/OrganizationFilters";
+import OrganizationFilters, {
+  type FilterState,
+} from "@/app/(dashboard)/organizations/OrganizationFilters";
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { ChevronDownIcon, ChevronRightIcon, RefreshIcon } from "@heroicons/react/outline";
+import {
+  ChevronDownIcon,
+  ChevronRightIcon,
+  RefreshIcon,
+} from "@heroicons/react/outline";
 import {
   Badge,
   Button,
@@ -10,28 +16,34 @@ import {
   Icon,
   Tab,
   TabGroup,
+  TabList,
+  TabPanel,
+  TabPanels,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeaderCell,
   TableRow,
-  TabList,
-  TabPanel,
-  TabPanels,
   Text,
   TextInput,
 } from "@tremor/react";
 import { Form, Input, Modal, Select as Select2, Tooltip } from "antd";
-import React, { useState } from "react";
+import type React from "react";
+import { useState } from "react";
 import { formatNumberWithCommas } from "../utils/dataUtils";
+import { ModelSelect } from "./ModelSelect/ModelSelect";
 import DeleteResourceModal from "./common_components/DeleteResourceModal";
 import TableIconActionButton from "./common_components/IconActionButton/TableIconActionButtons/TableIconActionButton";
 import { getModelDisplayName } from "./key_team_helpers/fetch_available_models_team_key";
 import MCPServerSelector from "./mcp_server_management/MCPServerSelector";
-import { ModelSelect } from "./ModelSelect/ModelSelect";
 import NotificationsManager from "./molecules/notifications_manager";
-import { Organization, organizationCreateCall, organizationDeleteCall, organizationListCall } from "./networking";
+import {
+  type Organization,
+  organizationCreateCall,
+  organizationDeleteCall,
+  organizationListCall,
+} from "./networking";
 import OrganizationInfoView from "./organization/organization_view";
 import NumericalInput from "./shared/numerical_input";
 import VectorStoreSelector from "./vector_store_management/VectorStoreSelector";
@@ -55,7 +67,11 @@ export const fetchOrganizations = async (
   org_id: string | null = null,
   org_alias: string | null = null,
 ) => {
-  const organizations = await organizationListCall(accessToken, org_id, org_alias);
+  const organizations = await organizationListCall(
+    accessToken,
+    org_id,
+    org_alias,
+  );
   setOrganizations(organizations);
 };
 
@@ -78,7 +94,9 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const [isOrgModalVisible, setIsOrgModalVisible] = useState(false);
   const [form] = Form.useForm();
-  const [expandedAccordions, setExpandedAccordions] = useState<Record<string, boolean>>({});
+  const [expandedAccordions, setExpandedAccordions] = useState<
+    Record<string, boolean>
+  >({});
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
     org_id: "",
@@ -92,7 +110,11 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
     setFilters(newFilters);
     // Call organizationListCall with the new filters
     if (accessToken) {
-      organizationListCall(accessToken, newFilters.org_id || null, newFilters.org_alias || null)
+      organizationListCall(
+        accessToken,
+        newFilters.org_id || null,
+        newFilters.org_alias || null,
+      )
         .then((response) => {
           if (response) {
             setOrganizations(response);
@@ -143,7 +165,12 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
       setIsDeleteModalOpen(false);
       setOrgToDelete(null);
       // Refresh organizations list
-      await fetchOrganizations(accessToken, setOrganizations, filters.org_id || null, filters.org_alias || null);
+      await fetchOrganizations(
+        accessToken,
+        setOrganizations,
+        filters.org_id || null,
+        filters.org_alias || null,
+      );
     } catch (error) {
       console.error("Error deleting organization:", error);
     } finally {
@@ -160,26 +187,35 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
     try {
       if (!accessToken) return;
 
-      console.log(`values in organizations new create call: ${JSON.stringify(values)}`);
+      console.log(
+        `values in organizations new create call: ${JSON.stringify(values)}`,
+      );
 
       // Transform allowed_vector_store_ids and allowed_mcp_servers_and_groups into object_permission
       if (
-        (values.allowed_vector_store_ids && values.allowed_vector_store_ids.length > 0) ||
+        (values.allowed_vector_store_ids &&
+          values.allowed_vector_store_ids.length > 0) ||
         (values.allowed_mcp_servers_and_groups &&
           (values.allowed_mcp_servers_and_groups.servers?.length > 0 ||
             values.allowed_mcp_servers_and_groups.accessGroups?.length > 0))
       ) {
         values.object_permission = {};
-        if (values.allowed_vector_store_ids && values.allowed_vector_store_ids.length > 0) {
-          values.object_permission.vector_stores = values.allowed_vector_store_ids;
+        if (
+          values.allowed_vector_store_ids &&
+          values.allowed_vector_store_ids.length > 0
+        ) {
+          values.object_permission.vector_stores =
+            values.allowed_vector_store_ids;
           delete values.allowed_vector_store_ids;
         }
         if (values.allowed_mcp_servers_and_groups) {
           if (values.allowed_mcp_servers_and_groups.servers?.length > 0) {
-            values.object_permission.mcp_servers = values.allowed_mcp_servers_and_groups.servers;
+            values.object_permission.mcp_servers =
+              values.allowed_mcp_servers_and_groups.servers;
           }
           if (values.allowed_mcp_servers_and_groups.accessGroups?.length > 0) {
-            values.object_permission.mcp_access_groups = values.allowed_mcp_servers_and_groups.accessGroups;
+            values.object_permission.mcp_access_groups =
+              values.allowed_mcp_servers_and_groups.accessGroups;
           }
           delete values.allowed_mcp_servers_and_groups;
         }
@@ -190,7 +226,12 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
       setIsOrgModalVisible(false);
       form.resetFields();
       // Refresh organizations list
-      fetchOrganizations(accessToken, setOrganizations, filters.org_id || null, filters.org_alias || null);
+      fetchOrganizations(
+        accessToken,
+        setOrganizations,
+        filters.org_id || null,
+        filters.org_alias || null,
+      );
     } catch (error) {
       console.error("Error creating organization:", error);
     }
@@ -205,8 +246,13 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
     return (
       <div>
         <Text>
-          This is a LiteLLM Enterprise feature, and requires a valid key to use. Get a trial key{" "}
-          <a href="https://www.litellm.ai/#pricing" target="_blank" rel="noopener noreferrer">
+          This is a LiteLLM Enterprise feature, and requires a valid key to use.
+          Get a trial key{" "}
+          <a
+            href="https://www.litellm.ai/#pricing"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             here
           </a>
           .
@@ -220,7 +266,10 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
       <Grid numItems={1} className="gap-2 p-8 w-full mt-2">
         <Col numColSpan={1} className="flex flex-col gap-2">
           {(userRole === "Admin" || userRole === "Org Admin") && (
-            <Button className="w-fit" onClick={() => setIsOrgModalVisible(true)}>
+            <Button
+              className="w-fit"
+              onClick={() => setIsOrgModalVisible(true)}
+            >
               + Create New Organization
             </Button>
           )}
@@ -244,7 +293,9 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
                   <Tab>Your Organizations</Tab>
                 </div>
                 <div className="flex items-center space-x-2">
-                  {lastRefreshed && <Text>Last Refreshed: {lastRefreshed}</Text>}
+                  {lastRefreshed && (
+                    <Text>Last Refreshed: {lastRefreshed}</Text>
+                  )}
                   <Icon
                     icon={RefreshIcon}
                     variant="shadow"
@@ -256,8 +307,14 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
               </TabList>
               <TabPanels>
                 <TabPanel>
-                  <Text>Click on &ldquo;Organization ID&rdquo; to view organization details.</Text>
-                  <Grid numItems={1} className="gap-2 pt-2 pb-2 h-[75vh] w-full mt-2">
+                  <Text>
+                    Click on &ldquo;Organization ID&rdquo; to view organization
+                    details.
+                  </Text>
+                  <Grid
+                    numItems={1}
+                    className="gap-2 pt-2 pb-2 h-[75vh] w-full mt-2"
+                  >
                     <Col numColSpan={1}>
                       <Card className="w-full mx-auto flex-auto overflow-hidden overflow-y-auto max-h-[50vh]">
                         <div className="border-b px-6 py-4">
@@ -275,12 +332,16 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
                           <TableHead>
                             <TableRow>
                               <TableHeaderCell>Organization ID</TableHeaderCell>
-                              <TableHeaderCell>Organization Name</TableHeaderCell>
+                              <TableHeaderCell>
+                                Organization Name
+                              </TableHeaderCell>
                               <TableHeaderCell>Created</TableHeaderCell>
                               <TableHeaderCell>Spend (USD)</TableHeaderCell>
                               <TableHeaderCell>Budget (USD)</TableHeaderCell>
                               <TableHeaderCell>Models</TableHeaderCell>
-                              <TableHeaderCell>TPM / RPM Limits</TableHeaderCell>
+                              <TableHeaderCell>
+                                TPM / RPM Limits
+                              </TableHeaderCell>
                               <TableHeaderCell>Info</TableHeaderCell>
                               <TableHeaderCell>Actions</TableHeaderCell>
                             </TableRow>
@@ -289,7 +350,11 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
                           <TableBody>
                             {organizations && organizations.length > 0
                               ? organizations
-                                  .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                                  .sort(
+                                    (a, b) =>
+                                      new Date(b.created_at).getTime() -
+                                      new Date(a.created_at).getTime(),
+                                  )
                                   .map((org: Organization) => (
                                     <TableRow key={org.organization_id}>
                                       <TableCell>
@@ -299,7 +364,11 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
                                               size="xs"
                                               variant="light"
                                               className="font-mono text-blue-500 bg-blue-50 hover:bg-blue-100 text-xs font-normal px-2 py-0.5 text-left overflow-hidden truncate max-w-[200px]"
-                                              onClick={() => setSelectedOrgId(org.organization_id)}
+                                              onClick={() =>
+                                                setSelectedOrgId(
+                                                  org.organization_id,
+                                                )
+                                              }
                                             >
                                               {org.organization_id?.slice(0, 7)}
                                               ...
@@ -307,14 +376,24 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
                                           </Tooltip>
                                         </div>
                                       </TableCell>
-                                      <TableCell>{org.organization_alias}</TableCell>
                                       <TableCell>
-                                        {org.created_at ? new Date(org.created_at).toLocaleDateString() : "N/A"}
+                                        {org.organization_alias}
                                       </TableCell>
-                                      <TableCell>{formatNumberWithCommas(org.spend, 4)}</TableCell>
                                       <TableCell>
-                                        {org.litellm_budget_table?.max_budget !== null &&
-                                        org.litellm_budget_table?.max_budget !== undefined
+                                        {org.created_at
+                                          ? new Date(
+                                              org.created_at,
+                                            ).toLocaleDateString()
+                                          : "N/A"}
+                                      </TableCell>
+                                      <TableCell>
+                                        {formatNumberWithCommas(org.spend, 4)}
+                                      </TableCell>
+                                      <TableCell>
+                                        {org.litellm_budget_table
+                                          ?.max_budget !== null &&
+                                        org.litellm_budget_table?.max_budget !==
+                                          undefined
                                           ? org.litellm_budget_table?.max_budget
                                           : "No limit"}
                                       </TableCell>
@@ -324,13 +403,19 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
                                           whiteSpace: "pre-wrap",
                                           overflow: "hidden",
                                         }}
-                                        className={org.models.length > 3 ? "px-0" : ""}
+                                        className={
+                                          org.models.length > 3 ? "px-0" : ""
+                                        }
                                       >
                                         <div className="flex flex-col">
                                           {Array.isArray(org.models) ? (
                                             <div className="flex flex-col">
                                               {org.models.length === 0 ? (
-                                                <Badge size={"xs"} className="mb-1" color="red">
+                                                <Badge
+                                                  size={"xs"}
+                                                  className="mb-1"
+                                                  color="red"
+                                                >
                                                   <Text>All Proxy Models</Text>
                                                 </Badge>
                                               ) : (
@@ -340,66 +425,129 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
                                                       <div>
                                                         <Icon
                                                           icon={
-                                                            expandedAccordions[org.organization_id || ""]
+                                                            expandedAccordions[
+                                                              org.organization_id ||
+                                                                ""
+                                                            ]
                                                               ? ChevronDownIcon
                                                               : ChevronRightIcon
                                                           }
                                                           className="cursor-pointer"
                                                           size="xs"
                                                           onClick={() => {
-                                                            setExpandedAccordions((prev) => ({
-                                                              ...prev,
-                                                              [org.organization_id || ""]:
-                                                                !prev[org.organization_id || ""],
-                                                            }));
+                                                            setExpandedAccordions(
+                                                              (prev) => ({
+                                                                ...prev,
+                                                                [org.organization_id ||
+                                                                  ""]:
+                                                                  !prev[
+                                                                    org.organization_id ||
+                                                                      ""
+                                                                  ],
+                                                              }),
+                                                            );
                                                           }}
                                                         />
                                                       </div>
                                                     )}
                                                     <div className="flex flex-wrap gap-1">
-                                                      {org.models.slice(0, 3).map((model, index) =>
-                                                        model === "all-proxy-models" ? (
-                                                          <Badge key={index} size={"xs"} color="red">
-                                                            <Text>All Proxy Models</Text>
-                                                          </Badge>
-                                                        ) : (
-                                                          <Badge key={index} size={"xs"} color="blue">
-                                                            <Text>
-                                                              {model.length > 30
-                                                                ? `${getModelDisplayName(model).slice(0, 30)}...`
-                                                                : getModelDisplayName(model)}
-                                                            </Text>
-                                                          </Badge>
-                                                        ),
-                                                      )}
+                                                      {org.models
+                                                        .slice(0, 3)
+                                                        .map((model, index) =>
+                                                          model ===
+                                                          "all-proxy-models" ? (
+                                                            <Badge
+                                                              key={index}
+                                                              size={"xs"}
+                                                              color="red"
+                                                            >
+                                                              <Text>
+                                                                All Proxy Models
+                                                              </Text>
+                                                            </Badge>
+                                                          ) : (
+                                                            <Badge
+                                                              key={index}
+                                                              size={"xs"}
+                                                              color="blue"
+                                                            >
+                                                              <Text>
+                                                                {model.length >
+                                                                30
+                                                                  ? `${getModelDisplayName(model).slice(0, 30)}...`
+                                                                  : getModelDisplayName(
+                                                                      model,
+                                                                    )}
+                                                              </Text>
+                                                            </Badge>
+                                                          ),
+                                                        )}
                                                       {org.models.length > 3 &&
-                                                        !expandedAccordions[org.organization_id || ""] && (
-                                                          <Badge size={"xs"} color="gray" className="cursor-pointer">
+                                                        !expandedAccordions[
+                                                          org.organization_id ||
+                                                            ""
+                                                        ] && (
+                                                          <Badge
+                                                            size={"xs"}
+                                                            color="gray"
+                                                            className="cursor-pointer"
+                                                          >
                                                             <Text>
-                                                              +{org.models.length - 3}{" "}
-                                                              {org.models.length - 3 === 1
+                                                              +
+                                                              {org.models
+                                                                .length -
+                                                                3}{" "}
+                                                              {org.models
+                                                                .length -
+                                                                3 ===
+                                                              1
                                                                 ? "more model"
                                                                 : "more models"}
                                                             </Text>
                                                           </Badge>
                                                         )}
-                                                      {expandedAccordions[org.organization_id || ""] && (
+                                                      {expandedAccordions[
+                                                        org.organization_id ||
+                                                          ""
+                                                      ] && (
                                                         <div className="flex flex-wrap gap-1">
-                                                          {org.models.slice(3).map((model, index) =>
-                                                            model === "all-proxy-models" ? (
-                                                              <Badge key={index + 3} size={"xs"} color="red">
-                                                                <Text>All Proxy Models</Text>
-                                                              </Badge>
-                                                            ) : (
-                                                              <Badge key={index + 3} size={"xs"} color="blue">
-                                                                <Text>
-                                                                  {model.length > 30
-                                                                    ? `${getModelDisplayName(model).slice(0, 30)}...`
-                                                                    : getModelDisplayName(model)}
-                                                                </Text>
-                                                              </Badge>
-                                                            ),
-                                                          )}
+                                                          {org.models
+                                                            .slice(3)
+                                                            .map(
+                                                              (model, index) =>
+                                                                model ===
+                                                                "all-proxy-models" ? (
+                                                                  <Badge
+                                                                    key={
+                                                                      index + 3
+                                                                    }
+                                                                    size={"xs"}
+                                                                    color="red"
+                                                                  >
+                                                                    <Text>
+                                                                      All Proxy
+                                                                      Models
+                                                                    </Text>
+                                                                  </Badge>
+                                                                ) : (
+                                                                  <Badge
+                                                                    key={
+                                                                      index + 3
+                                                                    }
+                                                                    size={"xs"}
+                                                                    color="blue"
+                                                                  >
+                                                                    <Text>
+                                                                      {model.length >
+                                                                      30
+                                                                        ? `${getModelDisplayName(model).slice(0, 30)}...`
+                                                                        : getModelDisplayName(
+                                                                            model,
+                                                                          )}
+                                                                    </Text>
+                                                                  </Badge>
+                                                                ),
+                                                            )}
                                                         </div>
                                                       )}
                                                     </div>
@@ -414,17 +562,21 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
                                         <Text>
                                           TPM:{" "}
                                           {org.litellm_budget_table?.tpm_limit
-                                            ? org.litellm_budget_table?.tpm_limit
+                                            ? org.litellm_budget_table
+                                                ?.tpm_limit
                                             : "Unlimited"}
                                           <br />
                                           RPM:{" "}
                                           {org.litellm_budget_table?.rpm_limit
-                                            ? org.litellm_budget_table?.rpm_limit
+                                            ? org.litellm_budget_table
+                                                ?.rpm_limit
                                             : "Unlimited"}
                                         </Text>
                                       </TableCell>
                                       <TableCell>
-                                        <Text>{org.members?.length || 0} Members</Text>
+                                        <Text>
+                                          {org.members?.length || 0} Members
+                                        </Text>
                                       </TableCell>
                                       <TableCell>
                                         {userRole === "Admin" && (
@@ -433,14 +585,20 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
                                               variant="Edit"
                                               tooltipText="Edit organization"
                                               onClick={() => {
-                                                setSelectedOrgId(org.organization_id);
+                                                setSelectedOrgId(
+                                                  org.organization_id,
+                                                );
                                                 setEditOrg(true);
                                               }}
                                             />
                                             <TableIconActionButton
                                               variant="Delete"
                                               tooltipText="Delete organization"
-                                              onClick={() => handleDelete(org.organization_id)}
+                                              onClick={() =>
+                                                handleDelete(
+                                                  org.organization_id,
+                                                )
+                                              }
                                             />
                                           </>
                                         )}
@@ -459,8 +617,20 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
           )}
         </Col>
       </Grid>
-      <Modal title="Create Organization" visible={isOrgModalVisible} width={800} footer={null} onCancel={handleCancel}>
-        <Form form={form} onFinish={handleCreate} labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} labelAlign="left">
+      <Modal
+        title="Create Organization"
+        visible={isOrgModalVisible}
+        width={800}
+        footer={null}
+        onCancel={handleCancel}
+      >
+        <Form
+          form={form}
+          onFinish={handleCreate}
+          labelCol={{ span: 8 }}
+          wrapperCol={{ span: 16 }}
+          labelAlign="left"
+        >
           <Form.Item
             label="Organization Name"
             name="organization_alias"
@@ -475,7 +645,10 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
           </Form.Item>
           <Form.Item label="Models" name="models">
             <ModelSelect
-              options={{ showAllProxyModelsOverride: true, includeSpecialOptions: true }}
+              options={{
+                showAllProxyModelsOverride: true,
+                includeSpecialOptions: true,
+              }}
               value={form.getFieldValue("models")}
               onChange={(values) => form.setFieldValue("models", values)}
               context="organization"
@@ -513,7 +686,9 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
             help="Select vector stores this organization can access. Leave empty for access to all vector stores"
           >
             <VectorStoreSelector
-              onChange={(values) => form.setFieldValue("allowed_vector_store_ids", values)}
+              onChange={(values) =>
+                form.setFieldValue("allowed_vector_store_ids", values)
+              }
               value={form.getFieldValue("allowed_vector_store_ids")}
               accessToken={accessToken || ""}
               placeholder="Select vector stores (optional)"
@@ -534,7 +709,9 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
             help="Select MCP servers and access groups this organization can access."
           >
             <MCPServerSelector
-              onChange={(values) => form.setFieldValue("allowed_mcp_servers_and_groups", values)}
+              onChange={(values) =>
+                form.setFieldValue("allowed_mcp_servers_and_groups", values)
+              }
               value={form.getFieldValue("allowed_mcp_servers_and_groups")}
               accessToken={accessToken || ""}
               placeholder="Select MCP servers and access groups (optional)"
@@ -556,7 +733,9 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
         title="Delete Organization?"
         message="Are you sure you want to delete this organization? This action cannot be undone."
         resourceInformationTitle="Organization Information"
-        resourceInformation={[{ label: "Organization ID", value: orgToDelete, code: true }]}
+        resourceInformation={[
+          { label: "Organization ID", value: orgToDelete, code: true },
+        ]}
         onCancel={cancelDelete}
         onOk={confirmDelete}
         confirmLoading={isDeleting}

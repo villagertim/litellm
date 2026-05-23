@@ -6,11 +6,11 @@ import {
   TrashIcon,
 } from "@heroicons/react/outline";
 import {
-  ColumnDef,
+  type ColumnDef,
+  type SortingState,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import {
@@ -24,12 +24,11 @@ import {
   TableRow,
 } from "@tremor/react";
 import { Tooltip } from "antd";
-import React, { useState } from "react";
+import type React from "react";
+import { useState } from "react";
 import NotificationsManager from "../molecules/notifications_manager";
-import {
-  getCategoryBadgeColor
-} from "./helpers";
-import { Plugin } from "./types";
+import { getCategoryBadgeColor } from "./helpers";
+import type { Plugin } from "./types";
 
 interface PluginTableProps {
   pluginsList: Plugin[];
@@ -167,33 +166,33 @@ const PluginTable: React.FC<PluginTableProps> = ({
     },
     ...(isAdmin
       ? [
-        {
-          header: "Actions",
-          id: "actions",
-          enableSorting: false,
-          cell: ({ row }: any) => {
-            const plugin = row.original;
+          {
+            header: "Actions",
+            id: "actions",
+            enableSorting: false,
+            cell: ({ row }: any) => {
+              const plugin = row.original;
 
-            return (
-              <div className="flex items-center gap-1">
-                <Tooltip title="Delete skill">
-                  <Button
-                    size="xs"
-                    variant="light"
-                    color="red"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDeleteClick(plugin.name, plugin.name);
-                    }}
-                    icon={TrashIcon}
-                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                  />
-                </Tooltip>
-              </div>
-            );
+              return (
+                <div className="flex items-center gap-1">
+                  <Tooltip title="Delete skill">
+                    <Button
+                      size="xs"
+                      variant="light"
+                      color="red"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDeleteClick(plugin.name, plugin.name);
+                      }}
+                      icon={TrashIcon}
+                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                    />
+                  </Tooltip>
+                </div>
+              );
+            },
           },
-        },
-      ]
+        ]
       : []),
   ];
 
@@ -219,10 +218,11 @@ const PluginTable: React.FC<PluginTableProps> = ({
                 {headerGroup.headers.map((header) => (
                   <TableHeaderCell
                     key={header.id}
-                    className={`py-1 h-8 ${header.id === "actions"
+                    className={`py-1 h-8 ${
+                      header.id === "actions"
                         ? "sticky right-0 bg-white shadow-[-4px_0_8px_-6px_rgba(0,0,0,0.1)]"
                         : ""
-                      }`}
+                    }`}
                     onClick={
                       header.column.getCanSort()
                         ? header.column.getToggleSortingHandler()
@@ -234,9 +234,9 @@ const PluginTable: React.FC<PluginTableProps> = ({
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                       </div>
                       {header.column.getCanSort() && (
                         <div className="w-4">
@@ -279,14 +279,15 @@ const PluginTable: React.FC<PluginTableProps> = ({
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className={`py-0.5 max-h-8 overflow-hidden text-ellipsis whitespace-nowrap ${cell.column.id === "actions"
+                      className={`py-0.5 max-h-8 overflow-hidden text-ellipsis whitespace-nowrap ${
+                        cell.column.id === "actions"
                           ? "sticky right-0 bg-white shadow-[-4px_0_8px_-6px_rgba(0,0,0,0.1)]"
                           : ""
-                        }`}
+                      }`}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

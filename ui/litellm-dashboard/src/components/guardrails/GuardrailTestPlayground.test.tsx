@@ -64,7 +64,9 @@ describe("GuardrailTestPlayground", () => {
     // Verify the test panel is now shown
     await waitFor(() => {
       expect(screen.getByText("Test Guardrails:")).toBeInTheDocument();
-      expect(screen.getByPlaceholderText("Enter text to test with guardrails...")).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText("Enter text to test with guardrails..."),
+      ).toBeInTheDocument();
     });
 
     // Verify the selected count

@@ -28,10 +28,12 @@ export const OPEN_AI_VOICE_LABELS = {
   SHIMMER: "Shimmer - Bright and cheerful",
 };
 
-export const OPEN_AI_VOICE_SELECT_OPTIONS = Object.entries(OPEN_AI_VOICES).map(([key, voice]) => ({
-  value: voice,
-  label: OPEN_AI_VOICE_LABELS[key as keyof typeof OPEN_AI_VOICE_LABELS],
-}));
+export const OPEN_AI_VOICE_SELECT_OPTIONS = Object.entries(OPEN_AI_VOICES).map(
+  ([key, voice]) => ({
+    value: voice,
+    label: OPEN_AI_VOICE_LABELS[key as keyof typeof OPEN_AI_VOICE_LABELS],
+  }),
+);
 
 export const ENDPOINT_OPTIONS = [
   { value: EndpointType.CHAT, label: "/v1/chat/completions" },

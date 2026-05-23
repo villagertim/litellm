@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useState, useRef } from "react";
-import { KeyResponse } from "../key_team_helpers/key_list";
-import { keyListCall, Organization } from "../networking";
-import { Team } from "../key_team_helpers/key_list";
-import { fetchAllOrganizations, fetchAllTeams } from "./filter_helpers";
-import { debounce } from "lodash";
-import { defaultPageSize } from "../constants";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { debounce } from "lodash";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { defaultPageSize } from "../constants";
+import type { KeyResponse } from "../key_team_helpers/key_list";
+import type { Team } from "../key_team_helpers/key_list";
+import { type Organization, keyListCall } from "../networking";
+import { fetchAllOrganizations, fetchAllTeams } from "./filter_helpers";
 
 export interface FilterState {
   "Team ID": string;
@@ -37,9 +37,13 @@ export function useFilterLogic({
   const { accessToken } = useAuthorized();
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [allTeams, setAllTeams] = useState<Team[]>(teams || []);
-  const [allOrganizations, setAllOrganizations] = useState<Organization[]>(organizations || []);
+  const [allOrganizations, setAllOrganizations] = useState<Organization[]>(
+    organizations || [],
+  );
   const [filteredKeys, setFilteredKeys] = useState<KeyResponse[]>(keys);
-  const [filteredTotalCount, setFilteredTotalCount] = useState<number | null>(null);
+  const [filteredTotalCount, setFilteredTotalCount] = useState<number | null>(
+    null,
+  );
   const lastSearchTimestamp = useRef(0);
   const debouncedSearch = useCallback(
     debounce(async (filters: FilterState) => {
@@ -70,8 +74,14 @@ export function useFilterLogic({
           if (data) {
             setFilteredKeys(data.keys);
             setFilteredTotalCount(data.total_count ?? null);
-            console.log("called from debouncedSearch filters:", JSON.stringify(filters));
-            console.log("called from debouncedSearch data:", JSON.stringify(data));
+            console.log(
+              "called from debouncedSearch filters:",
+              JSON.stringify(filters),
+            );
+            console.log(
+              "called from debouncedSearch data:",
+              JSON.stringify(data),
+            );
           }
         }
       } catch (error) {
@@ -96,7 +106,10 @@ export function useFilterLogic({
 
     // Apply Organization ID filter
     if (filters["Organization ID"]) {
-      result = result.filter((key) => (key.organization_id ?? key.org_id) === filters["Organization ID"]);
+      result = result.filter(
+        (key) =>
+          (key.organization_id ?? key.org_id) === filters["Organization ID"],
+      );
     }
 
     setFilteredKeys(result);
@@ -137,12 +150,17 @@ export function useFilterLogic({
     if (organizations && organizations.length > 0) {
       setAllOrganizations((prevOrgs) => {
         // Only update if we don't already have a larger set of organizations
-        return prevOrgs.length < organizations.length ? organizations : prevOrgs;
+        return prevOrgs.length < organizations.length
+          ? organizations
+          : prevOrgs;
       });
     }
   }, [organizations]);
 
-  const handleFilterChange = (newFilters: Record<string, string>, skipDebounce: boolean = false) => {
+  const handleFilterChange = (
+    newFilters: Record<string, string>,
+    skipDebounce = false,
+  ) => {
     // Update filters state
     setFilters({
       "Team ID": newFilters["Team ID"] || "",

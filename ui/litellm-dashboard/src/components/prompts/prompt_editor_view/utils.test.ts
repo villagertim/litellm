@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { PromptType } from "./types";
+import type { PromptType } from "./types";
 import {
   convertToDotPrompt,
   extractVariables,
@@ -178,7 +178,9 @@ describe("convertToDotPrompt", () => {
 
     const result = convertToDotPrompt(prompt);
     expect(result).toContain("tools:");
-    expect(result).toContain('{"type":"function","function":{"name":"get_weather"}}');
+    expect(result).toContain(
+      '{"type":"function","function":{"name":"get_weather"}}',
+    );
   });
 
   it("should handle multiple messages with different roles", () => {
@@ -339,7 +341,9 @@ User: Hello`,
       },
     };
 
-    expect(() => parseExistingPrompt(apiResponse)).toThrow("No dotprompt_content found in API response");
+    expect(() => parseExistingPrompt(apiResponse)).toThrow(
+      "No dotprompt_content found in API response",
+    );
   });
 
   it("should throw error for invalid dotprompt format", () => {
@@ -351,7 +355,9 @@ User: Hello`,
       },
     };
 
-    expect(() => parseExistingPrompt(apiResponse)).toThrow("Invalid dotprompt format");
+    expect(() => parseExistingPrompt(apiResponse)).toThrow(
+      "Invalid dotprompt format",
+    );
   });
 
   it("should provide default values when parsing fails", () => {
@@ -374,7 +380,11 @@ output:
 
     const result = parseExistingPrompt(apiResponse);
     expect(result.messages).toEqual([
-      { role: "user", content: "Enter task specifics. Use {{template_variables}} for dynamic inputs" },
+      {
+        role: "user",
+        content:
+          "Enter task specifics. Use {{template_variables}} for dynamic inputs",
+      },
     ]);
   });
 });

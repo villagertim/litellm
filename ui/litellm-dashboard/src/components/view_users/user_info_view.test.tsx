@@ -1,6 +1,6 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import UserInfoView from "./user_info_view";
 
 const mockTeamMemberAddCall = vi.fn();
@@ -60,11 +60,19 @@ describe("UserInfoView", () => {
     mockUserGetInfoV2.mockResolvedValue(MOCK_USER_DATA);
     mockTeamInfoCall.mockImplementation((_token: string, teamId: string) => {
       const teamMap: Record<string, any> = {
-        "team-1": { team_id: "team-1", team_info: { team_alias: "Alpha Team" } },
+        "team-1": {
+          team_id: "team-1",
+          team_info: { team_alias: "Alpha Team" },
+        },
         "team-2": { team_id: "team-2", team_info: { team_alias: "Beta Team" } },
-        "team-3": { team_id: "team-3", team_info: { team_alias: "Gamma Team" } },
+        "team-3": {
+          team_id: "team-3",
+          team_info: { team_alias: "Gamma Team" },
+        },
       };
-      return Promise.resolve(teamMap[teamId] || { team_id: teamId, team_info: { team_alias: null } });
+      return Promise.resolve(
+        teamMap[teamId] || { team_id: teamId, team_info: { team_alias: null } },
+      );
     });
     mockTeamListCall.mockResolvedValue([
       { team_id: "team-1", team_alias: "Alpha Team" },
@@ -181,7 +189,11 @@ describe("UserInfoView", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Remove from Team")).toBeInTheDocument();
-      expect(screen.getByText(/Removing this user from the team will also delete any keys/)).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          /Removing this user from the team will also delete any keys/,
+        ),
+      ).toBeInTheDocument();
     });
   });
 
@@ -204,15 +216,19 @@ describe("UserInfoView", () => {
     });
 
     // The DeleteResourceModal's OK button has text "Delete" - find it within the modal
-    const modal = screen.getByText("Remove from Team").closest(".ant-modal") as HTMLElement;
-    const deleteConfirmButton = within(modal).getByRole("button", { name: /delete/i });
+    const modal = screen
+      .getByText("Remove from Team")
+      .closest(".ant-modal") as HTMLElement;
+    const deleteConfirmButton = within(modal).getByRole("button", {
+      name: /delete/i,
+    });
     await user.click(deleteConfirmButton);
 
     await waitFor(() => {
       expect(mockTeamMemberDeleteCall).toHaveBeenCalledWith(
         "test-token",
         "team-1",
-        { role: "user", user_id: "user-123" }
+        { role: "user", user_id: "user-123" },
       );
     });
   });

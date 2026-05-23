@@ -2,7 +2,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../tests/test-utils";
-import { TeamData } from "./TeamInfo";
+import type { TeamData } from "./TeamInfo";
 import TeamMembersComponent from "./TeamMemberTab";
 
 vi.mock("@/app/(dashboard)/hooks/uiSettings/useUISettings", () => ({
@@ -138,10 +138,18 @@ describe("TeamMembersComponent", () => {
       />,
     );
 
-    expect(screen.getByRole("columnheader", { name: /user email/i })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: /user id/i })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: /team role/i })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: /actions/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: /user email/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: /user id/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: /team role/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: /actions/i }),
+    ).toBeInTheDocument();
   });
 
   it("should render team members data", () => {
@@ -157,8 +165,12 @@ describe("TeamMembersComponent", () => {
     );
 
     // user1@test.com appears twice (User ID and User Email columns)
-    expect(screen.getAllByText("user1@test.com").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText("user2@test.com").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("user1@test.com").length).toBeGreaterThanOrEqual(
+      1,
+    );
+    expect(screen.getAllByText("user2@test.com").length).toBeGreaterThanOrEqual(
+      1,
+    );
     const table = screen.getByRole("table");
     expect(table).toHaveTextContent("member");
     expect(table).toHaveTextContent("admin");

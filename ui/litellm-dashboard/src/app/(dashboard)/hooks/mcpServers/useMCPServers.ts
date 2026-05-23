@@ -1,7 +1,7 @@
+import type { MCPServer } from "@/components/mcp_tools/types";
+import { fetchMCPServers } from "@/components/networking";
 import { useQuery } from "@tanstack/react-query";
 import { createQueryKeys } from "../common/queryKeysFactory";
-import { fetchMCPServers } from "@/components/networking";
-import { MCPServer } from "@/components/mcp_tools/types";
 import useAuthorized from "../useAuthorized";
 
 const mcpServersKeys = createQueryKeys("mcpServers");

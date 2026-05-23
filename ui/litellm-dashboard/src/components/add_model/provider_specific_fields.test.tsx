@@ -154,7 +154,9 @@ describe("ProviderSpecificFields", () => {
       const apiKeyLabel = screen.getByLabelText("OpenAI API Key");
       expect(apiKeyLabel).toBeInTheDocument();
 
-      const apiBaseInput = screen.getByPlaceholderText("https://api.openai.com/v1");
+      const apiBaseInput = screen.getByPlaceholderText(
+        "https://api.openai.com/v1",
+      );
       expect(apiBaseInput).toBeInTheDocument();
       expect(apiBaseInput).toHaveAttribute("type", "text");
 
@@ -168,7 +170,9 @@ describe("ProviderSpecificFields", () => {
     render(
       <QueryClientProvider client={queryClient}>
         <Form>
-          <ProviderSpecificFields selectedProvider={"Hosted_Vllm" as Providers} />
+          <ProviderSpecificFields
+            selectedProvider={"Hosted_Vllm" as Providers}
+          />
         </Form>
       </QueryClientProvider>,
     );
@@ -197,12 +201,18 @@ describe("ProviderSpecificFields", () => {
       const apiKeyInput = screen.getByLabelText("Azure API Key");
       expect(apiKeyInput).toBeInTheDocument();
       expect(apiKeyInput).toHaveAttribute("type", "password");
-      expect(apiKeyInput).toHaveAttribute("placeholder", "Enter your Azure API Key");
+      expect(apiKeyInput).toHaveAttribute(
+        "placeholder",
+        "Enter your Azure API Key",
+      );
 
       const azureAdTokenInput = screen.getByLabelText("Azure AD Token");
       expect(azureAdTokenInput).toBeInTheDocument();
       expect(azureAdTokenInput).toHaveAttribute("type", "password");
-      expect(azureAdTokenInput).toHaveAttribute("placeholder", "Enter your Azure AD Token");
+      expect(azureAdTokenInput).toHaveAttribute(
+        "placeholder",
+        "Enter your Azure AD Token",
+      );
 
       const apiBaseInput = screen.getByPlaceholderText("https://...");
       expect(apiBaseInput).toBeInTheDocument();

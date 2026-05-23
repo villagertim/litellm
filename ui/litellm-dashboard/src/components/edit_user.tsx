@@ -1,10 +1,16 @@
+import { SelectItem, TextInput } from "@tremor/react";
 import { useEffect, useState } from "react";
-import { TextInput, SelectItem } from "@tremor/react";
 
-import { Button as Button2, Modal, Form, Select as Select2, InputNumber } from "antd";
+import {
+  Button as Button2,
+  Form,
+  InputNumber,
+  Modal,
+  Select as Select2,
+} from "antd";
 
-import NumericalInput from "./shared/numerical_input";
 import BudgetDurationDropdown from "./common_components/budget_duration_dropdown";
+import NumericalInput from "./shared/numerical_input";
 
 interface EditUserModalProps {
   visible: boolean;
@@ -14,7 +20,13 @@ interface EditUserModalProps {
   onSubmit: (data: any) => void;
 }
 
-const EditUserModal: React.FC<EditUserModalProps> = ({ visible, possibleUIRoles, onCancel, user, onSubmit }) => {
+const EditUserModal: React.FC<EditUserModalProps> = ({
+  visible,
+  possibleUIRoles,
+  onCancel,
+  user,
+  onSubmit,
+}) => {
   const [editedUser, setEditedUser] = useState(user);
   const [form] = Form.useForm();
 
@@ -39,7 +51,13 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ visible, possibleUIRoles,
   }
 
   return (
-    <Modal open={visible} onCancel={handleCancel} footer={null} title={"Edit User " + user.user_id} width={1000}>
+    <Modal
+      open={visible}
+      onCancel={handleCancel}
+      footer={null}
+      title={"Edit User " + user.user_id}
+      width={1000}
+    >
       <Form
         form={form}
         onFinish={handleEditSubmit}
@@ -49,7 +67,12 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ visible, possibleUIRoles,
         labelAlign="left"
       >
         <>
-          <Form.Item className="mt-8" label="User Email" tooltip="Email of the User" name="user_email">
+          <Form.Item
+            className="mt-8"
+            label="User Email"
+            tooltip="Email of the User"
+            name="user_email"
+          >
             <TextInput />
           </Form.Item>
 
@@ -60,16 +83,21 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ visible, possibleUIRoles,
           <Form.Item label="User Role" name="user_role">
             <Select2>
               {possibleUIRoles &&
-                Object.entries(possibleUIRoles).map(([role, { ui_label, description }]) => (
-                  <SelectItem key={role} value={role} title={ui_label}>
-                    <div className="flex">
-                      {ui_label}{" "}
-                      <p className="ml-2" style={{ color: "gray", fontSize: "12px" }}>
-                        {description}
-                      </p>
-                    </div>
-                  </SelectItem>
-                ))}
+                Object.entries(possibleUIRoles).map(
+                  ([role, { ui_label, description }]) => (
+                    <SelectItem key={role} value={role} title={ui_label}>
+                      <div className="flex">
+                        {ui_label}{" "}
+                        <p
+                          className="ml-2"
+                          style={{ color: "gray", fontSize: "12px" }}
+                        >
+                          {description}
+                        </p>
+                      </div>
+                    </SelectItem>
+                  ),
+                )}
             </Select2>
           </Form.Item>
 

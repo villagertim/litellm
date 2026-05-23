@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Card, Badge, Button } from "@tremor/react";
 import { ArrowLeftIcon, PencilIcon } from "@heroicons/react/outline";
-import { Descriptions, Tag, Spin, Divider, Typography, Alert } from "antd";
-import { Policy } from "./types";
-import { PipelineInfoDisplay } from "./pipeline_flow_builder";
+import { Badge, Button, Card } from "@tremor/react";
+import { Alert, Descriptions, Divider, Spin, Tag, Typography } from "antd";
+import type React from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getResolvedGuardrails } from "../networking";
+import { PipelineInfoDisplay } from "./pipeline_flow_builder";
+import type { Policy } from "./types";
 
 const { Title, Text } = Typography;
 
@@ -37,7 +38,7 @@ const PolicyInfoView: React.FC<PolicyInfoViewProps> = ({
     try {
       const data = await getPolicy(accessToken, policyId);
       setPolicy(data);
-      
+
       // Also fetch resolved guardrails
       setIsLoadingResolved(true);
       try {
@@ -83,18 +84,11 @@ const PolicyInfoView: React.FC<PolicyInfoViewProps> = ({
     <Card>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <Button
-            variant="secondary"
-            icon={ArrowLeftIcon}
-            onClick={onClose}
-          >
+          <Button variant="secondary" icon={ArrowLeftIcon} onClick={onClose}>
             Back to Policies
           </Button>
           {isAdmin && (
-            <Button
-              icon={PencilIcon}
-              onClick={() => onEdit(policy)}
-            >
+            <Button icon={PencilIcon} onClick={() => onEdit(policy)}>
               Edit Policy
             </Button>
           )}
@@ -104,14 +98,18 @@ const PolicyInfoView: React.FC<PolicyInfoViewProps> = ({
 
         <Descriptions bordered column={1}>
           <Descriptions.Item label="Policy ID">
-            <code className="text-xs bg-gray-100 px-2 py-1 rounded">{policy.policy_id}</code>
+            <code className="text-xs bg-gray-100 px-2 py-1 rounded">
+              {policy.policy_id}
+            </code>
           </Descriptions.Item>
           <Descriptions.Item label="Description">
             {policy.description || <Text type="secondary">No description</Text>}
           </Descriptions.Item>
           <Descriptions.Item label="Inherits From">
             {policy.inherit ? (
-              <Badge color="blue" size="sm">{policy.inherit}</Badge>
+              <Badge color="blue" size="sm">
+                {policy.inherit}
+              </Badge>
             ) : (
               <Text type="secondary">None</Text>
             )}
@@ -152,7 +150,10 @@ const PolicyInfoView: React.FC<PolicyInfoViewProps> = ({
             message="Resolved Guardrails"
             description={
               <div>
-                <Text type="secondary" style={{ display: "block", marginBottom: 8 }}>
+                <Text
+                  type="secondary"
+                  style={{ display: "block", marginBottom: 8 }}
+                >
                   Final guardrails that will be applied (including inheritance):
                 </Text>
                 <div className="flex flex-wrap gap-1">
@@ -186,7 +187,8 @@ const PolicyInfoView: React.FC<PolicyInfoViewProps> = ({
           </Descriptions.Item>
           <Descriptions.Item label="Guardrails to Remove">
             <div className="flex flex-wrap gap-1">
-              {policy.guardrails_remove && policy.guardrails_remove.length > 0 ? (
+              {policy.guardrails_remove &&
+              policy.guardrails_remove.length > 0 ? (
                 policy.guardrails_remove.map((g) => (
                   <Tag key={g} color="red">
                     {g}
@@ -212,7 +214,9 @@ const PolicyInfoView: React.FC<PolicyInfoViewProps> = ({
                   : JSON.stringify(policy.condition.model)}
               </Tag>
             ) : (
-              <Text type="secondary">No model condition (applies to all models)</Text>
+              <Text type="secondary">
+                No model condition (applies to all models)
+              </Text>
             )}
           </Descriptions.Item>
         </Descriptions>

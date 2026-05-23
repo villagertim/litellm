@@ -1,8 +1,8 @@
-import { renderWithProviders, screen } from "../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
-import { vi } from "vitest";
 import { Form } from "antd";
-import React from "react";
+import type React from "react";
+import { vi } from "vitest";
+import { renderWithProviders, screen } from "../../../tests/test-utils";
 import { RateLimitTypeFormItem } from "./RateLimitTypeFormItem";
 
 const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -14,7 +14,7 @@ describe("RateLimitTypeFormItem", () => {
     renderWithProviders(
       <Wrapper>
         <RateLimitTypeFormItem type="tpm" name="tpm_type" />
-      </Wrapper>
+      </Wrapper>,
     );
     expect(screen.getByText(/TPM Rate Limit Type/)).toBeInTheDocument();
   });
@@ -23,7 +23,7 @@ describe("RateLimitTypeFormItem", () => {
     renderWithProviders(
       <Wrapper>
         <RateLimitTypeFormItem type="tpm" name="tpm_type" />
-      </Wrapper>
+      </Wrapper>,
     );
     expect(screen.getByText(/TPM Rate Limit Type/)).toBeInTheDocument();
   });
@@ -32,7 +32,7 @@ describe("RateLimitTypeFormItem", () => {
     renderWithProviders(
       <Wrapper>
         <RateLimitTypeFormItem type="rpm" name="rpm_type" />
-      </Wrapper>
+      </Wrapper>,
     );
     expect(screen.getByText(/RPM Rate Limit Type/)).toBeInTheDocument();
   });
@@ -41,7 +41,7 @@ describe("RateLimitTypeFormItem", () => {
     renderWithProviders(
       <Wrapper>
         <RateLimitTypeFormItem type="tpm" name="tpm_type" />
-      </Wrapper>
+      </Wrapper>,
     );
     expect(screen.getByText("Select rate limit type")).toBeInTheDocument();
   });
@@ -52,7 +52,7 @@ describe("RateLimitTypeFormItem", () => {
     renderWithProviders(
       <Wrapper>
         <RateLimitTypeFormItem type="tpm" name="tpm_type" onChange={onChange} />
-      </Wrapper>
+      </Wrapper>,
     );
     await user.click(screen.getByRole("combobox"));
     await user.click(screen.getByText("Guaranteed throughput"));

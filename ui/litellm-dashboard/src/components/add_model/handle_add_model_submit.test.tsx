@@ -24,7 +24,11 @@ describe("prepareModelAddRequest", () => {
       output_cost_per_token: "1000000",
     };
 
-    const deployments = await prepareModelAddRequest({ ...formValues }, "token", null);
+    const deployments = await prepareModelAddRequest(
+      { ...formValues },
+      "token",
+      null,
+    );
 
     expect(deployments).toHaveLength(1);
     const [deployment] = deployments!;
@@ -49,7 +53,11 @@ describe("prepareModelAddRequest", () => {
       custom_llm_provider: "Petals",
     };
 
-    const deployments = await prepareModelAddRequest({ ...fallbackValues }, "token", null);
+    const deployments = await prepareModelAddRequest(
+      { ...fallbackValues },
+      "token",
+      null,
+    );
 
     expect(deployments).toHaveLength(1);
     const [deployment] = deployments!;
@@ -72,11 +80,17 @@ describe("prepareModelAddRequest", () => {
       }),
     };
 
-    const deployments = await prepareModelAddRequest({ ...formValues }, "token", null);
+    const deployments = await prepareModelAddRequest(
+      { ...formValues },
+      "token",
+      null,
+    );
 
     expect(deployments).toHaveLength(1);
     const [deployment] = deployments!;
-    expect(deployment.litellmParamsObj.litellm_credential_name).toBe("selected-credential");
+    expect(deployment.litellmParamsObj.litellm_credential_name).toBe(
+      "selected-credential",
+    );
     expect(deployment.litellmParamsObj.timeout).toBe(5);
   });
 });

@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 import LatencyBasedConfiguration from "./LatencyBasedConfiguration";
 import ReliabilityRetriesSection from "./ReliabilityRetriesSection";
 import RoutingStrategySelector from "./RoutingStrategySelector";
@@ -44,14 +44,22 @@ const RouterSettingsForm: React.FC<RouterSettingsFormProps> = ({
       {/* Routing Settings Section */}
       <div className="space-y-6">
         <div className="max-w-3xl">
-          <h3 className="text-sm font-medium text-gray-900">Routing Settings</h3>
-          <p className="text-xs text-gray-500 mt-1">Configure how requests are routed to deployments</p>
+          <h3 className="text-sm font-medium text-gray-900">
+            Routing Settings
+          </h3>
+          <p className="text-xs text-gray-500 mt-1">
+            Configure how requests are routed to deployments
+          </p>
         </div>
 
         {/* Routing Strategy */}
         {availableRoutingStrategies.length > 0 && (
           <RoutingStrategySelector
-            selectedStrategy={value.selectedStrategy || value.routerSettings.routing_strategy || null}
+            selectedStrategy={
+              value.selectedStrategy ||
+              value.routerSettings.routing_strategy ||
+              null
+            }
             availableStrategies={availableRoutingStrategies}
             routingStrategyDescriptions={routingStrategyDescriptions}
             routerFieldsMetadata={routerFieldsMetadata}
@@ -72,11 +80,16 @@ const RouterSettingsForm: React.FC<RouterSettingsFormProps> = ({
 
       {/* Strategy-Specific Args - Show immediately after strategy if latency-based */}
       {value.selectedStrategy === "latency-based-routing" && (
-        <LatencyBasedConfiguration routingStrategyArgs={value.routerSettings["routing_strategy_args"]} />
+        <LatencyBasedConfiguration
+          routingStrategyArgs={value.routerSettings["routing_strategy_args"]}
+        />
       )}
 
       {/* Other Settings */}
-      <ReliabilityRetriesSection routerSettings={value.routerSettings} routerFieldsMetadata={routerFieldsMetadata} />
+      <ReliabilityRetriesSection
+        routerSettings={value.routerSettings}
+        routerFieldsMetadata={routerFieldsMetadata}
+      />
     </div>
   );
 };

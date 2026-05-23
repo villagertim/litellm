@@ -1,22 +1,30 @@
 "use client";
 
-import { ToolOutlined, CopyOutlined, CheckOutlined, EditOutlined } from "@ant-design/icons";
+import {
+  CheckOutlined,
+  CopyOutlined,
+  EditOutlined,
+  ToolOutlined,
+} from "@ant-design/icons";
 import { Collapse, Tooltip } from "antd";
-import React, { useEffect, useRef, useState } from "react";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coy } from "react-syntax-highlighter/dist/esm/styles/prism";
-import ReasoningContent from "../playground/chat_ui/ReasoningContent";
+import remarkGfm from "remark-gfm";
 import MCPEventsDisplay from "../playground/chat_ui/MCPEventsDisplay";
-import { ChatMessage } from "./types";
+import ReasoningContent from "../playground/chat_ui/ReasoningContent";
+import type { ChatMessage } from "./types";
 
 const { Panel } = Collapse;
 
 // Keys whose values must be redacted in tool args display
 const REDACTED_KEY_PATTERNS = /token|key|secret|password|auth/i;
 
-function redactSensitiveValues(obj: Record<string, unknown>): Record<string, unknown> {
+function redactSensitiveValues(
+  obj: Record<string, unknown>,
+): Record<string, unknown> {
   const result: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(obj)) {
     if (REDACTED_KEY_PATTERNS.test(k)) {
@@ -122,15 +130,23 @@ function UserBubble({ message, onEdit, isStreaming }: UserBubbleProps) {
 
   if (editing) {
     return (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-        <div style={{
-          width: "72%",
-          background: "#fff",
-          border: "1.5px solid #1677ff",
-          borderRadius: 12,
-          overflow: "hidden",
-          boxShadow: "0 0 0 3px rgba(22,119,255,0.1)",
-        }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-end",
+        }}
+      >
+        <div
+          style={{
+            width: "72%",
+            background: "#fff",
+            border: "1.5px solid #1677ff",
+            borderRadius: 12,
+            overflow: "hidden",
+            boxShadow: "0 0 0 3px rgba(22,119,255,0.1)",
+          }}
+        >
           <textarea
             ref={textareaRef}
             value={editValue}
@@ -151,18 +167,28 @@ function UserBubble({ message, onEdit, isStreaming }: UserBubbleProps) {
               minHeight: 40,
             }}
           />
-          <div style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            gap: 8,
-            padding: "6px 10px 8px",
-            borderTop: "1px solid #f0f0f0",
-          }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: 8,
+              padding: "6px 10px 8px",
+              borderTop: "1px solid #f0f0f0",
+            }}
+          >
             <button
-              onClick={() => { setEditValue(message.content); setEditing(false); }}
+              onClick={() => {
+                setEditValue(message.content);
+                setEditing(false);
+              }}
               style={{
-                padding: "4px 12px", borderRadius: 6, border: "1px solid #d1d5db",
-                background: "#fff", color: "#374151", fontSize: 13, cursor: "pointer",
+                padding: "4px 12px",
+                borderRadius: 6,
+                border: "1px solid #d1d5db",
+                background: "#fff",
+                color: "#374151",
+                fontSize: 13,
+                cursor: "pointer",
               }}
             >
               Cancel
@@ -171,10 +197,14 @@ function UserBubble({ message, onEdit, isStreaming }: UserBubbleProps) {
               onClick={handleSave}
               disabled={!editValue.trim()}
               style={{
-                padding: "4px 12px", borderRadius: 6, border: "none",
+                padding: "4px 12px",
+                borderRadius: 6,
+                border: "none",
                 background: editValue.trim() ? "#1677ff" : "#f3f4f6",
                 color: editValue.trim() ? "#fff" : "#9ca3af",
-                fontSize: 13, fontWeight: 500, cursor: editValue.trim() ? "pointer" : "not-allowed",
+                fontSize: 13,
+                fontWeight: 500,
+                cursor: editValue.trim() ? "pointer" : "not-allowed",
               }}
             >
               Save &amp; Send
@@ -187,25 +217,50 @@ function UserBubble({ message, onEdit, isStreaming }: UserBubbleProps) {
 
   return (
     <div
-      style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", width: "100%" }}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-end",
+        width: "100%",
+      }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <div style={{ display: "flex", alignItems: "flex-end", gap: 6, maxWidth: "72%" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-end",
+          gap: 6,
+          maxWidth: "72%",
+        }}
+      >
         {/* Edit button — appears on hover, to the left of the bubble */}
         {hovered && !isStreaming && onEdit && (
           <Tooltip title="Edit message">
             <button
-              onClick={() => { setEditValue(message.content); setEditing(true); }}
+              onClick={() => {
+                setEditValue(message.content);
+                setEditing(true);
+              }}
               style={{
-                background: "none", border: "none", cursor: "pointer",
-                padding: "4px 6px", borderRadius: 5,
-                color: "#9ca3af", fontSize: 13, flexShrink: 0,
-                display: "flex", alignItems: "center",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: "4px 6px",
+                borderRadius: 5,
+                color: "#9ca3af",
+                fontSize: 13,
+                flexShrink: 0,
+                display: "flex",
+                alignItems: "center",
                 transition: "color 0.15s",
               }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6b7280"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#9ca3af"; }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.color = "#6b7280";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.color = "#9ca3af";
+              }}
             >
               <EditOutlined />
             </button>
@@ -269,13 +324,25 @@ function AssistantBubble({
   const showReasoningPlaceholder =
     isLastMessage && isStreaming && !message.reasoningContent;
 
-  const showReasoning =
-    !!message.reasoningContent || showReasoningPlaceholder;
+  const showReasoning = !!message.reasoningContent || showReasoningPlaceholder;
 
   if (isTypingIndicator) {
     return (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "10px 4px" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+            padding: "10px 4px",
+          }}
+        >
           <TypingDots />
         </div>
       </div>
@@ -291,17 +358,23 @@ function AssistantBubble({
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", maxWidth: "80%" }}>
-      {showReasoning && (
-        showReasoningPlaceholder ? (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        maxWidth: "80%",
+      }}
+    >
+      {showReasoning &&
+        (showReasoningPlaceholder ? (
           <ThinkingPlaceholder />
         ) : (
           <ReasoningContent
             key={reasoningKeyRef.current}
             reasoningContent={message.reasoningContent!}
           />
-        )
-      )}
+        ))}
 
       <div
         style={{
@@ -314,13 +387,18 @@ function AssistantBubble({
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           components={{
-            code: MarkdownCodeRenderer as React.ComponentType<React.ComponentPropsWithoutRef<"code">>,
+            code: MarkdownCodeRenderer as React.ComponentType<
+              React.ComponentPropsWithoutRef<"code">
+            >,
           }}
         >
           {mainContent}
         </ReactMarkdown>
         {stoppedSuffix && (
-          <span style={{ color: "#9ca3af", fontStyle: "italic" }}> [stopped]</span>
+          <span style={{ color: "#9ca3af", fontStyle: "italic" }}>
+            {" "}
+            [stopped]
+          </span>
         )}
       </div>
 
@@ -338,16 +416,21 @@ function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(text).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }).catch(() => {
-      // clipboard not available (non-HTTPS or permission denied) — silently no-op
-    });
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      })
+      .catch(() => {
+        // clipboard not available (non-HTTPS or permission denied) — silently no-op
+      });
   };
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 6 }}>
+    <div
+      style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 6 }}
+    >
       <Tooltip title={copied ? "Copied!" : "Copy"}>
         <button
           onClick={handleCopy}
@@ -365,10 +448,12 @@ function CopyButton({ text }: { text: string }) {
             transition: "color 0.15s",
           }}
           onMouseEnter={(e) => {
-            if (!copied) (e.currentTarget as HTMLButtonElement).style.color = "#6b7280";
+            if (!copied)
+              (e.currentTarget as HTMLButtonElement).style.color = "#6b7280";
           }}
           onMouseLeave={(e) => {
-            if (!copied) (e.currentTarget as HTMLButtonElement).style.color = "#9ca3af";
+            if (!copied)
+              (e.currentTarget as HTMLButtonElement).style.color = "#9ca3af";
           }}
         >
           {copied ? <CheckOutlined /> : <CopyOutlined />}
@@ -440,8 +525,9 @@ interface ToolCardProps {
 }
 
 function ToolCard({ message }: ToolCardProps) {
-  const redactedArgs =
-    message.toolArgs ? redactSensitiveValues(message.toolArgs) : undefined;
+  const redactedArgs = message.toolArgs
+    ? redactSensitiveValues(message.toolArgs)
+    : undefined;
 
   return (
     <div style={{ maxWidth: "80%" }}>
@@ -455,7 +541,14 @@ function ToolCard({ message }: ToolCardProps) {
       >
         <Panel
           header={
-            <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
+            <span
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                fontSize: 13,
+              }}
+            >
               <ToolOutlined style={{ color: "#6b7280" }} />
               <span style={{ color: "#374151", fontWeight: 500 }}>
                 {message.toolName ?? "Tool call"}
@@ -542,7 +635,11 @@ interface Props {
   onEditMessage?: (messageId: string, newContent: string) => void;
 }
 
-const ChatMessages: React.FC<Props> = ({ messages, isStreaming, onEditMessage }) => {
+const ChatMessages: React.FC<Props> = ({
+  messages,
+  isStreaming,
+  onEditMessage,
+}) => {
   // Scrolling is managed by ChatPage.tsx (scroll lock during streaming,
   // scroll-to-bottom on new message). No auto-scroll here.
 
@@ -560,7 +657,14 @@ const ChatMessages: React.FC<Props> = ({ messages, isStreaming, onEditMessage })
         const isLastMessage = idx === lastIndex;
 
         if (msg.role === "user") {
-          return <UserBubble key={msg.id} message={msg} onEdit={onEditMessage} isStreaming={isStreaming} />;
+          return (
+            <UserBubble
+              key={msg.id}
+              message={msg}
+              onEdit={onEditMessage}
+              isStreaming={isStreaming}
+            />
+          );
         }
 
         if (msg.role === "tool") {
@@ -579,7 +683,6 @@ const ChatMessages: React.FC<Props> = ({ messages, isStreaming, onEditMessage })
           />
         );
       })}
-
     </div>
   );
 };

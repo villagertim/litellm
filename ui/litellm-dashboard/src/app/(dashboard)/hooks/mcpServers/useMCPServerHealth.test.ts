@@ -1,10 +1,10 @@
+import * as networking from "@/components/networking";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { renderHook, waitFor } from "@testing-library/react";
 /* @vitest-environment jsdom */
 import React from "react";
-import { renderHook, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useMCPServerHealth } from "./useMCPServerHealth";
-import * as networking from "@/components/networking";
 
 // Mock the networking module
 vi.mock("@/components/networking", () => ({
@@ -30,7 +30,11 @@ const createQueryClient = () =>
 
 const wrapper = ({ children }: { children: React.ReactNode }) => {
   const queryClient = createQueryClient();
-  return React.createElement(QueryClientProvider, { client: queryClient }, children);
+  return React.createElement(
+    QueryClientProvider,
+    { client: queryClient },
+    children,
+  );
 };
 
 describe("useMCPServerHealth", () => {
@@ -44,7 +48,9 @@ describe("useMCPServerHealth", () => {
       { server_id: "server-2", status: "unhealthy" },
     ];
 
-    vi.mocked(networking.fetchMCPServerHealth).mockResolvedValue(mockHealthStatuses);
+    vi.mocked(networking.fetchMCPServerHealth).mockResolvedValue(
+      mockHealthStatuses,
+    );
 
     const { result } = renderHook(() => useMCPServerHealth(), {
       wrapper,
@@ -54,7 +60,9 @@ describe("useMCPServerHealth", () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(networking.fetchMCPServerHealth).toHaveBeenCalledWith("test-token-123");
+    expect(networking.fetchMCPServerHealth).toHaveBeenCalledWith(
+      "test-token-123",
+    );
     expect(result.current.data).toEqual(mockHealthStatuses);
   });
 

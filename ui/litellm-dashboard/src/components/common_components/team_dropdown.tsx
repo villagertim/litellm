@@ -1,9 +1,10 @@
-import React, { useMemo, useState, type UIEvent } from "react";
-import { Select, Typography } from "antd";
+import { useInfiniteTeams } from "@/app/(dashboard)/hooks/teams/useTeams";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useDebouncedState } from "@tanstack/react-pacer/debouncer";
-import { useInfiniteTeams } from "@/app/(dashboard)/hooks/teams/useTeams";
-import { Team } from "../key_team_helpers/key_list";
+import { Select, Typography } from "antd";
+import type React from "react";
+import { type UIEvent, useMemo, useState } from "react";
+import type { Team } from "../key_team_helpers/key_list";
 
 const { Text } = Typography;
 
@@ -34,17 +35,8 @@ const TeamDropdown: React.FC<TeamDropdownProps> = ({
     wait: DEBOUNCE_MS,
   });
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-  } = useInfiniteTeams(
-    pageSize,
-    debouncedSearch || undefined,
-    organizationId,
-  );
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useInfiniteTeams(pageSize, debouncedSearch || undefined, organizationId);
 
   const teams = useMemo(() => {
     if (!data?.pages) return [];
@@ -77,7 +69,9 @@ const TeamDropdown: React.FC<TeamDropdownProps> = ({
   const handleChange = (teamId: string | undefined) => {
     onChange?.(teamId ?? "");
     if (onTeamSelect) {
-      const team = teamId ? teams.find((t) => t.team_id === teamId) ?? null : null;
+      const team = teamId
+        ? teams.find((t) => t.team_id === teamId) ?? null
+        : null;
       onTeamSelect(team);
     }
   };

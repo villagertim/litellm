@@ -1,13 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Title, Text, Button, Badge } from "@tremor/react";
+import { errorPatterns } from "@/utils/errorPatterns";
+import type { Table as TableInstance } from "@tanstack/react-table";
+import { Badge, Button, Text, Title } from "@tremor/react";
 import { Modal } from "antd";
 import { Button as AntdButton } from "antd";
-import { ModelDataTable } from "./table";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
+import type { Team } from "../key_team_helpers/key_list";
+import {
+  individualModelHealthCheckCall,
+  latestHealthChecksCall,
+} from "../networking";
 import { healthCheckColumns } from "./health_check_columns";
-import { errorPatterns } from "@/utils/errorPatterns";
-import { individualModelHealthCheckCall, latestHealthChecksCall } from "../networking";
-import { Table as TableInstance } from "@tanstack/react-table";
-import { Team } from "../key_team_helpers/key_list";
+import { ModelDataTable } from "./table";
 
 interface HealthStatus {
   status: string;
@@ -51,8 +55,12 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
   pageSize = 50,
   onPageChange,
 }) => {
-  const [modelHealthStatuses, setModelHealthStatuses] = useState<{ [key: string]: HealthStatus }>({});
-  const [selectedModelsForHealth, setSelectedModelsForHealth] = useState<string[]>([]);
+  const [modelHealthStatuses, setModelHealthStatuses] = useState<{
+    [key: string]: HealthStatus;
+  }>({});
+  const [selectedModelsForHealth, setSelectedModelsForHealth] = useState<
+    string[]
+  >([]);
   const [allModelsSelected, setAllModelsSelected] = useState<boolean>(false);
   const [errorModalVisible, setErrorModalVisible] = useState(false);
   const [selectedErrorDetails, setSelectedErrorDetails] = useState<{
@@ -100,33 +108,45 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
           latestHealthChecks.latest_health_checks &&
           typeof latestHealthChecks.latest_health_checks === "object"
         ) {
-          Object.entries(latestHealthChecks.latest_health_checks).forEach(([modelId, checkData]: [string, any]) => {
-            if (!checkData) return;
+          Object.entries(latestHealthChecks.latest_health_checks).forEach(
+            ([modelId, checkData]: [string, any]) => {
+              if (!checkData) return;
 
-            // Key is model_id from the backend (guaranteed by DB schema)
-            const modelExists = modelData.data.some((m: any) => m.model_info?.id === modelId);
-            if (!modelExists) return;
+              // Key is model_id from the backend (guaranteed by DB schema)
+              const modelExists = modelData.data.some(
+                (m: any) => m.model_info?.id === modelId,
+              );
+              if (!modelExists) return;
 
-            const fullError = checkData.error_message || undefined;
+              const fullError = checkData.error_message || undefined;
 
-            healthStatusMap[modelId] = {
-              status: checkData.status || "unknown",
-              lastCheck: checkData.checked_at ? new Date(checkData.checked_at).toLocaleString() : "None",
-              lastSuccess:
-                checkData.status === "healthy"
-                  ? checkData.checked_at
-                    ? new Date(checkData.checked_at).toLocaleString()
-                    : "None"
+              healthStatusMap[modelId] = {
+                status: checkData.status || "unknown",
+                lastCheck: checkData.checked_at
+                  ? new Date(checkData.checked_at).toLocaleString()
                   : "None",
-              loading: false,
-              error: fullError ? extractMeaningfulError(fullError) : undefined,
-              fullError: fullError,
-              successResponse: checkData.status === "healthy" ? checkData : undefined,
-            };
-          });
+                lastSuccess:
+                  checkData.status === "healthy"
+                    ? checkData.checked_at
+                      ? new Date(checkData.checked_at).toLocaleString()
+                      : "None"
+                    : "None",
+                loading: false,
+                error: fullError
+                  ? extractMeaningfulError(fullError)
+                  : undefined,
+                fullError: fullError,
+                successResponse:
+                  checkData.status === "healthy" ? checkData : undefined,
+              };
+            },
+          );
         }
       } catch (healthError) {
-        console.warn("Failed to load health check history (using default states):", healthError);
+        console.warn(
+          "Failed to load health check history (using default states):",
+          healthError,
+        );
       }
 
       setModelHealthStatuses(healthStatusMap);
@@ -139,7 +159,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
   const extractMeaningfulError = (error: any): string => {
     if (!error) return "Health check failed";
 
-    let errorStr = typeof error === "string" ? error : JSON.stringify(error);
+    const errorStr = typeof error === "string" ? error : JSON.stringify(error);
 
     // First, look for explicit "ErrorType: StatusCode" patterns
     const directPatternMatch = errorStr.match(/(\w+Error):\s*(\d{3})/i);
@@ -151,7 +171,9 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
     const errorTypeMatch = errorStr.match(
       /(AuthenticationError|RateLimitError|BadRequestError|InternalServerError|TimeoutError|NotFoundError|ForbiddenError|ServiceUnavailableError|BadGatewayError|ContentPolicyViolationError|\w+Error)/i,
     );
-    const statusCodeMatch = errorStr.match(/\b(400|401|403|404|408|429|500|502|503|504)\b/);
+    const statusCodeMatch = errorStr.match(
+      /\b(400|401|403|404|408|429|500|502|503|504)\b/,
+    );
 
     if (errorTypeMatch && statusCodeMatch) {
       return `${errorTypeMatch[1]}: ${statusCodeMatch[1]}`;
@@ -237,7 +259,9 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
     const firstSentence = sentences[0]?.trim();
 
     if (firstSentence && firstSentence.length > 0) {
-      return firstSentence.length > 100 ? firstSentence.substring(0, 97) + "..." : firstSentence;
+      return firstSentence.length > 100
+        ? firstSentence.substring(0, 97) + "..."
+        : firstSentence;
     }
 
     return cleaned.length > 100 ? cleaned.substring(0, 97) + "..." : cleaned;
@@ -256,11 +280,19 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
     }));
 
     try {
-      const response = await individualModelHealthCheckCall(accessToken, modelId);
+      const response = await individualModelHealthCheckCall(
+        accessToken,
+        modelId,
+      );
       const currentTime = new Date().toLocaleString();
 
-      if (response.unhealthy_count > 0 && response.unhealthy_endpoints && response.unhealthy_endpoints.length > 0) {
-        const rawError = response.unhealthy_endpoints[0]?.error || "Health check failed";
+      if (
+        response.unhealthy_count > 0 &&
+        response.unhealthy_endpoints &&
+        response.unhealthy_endpoints.length > 0
+      ) {
+        const rawError =
+          response.unhealthy_endpoints[0]?.error || "Health check failed";
         const errorMessage = extractMeaningfulError(rawError);
         setModelHealthStatuses((prev) => ({
           ...prev,
@@ -306,14 +338,22 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
                     : prev[modelId]?.lastSuccess || "None"
                   : prev[modelId]?.lastSuccess || "None",
               loading: false,
-              error: fullError ? extractMeaningfulError(fullError) : prev[modelId]?.error,
+              error: fullError
+                ? extractMeaningfulError(fullError)
+                : prev[modelId]?.error,
               fullError: fullError || prev[modelId]?.fullError,
-              successResponse: checkData.status === "healthy" ? checkData : prev[modelId]?.successResponse,
+              successResponse:
+                checkData.status === "healthy"
+                  ? checkData
+                  : prev[modelId]?.successResponse,
             },
           }));
         }
       } catch (dbError) {
-        console.debug("Could not fetch updated status from database (non-critical):", dbError);
+        console.debug(
+          "Could not fetch updated status from database (non-critical):",
+          dbError,
+        );
       }
     } catch (error) {
       const currentTime = new Date().toLocaleString();
@@ -334,7 +374,10 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
   };
 
   const runAllHealthChecks = async () => {
-    const modelsToCheck = selectedModelsForHealth.length > 0 ? selectedModelsForHealth : all_models_on_proxy;
+    const modelsToCheck =
+      selectedModelsForHealth.length > 0
+        ? selectedModelsForHealth
+        : all_models_on_proxy;
 
     const loadingStatuses = modelsToCheck.reduce(
       (acc, modelId) => {
@@ -356,12 +399,20 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
       if (!accessToken) return;
 
       try {
-        const response = await individualModelHealthCheckCall(accessToken, modelId);
+        const response = await individualModelHealthCheckCall(
+          accessToken,
+          modelId,
+        );
         healthCheckResults[modelId] = response;
 
         const currentTime = new Date().toLocaleString();
-        if (response.unhealthy_count > 0 && response.unhealthy_endpoints && response.unhealthy_endpoints.length > 0) {
-          const rawError = response.unhealthy_endpoints[0]?.error || "Health check failed";
+        if (
+          response.unhealthy_count > 0 &&
+          response.unhealthy_endpoints &&
+          response.unhealthy_endpoints.length > 0
+        ) {
+          const rawError =
+            response.unhealthy_endpoints[0]?.error || "Health check failed";
           const errorMessage = extractMeaningfulError(rawError);
           setModelHealthStatuses((prev) => ({
             ...prev,
@@ -412,36 +463,47 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
       const latestHealthChecks = await latestHealthChecksCall(accessToken);
 
       if (latestHealthChecks.latest_health_checks) {
-        Object.entries(latestHealthChecks.latest_health_checks).forEach(([modelId, checkData]: [string, any]) => {
-          if (modelsToCheck.includes(modelId) && checkData) {
-            const fullError = checkData.error_message || undefined;
-            setModelHealthStatuses((prev) => {
-              const currentStatus = prev[modelId];
-              return {
-                ...prev,
-                [modelId]: {
-                  status: checkData.status || currentStatus?.status || "unknown",
-                  lastCheck: checkData.checked_at
-                    ? new Date(checkData.checked_at).toLocaleString()
-                    : currentStatus?.lastCheck || "None",
-                  lastSuccess:
-                    checkData.status === "healthy"
-                      ? checkData.checked_at
-                        ? new Date(checkData.checked_at).toLocaleString()
-                        : currentStatus?.lastSuccess || "None"
-                      : currentStatus?.lastSuccess || "None",
-                  loading: false,
-                  error: fullError ? extractMeaningfulError(fullError) : currentStatus?.error,
-                  fullError: fullError || currentStatus?.fullError,
-                  successResponse: checkData.status === "healthy" ? checkData : currentStatus?.successResponse,
-                },
-              };
-            });
-          }
-        });
+        Object.entries(latestHealthChecks.latest_health_checks).forEach(
+          ([modelId, checkData]: [string, any]) => {
+            if (modelsToCheck.includes(modelId) && checkData) {
+              const fullError = checkData.error_message || undefined;
+              setModelHealthStatuses((prev) => {
+                const currentStatus = prev[modelId];
+                return {
+                  ...prev,
+                  [modelId]: {
+                    status:
+                      checkData.status || currentStatus?.status || "unknown",
+                    lastCheck: checkData.checked_at
+                      ? new Date(checkData.checked_at).toLocaleString()
+                      : currentStatus?.lastCheck || "None",
+                    lastSuccess:
+                      checkData.status === "healthy"
+                        ? checkData.checked_at
+                          ? new Date(checkData.checked_at).toLocaleString()
+                          : currentStatus?.lastSuccess || "None"
+                        : currentStatus?.lastSuccess || "None",
+                    loading: false,
+                    error: fullError
+                      ? extractMeaningfulError(fullError)
+                      : currentStatus?.error,
+                    fullError: fullError || currentStatus?.fullError,
+                    successResponse:
+                      checkData.status === "healthy"
+                        ? checkData
+                        : currentStatus?.successResponse,
+                  },
+                };
+              });
+            }
+          },
+        );
       }
     } catch (dbError) {
-      console.warn("Failed to fetch updated health statuses from database (non-critical):", dbError);
+      console.warn(
+        "Failed to fetch updated health statuses from database (non-critical):",
+        dbError,
+      );
     }
   };
 
@@ -485,7 +547,11 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
     }
   };
 
-  const showErrorModal = (modelName: string, cleanedError: string, fullError: string) => {
+  const showErrorModal = (
+    modelName: string,
+    cleanedError: string,
+    fullError: string,
+  ) => {
     setSelectedErrorDetails({
       modelName,
       cleanedError,
@@ -539,8 +605,13 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
   const totalPages = paginationMeta?.total_pages ?? 1;
   const pageForDisplay = paginationMeta?.current_page ?? currentPage;
   const pageSizeForDisplay = paginationMeta?.size ?? pageSize;
-  const resultsStart = shouldShowPagination && totalCount > 0 ? (pageForDisplay - 1) * pageSizeForDisplay + 1 : 0;
-  const resultsEnd = shouldShowPagination ? Math.min(pageForDisplay * pageSizeForDisplay, totalCount) : 0;
+  const resultsStart =
+    shouldShowPagination && totalCount > 0
+      ? (pageForDisplay - 1) * pageSizeForDisplay + 1
+      : 0;
+  const resultsEnd = shouldShowPagination
+    ? Math.min(pageForDisplay * pageSizeForDisplay, totalCount)
+    : 0;
 
   return (
     <div>
@@ -549,12 +620,18 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
           <div>
             <Title>Model Health Status</Title>
             <Text className="text-gray-600 mt-1">
-              Run health checks on individual models to verify they are working correctly
+              Run health checks on individual models to verify they are working
+              correctly
             </Text>
           </div>
           <div className="flex items-center gap-3">
             {selectedModelsForHealth.length > 0 && (
-              <Button size="sm" variant="light" onClick={() => handleSelectAll(false)} className="px-3 py-1 text-sm">
+              <Button
+                size="sm"
+                variant="light"
+                onClick={() => handleSelectAll(false)}
+                className="px-3 py-1 text-sm"
+              >
                 Clear Selection
               </Button>
             )}
@@ -562,10 +639,13 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
               size="sm"
               variant="secondary"
               onClick={runAllHealthChecks}
-              disabled={Object.values(modelHealthStatuses).some((status) => status.loading)}
+              disabled={Object.values(modelHealthStatuses).some(
+                (status) => status.loading,
+              )}
               className="px-3 py-1 text-sm"
             >
-              {selectedModelsForHealth.length > 0 && selectedModelsForHealth.length < all_models_on_proxy.length
+              {selectedModelsForHealth.length > 0 &&
+              selectedModelsForHealth.length < all_models_on_proxy.length
                 ? "Run Selected Checks"
                 : "Run All Checks"}
             </Button>
@@ -576,7 +656,10 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
       <div>
         {shouldShowPagination && (
           <div className="flex justify-between items-center mb-3">
-            <span data-testid="health-results-count" className="text-sm text-gray-700">
+            <span
+              data-testid="health-results-count"
+              className="text-sm text-gray-700"
+            >
               {totalCount > 0
                 ? `Showing ${resultsStart} - ${resultsEnd} of ${totalCount} results`
                 : "Showing 0 results"}
@@ -587,7 +670,9 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={isLoading || currentPage === 1}
                 className={`px-3 py-1 text-sm border rounded-md ${
-                  isLoading || currentPage === 1 ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "hover:bg-gray-50"
+                  isLoading || currentPage === 1
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    : "hover:bg-gray-50"
                 }`}
               >
                 Previous
@@ -628,7 +713,11 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
 
       {/* Error Modal */}
       <Modal
-        title={selectedErrorDetails ? `Health Check Error - ${selectedErrorDetails.modelName}` : "Error Details"}
+        title={
+          selectedErrorDetails
+            ? `Health Check Error - ${selectedErrorDetails.modelName}`
+            : "Error Details"
+        }
         open={errorModalVisible}
         onCancel={closeErrorModal}
         footer={[
@@ -643,14 +732,18 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
             <div>
               <Text className="font-medium">Error:</Text>
               <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-md">
-                <Text className="text-red-800">{selectedErrorDetails.cleanedError}</Text>
+                <Text className="text-red-800">
+                  {selectedErrorDetails.cleanedError}
+                </Text>
               </div>
             </div>
 
             <div>
               <Text className="font-medium">Full Error Details:</Text>
               <div className="mt-2 p-3 bg-gray-50 border border-gray-200 rounded-md max-h-96 overflow-y-auto">
-                <pre className="text-sm text-gray-800 whitespace-pre-wrap">{selectedErrorDetails.fullError}</pre>
+                <pre className="text-sm text-gray-800 whitespace-pre-wrap">
+                  {selectedErrorDetails.fullError}
+                </pre>
               </div>
             </div>
           </div>
@@ -660,7 +753,9 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
       {/* Success Modal */}
       <Modal
         title={
-          selectedSuccessDetails ? `Health Check Response - ${selectedSuccessDetails.modelName}` : "Response Details"
+          selectedSuccessDetails
+            ? `Health Check Response - ${selectedSuccessDetails.modelName}`
+            : "Response Details"
         }
         open={successModalVisible}
         onCancel={closeSuccessModal}
@@ -676,7 +771,9 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
             <div>
               <Text className="font-medium">Status:</Text>
               <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-md">
-                <Text className="text-green-800">Health check passed successfully</Text>
+                <Text className="text-green-800">
+                  Health check passed successfully
+                </Text>
               </div>
             </div>
 

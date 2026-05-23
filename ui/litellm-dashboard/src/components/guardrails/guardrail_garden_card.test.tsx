@@ -1,11 +1,13 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent, act } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import GuardrailCard from "./guardrail_garden_card";
 import type { GuardrailCardInfo } from "./guardrail_garden_data";
 
 vi.mock("@ant-design/icons", () => ({
-  CheckCircleFilled: ({ style, ...props }: any) => <span data-testid="check-icon" {...props} />,
+  CheckCircleFilled: ({ style, ...props }: any) => (
+    <span data-testid="check-icon" {...props} />
+  ),
 }));
 
 const baseCard: GuardrailCardInfo = {
@@ -25,7 +27,9 @@ describe("GuardrailCard", () => {
 
   it("should display the card description", () => {
     render(<GuardrailCard card={baseCard} onClick={vi.fn()} />);
-    expect(screen.getByText("A guardrail for testing purposes")).toBeInTheDocument();
+    expect(
+      screen.getByText("A guardrail for testing purposes"),
+    ).toBeInTheDocument();
   });
 
   it("should call onClick when the card is clicked", async () => {
@@ -41,7 +45,13 @@ describe("GuardrailCard", () => {
   it("should show eval badge when card has eval data", () => {
     const cardWithEval: GuardrailCardInfo = {
       ...baseCard,
-      eval: { f1: 95, precision: 92, recall: 98, testCases: 500, latency: "10ms" },
+      eval: {
+        f1: 95,
+        precision: 92,
+        recall: 98,
+        testCases: 500,
+        latency: "10ms",
+      },
     };
     render(<GuardrailCard card={cardWithEval} onClick={vi.fn()} />);
     expect(screen.getByText(/F1: 95%/)).toBeInTheDocument();

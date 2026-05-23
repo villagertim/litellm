@@ -1,8 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { X, LucideIcon, Check } from "lucide-react";
-import { Button } from "antd";
 import { useDisableShowPrompts } from "@/app/(dashboard)/hooks/useDisableShowPrompts";
-import { setLocalStorageItem, emitLocalStorageChange } from "@/utils/localStorageUtils";
+import {
+  emitLocalStorageChange,
+  setLocalStorageItem,
+} from "@/utils/localStorageUtils";
+import { Button } from "antd";
+import { Check, type LucideIcon, X } from "lucide-react";
+import type React from "react";
+import { useEffect, useState } from "react";
 
 interface NudgePromptProps {
   onOpen: () => void;
@@ -76,8 +80,11 @@ export function NudgePrompt({
   if (showConfirmation) {
     return (
       <div
-        className={`fixed bottom-6 right-6 z-40 w-80 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden transform transition-all duration-300 ease-out ${isVisible ? "translate-y-0 opacity-100 scale-100" : "translate-y-4 opacity-0 scale-95"
-          }`}
+        className={`fixed bottom-6 right-6 z-40 w-80 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden transform transition-all duration-300 ease-out ${
+          isVisible
+            ? "translate-y-0 opacity-100 scale-100"
+            : "translate-y-4 opacity-0 scale-95"
+        }`}
       >
         <div className="p-4">
           <div className="flex items-center gap-3">
@@ -86,7 +93,8 @@ export function NudgePrompt({
             </div>
             <div className="flex-1">
               <p className="text-sm text-gray-700 font-medium">
-                Got it, we will not ask again. Reactivate this at any time in the User Menu.
+                Got it, we will not ask again. Reactivate this at any time in
+                the User Menu.
               </p>
             </div>
           </div>
@@ -100,8 +108,11 @@ export function NudgePrompt({
 
   return (
     <div
-      className={`fixed bottom-6 right-6 z-40 w-80 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden transform transition-all duration-300 ease-out ${isVisible ? "translate-y-0 opacity-100 scale-100" : "translate-y-4 opacity-0 scale-95"
-        }`}
+      className={`fixed bottom-6 right-6 z-40 w-80 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden transform transition-all duration-300 ease-out ${
+        isVisible
+          ? "translate-y-0 opacity-100 scale-100"
+          : "translate-y-4 opacity-0 scale-95"
+      }`}
     >
       {/* Progress bar at top showing time remaining */}
       <div className="h-1 bg-gray-100 w-full">
@@ -113,7 +124,10 @@ export function NudgePrompt({
 
       <div className="p-4">
         <div className="flex items-start justify-between mb-2">
-          <div className="flex items-center gap-2" style={{ color: accentColor }}>
+          <div
+            className="flex items-center gap-2"
+            style={{ color: accentColor }}
+          >
             <Icon className="h-5 w-5" />
             <span className="font-semibold text-sm">{title}</span>
           </div>
@@ -145,4 +159,3 @@ export function NudgePrompt({
     </div>
   );
 }
-

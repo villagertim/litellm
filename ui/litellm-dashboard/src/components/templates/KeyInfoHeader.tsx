@@ -1,20 +1,28 @@
-import React from "react";
-import { Button, Typography, Tooltip, Space, Divider, Flex, Popover } from "antd";
 import {
   ArrowLeftOutlined,
-  SyncOutlined,
-  DeleteOutlined,
-  PlusOutlined,
-  UserOutlined,
   CalendarOutlined,
   ClockCircleOutlined,
-  ThunderboltOutlined,
-  SafetyCertificateOutlined,
-  TransactionOutlined,
+  DeleteOutlined,
   FieldTimeOutlined,
+  PlusOutlined,
+  SafetyCertificateOutlined,
+  SyncOutlined,
+  ThunderboltOutlined,
+  TransactionOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
-import LabeledField from "../common_components/LabeledField";
+import {
+  Button,
+  Divider,
+  Flex,
+  Popover,
+  Space,
+  Tooltip,
+  Typography,
+} from "antd";
+import React from "react";
 import DefaultProxyAdminTag from "../common_components/DefaultProxyAdminTag";
+import LabeledField from "../common_components/LabeledField";
 
 const { Title, Text } = Typography;
 
@@ -55,8 +63,17 @@ function UserField({
 }) {
   const labelEl = (
     <Space size={4}>
-      <Text type="secondary"><UserOutlined /></Text>
-      <Text type="secondary" style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+      <Text type="secondary">
+        <UserOutlined />
+      </Text>
+      <Text
+        type="secondary"
+        style={{
+          fontSize: 12,
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+        }}
+      >
         User
       </Text>
     </Space>
@@ -67,7 +84,9 @@ function UserField({
     return (
       <div>
         {labelEl}
-        <div><Text strong>-</Text></div>
+        <div>
+          <Text strong>-</Text>
+        </div>
       </div>
     );
   }
@@ -106,8 +125,14 @@ function UserField({
       <div>
         {labelEl}
         <div>
-          <Popover content={popoverContent} trigger="hover" placement="bottomLeft">
-            <span className="cursor-default"><DefaultProxyAdminTag userId={userId} /></span>
+          <Popover
+            content={popoverContent}
+            trigger="hover"
+            placement="bottomLeft"
+          >
+            <span className="cursor-default">
+              <DefaultProxyAdminTag userId={userId} />
+            </span>
           </Popover>
         </div>
       </div>
@@ -118,7 +143,11 @@ function UserField({
     <div>
       {labelEl}
       <div>
-        <Popover content={popoverContent} trigger="hover" placement="bottomLeft">
+        <Popover
+          content={popoverContent}
+          trigger="hover"
+          placement="bottomLeft"
+        >
           <Text
             strong
             ellipsis
@@ -162,10 +191,20 @@ export function KeyInfoHeader({
 
       <Flex justify="space-between" align="start" style={{ marginBottom: 20 }}>
         <div>
-          <Title level={3} copyable={{ tooltips: ["Copy Key Alias", "Copied!"] }} style={{ margin: 0 }}>
+          <Title
+            level={3}
+            copyable={{ tooltips: ["Copy Key Alias", "Copied!"] }}
+            style={{ margin: 0 }}
+          >
             {data.keyName}
           </Title>
-          <Text type="secondary" copyable={{ text: data.keyId, tooltips: ["Copy Key ID", "Copied!"] }}>
+          <Text
+            type="secondary"
+            copyable={{
+              text: data.keyId,
+              tooltips: ["Copy Key ID", "Copied!"],
+            }}
+          >
             Key ID: {data.keyId}
           </Text>
         </div>
@@ -173,13 +212,21 @@ export function KeyInfoHeader({
           <Space>
             <Tooltip title={regenerateTooltip || ""}>
               <span>
-                <Button icon={<SyncOutlined />} onClick={onRegenerate} disabled={regenerateDisabled}>
+                <Button
+                  icon={<SyncOutlined />}
+                  onClick={onRegenerate}
+                  disabled={regenerateDisabled}
+                >
                   Regenerate Key
                 </Button>
               </span>
             </Tooltip>
             {onResetSpend && (
-              <Button danger icon={<TransactionOutlined />} onClick={onResetSpend}>
+              <Button
+                danger
+                icon={<TransactionOutlined />}
+                onClick={onResetSpend}
+              >
                 Reset Spend
               </Button>
             )}
@@ -192,14 +239,26 @@ export function KeyInfoHeader({
 
       <Flex align="stretch" gap={40} style={{ marginBottom: 40 }}>
         <Space direction="vertical" size={16}>
-          <UserField userAlias={data.userAlias} userEmail={data.userEmail} userId={data.userId} />
-          <LabeledField label="Expires" value={data.expires} icon={<FieldTimeOutlined />} />
+          <UserField
+            userAlias={data.userAlias}
+            userEmail={data.userEmail}
+            userId={data.userId}
+          />
+          <LabeledField
+            label="Expires"
+            value={data.expires}
+            icon={<FieldTimeOutlined />}
+          />
         </Space>
 
         <Divider type="vertical" style={{ height: "auto" }} />
 
         <Space direction="vertical" size={16}>
-          <LabeledField label="Created At" value={data.createdAt} icon={<CalendarOutlined />} />
+          <LabeledField
+            label="Created At"
+            value={data.createdAt}
+            icon={<CalendarOutlined />}
+          />
           <LabeledField
             label="Created By"
             value={data.createdBy}
@@ -213,8 +272,16 @@ export function KeyInfoHeader({
         <Divider type="vertical" style={{ height: "auto" }} />
 
         <Space direction="vertical" size={16}>
-          <LabeledField label="Last Updated" value={data.lastUpdated} icon={<ClockCircleOutlined />} />
-          <LabeledField label="Last Active" value={data.lastActive} icon={<ThunderboltOutlined />} />
+          <LabeledField
+            label="Last Updated"
+            value={data.lastUpdated}
+            icon={<ClockCircleOutlined />}
+          />
+          <LabeledField
+            label="Last Active"
+            value={data.lastActive}
+            icon={<ThunderboltOutlined />}
+          />
         </Space>
       </Flex>
     </div>

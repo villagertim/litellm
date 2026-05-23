@@ -1,9 +1,13 @@
-import React from "react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { renderWithProviders, screen, waitFor } from "../../../../tests/test-utils";
 import { Form } from "antd";
-import { ProjectBaseForm, ProjectFormValues } from "./ProjectBaseForm";
+import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  renderWithProviders,
+  screen,
+  waitFor,
+} from "../../../../tests/test-utils";
+import { ProjectBaseForm, type ProjectFormValues } from "./ProjectBaseForm";
 
 const mockUseTeams = vi.fn();
 vi.mock("@/app/(dashboard)/hooks/teams/useTeams", () => ({
@@ -18,9 +22,12 @@ vi.mock("@/components/networking", () => ({
   getGuardrailsList: vi.fn().mockResolvedValue({ guardrails: [] }),
 }));
 
-vi.mock("@/components/key_team_helpers/fetch_available_models_team_key", () => ({
-  getModelDisplayName: (model: string) => model,
-}));
+vi.mock(
+  "@/components/key_team_helpers/fetch_available_models_team_key",
+  () => ({
+    getModelDisplayName: (model: string) => model,
+  }),
+);
 
 function FormWrapper() {
   const [form] = Form.useForm<ProjectFormValues>();
@@ -44,7 +51,9 @@ describe("ProjectBaseForm", () => {
 
   it("should show a Project Name input", () => {
     renderWithProviders(<FormWrapper />);
-    expect(screen.getByPlaceholderText("e.g. Customer Support Bot")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("e.g. Customer Support Bot"),
+    ).toBeInTheDocument();
   });
 
   it("should show a Team select", () => {
@@ -54,7 +63,9 @@ describe("ProjectBaseForm", () => {
 
   it("should show a Description textarea", () => {
     renderWithProviders(<FormWrapper />);
-    expect(screen.getByPlaceholderText("Describe the purpose of this project")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Describe the purpose of this project"),
+    ).toBeInTheDocument();
   });
 
   it("should show the models select as disabled when no team is selected", () => {

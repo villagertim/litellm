@@ -1,6 +1,6 @@
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
-import { isJwtExpired, decodeToken, checkTokenValidity } from "./jwtUtils";
 import { jwtDecode } from "jwt-decode";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { checkTokenValidity, decodeToken, isJwtExpired } from "./jwtUtils";
 
 vi.mock("jwt-decode");
 

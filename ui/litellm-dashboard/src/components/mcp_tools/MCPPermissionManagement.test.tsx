@@ -1,8 +1,8 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect } from "vitest";
 import { Form } from "antd";
+import type React from "react";
+import { describe, expect, it } from "vitest";
 
 import MCPPermissionManagement from "./MCPPermissionManagement";
 
@@ -15,31 +15,31 @@ const defaultProps = {
 };
 
 describe("MCPPermissionManagement", () => {
-const expandPanel = async () => {
-  const user = userEvent.setup();
-  const headerButton = screen.getByRole("button", {
-    name: /permission management/i,
-  });
-  await user.click(headerButton);
-  return user;
-};
-
-const renderWithForm = (props = {}) => {
-  const Wrapper: React.FC = ({ children }) => {
-    const [form] = Form.useForm();
-    return (
-      <Form form={form} initialValues={{ allow_all_keys: false }}>
-        {children}
-      </Form>
-    );
+  const expandPanel = async () => {
+    const user = userEvent.setup();
+    const headerButton = screen.getByRole("button", {
+      name: /permission management/i,
+    });
+    await user.click(headerButton);
+    return user;
   };
 
-  return render(
-    <Wrapper>
-      <MCPPermissionManagement {...defaultProps} {...props} />
-    </Wrapper>,
-  );
-};
+  const renderWithForm = (props = {}) => {
+    const Wrapper: React.FC = ({ children }) => {
+      const [form] = Form.useForm();
+      return (
+        <Form form={form} initialValues={{ allow_all_keys: false }}>
+          {children}
+        </Form>
+      );
+    };
+
+    return render(
+      <Wrapper>
+        <MCPPermissionManagement {...defaultProps} {...props} />
+      </Wrapper>,
+    );
+  };
 
   it("should default allow_all_keys switch to unchecked for new servers", async () => {
     renderWithForm();

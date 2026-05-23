@@ -1,8 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { renderWithProviders, screen, waitFor } from "../../../tests/test-utils";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  renderWithProviders,
+  screen,
+  waitFor,
+} from "../../../tests/test-utils";
+import type { KeyResponse } from "../key_team_helpers/key_list";
 import { RegenerateKeyModal } from "./RegenerateKeyModal";
-import { KeyResponse } from "../key_team_helpers/key_list";
 
 // Mock the networking call
 const mockRegenerateKeyCall = vi.fn();
@@ -45,14 +49,20 @@ describe("RegenerateKeyModal", () => {
   });
 
   it("should not render the modal when visible is false", () => {
-    renderWithProviders(<RegenerateKeyModal {...defaultProps} visible={false} />);
-    expect(screen.queryByText("Regenerate Virtual Key")).not.toBeInTheDocument();
+    renderWithProviders(
+      <RegenerateKeyModal {...defaultProps} visible={false} />,
+    );
+    expect(
+      screen.queryByText("Regenerate Virtual Key"),
+    ).not.toBeInTheDocument();
   });
 
   it("should display the form with pre-filled values", () => {
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
 
-    const keyAliasInput = screen.getByLabelText("Key Alias") as HTMLInputElement;
+    const keyAliasInput = screen.getByLabelText(
+      "Key Alias",
+    ) as HTMLInputElement;
     expect(keyAliasInput).toBeDisabled();
     expect(keyAliasInput).toHaveValue("my-test-key");
   });
@@ -63,14 +73,21 @@ describe("RegenerateKeyModal", () => {
   });
 
   it("should display 'Never' when token has no expires", () => {
-    renderWithProviders(<RegenerateKeyModal {...defaultProps} selectedToken={makeToken({ expires: undefined })} />);
+    renderWithProviders(
+      <RegenerateKeyModal
+        {...defaultProps}
+        selectedToken={makeToken({ expires: undefined })}
+      />,
+    );
     expect(screen.getByText("Current expiry: Never")).toBeInTheDocument();
   });
 
   it("should show Cancel and Regenerate buttons in form view", () => {
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
     expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Regenerate/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Regenerate/ }),
+    ).toBeInTheDocument();
   });
 
   it("should call onClose when Cancel is clicked", async () => {
@@ -106,7 +123,9 @@ describe("RegenerateKeyModal", () => {
 
   it("should display grace period recommendation text", () => {
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
-    expect(screen.getByText("Recommended: 24h to 72h for production keys")).toBeInTheDocument();
+    expect(
+      screen.getByText("Recommended: 24h to 72h for production keys"),
+    ).toBeInTheDocument();
   });
 
   it("should call regenerateKeyCall and show success view on successful regeneration", async () => {
@@ -148,8 +167,12 @@ describe("RegenerateKeyModal", () => {
     // Should show Close buttons (footer + modal X), not Cancel/Regenerate
     const closeButtons = screen.getAllByRole("button", { name: "Close" });
     expect(closeButtons.length).toBeGreaterThanOrEqual(1);
-    expect(screen.queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Regenerate/ })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Cancel" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /Regenerate/ }),
+    ).not.toBeInTheDocument();
   });
 
   it("should show Copy Key button after successful regeneration", async () => {
@@ -163,7 +186,9 @@ describe("RegenerateKeyModal", () => {
     await user.click(screen.getByRole("button", { name: /Regenerate/ }));
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Copy Key/ })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /Copy Key/ }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -181,9 +206,13 @@ describe("RegenerateKeyModal", () => {
     await user.click(copyButton);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Copied/ })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /Copied/ }),
+      ).toBeInTheDocument();
     });
-    expect(screen.queryByRole("button", { name: /Copy Key/ })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /Copy Key/ }),
+    ).not.toBeInTheDocument();
   });
 
   it("should display the 'Virtual Key' label above the key in the success view", async () => {
@@ -226,18 +255,21 @@ describe("RegenerateKeyModal", () => {
     ["7d", /New expiry:/],
     ["2w", /New expiry:/],
     ["1mo", /New expiry:/],
-  ])("should compute a new expiry preview for duration '%s'", async (durationInput, expected) => {
-    const user = userEvent.setup();
-    renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
+  ])(
+    "should compute a new expiry preview for duration '%s'",
+    async (durationInput, expected) => {
+      const user = userEvent.setup();
+      renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
 
-    const durationField = screen.getByPlaceholderText("e.g. 30s, 30h, 30d");
-    await user.clear(durationField);
-    await user.type(durationField, durationInput);
+      const durationField = screen.getByPlaceholderText("e.g. 30s, 30h, 30d");
+      await user.clear(durationField);
+      await user.type(durationField, durationInput);
 
-    await waitFor(() => {
-      expect(screen.getByText(expected)).toBeInTheDocument();
-    });
-  });
+      await waitFor(() => {
+        expect(screen.getByText(expected)).toBeInTheDocument();
+      });
+    },
+  );
 
   it("should fall back to the previous expiry when duration is unparseable", async () => {
     // Regression: if calculateNewExpiryTime returns null (unrecognised suffix),
@@ -250,7 +282,10 @@ describe("RegenerateKeyModal", () => {
     });
 
     renderWithProviders(
-      <RegenerateKeyModal {...defaultProps} selectedToken={makeToken({ expires: previousExpires })} />,
+      <RegenerateKeyModal
+        {...defaultProps}
+        selectedToken={makeToken({ expires: previousExpires })}
+      />,
     );
 
     const durationField = screen.getByPlaceholderText("e.g. 30s, 30h, 30d");
@@ -317,7 +352,12 @@ describe("RegenerateKeyModal", () => {
       token: "new-token-hash",
     });
 
-    renderWithProviders(<RegenerateKeyModal {...defaultProps} selectedToken={makeToken({ key_alias: undefined })} />);
+    renderWithProviders(
+      <RegenerateKeyModal
+        {...defaultProps}
+        selectedToken={makeToken({ key_alias: undefined })}
+      />,
+    );
     await user.click(screen.getByRole("button", { name: /Regenerate/ }));
 
     await waitFor(() => {
@@ -327,7 +367,9 @@ describe("RegenerateKeyModal", () => {
 
   it("should not call regenerateKeyCall when selectedToken is null", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<RegenerateKeyModal {...defaultProps} selectedToken={null} />);
+    renderWithProviders(
+      <RegenerateKeyModal {...defaultProps} selectedToken={null} />,
+    );
 
     // The form shouldn't even be populated, but we check the button doesn't trigger a call
     const regenerateBtn = screen.queryByRole("button", { name: /Regenerate/ });

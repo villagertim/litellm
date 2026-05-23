@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ChatMessage, Conversation } from "./types";
+import type { ChatMessage, Conversation } from "./types";
 
 const STORAGE_KEY = "litellm_chat_history_v1";
 const MAX_CONVERSATIONS = 100;
@@ -13,7 +13,10 @@ function generateTitle(firstUserMessage: string): string {
   return trimmed.slice(0, TITLE_MAX_LENGTH) + "…";
 }
 
-function loadFromStorage(): { conversations: Conversation[]; storageUnavailable: boolean } {
+function loadFromStorage(): {
+  conversations: Conversation[];
+  storageUnavailable: boolean;
+} {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
@@ -50,8 +53,16 @@ export function useChatHistory(activeConversationId: string | null): {
   storageUnavailable: boolean;
   staleId: boolean;
   createConversation: (model: string) => string;
-  appendMessage: (conversationId: string, message: Omit<ChatMessage, "id" | "timestamp">) => void;
-  updateLastAssistantMessage: (conversationId: string, updates: Partial<Pick<ChatMessage, "content" | "reasoningContent" | "mcpEvents">>) => void;
+  appendMessage: (
+    conversationId: string,
+    message: Omit<ChatMessage, "id" | "timestamp">,
+  ) => void;
+  updateLastAssistantMessage: (
+    conversationId: string,
+    updates: Partial<
+      Pick<ChatMessage, "content" | "reasoningContent" | "mcpEvents">
+    >,
+  ) => void;
   /** Remove the message with `messageId` and all subsequent messages from the conversation. */
   truncateFromMessage: (conversationId: string, messageId: string) => void;
   deleteConversation: (id: string) => void;
@@ -61,7 +72,9 @@ export function useChatHistory(activeConversationId: string | null): {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [storageUnavailable, setStorageUnavailable] = useState(false);
   const [staleId, setStaleId] = useState(false);
-  const [currentActiveId, setCurrentActiveId] = useState<string | null>(activeConversationId);
+  const [currentActiveId, setCurrentActiveId] = useState<string | null>(
+    activeConversationId,
+  );
   // Ref so updater functions stay pure (no state setter calls inside setConversations)
   const storageUnavailableRef = useRef(false);
   const initializedRef = useRef(false);
@@ -73,7 +86,8 @@ export function useChatHistory(activeConversationId: string | null): {
   }, [activeConversationId]);
 
   useEffect(() => {
-    const { conversations: loaded, storageUnavailable: unavailable } = loadFromStorage();
+    const { conversations: loaded, storageUnavailable: unavailable } =
+      loadFromStorage();
     storageUnavailableRef.current = unavailable;
     setConversations(loaded);
     setStorageUnavailable(unavailable);
@@ -98,28 +112,28 @@ export function useChatHistory(activeConversationId: string | null): {
     }
   }, [conversations]);
 
-  const createConversation = useCallback(
-    (model: string): string => {
-      const id = crypto.randomUUID();
-      const now = Date.now();
-      const newConversation: Conversation = {
-        id,
-        title: "New conversation",
-        model,
-        messages: [],
-        mcpServerNames: [],
-        createdAt: now,
-        updatedAt: now,
-      };
-      setConversations((prev) => trimConversations([newConversation, ...prev]));
-      setCurrentActiveId(id);
-      return id;
-    },
-    [],
-  );
+  const createConversation = useCallback((model: string): string => {
+    const id = crypto.randomUUID();
+    const now = Date.now();
+    const newConversation: Conversation = {
+      id,
+      title: "New conversation",
+      model,
+      messages: [],
+      mcpServerNames: [],
+      createdAt: now,
+      updatedAt: now,
+    };
+    setConversations((prev) => trimConversations([newConversation, ...prev]));
+    setCurrentActiveId(id);
+    return id;
+  }, []);
 
   const appendMessage = useCallback(
-    (conversationId: string, message: Omit<ChatMessage, "id" | "timestamp">) => {
+    (
+      conversationId: string,
+      message: Omit<ChatMessage, "id" | "timestamp">,
+    ) => {
       const newMessage: ChatMessage = {
         ...message,
         id: crypto.randomUUID(),
@@ -138,7 +152,12 @@ export function useChatHistory(activeConversationId: string | null): {
           ) {
             title = generateTitle(newMessage.content);
           }
-          return { ...conv, title, messages: updatedMessages, updatedAt: Date.now() };
+          return {
+            ...conv,
+            title,
+            messages: updatedMessages,
+            updatedAt: Date.now(),
+          };
         });
         return trimConversations(updated);
       });
@@ -149,7 +168,9 @@ export function useChatHistory(activeConversationId: string | null): {
   const updateLastAssistantMessage = useCallback(
     (
       conversationId: string,
-      updates: Partial<Pick<ChatMessage, "content" | "reasoningContent" | "mcpEvents">>,
+      updates: Partial<
+        Pick<ChatMessage, "content" | "reasoningContent" | "mcpEvents">
+      >,
     ) => {
       setConversations((prev) => {
         const updated = prev.map((conv) => {
@@ -160,7 +181,10 @@ export function useChatHistory(activeConversationId: string | null): {
             return msg.role === "assistant" ? idx : -1;
           }, -1);
           if (lastAssistantIndex === -1) return conv;
-          messages[lastAssistantIndex] = { ...messages[lastAssistantIndex], ...updates };
+          messages[lastAssistantIndex] = {
+            ...messages[lastAssistantIndex],
+            ...updates,
+          };
           return { ...conv, messages, updatedAt: Date.now() };
         });
         return trimConversations(updated);
@@ -176,7 +200,11 @@ export function useChatHistory(activeConversationId: string | null): {
           if (conv.id !== conversationId) return conv;
           const idx = conv.messages.findIndex((m) => m.id === messageId);
           if (idx === -1) return conv;
-          return { ...conv, messages: conv.messages.slice(0, idx), updatedAt: Date.now() };
+          return {
+            ...conv,
+            messages: conv.messages.slice(0, idx),
+            updatedAt: Date.now(),
+          };
         });
         return trimConversations(updated);
       });
@@ -186,24 +214,25 @@ export function useChatHistory(activeConversationId: string | null): {
 
   const deleteConversation = useCallback(
     (id: string) => {
-      setConversations((prev) => trimConversations(prev.filter((c) => c.id !== id)));
+      setConversations((prev) =>
+        trimConversations(prev.filter((c) => c.id !== id)),
+      );
       if (currentActiveId === id) setCurrentActiveId(null);
     },
     [currentActiveId],
   );
 
-  const renameConversation = useCallback(
-    (id: string, newTitle: string) => {
-      setConversations((prev) =>
-        trimConversations(
-          prev.map((conv) =>
-            conv.id === id ? { ...conv, title: newTitle, updatedAt: Date.now() } : conv,
-          ),
+  const renameConversation = useCallback((id: string, newTitle: string) => {
+    setConversations((prev) =>
+      trimConversations(
+        prev.map((conv) =>
+          conv.id === id
+            ? { ...conv, title: newTitle, updatedAt: Date.now() }
+            : conv,
         ),
-      );
-    },
-    [],
-  );
+      ),
+    );
+  }, []);
 
   const setActiveConversationId = useCallback((id: string | null) => {
     setCurrentActiveId(id);
@@ -212,7 +241,7 @@ export function useChatHistory(activeConversationId: string | null): {
 
   const activeConversation =
     currentActiveId !== null
-      ? (conversations.find((c) => c.id === currentActiveId) ?? null)
+      ? conversations.find((c) => c.id === currentActiveId) ?? null
       : null;
 
   return {

@@ -77,7 +77,8 @@ describe("returnUrlUtils", () => {
       Object.defineProperty(window, "location", {
         value: {
           ...window.location,
-          search: "?redirect_to=http%3A%2F%2Flocalhost%3A3000%2Fui%3Fcreate%3Dtrue",
+          search:
+            "?redirect_to=http%3A%2F%2Flocalhost%3A3000%2Fui%3Fcreate%3Dtrue",
         },
         writable: true,
       });
@@ -112,7 +113,7 @@ describe("returnUrlUtils", () => {
 
       const loginUrl = buildLoginUrlWithReturn("/ui/login");
       expect(loginUrl).toBe(
-        "/ui/login?redirect_to=http%3A%2F%2Flocalhost%3A3000%2Fui%3Fcreate%3Dtrue%26team_id%3D123"
+        "/ui/login?redirect_to=http%3A%2F%2Flocalhost%3A3000%2Fui%3Fcreate%3Dtrue%26team_id%3D123",
       );
     });
 
@@ -152,7 +153,8 @@ describe("returnUrlUtils", () => {
       Object.defineProperty(window, "location", {
         value: {
           ...window.location,
-          search: "?redirect_to=http%3A%2F%2Flocalhost%3A3000%2Fui%3Fpage%3Dteams",
+          search:
+            "?redirect_to=http%3A%2F%2Flocalhost%3A3000%2Fui%3Fpage%3Dteams",
         },
         writable: true,
       });
@@ -214,9 +216,13 @@ describe("returnUrlUtils", () => {
 
     it("should validate same-hostname URLs (even with different ports) in dev", () => {
       // Same hostname, same port
-      expect(isValidReturnUrl("http://localhost:3000/ui?page=teams")).toBe(true);
+      expect(isValidReturnUrl("http://localhost:3000/ui?page=teams")).toBe(
+        true,
+      );
       // Same hostname, different port (important for dev environments)
-      expect(isValidReturnUrl("http://localhost:4000/ui?page=teams")).toBe(true);
+      expect(isValidReturnUrl("http://localhost:4000/ui?page=teams")).toBe(
+        true,
+      );
     });
 
     it("should reject different-hostname URLs", () => {
@@ -238,7 +244,9 @@ describe("returnUrlUtils", () => {
     });
 
     it("should reject data: URLs", () => {
-      expect(isValidReturnUrl("data:text/html,<script>alert(1)</script>")).toBe(false);
+      expect(isValidReturnUrl("data:text/html,<script>alert(1)</script>")).toBe(
+        false,
+      );
     });
 
     it("should allow 127.x.x.x addresses in dev environment", () => {
@@ -289,7 +297,9 @@ describe("returnUrlUtils", () => {
       });
 
       // Same origin should work
-      expect(isValidReturnUrl("https://app.example.com/ui?page=teams")).toBe(true);
+      expect(isValidReturnUrl("https://app.example.com/ui?page=teams")).toBe(
+        true,
+      );
       // Different port should be rejected in production
       expect(isValidReturnUrl("https://app.example.com:8080/ui")).toBe(false);
       // Different hostname should be rejected
@@ -330,7 +340,10 @@ describe("returnUrlUtils", () => {
 
     it("should return null for invalid return URLs (different hostname)", () => {
       // Manually set an invalid URL in cookie
-      document.cookie = "litellm_return_url=" + encodeURIComponent("http://evil.com/phishing") + "; path=/";
+      document.cookie =
+        "litellm_return_url=" +
+        encodeURIComponent("http://evil.com/phishing") +
+        "; path=/";
 
       const returnUrl = consumeReturnUrl();
       expect(returnUrl).toBeNull();

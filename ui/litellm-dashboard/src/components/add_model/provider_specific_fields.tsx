@@ -1,10 +1,23 @@
 import { useProviderFields } from "@/app/(dashboard)/hooks/providers/useProviderFields";
 import { UploadOutlined } from "@ant-design/icons";
 import { Text, TextInput } from "@tremor/react";
-import { Button as Button2, Col, Form, Input, Row, Select, Typography, Upload, UploadProps } from "antd";
+import {
+  Button as Button2,
+  Col,
+  Form,
+  Input,
+  Row,
+  Select,
+  Typography,
+  Upload,
+  type UploadProps,
+} from "antd";
 import React from "react";
-import { CredentialItem, ProviderCredentialFieldMetadata } from "../networking";
-import { provider_map, Providers } from "../provider_info_helpers";
+import type {
+  CredentialItem,
+  ProviderCredentialFieldMetadata,
+} from "../networking";
+import { Providers, provider_map } from "../provider_info_helpers";
 const { Link } = Typography;
 
 interface ProviderSpecificFieldsProps {
@@ -28,7 +41,9 @@ export interface CredentialValues {
   value: string;
 }
 
-const mapFieldMetadataToUiField = (field: ProviderCredentialFieldMetadata): ProviderCredentialField => {
+const mapFieldMetadataToUiField = (
+  field: ProviderCredentialFieldMetadata,
+): ProviderCredentialField => {
   const type: ProviderCredentialField["type"] =
     field.field_type === "password"
       ? "password"
@@ -55,12 +70,18 @@ const mapFieldMetadataToUiField = (field: ProviderCredentialFieldMetadata): Prov
 // In-memory cache of provider credential fields keyed by provider display name.
 // This lets us reuse the data across multiple mounts and also supports
 // non-React helpers like createCredentialFromModel.
-const providerFieldsByDisplayName: Record<string, ProviderCredentialField[]> = {};
+const providerFieldsByDisplayName: Record<string, ProviderCredentialField[]> =
+  {};
 
-export const createCredentialFromModel = (provider: string, modelData: any): CredentialItem => {
+export const createCredentialFromModel = (
+  provider: string,
+  modelData: any,
+): CredentialItem => {
   console.log("provider", provider);
   console.log("modelData", modelData);
-  const enumKey = Object.keys(provider_map).find((key) => provider_map[key].toLowerCase() === provider.toLowerCase());
+  const enumKey = Object.keys(provider_map).find(
+    (key) => provider_map[key].toLowerCase() === provider.toLowerCase(),
+  );
   if (!enumKey) {
     throw new Error(`Provider ${provider} not found in provider_map`);
   }
@@ -76,7 +97,8 @@ export const createCredentialFromModel = (provider: string, modelData: any): Cre
     console.log("field", field);
     console.log("value", value);
     if (value !== undefined) {
-      (credentialValues as Record<string, string>)[field.key] = value.toString();
+      (credentialValues as Record<string, string>)[field.key] =
+        value.toString();
     }
   });
 
@@ -92,11 +114,20 @@ export const createCredentialFromModel = (provider: string, modelData: any): Cre
   return credential;
 };
 
-const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({ selectedProvider, uploadProps }) => {
-  const selectedProviderEnum = Providers[selectedProvider as keyof typeof Providers] as Providers;
+const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({
+  selectedProvider,
+  uploadProps,
+}) => {
+  const selectedProviderEnum = Providers[
+    selectedProvider as keyof typeof Providers
+  ] as Providers;
   const form = Form.useFormInstance(); // Get form instance from context
 
-  const { data: providerMetadata, isLoading, error: loadError } = useProviderFields();
+  const {
+    data: providerMetadata,
+    isLoading,
+    error: loadError,
+  } = useProviderFields();
 
   // Memoize the expensive cache computation
   const cacheEntries = React.useMemo(() => {
@@ -108,7 +139,9 @@ const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({ selecte
     const entries: Record<string, ProviderCredentialField[]> = {};
     providerMetadata.forEach((providerInfo) => {
       const displayName = providerInfo.provider_display_name;
-      const mappedFields = providerInfo.credential_fields.map(mapFieldMetadataToUiField);
+      const mappedFields = providerInfo.credential_fields.map(
+        mapFieldMetadataToUiField,
+      );
 
       // Primary key: human-readable display name
       entries[displayName] = mappedFields;
@@ -137,7 +170,8 @@ const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({ selecte
     // First try to resolve from the in-memory cache. We support both the
     // enum/display-name form and the raw provider slug (e.g. "petals").
     const cachedFields =
-      providerFieldsByDisplayName[selectedProviderEnum] ?? providerFieldsByDisplayName[selectedProvider];
+      providerFieldsByDisplayName[selectedProviderEnum] ??
+      providerFieldsByDisplayName[selectedProvider];
     if (cachedFields) {
       return cachedFields;
     }
@@ -156,7 +190,9 @@ const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({ selecte
       return [];
     }
 
-    const mapped = providerInfo.credential_fields.map(mapFieldMetadataToUiField);
+    const mapped = providerInfo.credential_fields.map(
+      mapFieldMetadataToUiField,
+    );
     providerFieldsByDisplayName[providerInfo.provider_display_name] = mapped;
     if (providerInfo.provider) {
       providerFieldsByDisplayName[providerInfo.provider] = mapped;
@@ -176,7 +212,9 @@ const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({ selecte
         reader.onload = (e) => {
           if (e.target) {
             const jsonStr = e.target.result as string;
-            console.log(`Setting field value from JSON, length: ${jsonStr.length}`);
+            console.log(
+              `Setting field value from JSON, length: ${jsonStr.length}`,
+            );
             form.setFieldsValue({ vertex_credentials: jsonStr });
             console.log("Form values after setting:", form.getFieldsValue());
           }
@@ -209,7 +247,9 @@ const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({ selecte
         <Row>
           <Col span={24}>
             <Text className="mb-2 text-red-500">
-              {loadError instanceof Error ? loadError.message : "Failed to load provider credential fields"}
+              {loadError instanceof Error
+                ? loadError.message
+                : "Failed to load provider credential fields"}
             </Text>
           </Col>
         </Row>
@@ -219,12 +259,19 @@ const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({ selecte
           <Form.Item
             label={field.label}
             name={field.key}
-            rules={field.required ? [{ required: true, message: "Required" }] : undefined}
+            rules={
+              field.required
+                ? [{ required: true, message: "Required" }]
+                : undefined
+            }
             tooltip={field.tooltip}
             className={field.key === "vertex_credentials" ? "mb-0" : undefined}
           >
             {field.type === "select" ? (
-              <Select placeholder={field.placeholder} defaultValue={field.defaultValue}>
+              <Select
+                placeholder={field.placeholder}
+                defaultValue={field.defaultValue}
+              >
                 {field.options?.map((option) => (
                   <Select.Option key={option} value={option}>
                     {option}
@@ -243,7 +290,10 @@ const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({ selecte
                   // Check the field value after a short delay
                   setTimeout(() => {
                     const value = form.getFieldValue(field.key);
-                    console.log(`${field.key} value after upload:`, JSON.stringify(value));
+                    console.log(
+                      `${field.key} value after upload:`,
+                      JSON.stringify(value),
+                    );
                   }, 500);
                 }}
               >
@@ -269,7 +319,9 @@ const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({ selecte
           {field.key === "vertex_credentials" && (
             <Row>
               <Col>
-                <Text className="mb-3 mt-1">Give a gcp service account(.json file)</Text>
+                <Text className="mb-3 mt-1">
+                  Give a gcp service account(.json file)
+                </Text>
               </Col>
             </Row>
           )}
@@ -280,7 +332,8 @@ const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({ selecte
               <Col span={10}></Col>
               <Col span={10}>
                 <Text className="mb-2">
-                  The actual model your azure deployment uses. Used for accurate cost tracking. Select name from{" "}
+                  The actual model your azure deployment uses. Used for accurate
+                  cost tracking. Select name from{" "}
                   <Link
                     href="https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json"
                     target="_blank"

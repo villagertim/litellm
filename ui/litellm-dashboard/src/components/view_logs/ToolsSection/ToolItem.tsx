@@ -2,11 +2,11 @@
  * Individual tool item component with expandable details
  */
 
+import { DownOutlined, RightOutlined, ToolOutlined } from "@ant-design/icons";
+import { Tag, Typography } from "antd";
 import { useState } from "react";
-import { Typography, Tag } from "antd";
-import { ToolOutlined, RightOutlined, DownOutlined } from "@ant-design/icons";
-import { ParsedTool } from "./types";
 import { ToolExpandedContent } from "./ToolExpandedContent";
+import type { ParsedTool } from "./types";
 
 const { Text } = Typography;
 

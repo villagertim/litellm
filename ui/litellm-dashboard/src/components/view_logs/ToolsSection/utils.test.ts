@@ -2,9 +2,9 @@
  * Tests for tool parsing utilities
  */
 
-import { describe, it, expect } from "vitest";
-import { parseToolsFromLog, hasTools } from "./utils";
-import { LogEntry } from "../columns";
+import { describe, expect, it } from "vitest";
+import type { LogEntry } from "../columns";
+import { hasTools, parseToolsFromLog } from "./utils";
 
 describe("ToolsSection utils", () => {
   describe("parseToolsFromLog", () => {

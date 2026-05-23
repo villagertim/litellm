@@ -1,6 +1,6 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import React from "react";
+import { describe, expect, it } from "vitest";
 import { OnboardingErrorView } from "./OnboardingErrorView";
 
 describe("OnboardingErrorView", () => {
@@ -12,7 +12,7 @@ describe("OnboardingErrorView", () => {
   it("should show the expiry description", () => {
     render(<OnboardingErrorView />);
     expect(
-      screen.getByText("The invitation link may be invalid or expired.")
+      screen.getByText("The invitation link may be invalid or expired."),
     ).toBeInTheDocument();
   });
 

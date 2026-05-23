@@ -1,6 +1,6 @@
 import { cx } from "@/lib/cva.config";
 import { Icon } from "@tremor/react";
-import React from "react";
+import type React from "react";
 
 interface BaseActionButtonProps {
   icon: React.ComponentType<React.ComponentProps<"svg">>;
@@ -10,9 +10,20 @@ interface BaseActionButtonProps {
   dataTestId?: string;
 }
 
-export default function BaseActionButton({ icon, onClick, className, disabled, dataTestId }: BaseActionButtonProps) {
+export default function BaseActionButton({
+  icon,
+  onClick,
+  className,
+  disabled,
+  dataTestId,
+}: BaseActionButtonProps) {
   return disabled ? (
-    <Icon icon={icon} size="sm" className={"opacity-50 cursor-not-allowed"} data-testid={dataTestId} />
+    <Icon
+      icon={icon}
+      size="sm"
+      className={"opacity-50 cursor-not-allowed"}
+      data-testid={dataTestId}
+    />
   ) : (
     <Icon
       icon={icon}

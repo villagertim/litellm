@@ -1,19 +1,19 @@
 import { useModelCostMap } from "@/app/(dashboard)/hooks/models/useModelCostMap";
 import { useTeams } from "@/app/(dashboard)/hooks/teams/useTeams";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { Team } from "@/components/key_team_helpers/key_list";
+import DeleteResourceModal from "@/components/common_components/DeleteResourceModal";
+import type { Team } from "@/components/key_team_helpers/key_list";
+import ModelSettingsModal from "@/components/model_dashboard/ModelSettingsModal/ModelSettingsModal";
 import { AllModelsDataTable } from "@/components/model_dashboard/all_models_table";
 import { columns } from "@/components/molecules/models/columns";
-import { getDisplayModelName } from "@/components/view_model/model_name_display";
-import DeleteResourceModal from "@/components/common_components/DeleteResourceModal";
 import NotificationsManager from "@/components/molecules/notifications_manager";
 import { modelDeleteCall } from "@/components/networking";
+import { getDisplayModelName } from "@/components/view_model/model_name_display";
 import { InfoCircleOutlined, SettingOutlined } from "@ant-design/icons";
-import { PaginationState, SortingState } from "@tanstack/react-table";
 import { useQueryClient } from "@tanstack/react-query";
+import type { PaginationState, SortingState } from "@tanstack/react-table";
 import { Grid, TabPanel } from "@tremor/react";
 import { Badge, Button, Select, Skeleton, Space, Typography } from "antd";
-import ModelSettingsModal from "@/components/model_dashboard/ModelSettingsModal/ModelSettingsModal";
 import debounce from "lodash/debounce";
 import { useEffect, useMemo, useState } from "react";
 import { useModelsInfo } from "../../hooks/models/useModels";
@@ -38,17 +38,20 @@ const AllModelsTab = ({
   setSelectedModelId,
   setSelectedTeamId,
 }: AllModelsTabProps) => {
-  const { data: modelCostMapData, isLoading: isLoadingModelCostMap } = useModelCostMap();
+  const { data: modelCostMapData, isLoading: isLoadingModelCostMap } =
+    useModelCostMap();
   const { accessToken, userId, userRole, premiumUser } = useAuthorized();
   const { data: teams, isLoading: isLoadingTeams } = useTeams();
   const queryClient = useQueryClient();
 
   const [modelNameSearch, setModelNameSearch] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
-  const [modelViewMode, setModelViewMode] = useState<ModelViewMode>("current_team");
+  const [modelViewMode, setModelViewMode] =
+    useState<ModelViewMode>("current_team");
   const [currentTeam, setCurrentTeam] = useState<Team | "personal">("personal");
   const [showFilters, setShowFilters] = useState<boolean>(false);
-  const [selectedModelAccessGroupFilter, setSelectedModelAccessGroupFilter] = useState<string | null>(null);
+  const [selectedModelAccessGroupFilter, setSelectedModelAccessGroupFilter] =
+    useState<string | null>(null);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize] = useState<number>(50);
@@ -57,7 +60,8 @@ const AllModelsTab = ({
     pageSize: 50,
   });
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [isModelSettingsModalVisible, setIsModelSettingsModalVisible] = useState(false);
+  const [isModelSettingsModalVisible, setIsModelSettingsModalVisible] =
+    useState(false);
 
   // Debounce search input
   const debouncedUpdateSearch = useMemo(
@@ -68,7 +72,7 @@ const AllModelsTab = ({
         setCurrentPage(1);
         setPagination((prev: PaginationState) => ({ ...prev, pageIndex: 0 }));
       }, 200),
-    []
+    [],
   );
 
   useEffect(() => {
@@ -79,7 +83,8 @@ const AllModelsTab = ({
   }, [modelNameSearch, debouncedUpdateSearch]);
 
   // Determine teamId to pass to the query - only pass if not "personal"
-  const teamIdForQuery = currentTeam === "personal" ? undefined : currentTeam.team_id;
+  const teamIdForQuery =
+    currentTeam === "personal" ? undefined : currentTeam.team_id;
 
   // Convert sorting state to sortBy and sortOrder for API
   const sortBy = useMemo(() => {
@@ -100,14 +105,18 @@ const AllModelsTab = ({
     return sort.desc ? "desc" : "asc";
   }, [sorting]);
 
-  const { data: rawModelData, isLoading: isLoadingModelsInfo, refetch: refetchModels } = useModelsInfo(
+  const {
+    data: rawModelData,
+    isLoading: isLoadingModelsInfo,
+    refetch: refetchModels,
+  } = useModelsInfo(
     currentPage,
     pageSize,
     debouncedSearch || undefined,
     undefined,
     teamIdForQuery,
     sortBy,
-    sortOrder
+    sortOrder,
   );
   const isLoading = isLoadingModelsInfo || isLoadingModelCostMap;
 
@@ -125,7 +134,9 @@ const AllModelsTab = ({
     return transformModelData(rawModelData, getProviderFromModel);
   }, [rawModelData, modelCostMapData]);
 
-  const [deleteModalModelId, setDeleteModalModelId] = useState<string | null>(null);
+  const [deleteModalModelId, setDeleteModalModelId] = useState<string | null>(
+    null,
+  );
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   // Get pagination metadata from the response
@@ -161,7 +172,9 @@ const AllModelsTab = ({
 
       const accessGroupMatch =
         selectedModelAccessGroupFilter === "all" ||
-        model.model_info["access_groups"]?.includes(selectedModelAccessGroupFilter) ||
+        model.model_info["access_groups"]?.includes(
+          selectedModelAccessGroupFilter,
+        ) ||
         !selectedModelAccessGroupFilter;
 
       // Team filtering is now handled server-side via teamId query parameter
@@ -200,7 +213,9 @@ const AllModelsTab = ({
 
   const modelToDelete = useMemo(() => {
     if (!deleteModalModelId || !modelData?.data) return null;
-    return modelData.data.find((model: any) => model.model_info.id === deleteModalModelId);
+    return modelData.data.find(
+      (model: any) => model.model_info.id === deleteModalModelId,
+    );
   }, [deleteModalModelId, modelData]);
 
   const handleDeleteModel = async () => {
@@ -229,7 +244,9 @@ const AllModelsTab = ({
             <div className="border-b px-6 py-4 bg-gray-50">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <Text className="text-lg font-semibold text-gray-900">Current Team:</Text>
+                  <Text className="text-lg font-semibold text-gray-900">
+                    Current Team:
+                  </Text>
                   <div className="w-80">
                     {isLoading ? (
                       <Skeleton.Input active block size="large" />
@@ -238,20 +255,32 @@ const AllModelsTab = ({
                         style={{ width: "100%" }}
                         size="large"
                         defaultValue="personal"
-                        value={currentTeam === "personal" ? "personal" : currentTeam.team_id}
+                        value={
+                          currentTeam === "personal"
+                            ? "personal"
+                            : currentTeam.team_id
+                        }
                         onChange={(value) => {
                           if (value === "personal") {
                             setCurrentTeam("personal");
                             // Reset to page 1 when team changes
                             setCurrentPage(1);
-                            setPagination((prev: PaginationState) => ({ ...prev, pageIndex: 0 }));
+                            setPagination((prev: PaginationState) => ({
+                              ...prev,
+                              pageIndex: 0,
+                            }));
                           } else {
-                            const team = teams?.find((t) => t.team_id === value);
+                            const team = teams?.find(
+                              (t) => t.team_id === value,
+                            );
                             if (team) {
                               setCurrentTeam(team);
                               // Reset to page 1 when team changes
                               setCurrentPage(1);
-                              setPagination((prev: PaginationState) => ({ ...prev, pageIndex: 0 }));
+                              setPagination((prev: PaginationState) => ({
+                                ...prev,
+                                pageIndex: 0,
+                              }));
                             }
                           }
                         }}
@@ -274,7 +303,9 @@ const AllModelsTab = ({
                                 <Space direction="horizontal" align="center">
                                   <Badge color="green" size="small" />
                                   <Text ellipsis style={{ fontSize: 16 }}>
-                                    {team.team_alias ? team.team_alias : team.team_id}
+                                    {team.team_alias
+                                      ? team.team_alias
+                                      : team.team_id}
                                   </Text>
                                 </Space>
                               ),
@@ -285,7 +316,9 @@ const AllModelsTab = ({
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <Text className="text-lg font-semibold text-gray-900">View:</Text>
+                  <Text className="text-lg font-semibold text-gray-900">
+                    View:
+                  </Text>
                   <div className="w-64">
                     {isLoading ? (
                       <Skeleton.Input active block size="large" />
@@ -295,14 +328,18 @@ const AllModelsTab = ({
                         size="large"
                         defaultValue="current_team"
                         value={modelViewMode}
-                        onChange={(value) => setModelViewMode(value as "current_team" | "all")}
+                        onChange={(value) =>
+                          setModelViewMode(value as "current_team" | "all")
+                        }
                         options={[
                           {
                             value: "current_team",
                             label: (
                               <Space direction="horizontal" align="center">
                                 <Badge color="purple" size="small" />
-                                <Text style={{ fontSize: 16 }}>Current Team Models</Text>
+                                <Text style={{ fontSize: 16 }}>
+                                  Current Team Models
+                                </Text>
                               </Space>
                             ),
                           },
@@ -311,7 +348,9 @@ const AllModelsTab = ({
                             label: (
                               <Space direction="horizontal" align="center">
                                 <Badge color="gray" size="small" />
-                                <Text style={{ fontSize: 16 }}>All Available Models</Text>
+                                <Text style={{ fontSize: 16 }}>
+                                  All Available Models
+                                </Text>
                               </Space>
                             ),
                           },
@@ -328,7 +367,8 @@ const AllModelsTab = ({
                   <div className="text-xs text-gray-500">
                     {currentTeam === "personal" ? (
                       <span>
-                        To access these models: Create a Virtual Key without selecting a team on the{" "}
+                        To access these models: Create a Virtual Key without
+                        selecting a team on the{" "}
                         <a
                           href="/public?login=success&page=api-keys"
                           className="text-gray-600 hover:text-gray-800 underline"
@@ -338,9 +378,12 @@ const AllModelsTab = ({
                       </span>
                     ) : (
                       <span>
-                        To access these models: Create a Virtual Key and select Team as &quot;
-                        {typeof currentTeam !== "string" ? currentTeam.team_alias || currentTeam.team_id : ""}&quot; on
-                        the{" "}
+                        To access these models: Create a Virtual Key and select
+                        Team as &quot;
+                        {typeof currentTeam !== "string"
+                          ? currentTeam.team_alias || currentTeam.team_id
+                          : ""}
+                        &quot; on the{" "}
                         <a
                           href="/public?login=success&page=api-keys"
                           className="text-gray-600 hover:text-gray-800 underline"
@@ -390,7 +433,12 @@ const AllModelsTab = ({
                       className={`px-3 py-2 text-sm border rounded-md hover:bg-gray-50 flex items-center gap-2 ${showFilters ? "bg-gray-100" : ""}`}
                       onClick={() => setShowFilters(!showFilters)}
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -406,7 +454,12 @@ const AllModelsTab = ({
                       className="px-3 py-2 text-sm border rounded-md hover:bg-gray-50 flex items-center gap-2"
                       onClick={resetFilters}
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -434,7 +487,9 @@ const AllModelsTab = ({
                       <Select
                         className="w-full"
                         value={selectedModelGroup ?? "all"}
-                        onChange={(value) => setSelectedModelGroup(value === "all" ? "all" : value)}
+                        onChange={(value) =>
+                          setSelectedModelGroup(value === "all" ? "all" : value)
+                        }
                         placeholder="Filter by Public Model Name"
                         showSearch
                         options={[
@@ -453,15 +508,21 @@ const AllModelsTab = ({
                       <Select
                         className="w-full"
                         value={selectedModelAccessGroupFilter ?? "all"}
-                        onChange={(value) => setSelectedModelAccessGroupFilter(value === "all" ? null : value)}
+                        onChange={(value) =>
+                          setSelectedModelAccessGroupFilter(
+                            value === "all" ? null : value,
+                          )
+                        }
                         placeholder="Filter by Model Access Group"
                         showSearch
                         options={[
                           { value: "all", label: "All Model Access Groups" },
-                          ...availableModelAccessGroups.map((accessGroup, idx) => ({
-                            value: accessGroup,
-                            label: accessGroup,
-                          })),
+                          ...availableModelAccessGroups.map(
+                            (accessGroup, idx) => ({
+                              value: accessGroup,
+                              label: accessGroup,
+                            }),
+                          ),
                         ]}
                       />
                     </div>
@@ -473,47 +534,64 @@ const AllModelsTab = ({
                   {isLoading ? (
                     <Skeleton.Input active style={{ width: 184, height: 20 }} />
                   ) : (
-                    <span data-testid="models-results-count" className="text-sm text-gray-700">
+                    <span
+                      data-testid="models-results-count"
+                      className="text-sm text-gray-700"
+                    >
                       {paginationMeta.total_count > 0
-                        ? `Showing ${((currentPage - 1) * pageSize) + 1} - ${Math.min(currentPage * pageSize, paginationMeta.total_count)} of ${paginationMeta.total_count} results`
+                        ? `Showing ${(currentPage - 1) * pageSize + 1} - ${Math.min(currentPage * pageSize, paginationMeta.total_count)} of ${paginationMeta.total_count} results`
                         : "Showing 0 results"}
                     </span>
                   )}
 
                   <div className="flex items-center space-x-2">
                     {isLoading ? (
-                      <Skeleton.Button active style={{ width: 84, height: 30 }} />
+                      <Skeleton.Button
+                        active
+                        style={{ width: 84, height: 30 }}
+                      />
                     ) : (
                       <button
                         onClick={() => {
                           const newPage = currentPage - 1;
                           setCurrentPage(newPage);
-                          setPagination((prev: PaginationState) => ({ ...prev, pageIndex: 0 }));
+                          setPagination((prev: PaginationState) => ({
+                            ...prev,
+                            pageIndex: 0,
+                          }));
                         }}
                         disabled={currentPage === 1}
-                        className={`px-3 py-1 text-sm border rounded-md ${currentPage === 1
-                          ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                          : "hover:bg-gray-50"
-                          }`}
+                        className={`px-3 py-1 text-sm border rounded-md ${
+                          currentPage === 1
+                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                            : "hover:bg-gray-50"
+                        }`}
                       >
                         Previous
                       </button>
                     )}
 
                     {isLoading ? (
-                      <Skeleton.Button active style={{ width: 56, height: 30 }} />
+                      <Skeleton.Button
+                        active
+                        style={{ width: 56, height: 30 }}
+                      />
                     ) : (
                       <button
                         onClick={() => {
                           const newPage = currentPage + 1;
                           setCurrentPage(newPage);
-                          setPagination((prev: PaginationState) => ({ ...prev, pageIndex: 0 }));
+                          setPagination((prev: PaginationState) => ({
+                            ...prev,
+                            pageIndex: 0,
+                          }));
                         }}
                         disabled={currentPage >= paginationMeta.total_pages}
-                        className={`px-3 py-1 text-sm border rounded-md ${currentPage >= paginationMeta.total_pages
-                          ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                          : "hover:bg-gray-50"
-                          }`}
+                        className={`px-3 py-1 text-sm border rounded-md ${
+                          currentPage >= paginationMeta.total_pages
+                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                            : "hover:bg-gray-50"
+                        }`}
                       >
                         Next
                       </button>
@@ -531,8 +609,8 @@ const AllModelsTab = ({
                 setSelectedModelId,
                 setSelectedTeamId,
                 getDisplayModelName,
-                () => { },
-                () => { },
+                () => {},
+                () => {},
                 expandedRows,
                 setExpandedRows,
                 setDeleteModalModelId,
@@ -544,7 +622,9 @@ const AllModelsTab = ({
               pagination={pagination}
               onPaginationChange={setPagination}
               enablePagination={true}
-              onRowClick={(model: any) => setSelectedModelId(model.model_info.id)}
+              onRowClick={(model: any) =>
+                setSelectedModelId(model.model_info.id)
+              }
             />
           </div>
         </div>
@@ -556,24 +636,28 @@ const AllModelsTab = ({
         alertMessage="This action cannot be undone."
         message="Are you sure you want to delete this model?"
         resourceInformationTitle="Model Information"
-        resourceInformation={modelToDelete ? [
-          {
-            label: "Model Name",
-            value: modelToDelete.model_name || "Not Set",
-          },
-          {
-            label: "LiteLLM Model Name",
-            value: modelToDelete.litellm_model_name || "Not Set",
-          },
-          {
-            label: "Provider",
-            value: modelToDelete.provider || "Not Set",
-          },
-          {
-            label: "Created By",
-            value: modelToDelete.model_info?.created_by || "Not Set",
-          },
-        ] : []}
+        resourceInformation={
+          modelToDelete
+            ? [
+                {
+                  label: "Model Name",
+                  value: modelToDelete.model_name || "Not Set",
+                },
+                {
+                  label: "LiteLLM Model Name",
+                  value: modelToDelete.litellm_model_name || "Not Set",
+                },
+                {
+                  label: "Provider",
+                  value: modelToDelete.provider || "Not Set",
+                },
+                {
+                  label: "Created By",
+                  value: modelToDelete.model_info?.created_by || "Not Set",
+                },
+              ]
+            : []
+        }
         onCancel={() => setDeleteModalModelId(null)}
         onOk={handleDeleteModel}
         confirmLoading={deleteLoading}

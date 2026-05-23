@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createQueryKeys } from "../common/queryKeysFactory";
 
 const mcpSemanticFilterSettingsKeys = createQueryKeys(
-  "mcpSemanticFilterSettings"
+  "mcpSemanticFilterSettings",
 );
 
 export const useUpdateMCPSemanticFilterSettings = (accessToken: string) => {

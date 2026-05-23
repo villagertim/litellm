@@ -11,23 +11,28 @@ vi.mock("@/components/networking", () => ({
   updateGuardrailCall: vi.fn(),
 }));
 
-
 // Mock ContentFilterManager
 vi.mock("./content_filter/ContentFilterManager", () => ({
   __esModule: true,
   default: ({ onUnsavedChanges, onDataChange, isEditing }: any) => (
     <div data-testid="mock-content-filter-manager">
       {isEditing && (
-        <button onClick={() => {
-          onUnsavedChanges(true);
-          onDataChange?.(["new_pattern"], ["new_word"], []);
-        }}>
+        <button
+          onClick={() => {
+            onUnsavedChanges(true);
+            onDataChange?.(["new_pattern"], ["new_word"], []);
+          }}
+        >
           Simulate Change
         </button>
       )}
     </div>
   ),
-  formatContentFilterDataForAPI: (patterns: any[], blockedWords: any[], categories?: any[]) => ({
+  formatContentFilterDataForAPI: (
+    patterns: any[],
+    blockedWords: any[],
+    categories?: any[],
+  ) => ({
     patterns,
     blocked_words: blockedWords,
     categories: categories ?? [],
@@ -61,10 +66,17 @@ describe("Guardrail Info", () => {
       supported_modes: ["pre_call", "post_call"],
     });
 
-    vi.mocked(networking.getGuardrailProviderSpecificParams).mockResolvedValue({});
+    vi.mocked(networking.getGuardrailProviderSpecificParams).mockResolvedValue(
+      {},
+    );
 
     const { getAllByText, getByText } = render(
-      <GuardrailInfoView guardrailId="123" onClose={() => { }} accessToken="123" isAdmin={true} />,
+      <GuardrailInfoView
+        guardrailId="123"
+        onClose={() => {}}
+        accessToken="123"
+        isAdmin={true}
+      />,
     );
 
     // Wait for the loading to complete and data to be rendered
@@ -102,10 +114,17 @@ describe("Guardrail Info", () => {
       supported_modes: ["pre_call", "post_call"],
     });
 
-    vi.mocked(networking.getGuardrailProviderSpecificParams).mockResolvedValue({});
+    vi.mocked(networking.getGuardrailProviderSpecificParams).mockResolvedValue(
+      {},
+    );
 
     const { getByText, container } = render(
-      <GuardrailInfoView guardrailId="123" onClose={() => { }} accessToken="123" isAdmin={true} />,
+      <GuardrailInfoView
+        guardrailId="123"
+        onClose={() => {}}
+        accessToken="123"
+        isAdmin={true}
+      />,
     );
 
     await waitFor(() => {
@@ -129,7 +148,11 @@ describe("Guardrail Info", () => {
 
       // Wait for the tooltip to appear
       await waitFor(() => {
-        expect(getByText("Guardrail is defined in the config file and cannot be edited.")).toBeInTheDocument();
+        expect(
+          getByText(
+            "Guardrail is defined in the config file and cannot be edited.",
+          ),
+        ).toBeInTheDocument();
       });
     }
   });
@@ -160,10 +183,17 @@ describe("Guardrail Info", () => {
       supported_modes: ["pre_call", "post_call"],
     });
 
-    vi.mocked(networking.getGuardrailProviderSpecificParams).mockResolvedValue({});
+    vi.mocked(networking.getGuardrailProviderSpecificParams).mockResolvedValue(
+      {},
+    );
 
     const { getByText } = render(
-      <GuardrailInfoView guardrailId="123" onClose={() => { }} accessToken="123" isAdmin={true} />,
+      <GuardrailInfoView
+        guardrailId="123"
+        onClose={() => {}}
+        accessToken="123"
+        isAdmin={true}
+      />,
     );
 
     await waitFor(() => {
@@ -194,11 +224,20 @@ describe("Guardrail Info", () => {
       supported_modes: ["pre_call", "post_call"],
     });
 
-    vi.mocked(networking.getGuardrailProviderSpecificParams).mockResolvedValue({});
-    vi.mocked(networking.updateGuardrailCall).mockResolvedValue({ status: "success" });
+    vi.mocked(networking.getGuardrailProviderSpecificParams).mockResolvedValue(
+      {},
+    );
+    vi.mocked(networking.updateGuardrailCall).mockResolvedValue({
+      status: "success",
+    });
 
     const { getByText, getByRole, getAllByRole, getByLabelText } = render(
-      <GuardrailInfoView guardrailId="123" onClose={() => { }} accessToken="123" isAdmin={true} />,
+      <GuardrailInfoView
+        guardrailId="123"
+        onClose={() => {}}
+        accessToken="123"
+        isAdmin={true}
+      />,
     );
 
     await waitFor(() => {
@@ -229,12 +268,13 @@ describe("Guardrail Info", () => {
 
     // Verify call did NOT include patterns or blocked_words (because no changes)
     // updateGuardrailCall(accessToken, guardrailId, updateData) -> index 2 is updateData
-    const firstCallArgs: any = vi.mocked(networking.updateGuardrailCall).mock.calls[0][2];
+    const firstCallArgs: any = vi.mocked(networking.updateGuardrailCall).mock
+      .calls[0][2];
 
     // Verify attributes that definitely changed
     expect(firstCallArgs.guardrail_name).toBe("Updated Name");
 
-    // litellm_params might be undefined if empty, which is correct. 
+    // litellm_params might be undefined if empty, which is correct.
     // If it exists, ensure patterns/blocked_words are not in it.
     if (firstCallArgs.litellm_params) {
       expect(firstCallArgs.litellm_params.patterns).toBeUndefined();
@@ -262,7 +302,8 @@ describe("Guardrail Info", () => {
     });
 
     // Verify call INCLUDES patterns and blocked_words
-    const secondCallArgs: any = vi.mocked(networking.updateGuardrailCall).mock.calls[0][2];
+    const secondCallArgs: any = vi.mocked(networking.updateGuardrailCall).mock
+      .calls[0][2];
     expect(secondCallArgs.litellm_params).toBeDefined();
     expect(secondCallArgs.litellm_params.patterns).toEqual(["new_pattern"]);
     expect(secondCallArgs.litellm_params.blocked_words).toEqual(["new_word"]);

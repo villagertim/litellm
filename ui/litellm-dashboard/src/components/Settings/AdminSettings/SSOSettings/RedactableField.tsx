@@ -1,6 +1,6 @@
-import { useState } from "react";
 import { Button } from "antd";
 import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 
 export default function RedactableField({
   defaultHidden = true,
@@ -28,7 +28,13 @@ export default function RedactableField({
         <Button
           type="text"
           size="small"
-          icon={isHidden ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+          icon={
+            isHidden ? (
+              <Eye className="w-4 h-4" />
+            ) : (
+              <EyeOff className="w-4 h-4" />
+            )
+          }
           onClick={() => setIsHidden(!isHidden)}
           className="text-gray-400 hover:text-gray-600"
         />

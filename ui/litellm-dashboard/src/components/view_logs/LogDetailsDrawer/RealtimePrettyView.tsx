@@ -4,17 +4,17 @@
  * in a readable format instead of raw JSON.
  */
 
-import { useState } from 'react';
-import { Typography, Tag, Tooltip } from 'antd';
 import {
-  SoundOutlined,
-  MessageOutlined,
-  SettingOutlined,
   AudioOutlined,
   DownOutlined,
+  MessageOutlined,
+  SettingOutlined,
+  SoundOutlined,
   UpOutlined,
-} from '@ant-design/icons';
-import { SectionHeader } from './SectionHeader';
+} from "@ant-design/icons";
+import { Tag, Tooltip, Typography } from "antd";
+import { useState } from "react";
+import { SectionHeader } from "./SectionHeader";
 
 const { Text } = Typography;
 
@@ -80,32 +80,43 @@ interface RealtimePrettyViewProps {
 }
 
 export function isRealtimeResponse(response: any): boolean {
-  if (!response || !response.results || !Array.isArray(response.results) || response.results.length === 0) {
+  if (
+    !response ||
+    !response.results ||
+    !Array.isArray(response.results) ||
+    response.results.length === 0
+  ) {
     return false;
   }
 
   return response.results.some(
     (r: any) =>
-      r.type === 'session.created' ||
-      r.type === 'session.updated' ||
-      r.type === 'response.done'
+      r.type === "session.created" ||
+      r.type === "session.updated" ||
+      r.type === "response.done",
   );
 }
 
-export function RealtimePrettyView({ response, metrics }: RealtimePrettyViewProps) {
+export function RealtimePrettyView({
+  response,
+  metrics,
+}: RealtimePrettyViewProps) {
   const events: RealtimeEvent[] = response?.results || [];
   const usage = response?.usage;
 
   const sessionEvent = events.find(
-    (e) => e.type === 'session.created' || e.type === 'session.updated'
+    (e) => e.type === "session.created" || e.type === "session.updated",
   );
-  const responseEvents = events.filter((e) => e.type === 'response.done');
+  const responseEvents = events.filter((e) => e.type === "response.done");
 
   return (
     <div>
       {/* Session Configuration Card */}
       {sessionEvent?.session && (
-        <SessionCard session={sessionEvent.session} turnCount={responseEvents.length} />
+        <SessionCard
+          session={sessionEvent.session}
+          turnCount={responseEvents.length}
+        />
       )}
 
       {/* Conversation Turns */}
@@ -121,11 +132,11 @@ export function RealtimePrettyView({ response, metrics }: RealtimePrettyViewProp
       {!sessionEvent && responseEvents.length === 0 && (
         <div
           style={{
-            border: '1px solid #f0f0f0',
+            border: "1px solid #f0f0f0",
             borderRadius: 6,
-            padding: '16px',
-            color: '#8c8c8c',
-            fontStyle: 'italic',
+            padding: "16px",
+            color: "#8c8c8c",
+            fontStyle: "italic",
             fontSize: 13,
           }}
         >
@@ -136,58 +147,58 @@ export function RealtimePrettyView({ response, metrics }: RealtimePrettyViewProp
   );
 }
 
-function SessionCard({ session, turnCount }: { session: RealtimeSession; turnCount: number }) {
+function SessionCard({
+  session,
+  turnCount,
+}: { session: RealtimeSession; turnCount: number }) {
   const [isCollapsed, setIsCollapsed] = useState(true);
 
   return (
     <div
       style={{
-        border: '1px solid #f0f0f0',
+        border: "1px solid #f0f0f0",
         borderRadius: 6,
         marginBottom: 8,
-        overflow: 'hidden',
+        overflow: "hidden",
       }}
     >
       <div
         onClick={() => setIsCollapsed(!isCollapsed)}
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '10px 16px',
-          borderBottom: isCollapsed ? 'none' : '1px solid #f0f0f0',
-          background: '#fafafa',
-          cursor: 'pointer',
-          transition: 'background 0.15s ease',
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "10px 16px",
+          borderBottom: isCollapsed ? "none" : "1px solid #f0f0f0",
+          background: "#fafafa",
+          cursor: "pointer",
+          transition: "background 0.15s ease",
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.background = '#f5f5f5';
+          e.currentTarget.style.background = "#f5f5f5";
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.background = '#fafafa';
+          e.currentTarget.style.background = "#fafafa";
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <div style={{ display: "flex", alignItems: "center" }}>
             {isCollapsed ? (
-              <DownOutlined style={{ fontSize: 10, color: '#8c8c8c' }} />
+              <DownOutlined style={{ fontSize: 10, color: "#8c8c8c" }} />
             ) : (
-              <UpOutlined style={{ fontSize: 10, color: '#8c8c8c' }} />
+              <UpOutlined style={{ fontSize: 10, color: "#8c8c8c" }} />
             )}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <SettingOutlined style={{ color: '#8c8c8c', fontSize: 14 }} />
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <SettingOutlined style={{ color: "#8c8c8c", fontSize: 14 }} />
             <Text style={{ fontWeight: 500, fontSize: 14 }}>Session</Text>
           </div>
           <Text type="secondary" style={{ fontSize: 12 }}>
             {session.model}
           </Text>
           {turnCount > 0 && (
-            <Tag
-              color="purple"
-              style={{ margin: 0, fontWeight: 500 }}
-            >
-              {turnCount} {turnCount === 1 ? 'turn' : 'turns'}
+            <Tag color="purple" style={{ margin: 0, fontWeight: 500 }}>
+              {turnCount} {turnCount === 1 ? "turn" : "turns"}
             </Tag>
           )}
           {session.voice && (
@@ -196,10 +207,10 @@ function SessionCard({ session, turnCount }: { session: RealtimeSession; turnCou
             </Tag>
           )}
           {session.modalities && (
-            <div style={{ display: 'flex', gap: 4 }}>
+            <div style={{ display: "flex", gap: 4 }}>
               {session.modalities.map((m) => (
                 <Tag key={m} style={{ margin: 0 }}>
-                  {m === 'audio' ? <AudioOutlined /> : <MessageOutlined />} {m}
+                  {m === "audio" ? <AudioOutlined /> : <MessageOutlined />} {m}
                 </Tag>
               ))}
             </div>
@@ -209,18 +220,18 @@ function SessionCard({ session, turnCount }: { session: RealtimeSession; turnCou
 
       <div
         style={{
-          maxHeight: isCollapsed ? '0px' : '10000px',
-          overflow: 'hidden',
-          transition: 'max-height 0.3s ease-out, opacity 0.3s ease-out',
+          maxHeight: isCollapsed ? "0px" : "10000px",
+          overflow: "hidden",
+          transition: "max-height 0.3s ease-out, opacity 0.3s ease-out",
           opacity: isCollapsed ? 0 : 1,
         }}
       >
-        <div style={{ padding: '12px 16px' }}>
+        <div style={{ padding: "12px 16px" }}>
           <div
             style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '8px 24px',
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "8px 24px",
               fontSize: 13,
             }}
           >
@@ -259,9 +270,9 @@ function SessionCard({ session, turnCount }: { session: RealtimeSession; turnCou
                 type="secondary"
                 style={{
                   fontSize: 10,
-                  letterSpacing: '0.5px',
-                  textTransform: 'uppercase',
-                  display: 'block',
+                  letterSpacing: "0.5px",
+                  textTransform: "uppercase",
+                  display: "block",
                   marginBottom: 4,
                 }}
               >
@@ -271,15 +282,15 @@ function SessionCard({ session, turnCount }: { session: RealtimeSession; turnCou
                 style={{
                   fontSize: 12,
                   lineHeight: 1.6,
-                  color: '#595959',
-                  background: '#fafafa',
-                  padding: '8px 12px',
+                  color: "#595959",
+                  background: "#fafafa",
+                  padding: "8px 12px",
                   borderRadius: 4,
-                  border: '1px solid #f0f0f0',
-                  whiteSpace: 'pre-wrap',
-                  wordBreak: 'break-word',
+                  border: "1px solid #f0f0f0",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word",
                   maxHeight: 120,
-                  overflowY: 'auto',
+                  overflowY: "auto",
                 }}
               >
                 {session.instructions}
@@ -299,7 +310,7 @@ function ConversationCard({
 }: {
   responses: RealtimeResponse[];
   totalUsage?: any;
-  metrics?: RealtimePrettyViewProps['metrics'];
+  metrics?: RealtimePrettyViewProps["metrics"];
 }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -310,20 +321,20 @@ function ConversationCard({
       .flatMap((r) =>
         (r.output || []).flatMap((o) =>
           (o.content || []).map(
-            (c) => `${o.role}: ${c.transcript || c.text || ''}`
-          )
-        )
+            (c) => `${o.role}: ${c.transcript || c.text || ""}`,
+          ),
+        ),
       )
-      .join('\n');
+      .join("\n");
     navigator.clipboard.writeText(transcripts);
   };
 
   return (
     <div
       style={{
-        border: '1px solid #f0f0f0',
+        border: "1px solid #f0f0f0",
         borderRadius: 6,
-        overflow: 'hidden',
+        overflow: "hidden",
       }}
     >
       <SectionHeader
@@ -338,13 +349,13 @@ function ConversationCard({
 
       <div
         style={{
-          maxHeight: isCollapsed ? '0px' : '10000px',
-          overflow: 'hidden',
-          transition: 'max-height 0.3s ease-out, opacity 0.3s ease-out',
+          maxHeight: isCollapsed ? "0px" : "10000px",
+          overflow: "hidden",
+          transition: "max-height 0.3s ease-out, opacity 0.3s ease-out",
           opacity: isCollapsed ? 0 : 1,
         }}
       >
-        <div style={{ padding: '12px 16px' }}>
+        <div style={{ padding: "12px 16px" }}>
           {responses.map((resp, idx) => (
             <ResponseTurn key={resp.id || idx} response={resp} index={idx} />
           ))}
@@ -369,23 +380,23 @@ function ResponseTurn({
       style={{
         marginBottom: 12,
         paddingBottom: 12,
-        borderBottom: '1px solid #f5f5f5',
+        borderBottom: "1px solid #f5f5f5",
       }}
     >
       {/* Turn header */}
       <div
         style={{
-          display: 'flex',
-          alignItems: 'center',
+          display: "flex",
+          alignItems: "center",
           gap: 8,
           marginBottom: 8,
         }}
       >
         <Tag
-          color={response.status === 'completed' ? 'green' : 'orange'}
+          color={response.status === "completed" ? "green" : "orange"}
           style={{ margin: 0 }}
         >
-          {response.status || 'unknown'}
+          {response.status || "unknown"}
         </Tag>
         {usage && (
           <Text type="secondary" style={{ fontSize: 11 }}>
@@ -394,10 +405,7 @@ function ResponseTurn({
         )}
         {response.conversation_id && (
           <Tooltip title={response.conversation_id}>
-            <Text
-              type="secondary"
-              style={{ fontSize: 11, cursor: 'help' }}
-            >
+            <Text type="secondary" style={{ fontSize: 11, cursor: "help" }}>
               conv: {response.conversation_id.slice(0, 12)}...
             </Text>
           </Tooltip>
@@ -411,16 +419,10 @@ function ResponseTurn({
 
       {/* Token breakdown if available */}
       {usage?.input_token_details && (
-        <TokenBreakdown
-          label="Input"
-          details={usage.input_token_details}
-        />
+        <TokenBreakdown label="Input" details={usage.input_token_details} />
       )}
       {usage?.output_token_details && (
-        <TokenBreakdown
-          label="Output"
-          details={usage.output_token_details}
-        />
+        <TokenBreakdown label="Output" details={usage.output_token_details} />
       )}
     </div>
   );
@@ -438,13 +440,13 @@ function OutputMessage({ output }: { output: RealtimeOutputItem }) {
         type="secondary"
         style={{
           fontSize: 10,
-          letterSpacing: '0.5px',
-          textTransform: 'uppercase',
-          display: 'block',
+          letterSpacing: "0.5px",
+          textTransform: "uppercase",
+          display: "block",
           marginBottom: 3,
         }}
       >
-        {output.role?.toUpperCase() || 'ASSISTANT'}
+        {output.role?.toUpperCase() || "ASSISTANT"}
       </Text>
       {contents.map((c, cIdx) => {
         const text = c.transcript || c.text;
@@ -453,26 +455,26 @@ function OutputMessage({ output }: { output: RealtimeOutputItem }) {
           <div
             key={cIdx}
             style={{
-              display: 'flex',
-              alignItems: 'flex-start',
+              display: "flex",
+              alignItems: "flex-start",
               gap: 8,
               marginBottom: 4,
             }}
           >
-            {c.type === 'audio' && (
+            {c.type === "audio" && (
               <AudioOutlined
                 style={{
-                  color: '#8c8c8c',
+                  color: "#8c8c8c",
                   fontSize: 12,
                   marginTop: 3,
                   flexShrink: 0,
                 }}
               />
             )}
-            {c.type === 'text' && (
+            {c.type === "text" && (
               <MessageOutlined
                 style={{
-                  color: '#8c8c8c',
+                  color: "#8c8c8c",
                   fontSize: 12,
                   marginTop: 3,
                   flexShrink: 0,
@@ -483,9 +485,9 @@ function OutputMessage({ output }: { output: RealtimeOutputItem }) {
               style={{
                 fontSize: 13,
                 lineHeight: 1.7,
-                color: '#262626',
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-word',
+                color: "#262626",
+                whiteSpace: "pre-wrap",
+                wordBreak: "break-word",
               }}
             >
               {text}
@@ -505,9 +507,7 @@ function TokenBreakdown({
   details: Record<string, any>;
 }) {
   const entries = Object.entries(details).filter(
-    ([, v]) =>
-      typeof v === 'number' ||
-      (typeof v === 'object' && v !== null)
+    ([, v]) => typeof v === "number" || (typeof v === "object" && v !== null),
   );
 
   if (entries.length === 0) return null;
@@ -516,20 +516,24 @@ function TokenBreakdown({
     <div style={{ marginTop: 4 }}>
       <Text
         type="secondary"
-        style={{ fontSize: 10, letterSpacing: '0.5px', textTransform: 'uppercase' }}
+        style={{
+          fontSize: 10,
+          letterSpacing: "0.5px",
+          textTransform: "uppercase",
+        }}
       >
         {label} Token Breakdown
       </Text>
       <div
         style={{
-          display: 'flex',
-          flexWrap: 'wrap',
+          display: "flex",
+          flexWrap: "wrap",
           gap: 8,
           marginTop: 4,
         }}
       >
         {entries.map(([key, value]) => {
-          if (typeof value === 'number') {
+          if (typeof value === "number") {
             return (
               <Tag key={key} style={{ margin: 0 }}>
                 {formatTokenLabel(key)}: {value.toLocaleString()}
@@ -556,15 +560,11 @@ function ConfigRow({
       <Text type="secondary" style={{ fontSize: 11 }}>
         {label}
       </Text>
-      <div style={{ fontSize: 13, color: '#262626' }}>
-        {String(value)}
-      </div>
+      <div style={{ fontSize: 13, color: "#262626" }}>{String(value)}</div>
     </div>
   );
 }
 
 function formatTokenLabel(key: string): string {
-  return key
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  return key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }

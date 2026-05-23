@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
 import { Form, Input, Modal, Typography } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
 import type { MemoryRow } from "../networking";
 
 const { Text } = Typography;
@@ -64,7 +65,9 @@ export const MemoryEditModal: React.FC<MemoryEditModalProps> = ({
   return (
     <Modal
       open={open}
-      title={mode === "create" ? "Create memory" : `Edit ${initialRow?.key ?? ""}`}
+      title={
+        mode === "create" ? "Create memory" : `Edit ${initialRow?.key ?? ""}`
+      }
       onCancel={() => {
         form.resetFields();
         onClose();
@@ -82,10 +85,7 @@ export const MemoryEditModal: React.FC<MemoryEditModalProps> = ({
           rules={[{ required: true, message: "Key is required" }]}
           tooltip="Globally unique — two memories cannot share a key. Namespace your own keys if you need per-user isolation (e.g. user:123:notes)."
         >
-          <Input
-            placeholder="e.g. user_role"
-            disabled={mode === "edit"}
-          />
+          <Input placeholder="e.g. user_role" disabled={mode === "edit"} />
         </Form.Item>
         <Form.Item
           label="Value"
@@ -110,7 +110,9 @@ export const MemoryEditModal: React.FC<MemoryEditModalProps> = ({
           <Input.TextArea
             rows={4}
             placeholder='{"tags": ["example"]}'
-            style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}
+            style={{
+              fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+            }}
           />
         </Form.Item>
       </Form>

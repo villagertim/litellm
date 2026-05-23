@@ -1,5 +1,9 @@
-import { Typography, Tooltip } from "antd";
-import { DEFAULT_MAX_WIDTH, FONT_FAMILY_MONO, FONT_SIZE_SMALL } from "./constants";
+import { Tooltip, Typography } from "antd";
+import {
+  DEFAULT_MAX_WIDTH,
+  FONT_FAMILY_MONO,
+  FONT_SIZE_SMALL,
+} from "./constants";
 
 const { Text } = Typography;
 
@@ -12,7 +16,10 @@ interface TruncatedValueProps {
  * Displays a truncated value with tooltip and copy functionality.
  * Useful for displaying long IDs, URLs, or other text that may overflow.
  */
-export function TruncatedValue({ value, maxWidth = DEFAULT_MAX_WIDTH }: TruncatedValueProps) {
+export function TruncatedValue({
+  value,
+  maxWidth = DEFAULT_MAX_WIDTH,
+}: TruncatedValueProps) {
   if (!value) return <Text type="secondary">-</Text>;
 
   return (

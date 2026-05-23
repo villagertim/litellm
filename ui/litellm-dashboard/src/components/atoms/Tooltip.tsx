@@ -1,5 +1,6 @@
-import React, { useState, useRef } from "react";
 import { QuestionCircleOutlined } from "@ant-design/icons";
+import type React from "react";
+import { useRef, useState } from "react";
 
 interface TooltipProps {
   content: React.ReactNode;
@@ -8,9 +9,16 @@ interface TooltipProps {
   className?: string;
 }
 
-export const Tooltip: React.FC<TooltipProps> = ({ content, children, width = "auto", className = "" }) => {
+export const Tooltip: React.FC<TooltipProps> = ({
+  content,
+  children,
+  width = "auto",
+  className = "",
+}) => {
   const [showTooltip, setShowTooltip] = useState(false);
-  const [tooltipPosition, setTooltipPosition] = useState<"top" | "bottom">("top");
+  const [tooltipPosition, setTooltipPosition] = useState<"top" | "bottom">(
+    "top",
+  );
   const tooltipRef = useRef<HTMLDivElement>(null);
 
   // Function to check if tooltip would fit above
@@ -57,8 +65,14 @@ export const Tooltip: React.FC<TooltipProps> = ({ content, children, width = "au
             style={{
               top: tooltipPosition === "top" ? "100%" : "auto",
               bottom: tooltipPosition === "bottom" ? "100%" : "auto",
-              borderTop: tooltipPosition === "top" ? "6px solid rgba(0, 0, 0, 0.9)" : "6px solid transparent",
-              borderBottom: tooltipPosition === "bottom" ? "6px solid rgba(0, 0, 0, 0.9)" : "6px solid transparent",
+              borderTop:
+                tooltipPosition === "top"
+                  ? "6px solid rgba(0, 0, 0, 0.9)"
+                  : "6px solid transparent",
+              borderBottom:
+                tooltipPosition === "bottom"
+                  ? "6px solid rgba(0, 0, 0, 0.9)"
+                  : "6px solid transparent",
               borderLeft: "6px solid transparent",
               borderRight: "6px solid transparent",
             }}

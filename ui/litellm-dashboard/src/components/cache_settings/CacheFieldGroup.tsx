@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 import CacheFieldRenderer from "./CacheFieldRenderer";
 
 interface CacheFieldGroupProps {
@@ -21,7 +21,7 @@ const CacheFieldGroup: React.FC<CacheFieldGroupProps> = ({
     if (field.redis_type === null || field.redis_type === undefined) {
       return true;
     }
-    
+
     return field.redis_type === redisType;
   };
 
@@ -36,7 +36,8 @@ const CacheFieldGroup: React.FC<CacheFieldGroupProps> = ({
       <h4 className="text-sm font-medium text-gray-900">{title}</h4>
       <div className={`grid ${gridCols}`}>
         {visibleFields.map((field) => {
-          const currentValue = cacheSettings[field.field_name] ?? field.field_default ?? "";
+          const currentValue =
+            cacheSettings[field.field_name] ?? field.field_default ?? "";
           return (
             <CacheFieldRenderer
               key={field.field_name}
@@ -51,4 +52,3 @@ const CacheFieldGroup: React.FC<CacheFieldGroupProps> = ({
 };
 
 export default CacheFieldGroup;
-

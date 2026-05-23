@@ -1,7 +1,10 @@
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import {
+  getGlobalLitellmHeaderName,
+  proxyBaseUrl,
+} from "@/components/networking";
+import { type UseQueryResult, useQuery } from "@tanstack/react-query";
 import { createQueryKeys } from "../common/queryKeysFactory";
-import { proxyBaseUrl, getGlobalLitellmHeaderName } from "@/components/networking";
 
 export interface RouterSettingsField {
   field_name: string;
@@ -30,9 +33,13 @@ const deriveErrorMessage = (errorData: any): string => {
   );
 };
 
-const getRouterFields = async (accessToken: string): Promise<RouterFieldsResponse> => {
+const getRouterFields = async (
+  accessToken: string,
+): Promise<RouterFieldsResponse> => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/router/fields` : `/router/fields`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/router/fields`
+      : `/router/fields`;
 
     console.log("Fetching router fields from:", url);
 

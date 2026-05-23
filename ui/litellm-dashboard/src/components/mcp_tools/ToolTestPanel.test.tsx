@@ -1,9 +1,9 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
+import React from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import { ToolTestPanel } from "./ToolTestPanel";
-import { InputSchema, MCPTool } from "./types";
+import type { InputSchema, MCPTool } from "./types";
 
 vi.mock("../molecules/notifications_manager", () => ({
   default: {
@@ -148,7 +148,11 @@ describe("ToolTestPanel defaults", () => {
   it("falls back to a plain input when schema is missing", () => {
     renderPanel("tool_input_schema");
 
-    expect(screen.getByPlaceholderText("Enter input for this tool")).toBeInTheDocument();
-    expect(screen.queryByText("No parameters required")).not.toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Enter input for this tool"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("No parameters required"),
+    ).not.toBeInTheDocument();
   });
 });

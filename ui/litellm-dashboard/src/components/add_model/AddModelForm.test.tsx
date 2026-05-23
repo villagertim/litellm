@@ -1,15 +1,23 @@
-import { renderHook, screen, waitFor, renderWithProviders } from "../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { Form } from "antd";
 import type { UploadProps } from "antd/es/upload";
 import { describe, expect, it, vi } from "vitest";
+import {
+  renderHook,
+  renderWithProviders,
+  screen,
+  waitFor,
+} from "../../../tests/test-utils";
 import type { Team } from "../key_team_helpers/key_list";
 import type { CredentialItem } from "../networking";
 import { Providers } from "../provider_info_helpers";
 import AddModelForm from "./AddModelForm";
 
 vi.mock("../molecules/models/ProviderLogo", () => ({
-  ProviderLogo: ({ provider, className }: { provider: string; className?: string }) => (
+  ProviderLogo: ({
+    provider,
+    className,
+  }: { provider: string; className?: string }) => (
     <div className={className} data-testid={`provider-logo-${provider}`}>
       {provider}
     </div>
@@ -21,7 +29,10 @@ vi.mock("../networking", async () => {
   return {
     ...actual,
     getGuardrailsList: vi.fn().mockResolvedValue({
-      guardrails: [{ guardrail_name: "test-guardrail-1" }, { guardrail_name: "test-guardrail-2" }],
+      guardrails: [
+        { guardrail_name: "test-guardrail-1" },
+        { guardrail_name: "test-guardrail-2" },
+      ],
     }),
     tagListCall: vi.fn().mockResolvedValue({}),
     modelAvailableCall: vi.fn().mockResolvedValue({
@@ -68,10 +79,21 @@ vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({
 vi.mock("@/app/(dashboard)/hooks/teams/useTeams", () => ({
   useInfiniteTeams: () => ({
     data: {
-      pages: [{
-        teams: [{ team_id: "team-1", team_alias: "Test Team", organization_id: "org-1" }],
-        total: 1, page: 1, page_size: 20, total_pages: 1,
-      }],
+      pages: [
+        {
+          teams: [
+            {
+              team_id: "team-1",
+              team_alias: "Test Team",
+              organization_id: "org-1",
+            },
+          ],
+          total: 1,
+          page: 1,
+          page_size: 20,
+          total_pages: 1,
+        },
+      ],
     },
     fetchNextPage: vi.fn(),
     hasNextPage: false,
@@ -100,7 +122,11 @@ vi.mock("@/app/(dashboard)/hooks/tags/useTags", () => ({
   }),
 }));
 
-const mockAuthorizedUser = (userRole: string, userId: string, premiumUser: boolean) => ({
+const mockAuthorizedUser = (
+  userRole: string,
+  userId: string,
+  premiumUser: boolean,
+) => ({
   token: "test-token",
   accessToken: "test-access-token",
   userId,
@@ -125,14 +151,20 @@ const testTeam: Team = {
   members_with_roles: [],
 };
 
-const createTestProps = (userRole = "proxy_admin", userId = "user-1", isTeamAdmin = false) => {
+const createTestProps = (
+  userRole = "proxy_admin",
+  userId = "user-1",
+  isTeamAdmin = false,
+) => {
   const { result } = renderHook(() => Form.useForm());
   const [form] = result.current;
 
   const teams = [
     {
       ...testTeam,
-      members_with_roles: isTeamAdmin ? [{ user_id: userId, role: "admin" }] : [],
+      members_with_roles: isTeamAdmin
+        ? [{ user_id: userId, role: "admin" }]
+        : [],
     },
   ];
 
@@ -157,7 +189,9 @@ const createTestProps = (userRole = "proxy_admin", userId = "user-1", isTeamAdmi
     handleOk: vi.fn(),
     setSelectedProvider: vi.fn(),
     setProviderModelsFn: vi.fn(),
-    getPlaceholder: vi.fn((provider: Providers) => `Enter ${provider} model name`),
+    getPlaceholder: vi.fn(
+      (provider: Providers) => `Enter ${provider} model name`,
+    ),
     setShowAdvancedSettings: vi.fn(),
     selectedProvider: Providers.OpenAI,
     providerModels: ["gpt-4", "gpt-3.5-turbo"],
@@ -172,19 +206,29 @@ const createTestProps = (userRole = "proxy_admin", userId = "user-1", isTeamAdmi
 
 describe("AddModelForm", () => {
   it("should render", async () => {
-    const mockUseAuthorized = vi.mocked(await import("@/app/(dashboard)/hooks/useAuthorized"));
-    mockUseAuthorized.default.mockReturnValue(mockAuthorizedUser("proxy_admin", "user-1", true));
+    const mockUseAuthorized = vi.mocked(
+      await import("@/app/(dashboard)/hooks/useAuthorized"),
+    );
+    mockUseAuthorized.default.mockReturnValue(
+      mockAuthorizedUser("proxy_admin", "user-1", true),
+    );
 
     const props = createTestProps();
 
     renderWithProviders(<AddModelForm {...props} />);
 
-    expect(await screen.findByRole("heading", { name: "Add Model" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "Add Model" }),
+    ).toBeInTheDocument();
   });
 
   it("should show proxy admin only (not team admin) - should not see Select Team dropdown unless switch is toggled", async () => {
-    const mockUseAuthorized = vi.mocked(await import("@/app/(dashboard)/hooks/useAuthorized"));
-    mockUseAuthorized.default.mockReturnValue(mockAuthorizedUser("proxy_admin", "user-1", true));
+    const mockUseAuthorized = vi.mocked(
+      await import("@/app/(dashboard)/hooks/useAuthorized"),
+    );
+    mockUseAuthorized.default.mockReturnValue(
+      mockAuthorizedUser("proxy_admin", "user-1", true),
+    );
 
     const props = createTestProps("proxy_admin", "user-1", false);
 
@@ -192,7 +236,9 @@ describe("AddModelForm", () => {
 
     await screen.findByText("Provider");
 
-    expect(screen.queryByText("Team Selection Required")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Team Selection Required"),
+    ).not.toBeInTheDocument();
     expect(screen.queryByText("Select Team")).not.toBeInTheDocument();
 
     const teamSwitch = screen.getByRole("switch");
@@ -206,8 +252,12 @@ describe("AddModelForm", () => {
   });
 
   it("should show proxy admin who is also team admin - should not see Select Team dropdown unless switch is toggled", async () => {
-    const mockUseAuthorized = vi.mocked(await import("@/app/(dashboard)/hooks/useAuthorized"));
-    mockUseAuthorized.default.mockReturnValue(mockAuthorizedUser("proxy_admin", "user-1", true));
+    const mockUseAuthorized = vi.mocked(
+      await import("@/app/(dashboard)/hooks/useAuthorized"),
+    );
+    mockUseAuthorized.default.mockReturnValue(
+      mockAuthorizedUser("proxy_admin", "user-1", true),
+    );
 
     const props = createTestProps("proxy_admin", "user-1", true);
 
@@ -215,7 +265,9 @@ describe("AddModelForm", () => {
 
     await screen.findByText("Provider");
 
-    expect(screen.queryByText("Team Selection Required")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Team Selection Required"),
+    ).not.toBeInTheDocument();
     expect(screen.queryByText("Select Team")).not.toBeInTheDocument();
 
     const teamSwitch = screen.getByRole("switch");
@@ -229,8 +281,12 @@ describe("AddModelForm", () => {
   });
 
   it("should show team admin (not proxy admin) - should see alert and team select, must select team before seeing remaining fields", async () => {
-    const mockUseAuthorized = vi.mocked(await import("@/app/(dashboard)/hooks/useAuthorized"));
-    mockUseAuthorized.default.mockReturnValue(mockAuthorizedUser("team_member", "user-1", true));
+    const mockUseAuthorized = vi.mocked(
+      await import("@/app/(dashboard)/hooks/useAuthorized"),
+    );
+    mockUseAuthorized.default.mockReturnValue(
+      mockAuthorizedUser("team_member", "user-1", true),
+    );
 
     const props = createTestProps("team_member", "user-1", true);
 
@@ -254,8 +310,12 @@ describe("AddModelForm", () => {
   });
 
   it("should show team admin (not proxy admin) - should not see team-BYOK switch", async () => {
-    const mockUseAuthorized = vi.mocked(await import("@/app/(dashboard)/hooks/useAuthorized"));
-    mockUseAuthorized.default.mockReturnValue(mockAuthorizedUser("team_member", "user-1", true));
+    const mockUseAuthorized = vi.mocked(
+      await import("@/app/(dashboard)/hooks/useAuthorized"),
+    );
+    mockUseAuthorized.default.mockReturnValue(
+      mockAuthorizedUser("team_member", "user-1", true),
+    );
 
     const props = createTestProps("team_member", "user-1", true);
 
@@ -275,8 +335,12 @@ describe("AddModelForm", () => {
   });
 
   it("should handle non-admin, non-team-admin users - should not see team selection or switch", async () => {
-    const mockUseAuthorized = vi.mocked(await import("@/app/(dashboard)/hooks/useAuthorized"));
-    mockUseAuthorized.default.mockReturnValue(mockAuthorizedUser("user", "user-1", false));
+    const mockUseAuthorized = vi.mocked(
+      await import("@/app/(dashboard)/hooks/useAuthorized"),
+    );
+    mockUseAuthorized.default.mockReturnValue(
+      mockAuthorizedUser("user", "user-1", false),
+    );
 
     const props = createTestProps("user", "user-1", false);
 
@@ -284,7 +348,9 @@ describe("AddModelForm", () => {
 
     await screen.findByRole("heading", { name: "Add Model" });
 
-    expect(screen.queryByText("Team Selection Required")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Team Selection Required"),
+    ).not.toBeInTheDocument();
 
     expect(screen.queryByText("Select Team")).not.toBeInTheDocument();
 

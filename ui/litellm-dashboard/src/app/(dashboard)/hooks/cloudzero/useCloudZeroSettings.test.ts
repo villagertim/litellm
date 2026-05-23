@@ -1,9 +1,13 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
+import type { CloudZeroSettings } from "@/components/CloudZeroCostTracking/types";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { ReactNode } from "react";
-import { useCloudZeroSettings, useCloudZeroUpdateSettings, useCloudZeroDeleteSettings } from "./useCloudZeroSettings";
-import { CloudZeroSettings } from "@/components/CloudZeroCostTracking/types";
+import { renderHook, waitFor } from "@testing-library/react";
+import React, { type ReactNode } from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  useCloudZeroDeleteSettings,
+  useCloudZeroSettings,
+  useCloudZeroUpdateSettings,
+} from "./useCloudZeroSettings";
 
 const {
   mockProxyBaseUrl,
@@ -87,7 +91,9 @@ describe("useCloudZeroSettings", () => {
       json: async () => mockCloudZeroSettings,
     });
 
-    const { result } = renderHook(() => useCloudZeroSettings(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroSettings(mockAccessToken), {
+      wrapper,
+    });
 
     expect(result.current.isLoading).toBe(true);
     expect(result.current.data).toBeUndefined();
@@ -99,13 +105,16 @@ describe("useCloudZeroSettings", () => {
 
     expect(result.current.data).toEqual(mockCloudZeroSettings);
     expect(result.current.error).toBeNull();
-    expect(fetchSpy).toHaveBeenCalledWith(`${mockProxyBaseUrl}/cloudzero/settings`, {
-      method: "GET",
-      headers: {
-        [mockHeaderName]: `Bearer ${mockAccessToken}`,
-        "Content-Type": "application/json",
+    expect(fetchSpy).toHaveBeenCalledWith(
+      `${mockProxyBaseUrl}/cloudzero/settings`,
+      {
+        method: "GET",
+        headers: {
+          [mockHeaderName]: `Bearer ${mockAccessToken}`,
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
   });
 
   it("should return null when settings are not configured (missing both api_key_masked and connection_id)", async () => {
@@ -114,7 +123,9 @@ describe("useCloudZeroSettings", () => {
       json: async () => ({}),
     });
 
-    const { result } = renderHook(() => useCloudZeroSettings(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroSettings(mockAccessToken), {
+      wrapper,
+    });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -131,7 +142,9 @@ describe("useCloudZeroSettings", () => {
       json: async () => settingsWithConnectionId,
     });
 
-    const { result } = renderHook(() => useCloudZeroSettings(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroSettings(mockAccessToken), {
+      wrapper,
+    });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -156,7 +169,10 @@ describe("useCloudZeroSettings", () => {
         json: async () => errorResponse,
       });
 
-      const { result } = renderHook(() => useCloudZeroSettings(mockAccessToken), { wrapper });
+      const { result } = renderHook(
+        () => useCloudZeroSettings(mockAccessToken),
+        { wrapper },
+      );
 
       await waitFor(() => {
         expect(result.current.isError).toBe(true);
@@ -172,7 +188,9 @@ describe("useCloudZeroSettings", () => {
       json: async () => "Error string",
     });
 
-    const { result } = renderHook(() => useCloudZeroSettings(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroSettings(mockAccessToken), {
+      wrapper,
+    });
 
     await waitFor(() => {
       expect(result.current.isError).toBe(true);
@@ -190,7 +208,9 @@ describe("useCloudZeroSettings", () => {
       },
     });
 
-    const { result } = renderHook(() => useCloudZeroSettings(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroSettings(mockAccessToken), {
+      wrapper,
+    });
 
     await waitFor(() => {
       expect(result.current.isError).toBe(true);
@@ -203,7 +223,9 @@ describe("useCloudZeroSettings", () => {
     const networkError = new Error("Network request failed");
     (fetchSpy as any).mockRejectedValue(networkError);
 
-    const { result } = renderHook(() => useCloudZeroSettings(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroSettings(mockAccessToken), {
+      wrapper,
+    });
 
     await waitFor(() => {
       expect(result.current.isError).toBe(true);
@@ -228,13 +250,18 @@ describe("useCloudZeroSettings", () => {
       json: async () => mockCloudZeroSettings,
     });
 
-    const { result } = renderHook(() => useCloudZeroSettings(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroSettings(mockAccessToken), {
+      wrapper,
+    });
 
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(fetchSpy).toHaveBeenCalledWith("/cloudzero/settings", expect.any(Object));
+    expect(fetchSpy).toHaveBeenCalledWith(
+      "/cloudzero/settings",
+      expect.any(Object),
+    );
   });
 });
 
@@ -268,13 +295,19 @@ describe("useCloudZeroUpdateSettings", () => {
     React.createElement(QueryClientProvider, { client: queryClient }, children);
 
   it("should successfully update settings with all parameters", async () => {
-    const mockResponse = { message: "Settings updated successfully", status: "success" };
+    const mockResponse = {
+      message: "Settings updated successfully",
+      status: "success",
+    };
     (fetchSpy as any).mockResolvedValue({
       ok: true,
       json: async () => mockResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroUpdateSettings(mockAccessToken), { wrapper });
+    const { result } = renderHook(
+      () => useCloudZeroUpdateSettings(mockAccessToken),
+      { wrapper },
+    );
 
     result.current.mutate({
       connection_id: "new-connection-id",
@@ -287,18 +320,21 @@ describe("useCloudZeroUpdateSettings", () => {
     });
 
     expect(result.current.data).toEqual(mockResponse);
-    expect(fetchSpy).toHaveBeenCalledWith(`${mockProxyBaseUrl}/cloudzero/settings`, {
-      method: "PUT",
-      headers: {
-        [mockHeaderName]: `Bearer ${mockAccessToken}`,
-        "Content-Type": "application/json",
+    expect(fetchSpy).toHaveBeenCalledWith(
+      `${mockProxyBaseUrl}/cloudzero/settings`,
+      {
+        method: "PUT",
+        headers: {
+          [mockHeaderName]: `Bearer ${mockAccessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          connection_id: "new-connection-id",
+          timezone: "America/Los_Angeles",
+          api_key: "new-api-key",
+        }),
       },
-      body: JSON.stringify({
-        connection_id: "new-connection-id",
-        timezone: "America/Los_Angeles",
-        api_key: "new-api-key",
-      }),
-    });
+    );
   });
 
   it("should not include undefined fields in request body", async () => {
@@ -308,7 +344,10 @@ describe("useCloudZeroUpdateSettings", () => {
       json: async () => mockResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroUpdateSettings(mockAccessToken), { wrapper });
+    const { result } = renderHook(
+      () => useCloudZeroUpdateSettings(mockAccessToken),
+      { wrapper },
+    );
 
     result.current.mutate({
       connection_id: "test-id",
@@ -331,9 +370,15 @@ describe("useCloudZeroUpdateSettings", () => {
       json: async () => mockResponse,
     });
 
-    queryClient.setQueryData(["cloudZeroSettings", "list", { params: {} }], mockCloudZeroSettings);
+    queryClient.setQueryData(
+      ["cloudZeroSettings", "list", { params: {} }],
+      mockCloudZeroSettings,
+    );
 
-    const { result } = renderHook(() => useCloudZeroUpdateSettings(mockAccessToken), { wrapper });
+    const { result } = renderHook(
+      () => useCloudZeroUpdateSettings(mockAccessToken),
+      { wrapper },
+    );
 
     result.current.mutate({
       connection_id: "test-id",
@@ -345,7 +390,9 @@ describe("useCloudZeroUpdateSettings", () => {
 
     const queryCache = queryClient.getQueryCache();
     const queries = queryCache.findAll();
-    const settingsQuery = queries.find((q) => q.queryKey[0] === "cloudZeroSettings");
+    const settingsQuery = queries.find(
+      (q) => q.queryKey[0] === "cloudZeroSettings",
+    );
 
     expect(settingsQuery).toBeDefined();
   });
@@ -365,7 +412,10 @@ describe("useCloudZeroUpdateSettings", () => {
         json: async () => errorResponse,
       });
 
-      const { result } = renderHook(() => useCloudZeroUpdateSettings(mockAccessToken), { wrapper });
+      const { result } = renderHook(
+        () => useCloudZeroUpdateSettings(mockAccessToken),
+        { wrapper },
+      );
 
       result.current.mutate({
         connection_id: "test-id",
@@ -385,7 +435,10 @@ describe("useCloudZeroUpdateSettings", () => {
       json: async () => "Error string",
     });
 
-    const { result } = renderHook(() => useCloudZeroUpdateSettings(mockAccessToken), { wrapper });
+    const { result } = renderHook(
+      () => useCloudZeroUpdateSettings(mockAccessToken),
+      { wrapper },
+    );
 
     result.current.mutate({
       connection_id: "test-id",
@@ -407,7 +460,10 @@ describe("useCloudZeroUpdateSettings", () => {
       },
     });
 
-    const { result } = renderHook(() => useCloudZeroUpdateSettings(mockAccessToken), { wrapper });
+    const { result } = renderHook(
+      () => useCloudZeroUpdateSettings(mockAccessToken),
+      { wrapper },
+    );
 
     result.current.mutate({
       connection_id: "test-id",
@@ -424,7 +480,10 @@ describe("useCloudZeroUpdateSettings", () => {
     const networkError = new Error("Network request failed");
     (fetchSpy as any).mockRejectedValue(networkError);
 
-    const { result } = renderHook(() => useCloudZeroUpdateSettings(mockAccessToken), { wrapper });
+    const { result } = renderHook(
+      () => useCloudZeroUpdateSettings(mockAccessToken),
+      { wrapper },
+    );
 
     result.current.mutate({
       connection_id: "test-id",
@@ -442,7 +501,10 @@ describe("useCloudZeroUpdateSettings", () => {
 
     for (const accessToken of testCases) {
       vi.clearAllMocks();
-      const { result } = renderHook(() => useCloudZeroUpdateSettings(accessToken), { wrapper });
+      const { result } = renderHook(
+        () => useCloudZeroUpdateSettings(accessToken),
+        { wrapper },
+      );
 
       result.current.mutate({
         connection_id: "test-id",
@@ -465,7 +527,10 @@ describe("useCloudZeroUpdateSettings", () => {
       json: async () => mockResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroUpdateSettings(mockAccessToken), { wrapper });
+    const { result } = renderHook(
+      () => useCloudZeroUpdateSettings(mockAccessToken),
+      { wrapper },
+    );
 
     result.current.mutate({
       connection_id: "test-id",
@@ -475,7 +540,10 @@ describe("useCloudZeroUpdateSettings", () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(fetchSpy).toHaveBeenCalledWith("/cloudzero/settings", expect.any(Object));
+    expect(fetchSpy).toHaveBeenCalledWith(
+      "/cloudzero/settings",
+      expect.any(Object),
+    );
   });
 });
 
@@ -509,13 +577,19 @@ describe("useCloudZeroDeleteSettings", () => {
     React.createElement(QueryClientProvider, { client: queryClient }, children);
 
   it("should successfully delete settings", async () => {
-    const mockResponse = { message: "Settings deleted successfully", status: "success" };
+    const mockResponse = {
+      message: "Settings deleted successfully",
+      status: "success",
+    };
     (fetchSpy as any).mockResolvedValue({
       ok: true,
       json: async () => mockResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroDeleteSettings(mockAccessToken), { wrapper });
+    const { result } = renderHook(
+      () => useCloudZeroDeleteSettings(mockAccessToken),
+      { wrapper },
+    );
 
     result.current.mutate();
 
@@ -524,13 +598,16 @@ describe("useCloudZeroDeleteSettings", () => {
     });
 
     expect(result.current.data).toEqual(mockResponse);
-    expect(fetchSpy).toHaveBeenCalledWith(`${mockProxyBaseUrl}/cloudzero/delete`, {
-      method: "DELETE",
-      headers: {
-        [mockHeaderName]: `Bearer ${mockAccessToken}`,
-        "Content-Type": "application/json",
+    expect(fetchSpy).toHaveBeenCalledWith(
+      `${mockProxyBaseUrl}/cloudzero/delete`,
+      {
+        method: "DELETE",
+        headers: {
+          [mockHeaderName]: `Bearer ${mockAccessToken}`,
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
   });
 
   it("should invalidate settings query on success", async () => {
@@ -540,9 +617,15 @@ describe("useCloudZeroDeleteSettings", () => {
       json: async () => mockResponse,
     });
 
-    queryClient.setQueryData(["cloudZeroSettings", "list", { params: {} }], mockCloudZeroSettings);
+    queryClient.setQueryData(
+      ["cloudZeroSettings", "list", { params: {} }],
+      mockCloudZeroSettings,
+    );
 
-    const { result } = renderHook(() => useCloudZeroDeleteSettings(mockAccessToken), { wrapper });
+    const { result } = renderHook(
+      () => useCloudZeroDeleteSettings(mockAccessToken),
+      { wrapper },
+    );
 
     result.current.mutate();
 
@@ -552,7 +635,9 @@ describe("useCloudZeroDeleteSettings", () => {
 
     const queryCache = queryClient.getQueryCache();
     const queries = queryCache.findAll();
-    const settingsQuery = queries.find((q) => q.queryKey[0] === "cloudZeroSettings");
+    const settingsQuery = queries.find(
+      (q) => q.queryKey[0] === "cloudZeroSettings",
+    );
 
     expect(settingsQuery).toBeDefined();
   });
@@ -572,7 +657,10 @@ describe("useCloudZeroDeleteSettings", () => {
         json: async () => errorResponse,
       });
 
-      const { result } = renderHook(() => useCloudZeroDeleteSettings(mockAccessToken), { wrapper });
+      const { result } = renderHook(
+        () => useCloudZeroDeleteSettings(mockAccessToken),
+        { wrapper },
+      );
 
       result.current.mutate();
 
@@ -590,7 +678,10 @@ describe("useCloudZeroDeleteSettings", () => {
       json: async () => "Error string",
     });
 
-    const { result } = renderHook(() => useCloudZeroDeleteSettings(mockAccessToken), { wrapper });
+    const { result } = renderHook(
+      () => useCloudZeroDeleteSettings(mockAccessToken),
+      { wrapper },
+    );
 
     result.current.mutate();
 
@@ -610,7 +701,10 @@ describe("useCloudZeroDeleteSettings", () => {
       },
     });
 
-    const { result } = renderHook(() => useCloudZeroDeleteSettings(mockAccessToken), { wrapper });
+    const { result } = renderHook(
+      () => useCloudZeroDeleteSettings(mockAccessToken),
+      { wrapper },
+    );
 
     result.current.mutate();
 
@@ -625,7 +719,10 @@ describe("useCloudZeroDeleteSettings", () => {
     const networkError = new Error("Network request failed");
     (fetchSpy as any).mockRejectedValue(networkError);
 
-    const { result } = renderHook(() => useCloudZeroDeleteSettings(mockAccessToken), { wrapper });
+    const { result } = renderHook(
+      () => useCloudZeroDeleteSettings(mockAccessToken),
+      { wrapper },
+    );
 
     result.current.mutate();
 
@@ -641,7 +738,10 @@ describe("useCloudZeroDeleteSettings", () => {
 
     for (const accessToken of testCases) {
       vi.clearAllMocks();
-      const { result } = renderHook(() => useCloudZeroDeleteSettings(accessToken), { wrapper });
+      const { result } = renderHook(
+        () => useCloudZeroDeleteSettings(accessToken),
+        { wrapper },
+      );
 
       result.current.mutate();
 
@@ -662,7 +762,10 @@ describe("useCloudZeroDeleteSettings", () => {
       json: async () => mockResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroDeleteSettings(mockAccessToken), { wrapper });
+    const { result } = renderHook(
+      () => useCloudZeroDeleteSettings(mockAccessToken),
+      { wrapper },
+    );
 
     result.current.mutate();
 
@@ -670,6 +773,9 @@ describe("useCloudZeroDeleteSettings", () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(fetchSpy).toHaveBeenCalledWith("/cloudzero/delete", expect.any(Object));
+    expect(fetchSpy).toHaveBeenCalledWith(
+      "/cloudzero/delete",
+      expect.any(Object),
+    );
   });
 });

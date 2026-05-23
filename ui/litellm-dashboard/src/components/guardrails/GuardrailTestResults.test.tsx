@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GuardrailTestResults } from "./GuardrailTestResults";
 
 Object.defineProperty(window, "matchMedia", {
@@ -31,7 +31,8 @@ describe("GuardrailTestResults", () => {
     const mockResults = [
       {
         guardrailName: "test-guardrail",
-        response_text: "This is a very long response text that should be collapsible",
+        response_text:
+          "This is a very long response text that should be collapsible",
         latency: 250,
       },
     ];
@@ -39,20 +40,31 @@ describe("GuardrailTestResults", () => {
     render(<GuardrailTestResults results={mockResults} errors={null} />);
 
     // Verify output text is initially visible
-    expect(screen.getByText("This is a very long response text that should be collapsible")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "This is a very long response text that should be collapsible",
+      ),
+    ).toBeInTheDocument();
 
     // Click on the guardrail name to collapse
     const guardrailHeader = screen.getByText("test-guardrail");
     await user.click(guardrailHeader);
 
     // Verify output text is now hidden
-    expect(screen.queryByText("This is a very long response text that should be collapsible")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "This is a very long response text that should be collapsible",
+      ),
+    ).not.toBeInTheDocument();
 
     // Click again to expand
     await user.click(guardrailHeader);
 
     // Verify output text is visible again
-    expect(screen.getByText("This is a very long response text that should be collapsible")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "This is a very long response text that should be collapsible",
+      ),
+    ).toBeInTheDocument();
   });
 });
-

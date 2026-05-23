@@ -1,4 +1,4 @@
-import { MessageType } from "./types";
+import type { MessageType } from "./types";
 
 export interface ChatMultimodalContent {
   type: "text" | "image_url";
@@ -50,7 +50,9 @@ export const createChatDisplayMessage = (
 ): MessageType => {
   let attachmentText = "";
   if (hasFile && fileName) {
-    attachmentText = fileName.toLowerCase().endsWith(".pdf") ? "[PDF attached]" : "[Image attached]";
+    attachmentText = fileName.toLowerCase().endsWith(".pdf")
+      ? "[PDF attached]"
+      : "[Image attached]";
   }
 
   const displayMessage: MessageType = {
@@ -69,7 +71,8 @@ export const shouldShowChatAttachedImage = (message: MessageType): boolean => {
   return (
     message.role === "user" &&
     typeof message.content === "string" &&
-    (message.content.includes("[Image attached]") || message.content.includes("[PDF attached]")) &&
+    (message.content.includes("[Image attached]") ||
+      message.content.includes("[PDF attached]")) &&
     !!message.imagePreviewUrl
   );
 };

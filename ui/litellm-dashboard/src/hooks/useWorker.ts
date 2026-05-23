@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
-import { switchToWorkerUrl, WorkerInfo } from "@/components/networking";
 import { useUIConfig } from "@/app/(dashboard)/hooks/uiConfig/useUIConfig";
+import { type WorkerInfo, switchToWorkerUrl } from "@/components/networking";
+import { useCallback, useEffect, useState } from "react";
 
 const SELECTED_WORKER_KEY = "litellm_selected_worker_id";
 
@@ -20,10 +20,12 @@ export const useWorker = (): UseWorkerReturn => {
   const isControlPlane = uiConfig?.is_control_plane ?? false;
   const workers: WorkerInfo[] = uiConfig?.workers ?? [];
 
-  const [selectedWorkerId, setSelectedWorkerId] = useState<string | null>(() => {
-    if (typeof window === "undefined") return null;
-    return localStorage.getItem(SELECTED_WORKER_KEY);
-  });
+  const [selectedWorkerId, setSelectedWorkerId] = useState<string | null>(
+    () => {
+      if (typeof window === "undefined") return null;
+      return localStorage.getItem(SELECTED_WORKER_KEY);
+    },
+  );
 
   // Once workers are loaded, restore proxyBaseUrl from the persisted selection
   useEffect(() => {

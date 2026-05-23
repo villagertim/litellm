@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import { Button } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
 import { Title } from "@tremor/react";
-import { transformRequestCall } from "./networking";
+import { Button } from "antd";
+import type React from "react";
+import { useState } from "react";
 import NotificationsManager from "./molecules/notifications_manager";
+import { transformRequestCall } from "./networking";
 interface TransformRequestPanelProps {
   accessToken: string | null;
 }
@@ -14,7 +15,9 @@ interface TransformResponse {
   raw_request_headers: Record<string, string>;
 }
 
-const TransformRequestPanel: React.FC<TransformRequestPanelProps> = ({ accessToken }) => {
+const TransformRequestPanel: React.FC<TransformRequestPanelProps> = ({
+  accessToken,
+}) => {
   const [originalRequestJSON, setOriginalRequestJSON] = useState(`{
   "model": "openai/gpt-4o",
   "messages": [
@@ -109,7 +112,9 @@ ${formattedBody}
         // Try to extract the parts from a string response if needed
         const rawText = typeof data === "string" ? data : JSON.stringify(data);
         setTransformedResponse(rawText);
-        NotificationsManager.info("Transformed request received in unexpected format");
+        NotificationsManager.info(
+          "Transformed request received in unexpected format",
+        );
       }
     } catch (err) {
       console.error("Error transforming request:", err);
@@ -130,7 +135,9 @@ ${formattedBody}
   return (
     <div className="w-full m-2" style={{ overflow: "hidden" }}>
       <Title>Playground</Title>
-      <p className="text-sm text-gray-500">See how LiteLLM transforms your request for the specified provider.</p>
+      <p className="text-sm text-gray-500">
+        See how LiteLLM transforms your request for the specified provider.
+      </p>
       <div
         style={{
           display: "flex",
@@ -156,7 +163,15 @@ ${formattedBody}
           }}
         >
           <div style={{ marginBottom: "24px" }}>
-            <h2 style={{ fontSize: "24px", fontWeight: "bold", margin: "0 0 4px 0" }}>Original Request</h2>
+            <h2
+              style={{
+                fontSize: "24px",
+                fontWeight: "bold",
+                margin: "0 0 4px 0",
+              }}
+            >
+              Original Request
+            </h2>
             <p style={{ color: "#666", margin: 0 }}>
               The request you would send to LiteLLM /chat/completions endpoint.
             </p>
@@ -221,8 +236,18 @@ ${formattedBody}
           }}
         >
           <div style={{ marginBottom: "24px" }}>
-            <h2 style={{ fontSize: "24px", fontWeight: "bold", margin: "0 0 4px 0" }}>Transformed Request</h2>
-            <p style={{ color: "#666", margin: 0 }}>How LiteLLM transforms your request for the specified provider.</p>
+            <h2
+              style={{
+                fontSize: "24px",
+                fontWeight: "bold",
+                margin: "0 0 4px 0",
+              }}
+            >
+              Transformed Request
+            </h2>
+            <p style={{ color: "#666", margin: 0 }}>
+              How LiteLLM transforms your request for the specified provider.
+            </p>
             <br />
             <p style={{ color: "#666", margin: 0 }} className="text-xs">
               Note: Sensitive headers are not shown.
@@ -287,7 +312,11 @@ ${formattedBody}
       <div className="mt-4 text-right w-full">
         <p className="text-sm text-gray-500">
           Found an error? File an issue{" "}
-          <a href="https://github.com/BerriAI/litellm/issues" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://github.com/BerriAI/litellm/issues"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             here
           </a>
           .

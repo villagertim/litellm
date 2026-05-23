@@ -1,8 +1,22 @@
 import { useDisableUsageIndicator } from "@/app/(dashboard)/hooks/useDisableUsageIndicator";
 import { Badge } from "@tremor/react";
-import { AlertTriangle, Calendar, ChevronDown, ChevronUp, Loader2, Minus, TrendingUp, UserCheck, Users } from "lucide-react";
+import {
+  AlertTriangle,
+  Calendar,
+  ChevronDown,
+  ChevronUp,
+  Loader2,
+  Minus,
+  TrendingUp,
+  UserCheck,
+  Users,
+} from "lucide-react";
 import { useEffect, useState } from "react";
-import { getRemainingUsers, getLicenseInfo, LicenseInfo } from "./networking";
+import {
+  type LicenseInfo,
+  getLicenseInfo,
+  getRemainingUsers,
+} from "./networking";
 
 // Simple utility function to combine class names
 const cn = (...classes: (string | boolean | undefined)[]) => {
@@ -24,9 +38,11 @@ interface UsageData {
 }
 
 // Calculate days until expiration
-const getDaysUntilExpiration = (expirationDate: string | null): number | null => {
+const getDaysUntilExpiration = (
+  expirationDate: string | null,
+): number | null => {
   if (!expirationDate) return null;
-  const expDate = new Date(expirationDate + 'T00:00:00Z'); // Force UTC midnight
+  const expDate = new Date(expirationDate + "T00:00:00Z"); // Force UTC midnight
   const now = new Date();
   now.setHours(0, 0, 0, 0); // Normalize to local midnight
   const diffTime = expDate.getTime() - now.getTime();
@@ -46,7 +62,10 @@ const formatExpirationDisplay = (daysRemaining: number | null): string => {
   return `${months} months remaining`;
 };
 
-export default function UsageIndicator({ accessToken, width = 220 }: UsageIndicatorProps) {
+export default function UsageIndicator({
+  accessToken,
+  width = 220,
+}: UsageIndicatorProps) {
   const disableUsageIndicator = useDisableUsageIndicator();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
@@ -84,8 +103,12 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
   const daysUntilExpiration = licenseInfo?.expiration_date
     ? getDaysUntilExpiration(licenseInfo.expiration_date)
     : null;
-  const isLicenseExpired = daysUntilExpiration !== null && daysUntilExpiration < 0;
-  const isLicenseExpiringSoon = daysUntilExpiration !== null && daysUntilExpiration >= 0 && daysUntilExpiration < 30;
+  const isLicenseExpired =
+    daysUntilExpiration !== null && daysUntilExpiration < 0;
+  const isLicenseExpiringSoon =
+    daysUntilExpiration !== null &&
+    daysUntilExpiration >= 0 &&
+    daysUntilExpiration < 30;
 
   // Calculate derived values from data
   const getUsageMetrics = (data: UsageData | null) => {
@@ -108,14 +131,20 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
     }
 
     // User metrics
-    const userUsagePercentage = data.total_users ? (data.total_users_used / data.total_users) * 100 : 0;
+    const userUsagePercentage = data.total_users
+      ? (data.total_users_used / data.total_users) * 100
+      : 0;
     const userIsOverLimit = userUsagePercentage > 100;
-    const userIsNearLimit = userUsagePercentage >= 80 && userUsagePercentage <= 100;
+    const userIsNearLimit =
+      userUsagePercentage >= 80 && userUsagePercentage <= 100;
 
     // Team metrics
-    const teamUsagePercentage = data.total_teams ? (data.total_teams_used / data.total_teams) * 100 : 0;
+    const teamUsagePercentage = data.total_teams
+      ? (data.total_teams_used / data.total_teams) * 100
+      : 0;
     const teamIsOverLimit = teamUsagePercentage > 100;
-    const teamIsNearLimit = teamUsagePercentage >= 80 && teamUsagePercentage <= 100;
+    const teamIsNearLimit =
+      teamUsagePercentage >= 80 && teamUsagePercentage <= 100;
 
     // Combined status (worst case scenario)
     const isOverLimit = userIsOverLimit || teamIsOverLimit;
@@ -139,10 +168,17 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
     };
   };
 
-  const { isOverLimit, isNearLimit, usagePercentage, userMetrics, teamMetrics } = getUsageMetrics(data);
+  const {
+    isOverLimit,
+    isNearLimit,
+    usagePercentage,
+    userMetrics,
+    teamMetrics,
+  } = getUsageMetrics(data);
 
   // Include license status in overall status
-  const hasAnyIssue = isOverLimit || isNearLimit || isLicenseExpired || isLicenseExpiringSoon;
+  const hasAnyIssue =
+    isOverLimit || isNearLimit || isLicenseExpired || isLicenseExpiringSoon;
   const hasError = isOverLimit || isLicenseExpired;
   const hasWarning = (isNearLimit || isLicenseExpiringSoon) && !hasError;
 
@@ -172,7 +208,9 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
           title="Show usage details"
         >
           <Users className="h-3 w-3 flex-shrink-0" />
-          {hasAnyIssue && <span className="flex-shrink-0">{getStatusIcon()}</span>}
+          {hasAnyIssue && (
+            <span className="flex-shrink-0">{getStatusIcon()}</span>
+          )}
           <div className="flex items-center gap-1 truncate">
             {data && data.total_users !== null && (
               <span className="flex-shrink-0">
@@ -185,16 +223,20 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
               </span>
             )}
             {licenseInfo?.expiration_date && daysUntilExpiration !== null && (
-              <span className={cn(
-                "flex-shrink-0",
-                isLicenseExpired && "text-red-500",
-                isLicenseExpiringSoon && "text-yellow-500",
-              )}>
+              <span
+                className={cn(
+                  "flex-shrink-0",
+                  isLicenseExpired && "text-red-500",
+                  isLicenseExpiringSoon && "text-yellow-500",
+                )}
+              >
                 {daysUntilExpiration < 0 ? "Exp!" : `${daysUntilExpiration}d`}
               </span>
             )}
             {!data ||
-              (data.total_users === null && data.total_teams === null && !licenseInfo && <span className="truncate">Usage</span>)}
+              (data.total_users === null &&
+                data.total_teams === null &&
+                !licenseInfo && <span className="truncate">Usage</span>)}
           </div>
         </button>
       </div>
@@ -209,7 +251,10 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
 
     if (isLoading) {
       return (
-        <div className="flex items-center gap-3 px-3 py-2 text-gray-500" style={{ maxWidth: `${width}px` }}>
+        <div
+          className="flex items-center gap-3 px-3 py-2 text-gray-500"
+          style={{ maxWidth: `${width}px` }}
+        >
           <Loader2 className="h-4 w-4 animate-spin flex-shrink-0" />
           <span className="text-sm truncate">Loading...</span>
         </div>
@@ -252,7 +297,10 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
             <Users className="h-4 w-4 flex-shrink-0" />
             <span className="text-sm font-medium truncate">Usage Status</span>
             {hasAnyIssue && (
-              <Badge color={getStatusColor()} className="text-xs px-1.5 py-0.5 flex-shrink-0">
+              <Badge
+                color={getStatusColor()}
+                className="text-xs px-1.5 py-0.5 flex-shrink-0"
+              >
                 {getStatusIcon()}
               </Badge>
             )}
@@ -283,17 +331,21 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
                   <Calendar className="h-3 w-3" />
                   <span className="font-medium">License</span>
                 </div>
-                <div className={cn(
-                  "flex items-center gap-1 text-xs",
-                  isLicenseExpired && "text-red-600",
-                  isLicenseExpiringSoon && "text-yellow-600",
-                )}>
+                <div
+                  className={cn(
+                    "flex items-center gap-1 text-xs",
+                    isLicenseExpired && "text-red-600",
+                    isLicenseExpiringSoon && "text-yellow-600",
+                  )}
+                >
                   {isLicenseExpired ? (
                     <AlertTriangle className="h-3 w-3" />
                   ) : isLicenseExpiringSoon ? (
                     <TrendingUp className="h-3 w-3" />
                   ) : null}
-                  <span className="truncate">{formatExpirationDisplay(daysUntilExpiration)}</span>
+                  <span className="truncate">
+                    {formatExpirationDisplay(daysUntilExpiration)}
+                  </span>
                 </div>
               </div>
             )}
@@ -316,9 +368,13 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
                       "h-1 rounded-full transition-all duration-300",
                       userMetrics.isOverLimit && "bg-red-500",
                       userMetrics.isNearLimit && "bg-yellow-500",
-                      !userMetrics.isOverLimit && !userMetrics.isNearLimit && "bg-green-500",
+                      !userMetrics.isOverLimit &&
+                        !userMetrics.isNearLimit &&
+                        "bg-green-500",
                     )}
-                    style={{ width: `${Math.min(userMetrics.usagePercentage, 100)}%` }}
+                    style={{
+                      width: `${Math.min(userMetrics.usagePercentage, 100)}%`,
+                    }}
                   />
                 </div>
 
@@ -335,7 +391,10 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
                     ) : (
                       <TrendingUp className="h-3 w-3" />
                     )}
-                    <span className="truncate">Users {userMetrics.isOverLimit ? "Over Limit" : "Near Limit"}</span>
+                    <span className="truncate">
+                      Users{" "}
+                      {userMetrics.isOverLimit ? "Over Limit" : "Near Limit"}
+                    </span>
                   </div>
                 )}
               </div>
@@ -359,9 +418,13 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
                       "h-1 rounded-full transition-all duration-300",
                       teamMetrics.isOverLimit && "bg-red-500",
                       teamMetrics.isNearLimit && "bg-yellow-500",
-                      !teamMetrics.isOverLimit && !teamMetrics.isNearLimit && "bg-green-500",
+                      !teamMetrics.isOverLimit &&
+                        !teamMetrics.isNearLimit &&
+                        "bg-green-500",
                     )}
-                    style={{ width: `${Math.min(teamMetrics.usagePercentage, 100)}%` }}
+                    style={{
+                      width: `${Math.min(teamMetrics.usagePercentage, 100)}%`,
+                    }}
                   />
                 </div>
 
@@ -378,7 +441,10 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
                     ) : (
                       <TrendingUp className="h-3 w-3" />
                     )}
-                    <span className="truncate">Teams {teamMetrics.isOverLimit ? "Over Limit" : "Near Limit"}</span>
+                    <span className="truncate">
+                      Teams{" "}
+                      {teamMetrics.isOverLimit ? "Over Limit" : "Near Limit"}
+                    </span>
                   </div>
                 )}
               </div>
@@ -402,15 +468,21 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
         >
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 flex-shrink-0" />
-            {hasAnyIssue && <span className="flex-shrink-0">{getStatusIcon()}</span>}
+            {hasAnyIssue && (
+              <span className="flex-shrink-0">{getStatusIcon()}</span>
+            )}
             <div className="flex items-center gap-2 text-sm font-medium truncate">
               {data && data.total_users !== null && (
                 <span
                   className={cn(
                     "flex-shrink-0 px-1.5 py-0.5 rounded text-xs border",
-                    userMetrics.isOverLimit && "bg-red-50 text-red-700 border-red-200",
-                    userMetrics.isNearLimit && "bg-yellow-50 text-yellow-700 border-yellow-200",
-                    !userMetrics.isOverLimit && !userMetrics.isNearLimit && "bg-gray-50 text-gray-700 border-gray-200",
+                    userMetrics.isOverLimit &&
+                      "bg-red-50 text-red-700 border-red-200",
+                    userMetrics.isNearLimit &&
+                      "bg-yellow-50 text-yellow-700 border-yellow-200",
+                    !userMetrics.isOverLimit &&
+                      !userMetrics.isNearLimit &&
+                      "bg-gray-50 text-gray-700 border-gray-200",
                   )}
                 >
                   U: {data.total_users_used}/{data.total_users}
@@ -420,9 +492,13 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
                 <span
                   className={cn(
                     "flex-shrink-0 px-1.5 py-0.5 rounded text-xs border",
-                    teamMetrics.isOverLimit && "bg-red-50 text-red-700 border-red-200",
-                    teamMetrics.isNearLimit && "bg-yellow-50 text-yellow-700 border-yellow-200",
-                    !teamMetrics.isOverLimit && !teamMetrics.isNearLimit && "bg-gray-50 text-gray-700 border-gray-200",
+                    teamMetrics.isOverLimit &&
+                      "bg-red-50 text-red-700 border-red-200",
+                    teamMetrics.isNearLimit &&
+                      "bg-yellow-50 text-yellow-700 border-yellow-200",
+                    !teamMetrics.isOverLimit &&
+                      !teamMetrics.isNearLimit &&
+                      "bg-gray-50 text-gray-700 border-gray-200",
                   )}
                 >
                   T: {data.total_teams_used}/{data.total_teams}
@@ -433,15 +509,20 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
                   className={cn(
                     "flex-shrink-0 px-1.5 py-0.5 rounded text-xs border",
                     isLicenseExpired && "bg-red-50 text-red-700 border-red-200",
-                    isLicenseExpiringSoon && "bg-yellow-50 text-yellow-700 border-yellow-200",
-                    !isLicenseExpired && !isLicenseExpiringSoon && "bg-gray-50 text-gray-700 border-gray-200",
+                    isLicenseExpiringSoon &&
+                      "bg-yellow-50 text-yellow-700 border-yellow-200",
+                    !isLicenseExpired &&
+                      !isLicenseExpiringSoon &&
+                      "bg-gray-50 text-gray-700 border-gray-200",
                   )}
                 >
                   {daysUntilExpiration < 0 ? "Exp!" : `${daysUntilExpiration}d`}
                 </span>
               )}
               {!data ||
-                (data.total_users === null && data.total_teams === null && !licenseInfo && <span className="truncate">Usage</span>)}
+                (data.total_users === null &&
+                  data.total_teams === null &&
+                  !licenseInfo && <span className="truncate">Usage</span>)}
             </div>
           </div>
         </button>
@@ -464,7 +545,9 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
         <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4 group w-full">
           <div className="flex items-center justify-between gap-2">
             <div className="flex-1 min-w-0">
-              <span className="text-sm text-gray-500 truncate block">{error || "No data"}</span>
+              <span className="text-sm text-gray-500 truncate block">
+                {error || "No data"}
+              </span>
             </div>
             <button
               onClick={() => setIsMinimized(true)}
@@ -479,7 +562,11 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
     }
 
     return (
-      <div className={cn("bg-white border rounded-lg shadow-sm p-3 transition-all duration-200 group w-full")}>
+      <div
+        className={cn(
+          "bg-white border rounded-lg shadow-sm p-3 transition-all duration-200 group w-full",
+        )}
+      >
         <div className="flex items-center justify-between gap-2 mb-3">
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <Users className="h-4 w-4 flex-shrink-0" />
@@ -512,11 +599,18 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
                   className={cn(
                     "ml-1 px-1.5 py-0.5 rounded border",
                     isLicenseExpired && "bg-red-50 text-red-700 border-red-200",
-                    isLicenseExpiringSoon && "bg-yellow-50 text-yellow-700 border-yellow-200",
-                    !isLicenseExpired && !isLicenseExpiringSoon && "bg-gray-50 text-gray-600 border-gray-200",
+                    isLicenseExpiringSoon &&
+                      "bg-yellow-50 text-yellow-700 border-yellow-200",
+                    !isLicenseExpired &&
+                      !isLicenseExpiringSoon &&
+                      "bg-gray-50 text-gray-600 border-gray-200",
                   )}
                 >
-                  {isLicenseExpired ? "Expired" : isLicenseExpiringSoon ? "Expiring soon" : "OK"}
+                  {isLicenseExpired
+                    ? "Expired"
+                    : isLicenseExpiringSoon
+                      ? "Expiring soon"
+                      : "OK"}
                 </span>
               </div>
               <div className="flex justify-between items-center">
@@ -534,7 +628,9 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
               {licenseInfo.license_type && (
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600 text-xs">Type:</span>
-                  <span className="font-medium text-right capitalize">{licenseInfo.license_type}</span>
+                  <span className="font-medium text-right capitalize">
+                    {licenseInfo.license_type}
+                  </span>
                 </div>
               )}
             </div>
@@ -555,12 +651,20 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
                 <span
                   className={cn(
                     "ml-1 px-1.5 py-0.5 rounded border",
-                    userMetrics.isOverLimit && "bg-red-50 text-red-700 border-red-200",
-                    userMetrics.isNearLimit && "bg-yellow-50 text-yellow-700 border-yellow-200",
-                    !userMetrics.isOverLimit && !userMetrics.isNearLimit && "bg-gray-50 text-gray-600 border-gray-200",
+                    userMetrics.isOverLimit &&
+                      "bg-red-50 text-red-700 border-red-200",
+                    userMetrics.isNearLimit &&
+                      "bg-yellow-50 text-yellow-700 border-yellow-200",
+                    !userMetrics.isOverLimit &&
+                      !userMetrics.isNearLimit &&
+                      "bg-gray-50 text-gray-600 border-gray-200",
                   )}
                 >
-                  {userMetrics.isOverLimit ? "Over limit" : userMetrics.isNearLimit ? "Near limit" : "OK"}
+                  {userMetrics.isOverLimit
+                    ? "Over limit"
+                    : userMetrics.isNearLimit
+                      ? "Near limit"
+                      : "OK"}
                 </span>
               </div>
               <div className="flex justify-between items-center">
@@ -583,7 +687,9 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-600 text-xs">Usage:</span>
-                <span className="font-medium text-right">{Math.round(userMetrics.usagePercentage)}%</span>
+                <span className="font-medium text-right">
+                  {Math.round(userMetrics.usagePercentage)}%
+                </span>
               </div>
 
               {/* User progress bar */}
@@ -593,9 +699,13 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
                     "h-2 rounded-full transition-all duration-300",
                     userMetrics.isOverLimit && "bg-red-500",
                     userMetrics.isNearLimit && "bg-yellow-500",
-                    !userMetrics.isOverLimit && !userMetrics.isNearLimit && "bg-green-500",
+                    !userMetrics.isOverLimit &&
+                      !userMetrics.isNearLimit &&
+                      "bg-green-500",
                   )}
-                  style={{ width: `${Math.min(userMetrics.usagePercentage, 100)}%` }}
+                  style={{
+                    width: `${Math.min(userMetrics.usagePercentage, 100)}%`,
+                  }}
                 />
               </div>
             </div>
@@ -616,12 +726,20 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
                 <span
                   className={cn(
                     "ml-1 px-1.5 py-0.5 rounded border",
-                    teamMetrics.isOverLimit && "bg-red-50 text-red-700 border-red-200",
-                    teamMetrics.isNearLimit && "bg-yellow-50 text-yellow-700 border-yellow-200",
-                    !teamMetrics.isOverLimit && !teamMetrics.isNearLimit && "bg-gray-50 text-gray-600 border-gray-200",
+                    teamMetrics.isOverLimit &&
+                      "bg-red-50 text-red-700 border-red-200",
+                    teamMetrics.isNearLimit &&
+                      "bg-yellow-50 text-yellow-700 border-yellow-200",
+                    !teamMetrics.isOverLimit &&
+                      !teamMetrics.isNearLimit &&
+                      "bg-gray-50 text-gray-600 border-gray-200",
                   )}
                 >
-                  {teamMetrics.isOverLimit ? "Over limit" : teamMetrics.isNearLimit ? "Near limit" : "OK"}
+                  {teamMetrics.isOverLimit
+                    ? "Over limit"
+                    : teamMetrics.isNearLimit
+                      ? "Near limit"
+                      : "OK"}
                 </span>
               </div>
               <div className="flex justify-between items-center">
@@ -644,7 +762,9 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-600 text-xs">Usage:</span>
-                <span className="font-medium text-right">{Math.round(teamMetrics.usagePercentage)}%</span>
+                <span className="font-medium text-right">
+                  {Math.round(teamMetrics.usagePercentage)}%
+                </span>
               </div>
 
               {/* Team progress bar */}
@@ -654,9 +774,13 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
                     "h-2 rounded-full transition-all duration-300",
                     teamMetrics.isOverLimit && "bg-red-500",
                     teamMetrics.isNearLimit && "bg-yellow-500",
-                    !teamMetrics.isOverLimit && !teamMetrics.isNearLimit && "bg-green-500",
+                    !teamMetrics.isOverLimit &&
+                      !teamMetrics.isNearLimit &&
+                      "bg-green-500",
                   )}
-                  style={{ width: `${Math.min(teamMetrics.usagePercentage, 100)}%` }}
+                  style={{
+                    width: `${Math.min(teamMetrics.usagePercentage, 100)}%`,
+                  }}
                 />
               </div>
             </div>
@@ -667,13 +791,20 @@ export default function UsageIndicator({ accessToken, width = 220 }: UsageIndica
   };
 
   // Don't render anything if disabled, no access token, or if both total_users and total_teams are null
-  if (disableUsageIndicator || !accessToken || (data?.total_users === null && data?.total_teams === null)) {
+  if (
+    disableUsageIndicator ||
+    !accessToken ||
+    (data?.total_users === null && data?.total_teams === null)
+  ) {
     return null;
   }
 
   // Fixed positioning with proper spacing from edges
   return (
-    <div className="fixed bottom-4 left-4 z-50" style={{ width: `${Math.min(width, 220)}px` }}>
+    <div
+      className="fixed bottom-4 left-4 z-50"
+      style={{ width: `${Math.min(width, 220)}px` }}
+    >
       <CardStyleView />
     </div>
   );

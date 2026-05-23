@@ -1,12 +1,15 @@
-import { act, screen, waitFor, fireEvent } from "@testing-library/react";
-import { vi, it, expect, beforeEach, MockedFunction } from "vitest";
-import { renderWithProviders } from "../../../tests/test-utils";
-import { VirtualKeysTable } from "./VirtualKeysTable";
-import { KeyResponse, Team } from "../key_team_helpers/key_list";
-import { Organization } from "../networking";
-import { KeysResponse, useKeys } from "@/app/(dashboard)/hooks/keys/useKeys";
-import { useFilterLogic } from "../key_team_helpers/filter_logic";
+import {
+  type KeysResponse,
+  useKeys,
+} from "@/app/(dashboard)/hooks/keys/useKeys";
 import useTeams from "@/app/(dashboard)/hooks/useTeams";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react";
+import { type MockedFunction, beforeEach, expect, it, vi } from "vitest";
+import { renderWithProviders } from "../../../tests/test-utils";
+import { useFilterLogic } from "../key_team_helpers/filter_logic";
+import type { KeyResponse, Team } from "../key_team_helpers/key_list";
+import type { Organization } from "../networking";
+import { VirtualKeysTable } from "./VirtualKeysTable";
 
 // Mock network calls
 vi.mock("./networking", async (importOriginal) => {
@@ -71,7 +74,8 @@ vi.mock("@/app/(dashboard)/hooks/organizations/useOrganizations", () => ({
 
 // Mock fetchTeams to prevent network calls
 vi.mock("@/app/(dashboard)/networking", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/app/(dashboard)/networking")>();
+  const actual =
+    await importOriginal<typeof import("@/app/(dashboard)/networking")>();
   return {
     ...actual,
     fetchTeams: vi.fn().mockResolvedValue([]),
@@ -175,7 +179,9 @@ const mockOrganization: Organization = {
 
 // Mock hook implementations
 const mockUseKeys = useKeys as MockedFunction<typeof useKeys>;
-const mockUseFilterLogic = useFilterLogic as MockedFunction<typeof useFilterLogic>;
+const mockUseFilterLogic = useFilterLogic as MockedFunction<
+  typeof useFilterLogic
+>;
 const mockUseTeams = useTeams as MockedFunction<typeof useTeams>;
 
 beforeEach(() => {
@@ -340,7 +346,13 @@ it("should show 'No keys found' message when filteredKeys is empty", () => {
 it("should handle models with more than 3 entries to trigger expansion UI", () => {
   const keyWithManyModels = {
     ...mockKey,
-    models: ["gpt-3.5-turbo", "gpt-4", "gpt-4-turbo", "claude-3", "claude-3-5-sonnet"],
+    models: [
+      "gpt-3.5-turbo",
+      "gpt-4",
+      "gpt-4-turbo",
+      "claude-3",
+      "claude-3-5-sonnet",
+    ],
   };
 
   mockUseFilterLogic.mockReturnValue({
@@ -549,11 +561,12 @@ it("should display 'Default Proxy Admin' for created_by when value is 'default_u
 
   await waitFor(() => {
     // The created_by column should display "Default Proxy Admin"
-    const defaultProxyAdminElements = screen.getAllByText("Default Proxy Admin");
+    const defaultProxyAdminElements = screen.getAllByText(
+      "Default Proxy Admin",
+    );
     expect(defaultProxyAdminElements.length).toBeGreaterThan(0);
   });
 });
-
 
 it("should display created_by_user email in 'Created By' column when available", async () => {
   const keyWithCreatedByUser = {
@@ -819,7 +832,14 @@ describe("pagination display – total count and page count", () => {
     } as any);
 
     mockUseFilterLogic.mockReturnValue({
-      filters: { "Team ID": "", "Organization ID": "", "Key Alias": "", "User ID": "", "Sort By": "created_at", "Sort Order": "desc" },
+      filters: {
+        "Team ID": "",
+        "Organization ID": "",
+        "Key Alias": "",
+        "User ID": "",
+        "Sort By": "created_at",
+        "Sort Order": "desc",
+      },
       filteredKeys: [mockKey],
       filteredTotalCount: null,
       allTeams: [mockTeam],
@@ -831,7 +851,9 @@ describe("pagination display – total count and page count", () => {
     renderWithProviders(<VirtualKeysTable {...defaultMockProps} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Showing 1 - 50 of 509 results")).toBeInTheDocument();
+      expect(
+        screen.getByText("Showing 1 - 50 of 509 results"),
+      ).toBeInTheDocument();
       expect(screen.getByText("Page 1 of 11")).toBeInTheDocument();
     });
   });
@@ -850,7 +872,14 @@ describe("pagination display – total count and page count", () => {
     } as any);
 
     mockUseFilterLogic.mockReturnValue({
-      filters: { "Team ID": "", "Organization ID": "", "Key Alias": "aaaaa", "User ID": "", "Sort By": "created_at", "Sort Order": "desc" },
+      filters: {
+        "Team ID": "",
+        "Organization ID": "",
+        "Key Alias": "aaaaa",
+        "User ID": "",
+        "Sort By": "created_at",
+        "Sort Order": "desc",
+      },
       filteredKeys: [mockKey],
       filteredTotalCount: 1,
       allTeams: [mockTeam],
@@ -862,7 +891,9 @@ describe("pagination display – total count and page count", () => {
     renderWithProviders(<VirtualKeysTable {...defaultMockProps} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Showing 1 - 1 of 1 results")).toBeInTheDocument();
+      expect(
+        screen.getByText("Showing 1 - 1 of 1 results"),
+      ).toBeInTheDocument();
       expect(screen.getByText("Page 1 of 1")).toBeInTheDocument();
     });
   });
@@ -881,7 +912,14 @@ describe("pagination display – total count and page count", () => {
     } as any);
 
     mockUseFilterLogic.mockReturnValue({
-      filters: { "Team ID": "", "Organization ID": "", "Key Alias": "aaaaa", "User ID": "", "Sort By": "created_at", "Sort Order": "desc" },
+      filters: {
+        "Team ID": "",
+        "Organization ID": "",
+        "Key Alias": "aaaaa",
+        "User ID": "",
+        "Sort By": "created_at",
+        "Sort Order": "desc",
+      },
       filteredKeys: [mockKey],
       filteredTotalCount: 1,
       allTeams: [mockTeam],
@@ -997,9 +1035,9 @@ describe("Status column reflects key.blocked / scim_blocked metadata", () => {
     renderWithProviders(<VirtualKeysTable {...defaultMockProps} />);
 
     await waitFor(() => {
-      expect(screen.getByTestId(`key-status-${mockKey.token_id}`)).toHaveTextContent(
-        "Active",
-      );
+      expect(
+        screen.getByTestId(`key-status-${mockKey.token_id}`),
+      ).toHaveTextContent("Active");
     });
   });
 
@@ -1024,9 +1062,9 @@ describe("Status column reflects key.blocked / scim_blocked metadata", () => {
     renderWithProviders(<VirtualKeysTable {...defaultMockProps} />);
 
     await waitFor(() => {
-      expect(screen.getByTestId(`key-status-${mockKey.token_id}`)).toHaveTextContent(
-        "Blocked",
-      );
+      expect(
+        screen.getByTestId(`key-status-${mockKey.token_id}`),
+      ).toHaveTextContent("Blocked");
     });
     expect(screen.queryByText(/Blocked by SCIM/i)).not.toBeInTheDocument();
   });

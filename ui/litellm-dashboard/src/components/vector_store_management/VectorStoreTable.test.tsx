@@ -2,39 +2,49 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import VectorStoreTable from "./VectorStoreTable";
-import { VectorStore } from "./types";
+import type { VectorStore } from "./types";
 
 // Mock dependencies
 const mockGetProviderLogoAndName = vi.fn();
 const mockTableIconActionButton = vi.fn();
 
 vi.mock("../provider_info_helpers", () => ({
-  getProviderLogoAndName: (...args: any[]) => mockGetProviderLogoAndName(...args),
+  getProviderLogoAndName: (...args: any[]) =>
+    mockGetProviderLogoAndName(...args),
 }));
 
-vi.mock("../common_components/IconActionButton/TableIconActionButtons/TableIconActionButton", () => ({
-  default: (props: any) => {
-    mockTableIconActionButton(props);
-    return (
-      <button
-        data-testid={`action-button-${props.variant.toLowerCase()}`}
-        data-tooltip={props.tooltipText}
-        onClick={props.onClick}
-        disabled={props.disabled}
-      >
-        {props.variant}
-      </button>
-    );
-  },
-}));
+vi.mock(
+  "../common_components/IconActionButton/TableIconActionButtons/TableIconActionButton",
+  () => ({
+    default: (props: any) => {
+      mockTableIconActionButton(props);
+      return (
+        <button
+          data-testid={`action-button-${props.variant.toLowerCase()}`}
+          data-tooltip={props.tooltipText}
+          onClick={props.onClick}
+          disabled={props.disabled}
+        >
+          {props.variant}
+        </button>
+      );
+    },
+  }),
+);
 
 // Mock Tremor components to avoid complex styling issues
 vi.mock("@tremor/react", () => ({
   Table: ({ children, ...props }: any) => <table {...props}>{children}</table>,
-  TableHead: ({ children, ...props }: any) => <thead {...props}>{children}</thead>,
-  TableBody: ({ children, ...props }: any) => <tbody {...props}>{children}</tbody>,
+  TableHead: ({ children, ...props }: any) => (
+    <thead {...props}>{children}</thead>
+  ),
+  TableBody: ({ children, ...props }: any) => (
+    <tbody {...props}>{children}</tbody>
+  ),
   TableRow: ({ children, ...props }: any) => <tr {...props}>{children}</tr>,
-  TableHeaderCell: ({ children, ...props }: any) => <th {...props}>{children}</th>,
+  TableHeaderCell: ({ children, ...props }: any) => (
+    <th {...props}>{children}</th>
+  ),
   TableCell: ({ children, ...props }: any) => <td {...props}>{children}</td>,
 }));
 
@@ -49,9 +59,13 @@ vi.mock("antd", () => ({
 
 // Mock Heroicons
 vi.mock("@heroicons/react/outline", () => ({
-  ChevronDownIcon: (props: any) => <div data-testid="chevron-down" {...props} />,
+  ChevronDownIcon: (props: any) => (
+    <div data-testid="chevron-down" {...props} />
+  ),
   ChevronUpIcon: (props: any) => <div data-testid="chevron-up" {...props} />,
-  SwitchVerticalIcon: (props: any) => <div data-testid="switch-vertical" {...props} />,
+  SwitchVerticalIcon: (props: any) => (
+    <div data-testid="switch-vertical" {...props} />
+  ),
 }));
 
 // Test data
@@ -70,7 +84,8 @@ const mockVectorStores: VectorStore[] = [
     vector_store_id: "very-long-vector-store-id-that-should-be-truncated",
     custom_llm_provider: "azure",
     vector_store_name: undefined, // Test missing name
-    vector_store_description: "A store for Azure vectors with a very long description that should show a tooltip",
+    vector_store_description:
+      "A store for Azure vectors with a very long description that should show a tooltip",
     created_at: "2024-01-10T09:15:00Z",
     updated_at: "2024-01-12T14:20:00Z",
   },
@@ -107,11 +122,12 @@ describe("VectorStoreTable", () => {
 
     // Setup default mock returns for getProviderLogoAndName
     mockGetProviderLogoAndName.mockImplementation((provider: string) => {
-      const providerMap: Record<string, { displayName: string; logo: string }> = {
-        openai: { displayName: "OpenAI", logo: "/openai-logo.png" },
-        azure: { displayName: "Azure", logo: "/azure-logo.png" },
-        pg_vector: { displayName: "PostgreSQL Vector", logo: "/pg-logo.png" },
-      };
+      const providerMap: Record<string, { displayName: string; logo: string }> =
+        {
+          openai: { displayName: "OpenAI", logo: "/openai-logo.png" },
+          azure: { displayName: "Azure", logo: "/azure-logo.png" },
+          pg_vector: { displayName: "PostgreSQL Vector", logo: "/pg-logo.png" },
+        };
       return providerMap[provider] || { displayName: provider, logo: "" };
     });
   });
@@ -137,7 +153,9 @@ describe("VectorStoreTable", () => {
 
     it("should render all vector store rows", () => {
       renderComponent();
-      expect(screen.getAllByRole("row")).toHaveLength(mockVectorStores.length + 1); // +1 for header row
+      expect(screen.getAllByRole("row")).toHaveLength(
+        mockVectorStores.length + 1,
+      ); // +1 for header row
     });
 
     it("should render empty state when no data", () => {
@@ -170,7 +188,12 @@ describe("VectorStoreTable", () => {
     it("should have correct styling for vector store ID button", () => {
       renderComponent();
       const idButton = screen.getByText("short-id").closest("button");
-      expect(idButton).toHaveClass("font-mono", "text-blue-500", "bg-blue-50", "hover:bg-blue-100");
+      expect(idButton).toHaveClass(
+        "font-mono",
+        "text-blue-500",
+        "bg-blue-50",
+        "hover:bg-blue-100",
+      );
     });
   });
 
@@ -189,7 +212,9 @@ describe("VectorStoreTable", () => {
     it("should wrap name in tooltip", () => {
       renderComponent();
       const tooltips = screen.getAllByTestId("tooltip");
-      const nameTooltip = tooltips.find((t) => t.getAttribute("data-title") === "My OpenAI Store");
+      const nameTooltip = tooltips.find(
+        (t) => t.getAttribute("data-title") === "My OpenAI Store",
+      );
       expect(nameTooltip).toBeInTheDocument();
     });
   });
@@ -197,7 +222,9 @@ describe("VectorStoreTable", () => {
   describe("Description Column", () => {
     it("should render vector store description", () => {
       renderComponent();
-      expect(screen.getByText("A store for OpenAI vectors")).toBeInTheDocument();
+      expect(
+        screen.getByText("A store for OpenAI vectors"),
+      ).toBeInTheDocument();
     });
 
     it("should render fallback for missing description", () => {
@@ -259,8 +286,12 @@ describe("VectorStoreTable", () => {
   describe("Actions Column", () => {
     it("should render edit and delete action buttons for each row", () => {
       renderComponent();
-      expect(screen.getAllByTestId("action-button-edit")).toHaveLength(mockVectorStores.length);
-      expect(screen.getAllByTestId("action-button-delete")).toHaveLength(mockVectorStores.length);
+      expect(screen.getAllByTestId("action-button-edit")).toHaveLength(
+        mockVectorStores.length,
+      );
+      expect(screen.getAllByTestId("action-button-delete")).toHaveLength(
+        mockVectorStores.length,
+      );
     });
 
     it("should call onEdit when edit button is clicked", async () => {
@@ -308,14 +339,18 @@ describe("VectorStoreTable", () => {
     it("should render sort icons for sortable columns", () => {
       renderComponent();
       // Should have sort icons for Created At and Updated At columns
-      const sortIcons = screen.getAllByTestId(/^chevron-(up|down)$|^switch-vertical$/);
+      const sortIcons = screen.getAllByTestId(
+        /^chevron-(up|down)$|^switch-vertical$/,
+      );
       expect(sortIcons.length).toBeGreaterThan(0);
     });
 
     it("should make header cells clickable for sorting", () => {
       renderComponent();
       const headerCells = screen.getAllByRole("columnheader");
-      const sortableHeaders = headerCells.filter((cell) => cell.textContent !== "");
+      const sortableHeaders = headerCells.filter(
+        (cell) => cell.textContent !== "",
+      );
       expect(sortableHeaders.length).toBeGreaterThan(0);
     });
 
@@ -329,8 +364,13 @@ describe("VectorStoreTable", () => {
   describe("Styling and Layout", () => {
     it("should apply correct CSS classes to table container", () => {
       renderComponent();
-      const tableContainer = screen.getByRole("table").parentElement?.parentElement;
-      expect(tableContainer).toHaveClass("rounded-lg", "custom-border", "relative");
+      const tableContainer =
+        screen.getByRole("table").parentElement?.parentElement;
+      expect(tableContainer).toHaveClass(
+        "rounded-lg",
+        "custom-border",
+        "relative",
+      );
     });
 
     it("should apply overflow styling to table wrapper", () => {
@@ -370,7 +410,13 @@ describe("VectorStoreTable", () => {
       renderComponent();
       const cells = screen.getAllByRole("cell");
       cells.forEach((cell) => {
-        expect(cell).toHaveClass("py-0.5", "max-h-8", "overflow-hidden", "text-ellipsis", "whitespace-nowrap");
+        expect(cell).toHaveClass(
+          "py-0.5",
+          "max-h-8",
+          "overflow-hidden",
+          "text-ellipsis",
+          "whitespace-nowrap",
+        );
       });
     });
   });
@@ -385,7 +431,9 @@ describe("VectorStoreTable", () => {
 
     it("should span all columns in empty state", () => {
       renderComponent({ data: [] });
-      const emptyCell = screen.getByText("No vector stores found").closest("td");
+      const emptyCell = screen
+        .getByText("No vector stores found")
+        .closest("td");
       expect(emptyCell).toHaveAttribute("colSpan", "8"); // 7 data columns + 1 actions column
     });
   });

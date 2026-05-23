@@ -48,7 +48,9 @@ describe("ModelSettingsModal", () => {
       isLoading: false,
       refetch: mockRefetch,
     } as any);
-    mockParseErrorMessage.mockImplementation((error: any) => error?.message || String(error));
+    mockParseErrorMessage.mockImplementation(
+      (error: any) => error?.message || String(error),
+    );
   });
 
   it("should render the modal", () => {
@@ -65,7 +67,9 @@ describe("ModelSettingsModal", () => {
   it("should render cancel and save buttons", () => {
     renderWithProviders(<ModelSettingsModal {...defaultProps} />);
     expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Save Settings" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Save Settings" }),
+    ).toBeInTheDocument();
   });
 
   it("should call onCancel when cancel button is clicked", async () => {
@@ -121,7 +125,7 @@ describe("ModelSettingsModal", () => {
     await waitFor(() => {
       expect(mockMutateAsync).toHaveBeenCalledWith(
         { store_model_in_db: true },
-        expect.any(Object)
+        expect.any(Object),
       );
     });
   });
@@ -142,7 +146,7 @@ describe("ModelSettingsModal", () => {
     await waitFor(() => {
       expect(mockMutateAsync).toHaveBeenCalledWith(
         { store_model_in_db: false },
-        expect.any(Object)
+        expect.any(Object),
       );
     });
   });
@@ -161,7 +165,9 @@ describe("ModelSettingsModal", () => {
     await user.click(saveButton);
 
     await waitFor(() => {
-      expect(mockNotificationsManager.success).toHaveBeenCalledWith("Model storage settings updated successfully");
+      expect(mockNotificationsManager.success).toHaveBeenCalledWith(
+        "Model storage settings updated successfully",
+      );
       expect(mockRefetch).toHaveBeenCalled();
       expect(mockOnSuccess).toHaveBeenCalledTimes(1);
     });
@@ -179,7 +185,9 @@ describe("ModelSettingsModal", () => {
     await user.click(saveButton);
 
     await waitFor(() => {
-      expect(mockNotificationsManager.fromBackend).toHaveBeenCalledWith("Failed to save model storage settings: Network error");
+      expect(mockNotificationsManager.fromBackend).toHaveBeenCalledWith(
+        "Failed to save model storage settings: Network error",
+      );
     });
   });
 
@@ -198,7 +206,9 @@ describe("ModelSettingsModal", () => {
     await user.click(saveButton);
 
     await waitFor(() => {
-      expect(mockNotificationsManager.fromBackend).toHaveBeenCalledWith("Failed to save model storage settings: Backend error");
+      expect(mockNotificationsManager.fromBackend).toHaveBeenCalledWith(
+        "Failed to save model storage settings: Backend error",
+      );
     });
   });
 
@@ -241,7 +251,9 @@ describe("ModelSettingsModal", () => {
   });
 
   it("should not render modal when isVisible is false", () => {
-    renderWithProviders(<ModelSettingsModal {...defaultProps} isVisible={false} />);
+    renderWithProviders(
+      <ModelSettingsModal {...defaultProps} isVisible={false} />,
+    );
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
@@ -294,7 +306,9 @@ describe("ModelSettingsModal", () => {
       return { message: "Success" };
     });
 
-    renderWithProviders(<ModelSettingsModal isVisible={true} onCancel={mockOnCancel} />);
+    renderWithProviders(
+      <ModelSettingsModal isVisible={true} onCancel={mockOnCancel} />,
+    );
 
     const saveButton = screen.getByRole("button", { name: "Save Settings" });
     await user.click(saveButton);

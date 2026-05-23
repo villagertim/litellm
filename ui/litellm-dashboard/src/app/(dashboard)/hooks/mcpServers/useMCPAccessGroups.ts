@@ -1,7 +1,7 @@
+import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { fetchMCPAccessGroups } from "@/components/networking";
 import { useQuery } from "@tanstack/react-query";
 import { createQueryKeys } from "../common/queryKeysFactory";
-import { fetchMCPAccessGroups } from "@/components/networking";
-import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 const mcpAccessGroupsKeys = createQueryKeys("mcpAccessGroups");
 
 export const useMCPAccessGroups = () => {

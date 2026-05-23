@@ -1,9 +1,12 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import NotificationsManager from "../../../molecules/notifications_manager";
-import { TokenUsage } from "../../../playground/chat_ui/ResponseMetrics";
-import { Message } from "./types";
+import {
+  getGlobalLitellmHeaderName,
+  getProxyBaseUrl,
+} from "../../../networking";
+import type { TokenUsage } from "../../../playground/chat_ui/ResponseMetrics";
 import { convertToDotPrompt, extractVariables } from "../utils";
-import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "../../../networking";
+import type { Message } from "./types";
 
 export const useConversation = (prompt: any, accessToken: string | null) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -11,7 +14,8 @@ export const useConversation = (prompt: any, accessToken: string | null) => {
   const [inputMessage, setInputMessage] = useState("");
   const [variables, setVariables] = useState<Record<string, string>>({});
   const [variablesFilled, setVariablesFilled] = useState(false);
-  const [abortController, setAbortController] = useState<AbortController | null>(null);
+  const [abortController, setAbortController] =
+    useState<AbortController | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const extractedVariables = extractVariables(prompt);
@@ -182,10 +186,20 @@ export const useConversation = (prompt: any, accessToken: string | null) => {
         console.error("Error testing prompt:", error);
         setMessages((prev) => {
           const lastMsg = prev[prev.length - 1];
-          if (lastMsg && lastMsg.role === "assistant" && lastMsg.content === "") {
-            return [...prev.slice(0, -1), { role: "assistant", content: `Error: ${error.message}` }];
+          if (
+            lastMsg &&
+            lastMsg.role === "assistant" &&
+            lastMsg.content === ""
+          ) {
+            return [
+              ...prev.slice(0, -1),
+              { role: "assistant", content: `Error: ${error.message}` },
+            ];
           }
-          return [...prev, { role: "assistant", content: `Error: ${error.message}` }];
+          return [
+            ...prev,
+            { role: "assistant", content: `Error: ${error.message}` },
+          ];
         });
       }
     } finally {

@@ -1,15 +1,22 @@
 import { SearchOutlined } from "@ant-design/icons";
-import { Card, Tab, TabGroup, TabList, TabPanel, TabPanels, Text } from "@tremor/react";
+import {
+  Card,
+  Tab,
+  TabGroup,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Text,
+} from "@tremor/react";
 import { Input } from "antd";
-import React, { useEffect, useMemo, useState } from "react";
+import type React from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   extractCategories,
   filterPluginsByCategory,
   filterPluginsBySearch,
 } from "../claude_code_plugins/helpers";
-import {
-  MarketplaceResponse
-} from "../claude_code_plugins/types";
+import type { MarketplaceResponse } from "../claude_code_plugins/types";
 import { ModelDataTable } from "../model_dashboard/table";
 import NotificationsManager from "../molecules/notifications_manager";
 import { getClaudeCodeMarketplace } from "../networking";
@@ -76,7 +83,7 @@ const ClaudeCodeMarketplaceTab: React.FC<ClaudeCodeMarketplaceTabProps> = ({
 
   const columns = useMemo(
     () => getMarketplaceTableColumns(copyToClipboard, publicPage),
-    [publicPage]
+    [publicPage],
   );
 
   if (!marketplaceData && !isLoading) {
@@ -106,17 +113,20 @@ const ClaudeCodeMarketplaceTab: React.FC<ClaudeCodeMarketplaceTabProps> = ({
       </div>
 
       {/* Category Tabs */}
-      <TabGroup index={selectedCategoryIndex} onIndexChange={setSelectedCategoryIndex}>
+      <TabGroup
+        index={selectedCategoryIndex}
+        onIndexChange={setSelectedCategoryIndex}
+      >
         <TabList className="mb-4">
           {categories.map((category) => {
             // Count plugins in this category
             const categoryPlugins = filterPluginsByCategory(
               marketplaceData?.plugins || [],
-              category
+              category,
             );
             const count = filterPluginsBySearch(
               categoryPlugins,
-              searchTerm
+              searchTerm,
             ).length;
 
             return (

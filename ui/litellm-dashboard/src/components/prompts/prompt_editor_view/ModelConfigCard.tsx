@@ -1,7 +1,8 @@
-import React, { useState } from "react";
 import { Text } from "@tremor/react";
 import { Input } from "antd";
 import { SettingsIcon } from "lucide-react";
+import type React from "react";
+import { useState } from "react";
 import ModelSelector from "../../common_components/ModelSelector";
 
 interface ModelConfigCardProps {
@@ -67,7 +68,11 @@ const ModelConfigCard: React.FC<ModelConfigCardProps> = ({
                     max={2}
                     step={0.1}
                     value={temperature}
-                    onChange={(e) => onTemperatureChange(parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      onTemperatureChange(
+                        Number.parseFloat(e.target.value) || 0,
+                      )
+                    }
                     className="w-20"
                   />
                 </div>
@@ -81,7 +86,9 @@ const ModelConfigCard: React.FC<ModelConfigCardProps> = ({
                     min={1}
                     max={32768}
                     value={maxTokens}
-                    onChange={(e) => onMaxTokensChange(parseInt(e.target.value) || 1000)}
+                    onChange={(e) =>
+                      onMaxTokensChange(Number.parseInt(e.target.value) || 1000)
+                    }
                     className="w-24"
                   />
                 </div>
@@ -95,4 +102,3 @@ const ModelConfigCard: React.FC<ModelConfigCardProps> = ({
 };
 
 export default ModelConfigCard;
-

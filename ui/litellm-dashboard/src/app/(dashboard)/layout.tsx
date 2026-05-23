@@ -1,12 +1,12 @@
 "use client";
 
-import React, { Suspense, useEffect, useState } from "react";
-import Navbar from "@/components/navbar";
-import { ThemeProvider } from "@/contexts/ThemeContext";
 import SidebarProvider from "@/app/(dashboard)/components/SidebarProvider";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { useRouter, useSearchParams } from "next/navigation";
 import { DebugWarningBanner } from "@/components/DebugWarningBanner";
+import Navbar from "@/components/navbar";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { Suspense, useEffect, useState } from "react";
 
 /** ---- BASE URL HELPERS ---- */
 function normalizeBasePrefix(raw: string | undefined | null): string {
@@ -37,7 +37,8 @@ const MIGRATED_PAGES: Record<string, string> = {
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { accessToken, userRole, userId, userEmail, premiumUser } = useAuthorized();
+  const { accessToken, userRole, userId, userEmail, premiumUser } =
+    useAuthorized();
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
   const [page, setPage] = useState(() => {
     return searchParams.get("page") || "api-keys";
@@ -75,10 +76,10 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           userRole={userRole}
           premiumUser={premiumUser}
           proxySettings={undefined}
-          setProxySettings={() => { }}
+          setProxySettings={() => {}}
           accessToken={accessToken}
           isDarkMode={false}
-          toggleDarkMode={() => { }}
+          toggleDarkMode={() => {}}
         />
         <DebugWarningBanner accessToken={accessToken} />
         <div className="flex flex-1 overflow-auto">
@@ -98,7 +99,13 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          Loading...
+        </div>
+      }
+    >
       <LayoutContent>{children}</LayoutContent>
     </Suspense>
   );

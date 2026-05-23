@@ -1,5 +1,7 @@
 import { useProjectDetails } from "@/app/(dashboard)/hooks/projects/useProjectDetails";
 import { useTeam } from "@/app/(dashboard)/hooks/teams/useTeams";
+import { LoadingOutlined } from "@ant-design/icons";
+import { BarChart } from "@tremor/react";
 import {
   Button,
   Card,
@@ -12,12 +14,16 @@ import {
   Row,
   Spin,
   Tag,
-  theme,
   Typography,
+  theme,
 } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
-import { BarChart } from "@tremor/react";
-import { ArrowLeftIcon, DollarSignIcon, EditIcon, KeyIcon, UsersIcon } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  DollarSignIcon,
+  EditIcon,
+  KeyIcon,
+  UsersIcon,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import DefaultProxyAdminTag from "../common_components/DefaultProxyAdminTag";
 import { EditProjectModal } from "./ProjectModals/EditProjectModal";
@@ -44,8 +50,9 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
   const { data: project, isLoading } = useProjectDetails(projectId);
   const { data: teamData } = useTeam(project?.team_id ?? undefined);
   // teamInfoCall returns { team_id, team_info: {...}, keys, team_memberships }
-  const teamInfo: TeamInfoShape | undefined = ((teamData as unknown as { team_info?: TeamInfoShape })?.team_info ??
-    teamData) as TeamInfoShape | undefined;
+  const teamInfo: TeamInfoShape | undefined = ((
+    teamData as unknown as { team_info?: TeamInfoShape }
+  )?.team_info ?? teamData) as TeamInfoShape | undefined;
   const { token } = theme.useToken();
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
 
@@ -53,7 +60,8 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
   const maxBudget = project?.litellm_budget_table?.max_budget ?? null;
   const hasLimit = maxBudget != null && maxBudget > 0;
   const spendPercent = hasLimit ? Math.min((spend / maxBudget) * 100, 100) : 0;
-  const spendColor = spendPercent >= 90 ? "#f5222d" : spendPercent >= 70 ? "#faad14" : "#52c41a";
+  const spendColor =
+    spendPercent >= 90 ? "#f5222d" : spendPercent >= 70 ? "#faad14" : "#52c41a";
 
   const modelSpendData = useMemo(() => {
     const raw = (project?.model_spend ?? {}) as Record<string, number>;
@@ -85,14 +93,21 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
           paddingInline: token.paddingLG * 2,
         }}
       >
-        <Button icon={<ArrowLeftIcon size={16} />} onClick={onBack} type="text" style={{ marginBottom: 16 }} />
+        <Button
+          icon={<ArrowLeftIcon size={16} />}
+          onClick={onBack}
+          type="text"
+          style={{ marginBottom: 16 }}
+        />
         <Empty description="Project not found" />
       </Content>
     );
   }
 
   return (
-    <Content style={{ padding: token.paddingLG, paddingInline: token.paddingLG * 2 }}>
+    <Content
+      style={{ padding: token.paddingLG, paddingInline: token.paddingLG * 2 }}
+    >
       {/* Header */}
       <div
         style={{
@@ -103,20 +118,30 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <Button icon={<ArrowLeftIcon size={16} />} onClick={onBack} type="text" />
+          <Button
+            icon={<ArrowLeftIcon size={16} />}
+            onClick={onBack}
+            type="text"
+          />
           <div>
             <Flex align="center" gap={8}>
               <Title level={2} style={{ margin: 0 }}>
                 {project.project_alias ?? project.project_id}
               </Title>
-              <Tag color={project.blocked ? "red" : "green"}>{project.blocked ? "Blocked" : "Active"}</Tag>
+              <Tag color={project.blocked ? "red" : "green"}>
+                {project.blocked ? "Blocked" : "Active"}
+              </Tag>
             </Flex>
             <Text type="secondary">
               ID: <Text copyable>{project.project_id}</Text>
             </Text>
           </div>
         </div>
-        <Button type="primary" icon={<EditIcon size={16} />} onClick={() => setIsEditModalVisible(true)}>
+        <Button
+          type="primary"
+          icon={<EditIcon size={16} />}
+          onClick={() => setIsEditModalVisible(true)}
+        >
           Edit Project
         </Button>
       </div>
@@ -125,7 +150,9 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
       <Row style={{ marginBottom: 24 }}>
         <Card>
           <Descriptions title="Project Details" column={1}>
-            <Descriptions.Item label="Description">{project.description || "\u2014"}</Descriptions.Item>
+            <Descriptions.Item label="Description">
+              {project.description || "\u2014"}
+            </Descriptions.Item>
             <Descriptions.Item label="Created">
               {new Date(project.created_at).toLocaleString()}
               {project.created_by && (
@@ -166,11 +193,19 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
                   ${spend.toFixed(2)}
                 </Text>
                 <br />
-                <Text type="secondary">{hasLimit ? `of $${maxBudget.toFixed(2)} budget` : "No budget limit"}</Text>
+                <Text type="secondary">
+                  {hasLimit
+                    ? `of $${maxBudget.toFixed(2)} budget`
+                    : "No budget limit"}
+                </Text>
               </div>
               {hasLimit && (
                 <div>
-                  <Progress percent={Math.round(spendPercent * 10) / 10} strokeColor={spendColor} showInfo={false} />
+                  <Progress
+                    percent={Math.round(spendPercent * 10) / 10}
+                    strokeColor={spendColor}
+                    showInfo={false}
+                  />
                   <Text type="secondary" style={{ fontSize: 12 }}>
                     {(Math.round(spendPercent * 10) / 10).toFixed(1)}% utilized
                   </Text>
@@ -194,7 +229,10 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
                 style={{ height: Math.max(modelSpendData.length * 40, 120) }}
               />
             ) : (
-              <Empty description="No model spend recorded yet" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              <Empty
+                description="No model spend recorded yet"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+              />
             )}
           </Card>
         </Col>
@@ -212,7 +250,10 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
             }
             style={{ height: "100%" }}
           >
-            <Empty description="No keys to display" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            <Empty
+              description="No keys to display"
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+            />
           </Card>
         </Col>
         <Col xs={24} lg={12}>
@@ -230,8 +271,15 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
                 const teamBudget = teamInfo.max_budget ?? null;
                 const teamSpend = teamInfo.spend ?? 0;
                 const teamHasLimit = teamBudget != null && teamBudget > 0;
-                const teamPercent = teamHasLimit ? Math.min((teamSpend / teamBudget) * 100, 100) : 0;
-                const teamColor = teamPercent >= 90 ? "#f5222d" : teamPercent >= 70 ? "#faad14" : "#52c41a";
+                const teamPercent = teamHasLimit
+                  ? Math.min((teamSpend / teamBudget) * 100, 100)
+                  : 0;
+                const teamColor =
+                  teamPercent >= 90
+                    ? "#f5222d"
+                    : teamPercent >= 70
+                      ? "#faad14"
+                      : "#52c41a";
 
                 return (
                   <Flex vertical gap={12}>
@@ -251,11 +299,22 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
 
                     {/* Models */}
                     <div>
-                      <Text type="secondary" style={{ fontSize: 12, display: "block", marginBottom: 4 }}>
+                      <Text
+                        type="secondary"
+                        style={{
+                          fontSize: 12,
+                          display: "block",
+                          marginBottom: 4,
+                        }}
+                      >
                         Models
                       </Text>
                       {(teamInfo.models?.length ?? 0) > 0 ? (
-                        <Flex wrap="wrap" gap={4} style={{ maxHeight: 60, overflow: "hidden" }}>
+                        <Flex
+                          wrap="wrap"
+                          gap={4}
+                          style={{ maxHeight: 60, overflow: "hidden" }}
+                        >
                           {teamInfo.models?.map((m: string) => (
                             <Tag key={m} style={{ margin: 0 }}>
                               {m}
@@ -269,7 +328,11 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
 
                     {/* Budget + Spend compact */}
                     <div>
-                      <Flex justify="space-between" align="center" style={{ marginBottom: 2 }}>
+                      <Flex
+                        justify="space-between"
+                        align="center"
+                        style={{ marginBottom: 2 }}
+                      >
                         <Text type="secondary" style={{ fontSize: 12 }}>
                           Spend
                         </Text>
@@ -303,7 +366,9 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
                       <Text type="secondary" style={{ fontSize: 12 }}>
                         Members
                       </Text>
-                      <Text style={{ fontSize: 12 }}>{teamInfo.members_with_roles?.length ?? 0}</Text>
+                      <Text style={{ fontSize: 12 }}>
+                        {teamInfo.members_with_roles?.length ?? 0}
+                      </Text>
                     </Flex>
                   </Flex>
                 );
@@ -313,14 +378,21 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
                 <Spin indicator={<LoadingOutlined spin />} size="small" />
               </Flex>
             ) : (
-              <Empty description="No team assigned" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              <Empty
+                description="No team assigned"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+              />
             )}
           </Card>
         </Col>
       </Row>
 
       {/* Edit Modal */}
-      <EditProjectModal isOpen={isEditModalVisible} project={project} onClose={() => setIsEditModalVisible(false)} />
+      <EditProjectModal
+        isOpen={isEditModalVisible}
+        project={project}
+        onClose={() => setIsEditModalVisible(false)}
+      />
     </Content>
   );
 }

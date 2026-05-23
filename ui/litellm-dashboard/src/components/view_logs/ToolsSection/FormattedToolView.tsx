@@ -2,8 +2,8 @@
  * Formatted view of tool definition with parameters table and call data
  */
 
-import { Typography, Table } from "antd";
-import { ParsedTool, ParameterRow } from "./types";
+import { Table, Typography } from "antd";
+import type { ParameterRow, ParsedTool } from "./types";
 
 const { Text } = Typography;
 
@@ -14,7 +14,7 @@ interface FormattedToolViewProps {
 export function FormattedToolView({ tool }: FormattedToolViewProps) {
   // Parse parameters for table display
   const parameterRows: ParameterRow[] = Object.entries(
-    tool.parameters?.properties || {}
+    tool.parameters?.properties || {},
   ).map(([name, schema]: [string, any]) => ({
     key: name,
     name: name,
@@ -61,7 +61,7 @@ export function FormattedToolView({ tool }: FormattedToolViewProps) {
           <Text
             style={{
               lineHeight: 1.6,
-              whiteSpace: 'pre-wrap',
+              whiteSpace: "pre-wrap",
             }}
           >
             {tool.description}

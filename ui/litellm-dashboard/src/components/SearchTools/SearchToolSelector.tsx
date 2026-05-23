@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
 import { Select } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { fetchSearchTools } from "../networking";
 
 export interface SearchToolSelectorProps {
@@ -19,7 +20,9 @@ const SearchToolSelector: React.FC<SearchToolSelectorProps> = ({
   placeholder = "Select search tools (optional)",
   disabled = false,
 }) => {
-  const [options, setOptions] = useState<{ label: string; value: string }[]>([]);
+  const [options, setOptions] = useState<{ label: string; value: string }[]>(
+    [],
+  );
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -35,8 +38,13 @@ const SearchToolSelector: React.FC<SearchToolSelectorProps> = ({
             : [];
         setOptions(
           tools
-            .map((tool: { search_tool_name?: string }) => tool?.search_tool_name)
-            .filter((name: unknown): name is string => typeof name === "string" && name.length > 0)
+            .map(
+              (tool: { search_tool_name?: string }) => tool?.search_tool_name,
+            )
+            .filter(
+              (name: unknown): name is string =>
+                typeof name === "string" && name.length > 0,
+            )
             .map((name: string) => ({ label: name, value: name })),
         );
       } catch (e) {

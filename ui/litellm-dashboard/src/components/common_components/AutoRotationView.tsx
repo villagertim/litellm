@@ -1,6 +1,6 @@
-import React from "react";
-import { Text, Badge } from "@tremor/react";
-import { RefreshIcon, ClockIcon } from "@heroicons/react/outline";
+import { ClockIcon, RefreshIcon } from "@heroicons/react/outline";
+import { Badge, Text } from "@tremor/react";
+import type React from "react";
 
 interface AutoRotationViewProps {
   autoRotate?: boolean;
@@ -49,7 +49,9 @@ const AutoRotationView: React.FC<AutoRotationViewProps> = ({
           {autoRotate && rotationInterval && (
             <>
               <Text className="text-gray-400">•</Text>
-              <Text className="text-sm text-gray-600">Every {rotationInterval}</Text>
+              <Text className="text-sm text-gray-600">
+                Every {rotationInterval}
+              </Text>
             </>
           )}
         </div>
@@ -64,7 +66,9 @@ const AutoRotationView: React.FC<AutoRotationViewProps> = ({
               <ClockIcon className="w-4 h-4 text-gray-500" />
               <div className="flex-1">
                 <Text className="font-medium text-gray-700">Last Rotation</Text>
-                <Text className="text-sm text-gray-600">{formatTimestamp(lastRotationAt)}</Text>
+                <Text className="text-sm text-gray-600">
+                  {formatTimestamp(lastRotationAt)}
+                </Text>
               </div>
             </div>
           )}
@@ -74,19 +78,28 @@ const AutoRotationView: React.FC<AutoRotationViewProps> = ({
             <div className="flex items-center gap-2 p-3 bg-gray-50 border border-gray-200 rounded-md">
               <ClockIcon className="w-4 h-4 text-gray-500" />
               <div className="flex-1">
-                <Text className="font-medium text-gray-700">Next Scheduled Rotation</Text>
-                <Text className="text-sm text-gray-600">{formatTimestamp(nextRotationAt || keyRotationAt || "")}</Text>
+                <Text className="font-medium text-gray-700">
+                  Next Scheduled Rotation
+                </Text>
+                <Text className="text-sm text-gray-600">
+                  {formatTimestamp(nextRotationAt || keyRotationAt || "")}
+                </Text>
               </div>
             </div>
           )}
 
           {/* No rotation data message - Only show if auto-rotation is enabled but no data */}
-          {autoRotate && !lastRotationAt && !keyRotationAt && !nextRotationAt && (
-            <div className="flex items-center gap-2 p-3 bg-gray-50 border border-gray-100 rounded-md">
-              <ClockIcon className="w-4 h-4 text-gray-500" />
-              <Text className="text-gray-600">No rotation history available</Text>
-            </div>
-          )}
+          {autoRotate &&
+            !lastRotationAt &&
+            !keyRotationAt &&
+            !nextRotationAt && (
+              <div className="flex items-center gap-2 p-3 bg-gray-50 border border-gray-100 rounded-md">
+                <ClockIcon className="w-4 h-4 text-gray-500" />
+                <Text className="text-gray-600">
+                  No rotation history available
+                </Text>
+              </div>
+            )}
         </div>
       )}
 
@@ -94,7 +107,9 @@ const AutoRotationView: React.FC<AutoRotationViewProps> = ({
       {!autoRotate && !lastRotationAt && !keyRotationAt && !nextRotationAt && (
         <div className="flex items-center gap-2 p-3 bg-gray-50 border border-gray-100 rounded-md">
           <RefreshIcon className="w-4 h-4 text-gray-400" />
-          <Text className="text-gray-600">Auto-rotation is not enabled for this key</Text>
+          <Text className="text-gray-600">
+            Auto-rotation is not enabled for this key
+          </Text>
         </div>
       )}
     </div>
@@ -102,11 +117,15 @@ const AutoRotationView: React.FC<AutoRotationViewProps> = ({
 
   if (variant === "card") {
     return (
-      <div className={`bg-white border border-gray-200 rounded-lg p-6 ${className}`}>
+      <div
+        className={`bg-white border border-gray-200 rounded-lg p-6 ${className}`}
+      >
         <div className="flex items-center gap-2 mb-6">
           <div>
             <Text className="font-semibold text-gray-900">Auto-Rotation</Text>
-            <Text className="text-xs text-gray-500">Automatic key rotation settings and status for this key</Text>
+            <Text className="text-xs text-gray-500">
+              Automatic key rotation settings and status for this key
+            </Text>
           </div>
         </div>
         {content}

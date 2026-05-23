@@ -8,7 +8,7 @@ describe("ExportSummary", () => {
       to: new Date("2024-01-31"),
     };
     const { container } = renderWithProviders(
-      <ExportSummary dateRange={dateRange} selectedFilters={[]} />
+      <ExportSummary dateRange={dateRange} selectedFilters={[]} />,
     );
     expect(container).not.toBeEmptyDOMElement();
   });
@@ -18,10 +18,14 @@ describe("ExportSummary", () => {
     const to = new Date(2024, 0, 31);
     const dateRange = { from, to };
     renderWithProviders(
-      <ExportSummary dateRange={dateRange} selectedFilters={[]} />
+      <ExportSummary dateRange={dateRange} selectedFilters={[]} />,
     );
-    expect(screen.getByText(new RegExp(from.toLocaleDateString()))).toBeInTheDocument();
-    expect(screen.getByText(new RegExp(to.toLocaleDateString()))).toBeInTheDocument();
+    expect(
+      screen.getByText(new RegExp(from.toLocaleDateString())),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(new RegExp(to.toLocaleDateString())),
+    ).toBeInTheDocument();
   });
 
   it("should show filter count when filters are selected", () => {
@@ -30,7 +34,10 @@ describe("ExportSummary", () => {
       to: new Date("2024-01-31"),
     };
     renderWithProviders(
-      <ExportSummary dateRange={dateRange} selectedFilters={["team-a", "team-b", "team-c"]} />
+      <ExportSummary
+        dateRange={dateRange}
+        selectedFilters={["team-a", "team-b", "team-c"]}
+      />,
     );
     expect(screen.getByText(/3 filters/)).toBeInTheDocument();
   });
@@ -41,7 +48,7 @@ describe("ExportSummary", () => {
       to: new Date("2024-01-31"),
     };
     renderWithProviders(
-      <ExportSummary dateRange={dateRange} selectedFilters={["team-a"]} />
+      <ExportSummary dateRange={dateRange} selectedFilters={["team-a"]} />,
     );
     expect(screen.getByText(/1 filter$/)).toBeInTheDocument();
   });
@@ -52,7 +59,7 @@ describe("ExportSummary", () => {
       to: new Date("2024-01-31"),
     };
     renderWithProviders(
-      <ExportSummary dateRange={dateRange} selectedFilters={[]} />
+      <ExportSummary dateRange={dateRange} selectedFilters={[]} />,
     );
     expect(screen.queryByText(/filter/)).not.toBeInTheDocument();
   });

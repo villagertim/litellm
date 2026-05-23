@@ -1,7 +1,10 @@
-import { claimOnboardingToken, getOnboardingCredentials } from "@/components/networking";
+import {
+  claimOnboardingToken,
+  getOnboardingCredentials,
+} from "@/components/networking";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useUIConfig } from "../uiConfig/useUIConfig";
 import { createQueryKeys } from "../common/queryKeysFactory";
+import { useUIConfig } from "../uiConfig/useUIConfig";
 
 const onboardingKeys = createQueryKeys("onboarding");
 
@@ -31,7 +34,12 @@ export interface ClaimTokenParams {
 
 export const useClaimOnboardingToken = () => {
   return useMutation({
-    mutationFn: async ({ accessToken, inviteId, userId, password }: ClaimTokenParams) =>
+    mutationFn: async ({
+      accessToken,
+      inviteId,
+      userId,
+      password,
+    }: ClaimTokenParams) =>
       await claimOnboardingToken(accessToken, inviteId, userId, password),
   });
 };

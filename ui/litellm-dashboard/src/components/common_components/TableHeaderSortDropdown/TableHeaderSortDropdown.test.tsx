@@ -6,14 +6,18 @@ import { TableHeaderSortDropdown } from "./TableHeaderSortDropdown";
 describe("TableHeaderSortDropdown", () => {
   it("should render", () => {
     const onSortChange = vi.fn();
-    render(<TableHeaderSortDropdown sortState={false} onSortChange={onSortChange} />);
+    render(
+      <TableHeaderSortDropdown sortState={false} onSortChange={onSortChange} />,
+    );
     expect(screen.getByRole("button")).toBeInTheDocument();
   });
 
   it("should open dropdown menu when button is clicked", async () => {
     const user = userEvent.setup();
     const onSortChange = vi.fn();
-    render(<TableHeaderSortDropdown sortState={false} onSortChange={onSortChange} />);
+    render(
+      <TableHeaderSortDropdown sortState={false} onSortChange={onSortChange} />,
+    );
 
     const button = screen.getByRole("button");
     await user.click(button);
@@ -28,7 +32,9 @@ describe("TableHeaderSortDropdown", () => {
   it("should call onSortChange with asc when ascending option is clicked", async () => {
     const user = userEvent.setup();
     const onSortChange = vi.fn();
-    render(<TableHeaderSortDropdown sortState={false} onSortChange={onSortChange} />);
+    render(
+      <TableHeaderSortDropdown sortState={false} onSortChange={onSortChange} />,
+    );
 
     const button = screen.getByRole("button");
     await user.click(button);
@@ -47,7 +53,9 @@ describe("TableHeaderSortDropdown", () => {
   it("should call onSortChange with desc when descending option is clicked", async () => {
     const user = userEvent.setup();
     const onSortChange = vi.fn();
-    render(<TableHeaderSortDropdown sortState={false} onSortChange={onSortChange} />);
+    render(
+      <TableHeaderSortDropdown sortState={false} onSortChange={onSortChange} />,
+    );
 
     const button = screen.getByRole("button");
     await user.click(button);
@@ -66,7 +74,9 @@ describe("TableHeaderSortDropdown", () => {
   it("should call onSortChange with false when reset option is clicked", async () => {
     const user = userEvent.setup();
     const onSortChange = vi.fn();
-    render(<TableHeaderSortDropdown sortState="asc" onSortChange={onSortChange} />);
+    render(
+      <TableHeaderSortDropdown sortState="asc" onSortChange={onSortChange} />,
+    );
 
     const button = screen.getByRole("button");
     await user.click(button);
@@ -85,7 +95,9 @@ describe("TableHeaderSortDropdown", () => {
   it("should highlight ascending option when sort state is asc", async () => {
     const user = userEvent.setup();
     const onSortChange = vi.fn();
-    render(<TableHeaderSortDropdown sortState="asc" onSortChange={onSortChange} />);
+    render(
+      <TableHeaderSortDropdown sortState="asc" onSortChange={onSortChange} />,
+    );
 
     const button = screen.getByRole("button");
     await user.click(button);
@@ -100,7 +112,9 @@ describe("TableHeaderSortDropdown", () => {
   it("should highlight descending option when sort state is desc", async () => {
     const user = userEvent.setup();
     const onSortChange = vi.fn();
-    render(<TableHeaderSortDropdown sortState="desc" onSortChange={onSortChange} />);
+    render(
+      <TableHeaderSortDropdown sortState="desc" onSortChange={onSortChange} />,
+    );
 
     const button = screen.getByRole("button");
     await user.click(button);
@@ -115,7 +129,9 @@ describe("TableHeaderSortDropdown", () => {
   it("should not highlight any option when sort state is false", async () => {
     const user = userEvent.setup();
     const onSortChange = vi.fn();
-    render(<TableHeaderSortDropdown sortState={false} onSortChange={onSortChange} />);
+    render(
+      <TableHeaderSortDropdown sortState={false} onSortChange={onSortChange} />,
+    );
 
     const button = screen.getByRole("button");
     await user.click(button);
@@ -136,7 +152,10 @@ describe("TableHeaderSortDropdown", () => {
 
     render(
       <div onClick={onParentClick}>
-        <TableHeaderSortDropdown sortState={false} onSortChange={onSortChange} />
+        <TableHeaderSortDropdown
+          sortState={false}
+          onSortChange={onSortChange}
+        />
       </div>,
     );
 

@@ -1,12 +1,12 @@
 import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  ClipboardCopyIcon,
+  ExternalLinkIcon,
   PencilAltIcon,
   PlayIcon,
   RefreshIcon,
   TrashIcon,
-  ChevronUpIcon,
-  ChevronDownIcon,
-  ExternalLinkIcon,
-  ClipboardCopyIcon,
 } from "@heroicons/react/outline";
 import { Tooltip } from "antd";
 import BaseActionButton from "../BaseActionButton";
@@ -25,7 +25,10 @@ export interface TableIconActionButtonBaseProps {
   className?: string;
 }
 
-export const TableIconActionButtonMap: Record<string, TableIconActionButtonBaseProps> = {
+export const TableIconActionButtonMap: Record<
+  string,
+  TableIconActionButtonBaseProps
+> = {
   Edit: { icon: PencilAltIcon, className: "hover:text-blue-600" },
   Delete: { icon: TrashIcon, className: "hover:text-red-600" },
   Test: { icon: PlayIcon, className: "hover:text-blue-600" },

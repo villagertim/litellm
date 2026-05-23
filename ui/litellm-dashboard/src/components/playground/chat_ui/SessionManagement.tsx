@@ -1,8 +1,8 @@
-import React from "react";
+import { CopyOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { Switch, Tooltip } from "antd";
-import { InfoCircleOutlined, CopyOutlined } from "@ant-design/icons";
-import { EndpointType } from "./mode_endpoint_mapping";
+import type React from "react";
 import NotificationsManager from "../../molecules/notifications_manager";
+import { EndpointType } from "./mode_endpoint_mapping";
 
 interface SessionManagementProps {
   endpointType: string;
@@ -30,10 +30,14 @@ const SessionManagement: React.FC<SessionManagementProps> = ({
 
   const getSessionDisplay = () => {
     if (!responsesSessionId) {
-      return useApiSessionManagement ? "API Session: Ready" : "UI Session: Ready";
+      return useApiSessionManagement
+        ? "API Session: Ready"
+        : "UI Session: Ready";
     }
 
-    const sessionPrefix = useApiSessionManagement ? "Response ID" : "UI Session";
+    const sessionPrefix = useApiSessionManagement
+      ? "Response ID"
+      : "UI Session";
     const truncatedId = responsesSessionId.slice(0, 10);
     return `${sessionPrefix}: ${truncatedId}...`;
   };
@@ -55,9 +59,14 @@ const SessionManagement: React.FC<SessionManagementProps> = ({
       {/* Session Management Toggle */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-gray-700">Session Management</span>
+          <span className="text-sm font-medium text-gray-700">
+            Session Management
+          </span>
           <Tooltip title="Choose between LiteLLM API session management (using previous_response_id) or UI-based session management (using chat history)">
-            <InfoCircleOutlined className="text-gray-400" style={{ fontSize: "12px" }} />
+            <InfoCircleOutlined
+              className="text-gray-400"
+              style={{ fontSize: "12px" }}
+            />
           </Tooltip>
         </div>
         <Switch
@@ -86,7 +95,9 @@ const SessionManagement: React.FC<SessionManagementProps> = ({
             <Tooltip
               title={
                 <div className="text-xs">
-                  <div className="mb-1">Copy response ID to continue session:</div>
+                  <div className="mb-1">
+                    Copy response ID to continue session:
+                  </div>
                   <div className="bg-gray-800 text-gray-100 p-2 rounded font-mono text-xs whitespace-pre-wrap">
                     {`curl -X POST "your-proxy-url/v1/responses" \\
   -H "Authorization: Bearer your-api-key" \\
@@ -102,7 +113,10 @@ const SessionManagement: React.FC<SessionManagementProps> = ({
               }
               overlayStyle={{ maxWidth: "500px" }}
             >
-              <button onClick={handleCopySessionId} className="ml-2 p-1 hover:bg-green-100 rounded transition-colors">
+              <button
+                onClick={handleCopySessionId}
+                className="ml-2 p-1 hover:bg-green-100 rounded transition-colors"
+              >
                 <CopyOutlined style={{ fontSize: "12px" }} />
               </button>
             </Tooltip>

@@ -1,5 +1,5 @@
-import React from "react";
 import { Card, Text } from "@tremor/react";
+import type React from "react";
 import VariableTextArea from "../variable_textarea";
 
 interface DeveloperMessageCardProps {
@@ -28,4 +28,3 @@ const DeveloperMessageCard: React.FC<DeveloperMessageCardProps> = ({
 };
 
 export default DeveloperMessageCard;
-

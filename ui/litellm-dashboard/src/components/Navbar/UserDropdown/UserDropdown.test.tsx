@@ -1,6 +1,10 @@
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { renderWithProviders, screen, waitFor } from "../../../../tests/test-utils";
+import {
+  renderWithProviders,
+  screen,
+  waitFor,
+} from "../../../../tests/test-utils";
 import UserDropdown from "./UserDropdown";
 
 let mockUseAuthorizedImpl = () => ({
@@ -155,9 +159,16 @@ describe("UserDropdown", () => {
 
     await user.click(toggle);
 
-    const localStorageUtils = vi.mocked(await import("@/utils/localStorageUtils"));
-    expect(localStorageUtils.setLocalStorageItem).toHaveBeenCalledWith("disableShowNewBadge", "true");
-    expect(localStorageUtils.emitLocalStorageChange).toHaveBeenCalledWith("disableShowNewBadge");
+    const localStorageUtils = vi.mocked(
+      await import("@/utils/localStorageUtils"),
+    );
+    expect(localStorageUtils.setLocalStorageItem).toHaveBeenCalledWith(
+      "disableShowNewBadge",
+      "true",
+    );
+    expect(localStorageUtils.emitLocalStorageChange).toHaveBeenCalledWith(
+      "disableShowNewBadge",
+    );
   });
 
   it("should toggle hide new feature indicators switch off", async () => {
@@ -180,9 +191,15 @@ describe("UserDropdown", () => {
 
     await user.click(toggle);
 
-    const localStorageUtils = vi.mocked(await import("@/utils/localStorageUtils"));
-    expect(localStorageUtils.removeLocalStorageItem).toHaveBeenCalledWith("disableShowNewBadge");
-    expect(localStorageUtils.emitLocalStorageChange).toHaveBeenCalledWith("disableShowNewBadge");
+    const localStorageUtils = vi.mocked(
+      await import("@/utils/localStorageUtils"),
+    );
+    expect(localStorageUtils.removeLocalStorageItem).toHaveBeenCalledWith(
+      "disableShowNewBadge",
+    );
+    expect(localStorageUtils.emitLocalStorageChange).toHaveBeenCalledWith(
+      "disableShowNewBadge",
+    );
   });
 
   it("should toggle hide all prompts switch", async () => {
@@ -200,9 +217,16 @@ describe("UserDropdown", () => {
 
     await user.click(toggle);
 
-    const localStorageUtils = vi.mocked(await import("@/utils/localStorageUtils"));
-    expect(localStorageUtils.setLocalStorageItem).toHaveBeenCalledWith("disableShowPrompts", "true");
-    expect(localStorageUtils.emitLocalStorageChange).toHaveBeenCalledWith("disableShowPrompts");
+    const localStorageUtils = vi.mocked(
+      await import("@/utils/localStorageUtils"),
+    );
+    expect(localStorageUtils.setLocalStorageItem).toHaveBeenCalledWith(
+      "disableShowPrompts",
+      "true",
+    );
+    expect(localStorageUtils.emitLocalStorageChange).toHaveBeenCalledWith(
+      "disableShowPrompts",
+    );
   });
 
   it("should toggle hide all prompts switch off", async () => {
@@ -226,9 +250,15 @@ describe("UserDropdown", () => {
 
     await user.click(toggle);
 
-    const localStorageUtils = vi.mocked(await import("@/utils/localStorageUtils"));
-    expect(localStorageUtils.removeLocalStorageItem).toHaveBeenCalledWith("disableShowPrompts");
-    expect(localStorageUtils.emitLocalStorageChange).toHaveBeenCalledWith("disableShowPrompts");
+    const localStorageUtils = vi.mocked(
+      await import("@/utils/localStorageUtils"),
+    );
+    expect(localStorageUtils.removeLocalStorageItem).toHaveBeenCalledWith(
+      "disableShowPrompts",
+    );
+    expect(localStorageUtils.emitLocalStorageChange).toHaveBeenCalledWith(
+      "disableShowPrompts",
+    );
   });
 
   it("should display dash when user email is not available", async () => {

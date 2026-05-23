@@ -1,18 +1,27 @@
 "use client";
 
-import { useState } from "react";
-import { useHashicorpVaultConfig } from "@/app/(dashboard)/hooks/configOverrides/useHashicorpVaultConfig";
+import { testHashicorpVaultConnection } from "@/app/(dashboard)/hooks/configOverrides/hashicorpVaultApi";
 import { useDeleteHashicorpVaultConfig } from "@/app/(dashboard)/hooks/configOverrides/useDeleteHashicorpVaultConfig";
+import { useHashicorpVaultConfig } from "@/app/(dashboard)/hooks/configOverrides/useHashicorpVaultConfig";
 import { useUpdateHashicorpVaultConfig } from "@/app/(dashboard)/hooks/configOverrides/useUpdateHashicorpVaultConfig";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import DeleteResourceModal from "@/components/common_components/DeleteResourceModal";
 import NotificationManager from "@/components/molecules/notifications_manager";
-import { testHashicorpVaultConnection } from "@/app/(dashboard)/hooks/configOverrides/hashicorpVaultApi";
-import { Alert, Button, Card, Descriptions, Flex, Skeleton, Space, Typography } from "antd";
+import {
+  Alert,
+  Button,
+  Card,
+  Descriptions,
+  Flex,
+  Skeleton,
+  Space,
+  Typography,
+} from "antd";
 import { Edit, KeyRound, PlugZap, Trash2 } from "lucide-react";
-import { SENSITIVE_FIELDS, FIELD_LABELS } from "./constants";
+import { useState } from "react";
 import EditHashicorpVaultModal from "./EditHashicorpVaultModal";
 import HashicorpVaultEmptyPlaceholder from "./HashicorpVaultEmptyPlaceholder";
+import { FIELD_LABELS, SENSITIVE_FIELDS } from "./constants";
 
 const { Title, Text } = Typography;
 
@@ -30,8 +39,10 @@ const descriptionsConfig = {
 export default function HashicorpVault() {
   const { accessToken } = useAuthorized();
   const { data, isLoading, isError, error } = useHashicorpVaultConfig();
-  const { mutate: deleteConfig, isPending: isDeleting } = useDeleteHashicorpVaultConfig(accessToken);
-  const { mutate: updateConfig, isPending: isClearingField } = useUpdateHashicorpVaultConfig(accessToken);
+  const { mutate: deleteConfig, isPending: isDeleting } =
+    useDeleteHashicorpVaultConfig(accessToken);
+  const { mutate: updateConfig, isPending: isClearingField } =
+    useUpdateHashicorpVaultConfig(accessToken);
 
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -46,7 +57,9 @@ export default function HashicorpVault() {
     setIsTesting(true);
     try {
       const result = await testHashicorpVaultConnection(accessToken);
-      NotificationManager.success(result.message || "Connection to Vault successful!");
+      NotificationManager.success(
+        result.message || "Connection to Vault successful!",
+      );
     } catch (err) {
       NotificationManager.fromBackend(err);
     } finally {
@@ -68,15 +81,20 @@ export default function HashicorpVault() {
 
   const handleClearField = () => {
     if (!clearingField) return;
-    updateConfig({ [clearingField]: "" }, {
-      onSuccess: () => {
-        NotificationManager.success(`${FIELD_LABELS[clearingField] ?? clearingField} cleared`);
-        setClearingField(null);
+    updateConfig(
+      { [clearingField]: "" },
+      {
+        onSuccess: () => {
+          NotificationManager.success(
+            `${FIELD_LABELS[clearingField] ?? clearingField} cleared`,
+          );
+          setClearingField(null);
+        },
+        onError: (err) => {
+          NotificationManager.fromBackend(err);
+        },
       },
-      onError: (err) => {
-        NotificationManager.fromBackend(err);
-      },
-    });
+    );
   };
 
   const renderValue = (key: string) => {
@@ -104,7 +122,7 @@ export default function HashicorpVault() {
   const renderSettings = () => {
     // Only show fields that have values, plus auth method
     const fieldsToShow = Object.entries(rawValues).filter(
-      ([_, value]) => value != null && value !== ""
+      ([_, value]) => value != null && value !== "",
     );
 
     if (fieldsToShow.length === 0) return null;
@@ -145,8 +163,12 @@ export default function HashicorpVault() {
               <Flex align="center" gap={12}>
                 <KeyRound className="w-6 h-6 text-gray-400" />
                 <div>
-                  <Title level={3} style={{ marginBottom: 0 }}>Hashicorp Vault</Title>
-                  <Text type="secondary">Manage secret manager configuration</Text>
+                  <Title level={3} style={{ marginBottom: 0 }}>
+                    Hashicorp Vault
+                  </Title>
+                  <Text type="secondary">
+                    Manage secret manager configuration
+                  </Text>
                 </div>
               </Flex>
 
@@ -185,7 +207,9 @@ export default function HashicorpVault() {
                 message={'Secrets must be stored with the field name "key"'}
                 description={
                   <>
-                    <Text code>vault kv put secret/SECRET_NAME key=secret_value</Text>
+                    <Text code>
+                      vault kv put secret/SECRET_NAME key=secret_value
+                    </Text>
                     <br />
                     <Typography.Link
                       href="https://docs.litellm.ai/docs/secret_managers/hashicorp_vault"
@@ -201,7 +225,9 @@ export default function HashicorpVault() {
             {isConfigured ? (
               renderSettings()
             ) : (
-              <HashicorpVaultEmptyPlaceholder onAdd={() => setIsEditModalVisible(true)} />
+              <HashicorpVaultEmptyPlaceholder
+                onAdd={() => setIsEditModalVisible(true)}
+              />
             )}
           </Space>
         </Card>
@@ -228,11 +254,16 @@ export default function HashicorpVault() {
 
       <DeleteResourceModal
         isOpen={clearingField !== null}
-        title={`Clear ${clearingField ? (FIELD_LABELS[clearingField] ?? clearingField) : ""}?`}
+        title={`Clear ${clearingField ? FIELD_LABELS[clearingField] ?? clearingField : ""}?`}
         message="This will remove the stored value."
         resourceInformationTitle="Field"
         resourceInformation={[
-          { label: "Field", value: clearingField ? (FIELD_LABELS[clearingField] ?? clearingField) : "" },
+          {
+            label: "Field",
+            value: clearingField
+              ? FIELD_LABELS[clearingField] ?? clearingField
+              : "",
+          },
         ]}
         onCancel={() => setClearingField(null)}
         onOk={handleClearField}

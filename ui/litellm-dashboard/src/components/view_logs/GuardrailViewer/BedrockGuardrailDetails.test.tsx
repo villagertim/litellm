@@ -1,20 +1,22 @@
-import React from "react";
-import { describe, it, expect } from "vitest";
 import BedrockGuardrailDetails, {
-  BedrockGuardrailResponse,
+  type BedrockGuardrailResponse,
 } from "@/components/view_logs/GuardrailViewer/BedrockGuardrailDetails";
-import { renderWithProviders, screen } from "../../../../tests/test-utils";
 import {
   makeAssessment,
   makeBedrockCoverage,
   makeBedrockResponse,
   makeBedrockUsage,
 } from "@/components/view_logs/GuardrailViewer/__tests__/fixtures";
+import React from "react";
+import { describe, expect, it } from "vitest";
+import { renderWithProviders, screen } from "../../../../tests/test-utils";
 
 describe("BedrockGuardrailDetails", () => {
   it("returns null when response is falsy", () => {
     // @ts-expect-error testing nullish handling
-    const { container } = renderWithProviders(<BedrockGuardrailDetails response={undefined} />);
+    const { container } = renderWithProviders(
+      <BedrockGuardrailDetails response={undefined} />,
+    );
     expect(container).toBeEmptyDOMElement();
   });
 
@@ -47,12 +49,17 @@ describe("BedrockGuardrailDetails", () => {
   it("renders outputs when present (prefers `outputs`, falls back to `output`)", () => {
     // Using outputs
     let resp = makeBedrockResponse({ outputs: [{ text: "hello" }] });
-    const { rerender } = renderWithProviders(<BedrockGuardrailDetails response={resp} />);
+    const { rerender } = renderWithProviders(
+      <BedrockGuardrailDetails response={resp} />,
+    );
     expect(screen.getByText("Outputs")).toBeInTheDocument();
     expect(screen.getByText("hello")).toBeInTheDocument();
 
     // Using output
-    resp = makeBedrockResponse({ outputs: undefined, output: [{ text: "world" }] });
+    resp = makeBedrockResponse({
+      outputs: undefined,
+      output: [{ text: "world" }],
+    });
     rerender(<BedrockGuardrailDetails response={resp} />);
     expect(screen.getByText("world")).toBeInTheDocument();
   });
@@ -89,7 +96,9 @@ describe("BedrockGuardrailDetails", () => {
     expect(screen.getByText("Invocation Metrics")).toBeInTheDocument();
 
     // Raw JSON section exists (closed by default)
-    expect(screen.getByText("Raw Bedrock Guardrail Response")).toBeInTheDocument();
+    expect(
+      screen.getByText("Raw Bedrock Guardrail Response"),
+    ).toBeInTheDocument();
   });
 
   it("handles non-text outputs gracefully", () => {

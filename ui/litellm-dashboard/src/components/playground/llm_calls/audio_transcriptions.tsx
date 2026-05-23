@@ -1,6 +1,6 @@
-import openai from "openai";
-import { getProxyBaseUrl } from "@/components/networking";
 import NotificationManager from "@/components/molecules/notifications_manager";
+import { getProxyBaseUrl } from "@/components/networking";
+import openai from "openai";
 
 export async function makeOpenAIAudioTranscriptionRequest(
   audioFile: File,
@@ -18,7 +18,7 @@ export async function makeOpenAIAudioTranscriptionRequest(
   // base url should be the current base_url
   const isLocal = process.env.NODE_ENV === "development";
   if (isLocal !== true) {
-    console.log = function () {};
+    console.log = () => {};
   }
   console.log("isLocal:", isLocal);
   const proxyBaseUrl = customBaseUrl || getProxyBaseUrl();
@@ -27,7 +27,10 @@ export async function makeOpenAIAudioTranscriptionRequest(
     apiKey: accessToken,
     baseURL: proxyBaseUrl,
     dangerouslyAllowBrowser: true,
-    defaultHeaders: tags && tags.length > 0 ? { "x-litellm-tags": tags.join(",") } : undefined,
+    defaultHeaders:
+      tags && tags.length > 0
+        ? { "x-litellm-tags": tags.join(",") }
+        : undefined,
   });
 
   try {
@@ -68,7 +71,9 @@ export async function makeOpenAIAudioTranscriptionRequest(
         errorMessage = error.message;
       }
 
-      NotificationManager.fromBackend(`Audio transcription failed: ${errorMessage}`);
+      NotificationManager.fromBackend(
+        `Audio transcription failed: ${errorMessage}`,
+      );
     }
     throw error; // Re-throw to allow the caller to handle the error
   }

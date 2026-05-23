@@ -1,7 +1,10 @@
-import { useState, useCallback, useRef, useEffect } from "react";
-import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "@/components/networking";
-import { CostEstimateRequest, CostEstimateResponse } from "../types";
-import { ModelEntry, MultiModelResult } from "./types";
+import {
+  getGlobalLitellmHeaderName,
+  getProxyBaseUrl,
+} from "@/components/networking";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { CostEstimateRequest, CostEstimateResponse } from "../types";
+import type { ModelEntry, MultiModelResult } from "./types";
 
 const DEBOUNCE_MS = 500;
 
@@ -13,7 +16,9 @@ interface EntryResult {
 }
 
 export function useMultiCostEstimate(accessToken: string | null) {
-  const [entryResults, setEntryResults] = useState<Map<string, EntryResult>>(new Map());
+  const [entryResults, setEntryResults] = useState<Map<string, EntryResult>>(
+    new Map(),
+  );
   const debounceRefs = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
   const fetchEstimateForEntry = useCallback(
@@ -46,7 +51,9 @@ export function useMultiCostEstimate(accessToken: string | null) {
 
       try {
         const proxyBaseUrl = getProxyBaseUrl();
-        const url = proxyBaseUrl ? `${proxyBaseUrl}/cost/estimate` : "/cost/estimate";
+        const url = proxyBaseUrl
+          ? `${proxyBaseUrl}/cost/estimate`
+          : "/cost/estimate";
 
         const requestBody: CostEstimateRequest = {
           model: entry.model,
@@ -80,7 +87,9 @@ export function useMultiCostEstimate(accessToken: string | null) {
         } else {
           const errorData = await response.json();
           const errorMessage =
-            errorData.detail?.error || errorData.detail || "Failed to estimate cost";
+            errorData.detail?.error ||
+            errorData.detail ||
+            "Failed to estimate cost";
           setEntryResults((prev) => {
             const next = new Map(prev);
             next.set(entry.id, {
@@ -106,7 +115,7 @@ export function useMultiCostEstimate(accessToken: string | null) {
         });
       }
     },
-    [accessToken]
+    [accessToken],
   );
 
   const debouncedFetchForEntry = useCallback(
@@ -120,7 +129,7 @@ export function useMultiCostEstimate(accessToken: string | null) {
       }, DEBOUNCE_MS);
       debounceRefs.current.set(entry.id, timeout);
     },
-    [fetchEstimateForEntry]
+    [fetchEstimateForEntry],
   );
 
   const removeEntry = useCallback((id: string) => {
@@ -171,13 +180,15 @@ export function useMultiCostEstimate(accessToken: string | null) {
             totalDailyCost = (totalDailyCost ?? 0) + r.result.daily_cost;
           }
           if (r.result.daily_margin_cost !== null) {
-            totalDailyMargin = (totalDailyMargin ?? 0) + r.result.daily_margin_cost;
+            totalDailyMargin =
+              (totalDailyMargin ?? 0) + r.result.daily_margin_cost;
           }
           if (r.result.monthly_cost !== null) {
             totalMonthlyCost = (totalMonthlyCost ?? 0) + r.result.monthly_cost;
           }
           if (r.result.monthly_margin_cost !== null) {
-            totalMonthlyMargin = (totalMonthlyMargin ?? 0) + r.result.monthly_margin_cost;
+            totalMonthlyMargin =
+              (totalMonthlyMargin ?? 0) + r.result.monthly_margin_cost;
           }
         }
       }
@@ -194,7 +205,7 @@ export function useMultiCostEstimate(accessToken: string | null) {
         },
       };
     },
-    [entryResults]
+    [entryResults],
   );
 
   return {
@@ -203,4 +214,3 @@ export function useMultiCostEstimate(accessToken: string | null) {
     getMultiModelResult,
   };
 }
-

@@ -33,7 +33,8 @@ vi.mock("./Navbar/UserDropdown/UserDropdown", async (importOriginal) => {
   const localStorageUtils = await import("@/utils/localStorageUtils");
   return {
     default: function MockUserDropdown({ onLogout }: { onLogout: () => void }) {
-      const { userId, userEmail, userRole, premiumUser } = mockUserDropdownData.current();
+      const { userId, userEmail, userRole, premiumUser } =
+        mockUserDropdownData.current();
       const [open, setOpen] = useState(false);
       return (
         <div>
@@ -55,8 +56,13 @@ vi.mock("./Navbar/UserDropdown/UserDropdown", async (importOriginal) => {
                   aria-label="Toggle hide new feature indicators"
                   onChange={(e) => {
                     if (e.target.checked) {
-                      localStorageUtils.setLocalStorageItem("disableShowNewBadge", "true");
-                      localStorageUtils.emitLocalStorageChange("disableShowNewBadge");
+                      localStorageUtils.setLocalStorageItem(
+                        "disableShowNewBadge",
+                        "true",
+                      );
+                      localStorageUtils.emitLocalStorageChange(
+                        "disableShowNewBadge",
+                      );
                     }
                   }}
                 />
@@ -75,24 +81,35 @@ vi.mock("@/utils/proxyUtils", () => ({
 }));
 
 // Mock CommunityEngagementButtons component
-vi.mock("./Navbar/CommunityEngagementButtons/CommunityEngagementButtons", () => ({
-  CommunityEngagementButtons: () => (
-    <div data-testid="community-engagement-buttons">
-      <a href="https://www.litellm.ai/support" target="_blank" rel="noopener noreferrer">
-        Join Slack
-      </a>
-      <a href="https://github.com/BerriAI/litellm" target="_blank" rel="noopener noreferrer">
-        Star us on GitHub
-      </a>
-    </div>
-  ),
-}));
+vi.mock(
+  "./Navbar/CommunityEngagementButtons/CommunityEngagementButtons",
+  () => ({
+    CommunityEngagementButtons: () => (
+      <div data-testid="community-engagement-buttons">
+        <a
+          href="https://www.litellm.ai/support"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Join Slack
+        </a>
+        <a
+          href="https://github.com/BerriAI/litellm"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Star us on GitHub
+        </a>
+      </div>
+    ),
+  }),
+);
 
 // Create mock functions that can be controlled in tests
 let mockUseThemeImpl = () => ({ logoUrl: null as string | null });
 let mockUseHealthReadinessDetailsImpl = () => ({ data: null as any });
 let mockGetLocalStorageItemImpl = (key: string) => null as string | null;
-let mockUseAuthorizedImpl = () => ({
+const mockUseAuthorizedImpl = () => ({
   userId: "test-user",
   userEmail: "test@example.com",
   userRole: "Admin",
@@ -105,12 +122,15 @@ vi.mock("@/contexts/ThemeContext", () => ({
   useTheme: () => mockUseThemeImpl(),
 }));
 
-vi.mock("@/app/(dashboard)/hooks/healthReadiness/useHealthReadinessDetails", () => ({
-  useHealthReadinessDetails: (accessToken: string | null | undefined) => {
-    useHealthReadinessDetailsSpy(accessToken);
-    return mockUseHealthReadinessDetailsImpl();
-  },
-}));
+vi.mock(
+  "@/app/(dashboard)/hooks/healthReadiness/useHealthReadinessDetails",
+  () => ({
+    useHealthReadinessDetails: (accessToken: string | null | undefined) => {
+      useHealthReadinessDetailsSpy(accessToken);
+      return mockUseHealthReadinessDetailsImpl();
+    },
+  }),
+);
 
 vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({
   default: () => mockUseAuthorizedImpl(),
@@ -170,7 +190,9 @@ describe("Navbar", () => {
 
   it("should show sidebar toggle button when onToggleSidebar is provided", () => {
     const mockToggle = vi.fn();
-    renderWithProviders(<Navbar {...defaultProps} onToggleSidebar={mockToggle} />);
+    renderWithProviders(
+      <Navbar {...defaultProps} onToggleSidebar={mockToggle} />,
+    );
 
     const toggleButton = screen.getByTitle("Collapse sidebar");
     expect(toggleButton).toBeInTheDocument();
@@ -179,7 +201,9 @@ describe("Navbar", () => {
   it("should call onToggleSidebar when sidebar button is clicked", async () => {
     const mockToggle = vi.fn();
     const user = userEvent.setup();
-    renderWithProviders(<Navbar {...defaultProps} onToggleSidebar={mockToggle} />);
+    renderWithProviders(
+      <Navbar {...defaultProps} onToggleSidebar={mockToggle} />,
+    );
 
     const toggleButton = screen.getByTitle("Collapse sidebar");
     await user.click(toggleButton);
@@ -209,7 +233,9 @@ describe("Navbar", () => {
   });
 
   it("should show version badge when health data contains version", () => {
-    mockUseHealthReadinessDetailsImpl = () => ({ data: { litellm_version: "1.0.0" } });
+    mockUseHealthReadinessDetailsImpl = () => ({
+      data: { litellm_version: "1.0.0" },
+    });
 
     renderWithProviders(<Navbar {...defaultProps} />);
 
@@ -236,12 +262,17 @@ describe("Navbar", () => {
   });
 
   it("should use custom logo from theme context", () => {
-    mockUseThemeImpl = () => ({ logoUrl: "https://example.com/custom-logo.png" });
+    mockUseThemeImpl = () => ({
+      logoUrl: "https://example.com/custom-logo.png",
+    });
 
     renderWithProviders(<Navbar {...defaultProps} />);
 
     const logoImg = screen.getByAltText("LiteLLM Brand");
-    expect(logoImg).toHaveAttribute("src", "https://example.com/custom-logo.png");
+    expect(logoImg).toHaveAttribute(
+      "src",
+      "https://example.com/custom-logo.png",
+    );
 
     // Reset mock
     mockUseThemeImpl = () => ({ logoUrl: null });
@@ -272,14 +303,23 @@ describe("Navbar", () => {
     });
 
     // Find and click the toggle switch
-    const toggleSwitch = screen.getByLabelText("Toggle hide new feature indicators");
+    const toggleSwitch = screen.getByLabelText(
+      "Toggle hide new feature indicators",
+    );
     await user.click(toggleSwitch);
 
     // The functions are mocked globally, so we can check if they were called
     // by accessing them through the mock registry
-    const localStorageUtils = vi.mocked(await import("@/utils/localStorageUtils"));
-    expect(localStorageUtils.setLocalStorageItem).toHaveBeenCalledWith("disableShowNewBadge", "true");
-    expect(localStorageUtils.emitLocalStorageChange).toHaveBeenCalledWith("disableShowNewBadge");
+    const localStorageUtils = vi.mocked(
+      await import("@/utils/localStorageUtils"),
+    );
+    expect(localStorageUtils.setLocalStorageItem).toHaveBeenCalledWith(
+      "disableShowNewBadge",
+      "true",
+    );
+    expect(localStorageUtils.emitLocalStorageChange).toHaveBeenCalledWith(
+      "disableShowNewBadge",
+    );
 
     // Reset mock
     mockGetLocalStorageItemImpl = (key: string) => null;

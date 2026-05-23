@@ -1,16 +1,20 @@
 import { useCloudZeroSettings } from "@/app/(dashboard)/hooks/cloudzero/useCloudZeroSettings";
+import { createQueryKeys } from "@/app/(dashboard)/hooks/common/queryKeysFactory";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { useQueryClient } from "@tanstack/react-query";
 import { Card, Typography } from "antd";
-import CloudZeroEmptyPlaceholder from "./CloudZeroEmptyPlaceholder";
 import { useState } from "react";
 import CloudZeroCreationModal from "./CloudZeroCreateModal";
-import { useQueryClient } from "@tanstack/react-query";
-import { createQueryKeys } from "@/app/(dashboard)/hooks/common/queryKeysFactory";
+import CloudZeroEmptyPlaceholder from "./CloudZeroEmptyPlaceholder";
 import { CloudZeroIntegrationSettings } from "./CloudZeroIntegrationSettings";
 
 export default function CloudZeroCostTracking() {
   const { accessToken } = useAuthorized();
-  const { data: settings, isLoading, error } = useCloudZeroSettings(accessToken);
+  const {
+    data: settings,
+    isLoading,
+    error,
+  } = useCloudZeroSettings(accessToken);
   const queryClient = useQueryClient();
   const cloudZeroSettingsKeys = createQueryKeys("cloudZeroSettings");
 
@@ -18,7 +22,9 @@ export default function CloudZeroCostTracking() {
 
   const handleCreateModalOk = async () => {
     setIsCreateModalOpen(false);
-    await queryClient.invalidateQueries({ queryKey: cloudZeroSettingsKeys.list({}) });
+    await queryClient.invalidateQueries({
+      queryKey: cloudZeroSettingsKeys.list({}),
+    });
   };
 
   const handleCreateModalCancel = () => {
@@ -37,7 +43,8 @@ export default function CloudZeroCostTracking() {
     return (
       <Card>
         <Typography.Text className="text-red-600">
-          Error loading CloudZero settings: {error instanceof Error ? error.message : String(error)}
+          Error loading CloudZero settings:{" "}
+          {error instanceof Error ? error.message : String(error)}
         </Typography.Text>
       </Card>
     );
@@ -46,7 +53,9 @@ export default function CloudZeroCostTracking() {
   if (!settings) {
     return (
       <>
-        <CloudZeroEmptyPlaceholder startCreation={() => setIsCreateModalOpen(true)} />
+        <CloudZeroEmptyPlaceholder
+          startCreation={() => setIsCreateModalOpen(true)}
+        />
         <CloudZeroCreationModal
           open={isCreateModalOpen}
           onOk={handleCreateModalOk}
@@ -58,7 +67,10 @@ export default function CloudZeroCostTracking() {
 
   return (
     <>
-      <CloudZeroIntegrationSettings settings={settings} onSettingsUpdated={handleCreateModalOk} />
+      <CloudZeroIntegrationSettings
+        settings={settings}
+        onSettingsUpdated={handleCreateModalOk}
+      />
     </>
   );
 }

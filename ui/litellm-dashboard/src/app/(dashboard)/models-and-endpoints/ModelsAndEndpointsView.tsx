@@ -6,20 +6,38 @@ import AllModelsTab from "@/app/(dashboard)/models-and-endpoints/components/AllM
 import ModelRetrySettingsTab from "@/app/(dashboard)/models-and-endpoints/components/ModelRetrySettingsTab";
 import PriceDataManagementTab from "@/app/(dashboard)/models-and-endpoints/components/PriceDataManagementTab";
 import { handleAddModelSubmit } from "@/components/add_model/handle_add_model_submit";
-import { Team } from "@/components/key_team_helpers/key_list";
+import type { Team } from "@/components/key_team_helpers/key_list";
 import CredentialsPanel from "@/components/model_add/credentials";
 import { getCallbacksCall, setCallbacksCall } from "@/components/networking";
-import { Providers, getPlaceholder, getProviderModels } from "@/components/provider_info_helpers";
+import {
+  Providers,
+  getPlaceholder,
+  getProviderModels,
+} from "@/components/provider_info_helpers";
 import { getDisplayModelName } from "@/components/view_model/model_name_display";
-import { transformModelData } from "./utils/modelDataTransformer";
-import { all_admin_roles, internalUserRoles, isProxyAdminRole, isUserTeamAdminForAnyTeam } from "@/utils/roles";
+import {
+  all_admin_roles,
+  internalUserRoles,
+  isProxyAdminRole,
+  isUserTeamAdminForAnyTeam,
+} from "@/utils/roles";
+import { PlusCircleOutlined } from "@ant-design/icons";
 import { RefreshIcon } from "@heroicons/react/outline";
 import { useQueryClient } from "@tanstack/react-query";
-import { Col, Grid, Icon, Tab, TabGroup, TabList, TabPanel, TabPanels } from "@tremor/react";
+import {
+  Col,
+  Grid,
+  Icon,
+  Tab,
+  TabGroup,
+  TabList,
+  TabPanel,
+  TabPanels,
+} from "@tremor/react";
 import type { UploadProps } from "antd";
 import { Form } from "antd";
-import { PlusCircleOutlined } from "@ant-design/icons";
-import React, { useEffect, useMemo, useState } from "react";
+import type React from "react";
+import { useEffect, useMemo, useState } from "react";
 import AddModelTab from "../../../components/add_model/add_model_tab";
 import HealthCheckComponent from "../../../components/model_dashboard/HealthCheckComponent";
 import ModelGroupAliasSettings from "../../../components/model_group_alias_settings";
@@ -28,6 +46,7 @@ import NotificationsManager from "../../../components/molecules/notifications_ma
 import PassThroughSettings from "../../../components/pass_through_settings";
 import TeamInfoView from "../../../components/team/TeamInfo";
 import useAuthorized from "../hooks/useAuthorized";
+import { transformModelData } from "./utils/modelDataTransformer";
 
 interface ModelDashboardProps {
   token: string | null;
@@ -48,38 +67,56 @@ interface GlobalRetryPolicyObject {
 
 const HEALTH_PAGE_SIZE = 50;
 
-const ModelsAndEndpointsView: React.FC<ModelDashboardProps> = ({ premiumUser, teams }) => {
+const ModelsAndEndpointsView: React.FC<ModelDashboardProps> = ({
+  premiumUser,
+  teams,
+}) => {
   const { accessToken, token, userRole, userId: userID } = useAuthorized();
   const [addModelForm] = Form.useForm();
   const [lastRefreshed, setLastRefreshed] = useState("");
   const [providerModels, setProviderModels] = useState<Array<string>>([]);
-  const [selectedProvider, setSelectedProvider] = useState<Providers>(Providers.Anthropic);
-  const [selectedModelGroup, setSelectedModelGroup] = useState<string | null>(null);
+  const [selectedProvider, setSelectedProvider] = useState<Providers>(
+    Providers.Anthropic,
+  );
+  const [selectedModelGroup, setSelectedModelGroup] = useState<string | null>(
+    null,
+  );
 
-  const [modelGroupRetryPolicy, setModelGroupRetryPolicy] = useState<RetryPolicyObject | null>(null);
-  const [globalRetryPolicy, setGlobalRetryPolicy] = useState<GlobalRetryPolicyObject | null>(null);
+  const [modelGroupRetryPolicy, setModelGroupRetryPolicy] =
+    useState<RetryPolicyObject | null>(null);
+  const [globalRetryPolicy, setGlobalRetryPolicy] =
+    useState<GlobalRetryPolicyObject | null>(null);
   const [defaultRetry, setDefaultRetry] = useState<number>(0);
-  const [modelGroupAlias, setModelGroupAlias] = useState<{ [key: string]: string }>({});
-  const [showAdvancedSettings, setShowAdvancedSettings] = useState<boolean>(false);
+  const [modelGroupAlias, setModelGroupAlias] = useState<{
+    [key: string]: string;
+  }>({});
+  const [showAdvancedSettings, setShowAdvancedSettings] =
+    useState<boolean>(false);
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
   const [selectedTabIndex, setSelectedTabIndex] = useState(0);
   const [healthCurrentPage, setHealthCurrentPage] = useState(1);
-  const [showMissingProviderBanner, setShowMissingProviderBanner] = useState(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("hideMissingProviderBanner") !== "true";
-    }
-    return true;
-  });
+  const [showMissingProviderBanner, setShowMissingProviderBanner] = useState(
+    () => {
+      if (typeof window !== "undefined") {
+        return localStorage.getItem("hideMissingProviderBanner") !== "true";
+      }
+      return true;
+    },
+  );
 
   const queryClient = useQueryClient();
-  const { data: modelDataResponse, isLoading: isLoadingModels, refetch: refetchModels } = useModelsInfo();
-  const { data: healthModelDataResponse, isLoading: isLoadingHealthModels } = useModelsInfo(
-    healthCurrentPage,
-    HEALTH_PAGE_SIZE,
-  );
-  const { data: modelCostMapData, isLoading: isLoadingModelCostMap } = useModelCostMap();
-  const { data: credentialsResponse, isLoading: isLoadingCredentials } = useCredentials();
+  const {
+    data: modelDataResponse,
+    isLoading: isLoadingModels,
+    refetch: refetchModels,
+  } = useModelsInfo();
+  const { data: healthModelDataResponse, isLoading: isLoadingHealthModels } =
+    useModelsInfo(healthCurrentPage, HEALTH_PAGE_SIZE);
+  const { data: modelCostMapData, isLoading: isLoadingModelCostMap } =
+    useModelCostMap();
+  const { data: credentialsResponse, isLoading: isLoadingCredentials } =
+    useCredentials();
   const credentialsList = credentialsResponse?.credentials || [];
   const { data: uiSettings, isLoading: isLoadingUISettings } = useUISettings();
 
@@ -150,9 +187,11 @@ const ModelsAndEndpointsView: React.FC<ModelDashboardProps> = ({ premiumUser, te
   const isInternalUser = userRole && internalUserRoles.includes(userRole);
   const isUserTeamAdmin = userID && isUserTeamAdminForAnyTeam(teams, userID);
   const addModelDisabledForInternalUsers =
-    isInternalUser && uiSettings?.values?.disable_model_add_for_internal_users === true;
+    isInternalUser &&
+    uiSettings?.values?.disable_model_add_for_internal_users === true;
   // Hide tab if user is NOT a proxy admin AND (internal user with setting enabled OR not a team admin)
-  const shouldHideAddModelTab = !isProxyAdmin && (addModelDisabledForInternalUsers || !isUserTeamAdmin);
+  const shouldHideAddModelTab =
+    !isProxyAdmin && (addModelDisabledForInternalUsers || !isUserTeamAdmin);
 
   const setProviderModelsFn = (provider: Providers) => {
     const _providerModels = getProviderModels(provider, modelCostMapData);
@@ -178,16 +217,25 @@ const ModelsAndEndpointsView: React.FC<ModelDashboardProps> = ({ premiumUser, te
     },
     onChange(info) {
       if (info.file.status === "done") {
-        NotificationsManager.success(`${info.file.name} file uploaded successfully`);
+        NotificationsManager.success(
+          `${info.file.name} file uploaded successfully`,
+        );
       } else if (info.file.status === "error") {
-        NotificationsManager.fromBackend(`${info.file.name} file upload failed.`);
+        NotificationsManager.fromBackend(
+          `${info.file.name} file upload failed.`,
+        );
       }
     },
   };
 
   const handleRefreshClick = () => {
     const currentDate = new Date();
-    setLastRefreshed(currentDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+    setLastRefreshed(
+      currentDate.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    );
     setHealthCurrentPage(1);
     queryClient.invalidateQueries({ queryKey: ["models", "list"] });
     refetchModels();
@@ -207,12 +255,17 @@ const ModelsAndEndpointsView: React.FC<ModelDashboardProps> = ({ premiumUser, te
         if (globalRetryPolicy) {
           payload.router_settings.retry_policy = globalRetryPolicy;
         }
-        NotificationsManager.success("Global retry settings saved successfully");
+        NotificationsManager.success(
+          "Global retry settings saved successfully",
+        );
       } else {
         if (modelGroupRetryPolicy) {
-          payload.router_settings.model_group_retry_policy = modelGroupRetryPolicy;
+          payload.router_settings.model_group_retry_policy =
+            modelGroupRetryPolicy;
         }
-        NotificationsManager.success(`Retry settings saved successfully for ${selectedModelGroup}`);
+        NotificationsManager.success(
+          `Retry settings saved successfully for ${selectedModelGroup}`,
+        );
       }
 
       await setCallbacksCall(accessToken, payload);
@@ -227,11 +280,16 @@ const ModelsAndEndpointsView: React.FC<ModelDashboardProps> = ({ premiumUser, te
     }
     const fetchData = async () => {
       try {
-        const routerSettingsInfo = await getCallbacksCall(accessToken, userID, userRole);
-        let router_settings = routerSettingsInfo.router_settings;
+        const routerSettingsInfo = await getCallbacksCall(
+          accessToken,
+          userID,
+          userRole,
+        );
+        const router_settings = routerSettingsInfo.router_settings;
 
-        let model_group_retry_policy = router_settings.model_group_retry_policy;
-        let default_retries = router_settings.num_retries;
+        const model_group_retry_policy =
+          router_settings.model_group_retry_policy;
+        const default_retries = router_settings.num_retries;
 
         setModelGroupRetryPolicy(model_group_retry_policy);
         setGlobalRetryPolicy(router_settings.retry_policy);
@@ -249,7 +307,11 @@ const ModelsAndEndpointsView: React.FC<ModelDashboardProps> = ({ premiumUser, te
     }
   }, [accessToken, token, userRole, userID, modelDataResponse]);
 
-  const isLoading = isLoadingModels || isLoadingModelCostMap || isLoadingCredentials || isLoadingUISettings;
+  const isLoading =
+    isLoadingModels ||
+    isLoadingModelCostMap ||
+    isLoadingCredentials ||
+    isLoadingUISettings;
 
   // Admin Viewer can view all models read-only — page render proceeds; the
   // individual write-action tabs (Add Model, LLM Credentials, etc.) are
@@ -258,7 +320,12 @@ const ModelsAndEndpointsView: React.FC<ModelDashboardProps> = ({ premiumUser, te
   const handleOk = async () => {
     try {
       const values = await addModelForm.validateFields();
-      await handleAddModelSubmit(values, accessToken, addModelForm, handleRefreshClick);
+      await handleAddModelSubmit(
+        values,
+        accessToken,
+        addModelForm,
+        handleRefreshClick,
+      );
     } catch (error: any) {
       const errorMessages =
         error.errorFields
@@ -266,11 +333,15 @@ const ModelsAndEndpointsView: React.FC<ModelDashboardProps> = ({ premiumUser, te
             return `${field.name.join(".")}: ${field.errors.join(", ")}`;
           })
           .join(" | ") || "Unknown validation error";
-      NotificationsManager.fromBackend(`Please fill in the following required fields: ${errorMessages}`);
+      NotificationsManager.fromBackend(
+        `Please fill in the following required fields: ${errorMessages}`,
+      );
     }
   };
 
-  Object.keys(Providers).find((key) => (Providers as { [index: string]: any })[key] === selectedProvider);
+  Object.keys(Providers).find(
+    (key) => (Providers as { [index: string]: any })[key] === selectedProvider,
+  );
   // If a team is selected, render TeamInfoView in full page layout
   if (selectedTeamId) {
     return (
@@ -299,9 +370,13 @@ const ModelsAndEndpointsView: React.FC<ModelDashboardProps> = ({ premiumUser, te
             <div>
               <h2 className="text-lg font-semibold">Model Management</h2>
               {!all_admin_roles.includes(userRole) ? (
-                <p className="text-sm text-gray-600">Add models for teams you are an admin for.</p>
+                <p className="text-sm text-gray-600">
+                  Add models for teams you are an admin for.
+                </p>
               ) : (
-                <p className="text-sm text-gray-600">Add and manage models for the proxy</p>
+                <p className="text-sm text-gray-600">
+                  Add and manage models for the proxy
+                </p>
               )}
             </div>
             {!showMissingProviderBanner && (
@@ -321,13 +396,18 @@ const ModelsAndEndpointsView: React.FC<ModelDashboardProps> = ({ premiumUser, te
           {showMissingProviderBanner && (
             <div className="mb-4 px-4 py-3 bg-blue-50 rounded-lg border border-blue-100 flex items-center gap-4">
               <div className="flex-shrink-0 w-10 h-10 bg-white rounded-full flex items-center justify-center border border-blue-200">
-                <PlusCircleOutlined style={{ fontSize: "18px", color: "#6366f1" }} />
+                <PlusCircleOutlined
+                  style={{ fontSize: "18px", color: "#6366f1" }}
+                />
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="text-gray-900 font-semibold text-sm m-0">Missing a provider?</h4>
+                <h4 className="text-gray-900 font-semibold text-sm m-0">
+                  Missing a provider?
+                </h4>
                 <p className="text-gray-500 text-xs m-0 mt-0.5">
-                  The LiteLLM engineering team is constantly adding support for new LLM models, providers, endpoints. If
-                  you don&apos;t see the one you need, let us know and we&apos;ll prioritize it.
+                  The LiteLLM engineering team is constantly adding support for
+                  new LLM models, providers, endpoints. If you don&apos;t see
+                  the one you need, let us know and we&apos;ll prioritize it.
                 </p>
               </div>
               <a
@@ -368,7 +448,11 @@ const ModelsAndEndpointsView: React.FC<ModelDashboardProps> = ({ premiumUser, te
                   stroke="currentColor"
                   strokeWidth={2}
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
@@ -397,9 +481,16 @@ const ModelsAndEndpointsView: React.FC<ModelDashboardProps> = ({ premiumUser, te
               // falsy children inconsistently, which previously caused
               // "click LLM Credentials, see nothing" for Admin Viewer.
               const isAdmin = all_admin_roles.includes(userRole);
-              const visibleTabs: Array<{ tab: React.ReactElement; panel: React.ReactElement }> = [
+              const visibleTabs: Array<{
+                tab: React.ReactElement;
+                panel: React.ReactElement;
+              }> = [
                 {
-                  tab: <Tab key="all-models">{isAdmin ? "All Models" : "Your Models"}</Tab>,
+                  tab: (
+                    <Tab key="all-models">
+                      {isAdmin ? "All Models" : "Your Models"}
+                    </Tab>
+                  ),
                   panel: (
                     <AllModelsTab
                       key="all-models"
@@ -483,7 +574,9 @@ const ModelsAndEndpointsView: React.FC<ModelDashboardProps> = ({ premiumUser, te
                     ),
                   },
                   {
-                    tab: <Tab key="model-retry-settings">Model Retry Settings</Tab>,
+                    tab: (
+                      <Tab key="model-retry-settings">Model Retry Settings</Tab>
+                    ),
                     panel: (
                       <ModelRetrySettingsTab
                         key="model-retry-settings"
@@ -518,12 +611,20 @@ const ModelsAndEndpointsView: React.FC<ModelDashboardProps> = ({ premiumUser, te
                 );
               }
               return (
-                <TabGroup index={selectedTabIndex} onIndexChange={setSelectedTabIndex} className="gap-2 h-[75vh] w-full ">
+                <TabGroup
+                  index={selectedTabIndex}
+                  onIndexChange={setSelectedTabIndex}
+                  className="gap-2 h-[75vh] w-full "
+                >
                   <TabList className="flex justify-between mt-2 w-full items-center">
                     <div className="flex">{visibleTabs.map((t) => t.tab)}</div>
 
                     <div className="flex items-center space-x-2 self-center">
-                      {lastRefreshed && <span className="text-xs text-gray-500">Last Refreshed: {lastRefreshed}</span>}
+                      {lastRefreshed && (
+                        <span className="text-xs text-gray-500">
+                          Last Refreshed: {lastRefreshed}
+                        </span>
+                      )}
                       <Icon
                         icon={RefreshIcon}
                         variant="shadow"

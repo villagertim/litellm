@@ -1,16 +1,22 @@
-import React from "react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, act, fireEvent } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { Form } from "antd";
+import type React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import OAuthFormFields from "./OAuthFormFields";
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 /** Minimal Ant Form wrapper so Form.Item registers correctly. */
-const WithForm: React.FC<{ children: React.ReactNode; onFinish?: (values: any) => void }> = ({
-  children,
-  onFinish,
-}) => {
+const WithForm: React.FC<{
+  children: React.ReactNode;
+  onFinish?: (values: any) => void;
+}> = ({ children, onFinish }) => {
   const [form] = Form.useForm();
   return (
     <Form form={form} onFinish={onFinish}>
@@ -36,7 +42,9 @@ describe("OAuthFormFields", () => {
           <OAuthFormFields isM2M={false} />
         </WithForm>,
       );
-      expect(screen.getByText("Token Validation Rules (optional)")).toBeInTheDocument();
+      expect(
+        screen.getByText("Token Validation Rules (optional)"),
+      ).toBeInTheDocument();
     });
 
     it("renders Token Storage TTL field", () => {
@@ -45,7 +53,9 @@ describe("OAuthFormFields", () => {
           <OAuthFormFields isM2M={false} />
         </WithForm>,
       );
-      expect(screen.getByText("Token Storage TTL (seconds, optional)")).toBeInTheDocument();
+      expect(
+        screen.getByText("Token Storage TTL (seconds, optional)"),
+      ).toBeInTheDocument();
     });
 
     it("renders standard interactive fields alongside the new fields", () => {
@@ -54,10 +64,18 @@ describe("OAuthFormFields", () => {
           <OAuthFormFields isM2M={false} />
         </WithForm>,
       );
-      expect(screen.getByText("Authorization URL (optional)")).toBeInTheDocument();
-      expect(screen.getByText("Registration URL (optional)")).toBeInTheDocument();
-      expect(screen.getByText("Token Validation Rules (optional)")).toBeInTheDocument();
-      expect(screen.getByText("Token Storage TTL (seconds, optional)")).toBeInTheDocument();
+      expect(
+        screen.getByText("Authorization URL (optional)"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Registration URL (optional)"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Token Validation Rules (optional)"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Token Storage TTL (seconds, optional)"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -68,7 +86,9 @@ describe("OAuthFormFields", () => {
           <OAuthFormFields isM2M={true} />
         </WithForm>,
       );
-      expect(screen.queryByText("Token Validation Rules (optional)")).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("Token Validation Rules (optional)"),
+      ).not.toBeInTheDocument();
     });
 
     it("does NOT render Token Storage TTL field", () => {
@@ -77,7 +97,9 @@ describe("OAuthFormFields", () => {
           <OAuthFormFields isM2M={true} />
         </WithForm>,
       );
-      expect(screen.queryByText("Token Storage TTL (seconds, optional)")).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("Token Storage TTL (seconds, optional)"),
+      ).not.toBeInTheDocument();
     });
 
     it("still renders M2M-specific fields", () => {
@@ -109,7 +131,9 @@ describe("OAuthFormFields", () => {
       });
 
       await waitFor(() => {
-        expect(screen.queryByText("Must be valid JSON")).not.toBeInTheDocument();
+        expect(
+          screen.queryByText("Must be valid JSON"),
+        ).not.toBeInTheDocument();
       });
     });
 
@@ -120,9 +144,13 @@ describe("OAuthFormFields", () => {
         </WithForm>,
       );
 
-      const textarea = document.getElementById("token_validation_json") as HTMLTextAreaElement;
+      const textarea = document.getElementById(
+        "token_validation_json",
+      ) as HTMLTextAreaElement;
       await act(async () => {
-        fireEvent.change(textarea, { target: { value: '{"organization": "my-org"}' } });
+        fireEvent.change(textarea, {
+          target: { value: '{"organization": "my-org"}' },
+        });
       });
 
       const submitBtn = screen.getByRole("button", { name: "Submit" });
@@ -131,7 +159,9 @@ describe("OAuthFormFields", () => {
       });
 
       await waitFor(() => {
-        expect(screen.queryByText("Must be valid JSON")).not.toBeInTheDocument();
+        expect(
+          screen.queryByText("Must be valid JSON"),
+        ).not.toBeInTheDocument();
       });
     });
 
@@ -142,7 +172,9 @@ describe("OAuthFormFields", () => {
         </WithForm>,
       );
 
-      const textarea = document.getElementById("token_validation_json") as HTMLTextAreaElement;
+      const textarea = document.getElementById(
+        "token_validation_json",
+      ) as HTMLTextAreaElement;
       await act(async () => {
         fireEvent.change(textarea, { target: { value: "not-valid-json{" } });
       });
@@ -164,7 +196,9 @@ describe("OAuthFormFields", () => {
         </WithForm>,
       );
 
-      const textarea = document.getElementById("token_validation_json") as HTMLTextAreaElement;
+      const textarea = document.getElementById(
+        "token_validation_json",
+      ) as HTMLTextAreaElement;
       await act(async () => {
         // A bare string is valid JSON but we still want to accept it; only truly
         // unparseable text should fail.  Bare "hello" is actually invalid JSON
@@ -190,7 +224,9 @@ describe("OAuthFormFields", () => {
         </WithForm>,
       );
 
-      const textarea = document.getElementById("token_validation_json") as HTMLTextAreaElement;
+      const textarea = document.getElementById(
+        "token_validation_json",
+      ) as HTMLTextAreaElement;
       await act(async () => {
         fireEvent.change(textarea, { target: { value: "   " } });
       });
@@ -201,7 +237,9 @@ describe("OAuthFormFields", () => {
       });
 
       await waitFor(() => {
-        expect(screen.queryByText("Must be valid JSON")).not.toBeInTheDocument();
+        expect(
+          screen.queryByText("Must be valid JSON"),
+        ).not.toBeInTheDocument();
       });
     });
   });

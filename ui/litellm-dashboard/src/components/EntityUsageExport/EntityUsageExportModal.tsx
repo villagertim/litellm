@@ -1,12 +1,17 @@
 import { useTeams } from "@/app/(dashboard)/hooks/teams/useTeams";
 import { createTeamAliasMap } from "@/utils/teamUtils";
 import { Button, Modal, Skeleton } from "antd";
-import React, { useMemo, useState } from "react";
+import type React from "react";
+import { useMemo, useState } from "react";
 import NotificationsManager from "../molecules/notifications_manager";
 import ExportFormatSelector from "./ExportFormatSelector";
 import ExportSummary from "./ExportSummary";
 import ExportTypeSelector from "./ExportTypeSelector";
-import type { EntityUsageExportModalProps, ExportFormat, ExportScope } from "./types";
+import type {
+  EntityUsageExportModalProps,
+  ExportFormat,
+  ExportScope,
+} from "./types";
 import { handleExportCSV, handleExportJSON } from "./utils";
 
 const EntityUsageExportModal: React.FC<EntityUsageExportModalProps> = ({
@@ -33,11 +38,29 @@ const EntityUsageExportModal: React.FC<EntityUsageExportModalProps> = ({
     setIsExporting(true);
     try {
       if (formatToUse === "csv") {
-        handleExportCSV(spendData, exportScope, entityLabel, entityType, teamAliasMap);
-        NotificationsManager.success(`${entityLabel} usage data exported successfully as CSV`);
+        handleExportCSV(
+          spendData,
+          exportScope,
+          entityLabel,
+          entityType,
+          teamAliasMap,
+        );
+        NotificationsManager.success(
+          `${entityLabel} usage data exported successfully as CSV`,
+        );
       } else {
-        handleExportJSON(spendData, exportScope, entityLabel, entityType, dateRange, selectedFilters, teamAliasMap);
-        NotificationsManager.success(`${entityLabel} usage data exported successfully as JSON`);
+        handleExportJSON(
+          spendData,
+          exportScope,
+          entityLabel,
+          entityType,
+          dateRange,
+          selectedFilters,
+          teamAliasMap,
+        );
+        NotificationsManager.success(
+          `${entityLabel} usage data exported successfully as JSON`,
+        );
       }
       onClose();
     } catch (error) {
@@ -61,9 +84,19 @@ const EntityUsageExportModal: React.FC<EntityUsageExportModalProps> = ({
           <Skeleton active />
         ) : (
           <>
-            <ExportSummary dateRange={dateRange} selectedFilters={selectedFilters} />
-            <ExportTypeSelector value={exportScope} onChange={setExportScope} entityType={entityType} />
-            <ExportFormatSelector value={exportFormat} onChange={setExportFormat} />
+            <ExportSummary
+              dateRange={dateRange}
+              selectedFilters={selectedFilters}
+            />
+            <ExportTypeSelector
+              value={exportScope}
+              onChange={setExportScope}
+              entityType={entityType}
+            />
+            <ExportFormatSelector
+              value={exportFormat}
+              onChange={setExportFormat}
+            />
           </>
         )}
         {isLoadingTeams ? (
@@ -82,7 +115,9 @@ const EntityUsageExportModal: React.FC<EntityUsageExportModalProps> = ({
               disabled={isExporting || isLoadingTeams}
               type="primary"
             >
-              {isExporting ? "Exporting..." : `Export ${exportFormat.toUpperCase()}`}
+              {isExporting
+                ? "Exporting..."
+                : `Export ${exportFormat.toUpperCase()}`}
             </Button>
           </div>
         )}

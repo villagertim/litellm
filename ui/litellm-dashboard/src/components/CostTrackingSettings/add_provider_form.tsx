@@ -1,10 +1,14 @@
-import React from "react";
-import { TextInput, Button } from "@tremor/react";
-import { Select as AntdSelect, Form, Tooltip } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { Providers, provider_map, providerLogoMap } from "../provider_info_helpers";
-import { DiscountConfig } from "./types";
+import { Button, TextInput } from "@tremor/react";
+import { Select as AntdSelect, Form, Tooltip } from "antd";
+import type React from "react";
+import {
+  Providers,
+  providerLogoMap,
+  provider_map,
+} from "../provider_info_helpers";
 import { handleImageError } from "./provider_display_helpers";
+import type { DiscountConfig } from "./types";
 
 interface AddProviderFormProps {
   discountConfig: DiscountConfig;
@@ -45,29 +49,38 @@ const AddProviderForm: React.FC<AddProviderFormProps> = ({
           size="large"
           optionFilterProp="children"
           filterOption={(input, option) =>
-            String(option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+            String(option?.label ?? "")
+              .toLowerCase()
+              .includes(input.toLowerCase())
           }
         >
-          {Object.entries(Providers).map(([providerEnum, providerDisplayName]) => {
-            const providerValue = provider_map[providerEnum as keyof typeof provider_map];
-            // Only show providers that don't already have a discount configured
-            if (providerValue && discountConfig[providerValue]) {
-              return null;
-            }
-            return (
-              <AntdSelect.Option key={providerEnum} value={providerEnum} label={providerDisplayName}>
-                <div className="flex items-center space-x-2">
-                  <img
-                    src={providerLogoMap[providerDisplayName]}
-                    alt={`${providerEnum} logo`}
-                    className="w-5 h-5"
-                    onError={(e) => handleImageError(e, providerDisplayName)}
-                  />
-                  <span>{providerDisplayName}</span>
-                </div>
-              </AntdSelect.Option>
-            );
-          })}
+          {Object.entries(Providers).map(
+            ([providerEnum, providerDisplayName]) => {
+              const providerValue =
+                provider_map[providerEnum as keyof typeof provider_map];
+              // Only show providers that don't already have a discount configured
+              if (providerValue && discountConfig[providerValue]) {
+                return null;
+              }
+              return (
+                <AntdSelect.Option
+                  key={providerEnum}
+                  value={providerEnum}
+                  label={providerDisplayName}
+                >
+                  <div className="flex items-center space-x-2">
+                    <img
+                      src={providerLogoMap[providerDisplayName]}
+                      alt={`${providerEnum} logo`}
+                      className="w-5 h-5"
+                      onError={(e) => handleImageError(e, providerDisplayName)}
+                    />
+                    <span>{providerDisplayName}</span>
+                  </div>
+                </AntdSelect.Option>
+              );
+            },
+          )}
         </AntdSelect>
       </Form.Item>
 
@@ -80,7 +93,9 @@ const AddProviderForm: React.FC<AddProviderFormProps> = ({
             </Tooltip>
           </span>
         }
-        rules={[{ required: true, message: "Please enter a discount percentage" }]}
+        rules={[
+          { required: true, message: "Please enter a discount percentage" },
+        ]}
       >
         <div className="flex items-center gap-2">
           <TextInput
@@ -94,9 +109,9 @@ const AddProviderForm: React.FC<AddProviderFormProps> = ({
       </Form.Item>
 
       <div className="flex items-center justify-end space-x-3 pt-6 border-t border-gray-100">
-        <Button 
+        <Button
           variant="primary"
-          onClick={onAddProvider} 
+          onClick={onAddProvider}
           disabled={!selectedProvider || !newDiscount}
         >
           Add Provider Discount
@@ -107,4 +122,3 @@ const AddProviderForm: React.FC<AddProviderFormProps> = ({
 };
 
 export default AddProviderForm;
-

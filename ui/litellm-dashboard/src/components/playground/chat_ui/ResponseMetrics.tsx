@@ -1,14 +1,14 @@
-import React from "react";
-import { Tooltip } from "antd";
 import {
-  ClockCircleOutlined,
-  NumberOutlined,
-  ImportOutlined,
-  ExportOutlined,
   BulbOutlined,
-  ToolOutlined,
+  ClockCircleOutlined,
   DollarOutlined,
+  ExportOutlined,
+  ImportOutlined,
+  NumberOutlined,
+  ToolOutlined,
 } from "@ant-design/icons";
+import { Tooltip } from "antd";
+import type React from "react";
 
 export interface TokenUsage {
   completionTokens?: number;
@@ -25,7 +25,12 @@ interface ResponseMetricsProps {
   toolName?: string;
 }
 
-const ResponseMetrics: React.FC<ResponseMetricsProps> = ({ timeToFirstToken, totalLatency, usage, toolName }) => {
+const ResponseMetrics: React.FC<ResponseMetricsProps> = ({
+  timeToFirstToken,
+  totalLatency,
+  usage,
+  toolName,
+}) => {
   if (!timeToFirstToken && !totalLatency && !usage) return null;
 
   return (

@@ -1,7 +1,9 @@
 export const LOCAL_STORAGE_EVENT = "local-storage-change";
 
 export function emitLocalStorageChange(key: string) {
-  window.dispatchEvent(new CustomEvent(LOCAL_STORAGE_EVENT, { detail: { key } }));
+  window.dispatchEvent(
+    new CustomEvent(LOCAL_STORAGE_EVENT, { detail: { key } }),
+  );
 }
 
 export function getLocalStorageItem(key: string): string | null {

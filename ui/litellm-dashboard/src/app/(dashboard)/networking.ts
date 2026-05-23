@@ -1,4 +1,4 @@
-import { Organization, teamListCall } from "@/components/networking";
+import { type Organization, teamListCall } from "@/components/networking";
 
 export const fetchTeams = async (
   accessToken: string,
@@ -8,9 +8,16 @@ export const fetchTeams = async (
 ) => {
   let givenTeams;
   if (userRole != "Admin" && userRole != "Admin Viewer") {
-    givenTeams = await teamListCall(accessToken, currentOrg?.organization_id || null, userID);
+    givenTeams = await teamListCall(
+      accessToken,
+      currentOrg?.organization_id || null,
+      userID,
+    );
   } else {
-    givenTeams = await teamListCall(accessToken, currentOrg?.organization_id || null);
+    givenTeams = await teamListCall(
+      accessToken,
+      currentOrg?.organization_id || null,
+    );
   }
 
   return givenTeams;

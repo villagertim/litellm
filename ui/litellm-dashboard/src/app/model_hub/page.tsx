@@ -1,7 +1,7 @@
 "use client";
-import React, { Suspense, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import PublicModelHubPage from "@/components/public_model_hub";
+import { useSearchParams } from "next/navigation";
+import React, { Suspense, useEffect, useState } from "react";
 
 function PublicModelHubContent() {
   const searchParams = useSearchParams()!;
@@ -20,7 +20,13 @@ function PublicModelHubContent() {
 
 export default function PublicModelHub() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          Loading...
+        </div>
+      }
+    >
       <PublicModelHubContent />
     </Suspense>
   );

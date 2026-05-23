@@ -1,13 +1,28 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import PageVisibilitySettings from "./PageVisibilitySettings";
 
 vi.mock("@/components/page_utils", () => ({
   getAvailablePages: () => [
-    { page: "usage", label: "Usage", description: "View usage stats", group: "Analytics" },
-    { page: "models", label: "Models", description: "Manage models", group: "Analytics" },
-    { page: "keys", label: "API Keys", description: "Manage API keys", group: "Access" },
+    {
+      page: "usage",
+      label: "Usage",
+      description: "View usage stats",
+      group: "Analytics",
+    },
+    {
+      page: "models",
+      label: "Models",
+      description: "Manage models",
+      group: "Analytics",
+    },
+    {
+      page: "keys",
+      label: "API Keys",
+      description: "Manage API keys",
+      group: "Access",
+    },
   ],
 }));
 
@@ -57,10 +72,16 @@ describe("PageVisibilitySettings", () => {
     );
 
     // Expand the collapse panel first to reveal the reset button
-    await user.click(screen.getByRole("button", { name: /configure page visibility/i }));
-    await user.click(await screen.findByRole("button", { name: /reset to default/i }));
+    await user.click(
+      screen.getByRole("button", { name: /configure page visibility/i }),
+    );
+    await user.click(
+      await screen.findByRole("button", { name: /reset to default/i }),
+    );
 
-    expect(onUpdate).toHaveBeenCalledWith({ enabled_ui_pages_internal_users: null });
+    expect(onUpdate).toHaveBeenCalledWith({
+      enabled_ui_pages_internal_users: null,
+    });
   });
 
   it("should display the property description when provided", () => {
@@ -72,6 +93,8 @@ describe("PageVisibilitySettings", () => {
         onUpdate={vi.fn()}
       />,
     );
-    expect(screen.getByText("Controls which pages are visible")).toBeInTheDocument();
+    expect(
+      screen.getByText("Controls which pages are visible"),
+    ).toBeInTheDocument();
   });
 });

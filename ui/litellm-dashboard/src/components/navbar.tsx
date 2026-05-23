@@ -3,12 +3,18 @@ import { useDisableBouncingIcon } from "@/app/(dashboard)/hooks/useDisableBounci
 import { getProxyBaseUrl } from "@/components/networking";
 import { useTheme } from "@/contexts/ThemeContext";
 import { clearTokenCookies } from "@/utils/cookieUtils";
-import { clearStoredReturnUrl } from "@/utils/returnUrlUtils";
 import { fetchProxySettings } from "@/utils/proxyUtils";
-import { MenuFoldOutlined, MenuUnfoldOutlined, MoonOutlined, SunOutlined } from "@ant-design/icons";
+import { clearStoredReturnUrl } from "@/utils/returnUrlUtils";
+import {
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  MoonOutlined,
+  SunOutlined,
+} from "@ant-design/icons";
 import { Button, Switch, Tag } from "antd";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { BlogDropdown } from "./Navbar/BlogDropdown/BlogDropdown";
 import { CommunityEngagementButtons } from "./Navbar/CommunityEngagementButtons/CommunityEngagementButtons";
 import UserDropdown from "./Navbar/UserDropdown/UserDropdown";
@@ -97,12 +103,21 @@ const Navbar: React.FC<NavbarProps> = ({
                 className="flex items-center justify-center w-10 h-10 mr-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors"
                 title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
               >
-                <span className="text-lg">{sidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}</span>
+                <span className="text-lg">
+                  {sidebarCollapsed ? (
+                    <MenuUnfoldOutlined />
+                  ) : (
+                    <MenuFoldOutlined />
+                  )}
+                </span>
               </button>
             )}
 
             <div className="flex items-center gap-2">
-              <Link href={baseUrl ? baseUrl : "/"} className="flex items-center">
+              <Link
+                href={baseUrl ? baseUrl : "/"}
+                className="flex items-center"
+              >
                 <div className="relative">
                   <div className="h-10 max-w-48 flex items-center justify-center overflow-hidden">
                     <img
@@ -153,7 +168,12 @@ const Navbar: React.FC<NavbarProps> = ({
                 unCheckedChildren={<SunOutlined />}
               />
             )}
-            <Button type="text" href="https://docs.litellm.ai/docs/" target="_blank" rel="noopener noreferrer">
+            <Button
+              type="text"
+              href="https://docs.litellm.ai/docs/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Docs
             </Button>
             <BlogDropdown />

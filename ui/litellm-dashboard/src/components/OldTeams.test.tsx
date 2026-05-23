@@ -1,10 +1,20 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { fetchAvailableModelsForTeamOrKey } from "./key_team_helpers/fetch_available_models_team_key";
-import { fetchMCPAccessGroups, getGuardrailsList, teamCreateCall } from "./networking";
 import OldTeams from "./OldTeams";
+import { fetchAvailableModelsForTeamOrKey } from "./key_team_helpers/fetch_available_models_team_key";
+import {
+  fetchMCPAccessGroups,
+  getGuardrailsList,
+  teamCreateCall,
+} from "./networking";
 
 const mockTeamInfoView = vi.fn();
 const mockUseOrganizations = vi.fn();
@@ -19,7 +29,15 @@ vi.mock("./networking", () => ({
 }));
 
 vi.mock("@/app/(dashboard)/hooks/teams/useTeams", () => ({
-  teamListCall: vi.fn().mockResolvedValue({ teams: [], total: 0, page: 1, page_size: 100, total_pages: 0 }),
+  teamListCall: vi
+    .fn()
+    .mockResolvedValue({
+      teams: [],
+      total: 0,
+      page: 1,
+      page_size: 100,
+      total_pages: 0,
+    }),
 }));
 
 vi.mock("./molecules/notifications_manager", () => ({
@@ -34,23 +52,29 @@ vi.mock("./molecules/notifications_manager", () => ({
 vi.mock("./key_team_helpers/fetch_available_models_team_key", () => ({
   fetchAvailableModelsForTeamOrKey: vi.fn(),
   getModelDisplayName: vi.fn((model: string) => model),
-  unfurlWildcardModelsInList: vi.fn((teamModels: string[], allModels: string[]) => {
-    const wildcardDisplayNames: string[] = [];
-    const expandedModels: string[] = [];
+  unfurlWildcardModelsInList: vi.fn(
+    (teamModels: string[], allModels: string[]) => {
+      const wildcardDisplayNames: string[] = [];
+      const expandedModels: string[] = [];
 
-    teamModels.forEach((teamModel) => {
-      if (teamModel.endsWith("/*")) {
-        const provider = teamModel.replace("/*", "");
-        const matchingModels = allModels.filter((model) => model.startsWith(provider + "/"));
-        expandedModels.push(...matchingModels);
-        wildcardDisplayNames.push(teamModel);
-      } else {
-        expandedModels.push(teamModel);
-      }
-    });
+      teamModels.forEach((teamModel) => {
+        if (teamModel.endsWith("/*")) {
+          const provider = teamModel.replace("/*", "");
+          const matchingModels = allModels.filter((model) =>
+            model.startsWith(provider + "/"),
+          );
+          expandedModels.push(...matchingModels);
+          wildcardDisplayNames.push(teamModel);
+        } else {
+          expandedModels.push(teamModel);
+        }
+      });
 
-    return [...wildcardDisplayNames, ...expandedModels].filter((item, index, array) => array.indexOf(item) === index);
-  }),
+      return [...wildcardDisplayNames, ...expandedModels].filter(
+        (item, index, array) => array.indexOf(item) === index,
+      );
+    },
+  ),
 }));
 
 vi.mock("@/components/team/TeamInfo", () => ({
@@ -62,28 +86,30 @@ vi.mock("@/components/team/TeamInfo", () => ({
 }));
 
 vi.mock("./ModelSelect/ModelSelect", () => {
-  const ModelSelect = React.forwardRef(({ value, onChange, dataTestId, id }: any, ref: any) => {
-    return (
-      <input
-        ref={ref}
-        id={id}
-        type="text"
-        data-testid={dataTestId || "model-select"}
-        value={Array.isArray(value) ? value.join(", ") : ""}
-        onChange={(e) => {
-          if (onChange) {
-            const newVal = e.target.value
-              ? e.target.value
-                .split(",")
-                .map((s: string) => s.trim())
-                .filter(Boolean)
-              : [];
-            onChange(newVal);
-          }
-        }}
-      />
-    );
-  });
+  const ModelSelect = React.forwardRef(
+    ({ value, onChange, dataTestId, id }: any, ref: any) => {
+      return (
+        <input
+          ref={ref}
+          id={id}
+          type="text"
+          data-testid={dataTestId || "model-select"}
+          value={Array.isArray(value) ? value.join(", ") : ""}
+          onChange={(e) => {
+            if (onChange) {
+              const newVal = e.target.value
+                ? e.target.value
+                    .split(",")
+                    .map((s: string) => s.trim())
+                    .filter(Boolean)
+                : [];
+              onChange(newVal);
+            }
+          }}
+        />
+      );
+    },
+  );
   ModelSelect.displayName = "ModelSelect";
   return {
     ModelSelect,
@@ -106,11 +132,18 @@ vi.mock("@/app/(dashboard)/hooks/accessGroups/useAccessGroups", () => ({
 }));
 
 vi.mock("./common_components/AccessGroupSelector", () => ({
-  default: ({ value = [], onChange }: { value?: string[]; onChange?: (v: string[]) => void }) => (
+  default: ({
+    value = [],
+    onChange,
+  }: { value?: string[]; onChange?: (v: string[]) => void }) => (
     <input
       data-testid="access-group-selector"
       value={Array.isArray(value) ? value.join(",") : ""}
-      onChange={(e) => onChange?.(e.target.value ? e.target.value.split(",").map((s) => s.trim()) : [])}
+      onChange={(e) =>
+        onChange?.(
+          e.target.value ? e.target.value.split(",").map((s) => s.trim()) : [],
+        )
+      }
     />
   ),
 }));
@@ -127,7 +160,9 @@ const createQueryClient = () => {
 
 const renderWithQueryClient = (component: React.ReactElement) => {
   const queryClient = createQueryClient();
-  return render(<QueryClientProvider client={queryClient}>{component}</QueryClientProvider>);
+  return render(
+    <QueryClientProvider client={queryClient}>{component}</QueryClientProvider>,
+  );
 };
 
 describe("OldTeams - handleCreate organization handling", () => {
@@ -149,7 +184,7 @@ describe("OldTeams - handleCreate organization handling", () => {
     };
 
     // Simulate the handleCreate logic
-    let organizationId = formValues?.organization_id || null;
+    const organizationId = formValues?.organization_id || null;
     if (organizationId === "" || typeof organizationId !== "string") {
       formValues.organization_id = null;
     } else {
@@ -168,7 +203,7 @@ describe("OldTeams - handleCreate organization handling", () => {
     };
 
     // Simulate the handleCreate logic
-    let organizationId = formValues?.organization_id || null;
+    const organizationId = formValues?.organization_id || null;
     if (organizationId === "" || typeof organizationId !== "string") {
       formValues.organization_id = null;
     } else {
@@ -186,7 +221,7 @@ describe("OldTeams - handleCreate organization handling", () => {
     };
 
     // Simulate the handleCreate logic
-    let organizationId = formValues?.organization_id || null;
+    const organizationId = formValues?.organization_id || null;
     if (organizationId === "" || typeof organizationId !== "string") {
       formValues.organization_id = null;
     } else {
@@ -204,14 +239,16 @@ describe("OldTeams - handleCreate organization handling", () => {
     };
 
     // Simulate the handleCreate logic
-    let organizationId = formValues?.organization_id || null;
+    const organizationId = formValues?.organization_id || null;
     if (organizationId === "" || typeof organizationId !== "string") {
       formValues.organization_id = null;
     } else {
       formValues.organization_id = organizationId.trim();
     }
 
-    expect(formValues.organization_id).toBe("f874bb43-b898-4813-beca-4054d224eafc");
+    expect(formValues.organization_id).toBe(
+      "f874bb43-b898-4813-beca-4054d224eafc",
+    );
   });
 
   it("should not send organization_id field when converting empty string to null", async () => {
@@ -223,7 +260,7 @@ describe("OldTeams - handleCreate organization handling", () => {
     };
 
     // Simulate the handleCreate logic
-    let organizationId = formValues?.organization_id || null;
+    const organizationId = formValues?.organization_id || null;
     if (organizationId === "" || typeof organizationId !== "string") {
       formValues.organization_id = null;
     } else {
@@ -259,7 +296,8 @@ describe("OldTeams - handleCreate organization handling", () => {
     };
 
     // Simulate the handleCreate logic with currentOrg fallback
-    let organizationId = formValues?.organization_id || currentOrg?.organization_id;
+    const organizationId =
+      formValues?.organization_id || currentOrg?.organization_id;
     if (organizationId === "" || typeof organizationId !== "string") {
       formValues.organization_id = null;
     } else {
@@ -281,7 +319,10 @@ describe("OldTeams - handleCreate organization handling", () => {
     };
 
     // Remove organizations key if it's empty
-    if (Array.isArray(formValues.organizations) && formValues.organizations.length === 0) {
+    if (
+      Array.isArray(formValues.organizations) &&
+      formValues.organizations.length === 0
+    ) {
       delete (formValues as any).organizations;
     }
 
@@ -408,7 +449,11 @@ describe("OldTeams - empty state", () => {
     await waitFor(() => {
       expect(screen.getByText("No teams yet")).toBeInTheDocument();
     });
-    expect(screen.getByText("Create your first team to organize members and manage access to models.")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Create your first team to organize members and manage access to models.",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("should display empty state message when teams is null", async () => {
@@ -427,7 +472,11 @@ describe("OldTeams - empty state", () => {
     await waitFor(() => {
       expect(screen.getByText("No teams yet")).toBeInTheDocument();
     });
-    expect(screen.getByText("Create your first team to organize members and manage access to models.")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Create your first team to organize members and manage access to models.",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("should not display empty state when teams array has items", async () => {
@@ -462,7 +511,11 @@ describe("OldTeams - empty state", () => {
       expect(screen.getByText("Test Team")).toBeInTheDocument();
     });
     expect(screen.queryByText("No teams yet")).not.toBeInTheDocument();
-    expect(screen.queryByText("Create your first team to organize members and manage access to models.")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "Create your first team to organize members and manage access to models.",
+      ),
+    ).not.toBeInTheDocument();
   });
 });
 
@@ -518,7 +571,10 @@ describe("OldTeams - helper functions", () => {
 
       // Simulate getAdminOrganizations logic
       const result = organizations.filter((org) =>
-        org.members?.some((member) => member.user_id === userID && member.user_role === "org_admin"),
+        org.members?.some(
+          (member) =>
+            member.user_id === userID && member.user_role === "org_admin",
+        ),
       );
 
       expect(result.length).toBe(1);
@@ -538,7 +594,10 @@ describe("OldTeams - helper functions", () => {
 
       // Simulate getAdminOrganizations logic
       const result = organizations.filter((org) =>
-        org.members?.some((member) => member.user_id === userID && member.user_role === "org_admin"),
+        org.members?.some(
+          (member) =>
+            member.user_id === userID && member.user_role === "org_admin",
+        ),
       );
 
       expect(result.length).toBe(0);
@@ -564,7 +623,10 @@ describe("OldTeams - helper functions", () => {
       ];
 
       const result = organizations.some((org) =>
-        org.members?.some((member) => member.user_id === userID && member.user_role === "org_admin"),
+        org.members?.some(
+          (member) =>
+            member.user_id === userID && member.user_role === "org_admin",
+        ),
       );
 
       expect(result).toBe(true);
@@ -584,7 +646,10 @@ describe("OldTeams - helper functions", () => {
 
       const isAdmin = userRole === "Admin";
       const isOrgAdmin = organizations.some((org) =>
-        org.members?.some((member) => member.user_id === userID && member.user_role === "org_admin"),
+        org.members?.some(
+          (member) =>
+            member.user_id === userID && member.user_role === "org_admin",
+        ),
       );
 
       expect(isAdmin || isOrgAdmin).toBe(false);
@@ -637,7 +702,9 @@ describe("OldTeams - premium props", () => {
 
     await waitFor(() => expect(mockTeamInfoView).toHaveBeenCalled());
 
-    expect(mockTeamInfoView).toHaveBeenLastCalledWith(expect.objectContaining({ premiumUser: true }));
+    expect(mockTeamInfoView).toHaveBeenLastCalledWith(
+      expect.objectContaining({ premiumUser: true }),
+    );
   });
 });
 
@@ -675,7 +742,9 @@ describe("OldTeams - Default Team Settings tab visibility", () => {
       />,
     );
 
-    expect(screen.getByRole("tab", { name: "Default Team Settings" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("tab", { name: "Default Team Settings" }),
+    ).toBeInTheDocument();
   });
 
   it("should show Default Team Settings tab for proxy_admin role", () => {
@@ -706,7 +775,9 @@ describe("OldTeams - Default Team Settings tab visibility", () => {
       />,
     );
 
-    expect(screen.getByRole("tab", { name: "Default Team Settings" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("tab", { name: "Default Team Settings" }),
+    ).toBeInTheDocument();
   });
 
   it("should not show Default Team Settings tab for proxy_admin_viewer role", () => {
@@ -737,7 +808,9 @@ describe("OldTeams - Default Team Settings tab visibility", () => {
       />,
     );
 
-    expect(screen.queryByRole("tab", { name: "Default Team Settings" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("tab", { name: "Default Team Settings" }),
+    ).not.toBeInTheDocument();
   });
 
   it("should not show Default Team Settings tab for Admin Viewer role", () => {
@@ -768,7 +841,9 @@ describe("OldTeams - Default Team Settings tab visibility", () => {
       />,
     );
 
-    expect(screen.queryByRole("tab", { name: "Default Team Settings" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("tab", { name: "Default Team Settings" }),
+    ).not.toBeInTheDocument();
   });
 });
 
@@ -776,7 +851,10 @@ describe("OldTeams - access_group_ids in team create", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockTeamInfoView.mockClear();
-    vi.mocked(fetchAvailableModelsForTeamOrKey).mockResolvedValue(["gpt-4", "gpt-3.5-turbo"]);
+    vi.mocked(fetchAvailableModelsForTeamOrKey).mockResolvedValue([
+      "gpt-4",
+      "gpt-3.5-turbo",
+    ]);
     vi.mocked(fetchMCPAccessGroups).mockResolvedValue([]);
     vi.mocked(getGuardrailsList).mockResolvedValue({ guardrails: [] });
     vi.mocked(teamCreateCall).mockResolvedValue({
@@ -788,7 +866,16 @@ describe("OldTeams - access_group_ids in team create", () => {
       members_with_roles: [],
       spend: 0,
     } as any);
-    mockUseOrganizations.mockReturnValue({ data: [{ organization_id: "org-1", organization_alias: "Org 1", models: [], members: [] }] });
+    mockUseOrganizations.mockReturnValue({
+      data: [
+        {
+          organization_id: "org-1",
+          organization_alias: "Org 1",
+          models: [],
+          members: [],
+        },
+      ],
+    });
   });
 
   it("should pass access_group_ids to teamCreateCall when creating team", async () => {
@@ -800,11 +887,20 @@ describe("OldTeams - access_group_ids in team create", () => {
         setTeams={vi.fn()}
         userID="user-123"
         userRole="Admin"
-        organizations={[{ organization_id: "org-1", organization_alias: "Org 1", models: [], members: [] }]}
+        organizations={[
+          {
+            organization_id: "org-1",
+            organization_alias: "Org 1",
+            models: [],
+            members: [],
+          },
+        ]}
       />,
     );
 
-    const createButton = screen.getAllByRole("button", { name: /create team/i })[0];
+    const createButton = screen.getAllByRole("button", {
+      name: /create team/i,
+    })[0];
     act(() => {
       fireEvent.click(createButton);
     });
@@ -829,8 +925,11 @@ describe("OldTeams - access_group_ids in team create", () => {
     const accessGroupInput = screen.getByTestId("access-group-selector");
     fireEvent.change(accessGroupInput, { target: { value: "ag-1,ag-2" } });
 
-    const createTeamSubmitButtons = screen.getAllByRole("button", { name: /create team/i });
-    const createTeamSubmitButton = createTeamSubmitButtons[createTeamSubmitButtons.length - 1];
+    const createTeamSubmitButtons = screen.getAllByRole("button", {
+      name: /create team/i,
+    });
+    const createTeamSubmitButton =
+      createTeamSubmitButtons[createTeamSubmitButtons.length - 1];
     fireEvent.click(createTeamSubmitButton);
 
     await waitFor(() => {
@@ -849,12 +948,18 @@ describe("OldTeams - access_group_ids in team create", () => {
 describe("OldTeams - models dropdown options", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(fetchAvailableModelsForTeamOrKey).mockResolvedValue(["gpt-4", "gpt-3.5-turbo"]);
+    vi.mocked(fetchAvailableModelsForTeamOrKey).mockResolvedValue([
+      "gpt-4",
+      "gpt-3.5-turbo",
+    ]);
     mockUseOrganizations.mockReturnValue({ data: [] });
   });
 
   it("should not render all-proxy-models option in models select", async () => {
-    vi.mocked(fetchAvailableModelsForTeamOrKey).mockResolvedValue(["gpt-4", "gpt-3.5-turbo"]);
+    vi.mocked(fetchAvailableModelsForTeamOrKey).mockResolvedValue([
+      "gpt-4",
+      "gpt-3.5-turbo",
+    ]);
 
     renderWithQueryClient(
       <OldTeams
@@ -872,7 +977,9 @@ describe("OldTeams - models dropdown options", () => {
       expect(fetchAvailableModelsForTeamOrKey).toHaveBeenCalled();
     });
 
-    const createButton = screen.getAllByRole("button", { name: /create team/i })[0];
+    const createButton = screen.getAllByRole("button", {
+      name: /create team/i,
+    })[0];
     act(() => {
       fireEvent.click(createButton);
     });

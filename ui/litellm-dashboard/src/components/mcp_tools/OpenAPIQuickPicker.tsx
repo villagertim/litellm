@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { fetchOpenAPIRegistry } from "../networking";
 
 export interface OpenAPIKeyTool {
@@ -65,7 +66,9 @@ const OpenAPIQuickPicker: React.FC<OpenAPIQuickPickerProps> = ({
 
   return (
     <div className="mb-4">
-      <span className="text-sm font-medium text-gray-700 block mb-2">Popular APIs</span>
+      <span className="text-sm font-medium text-gray-700 block mb-2">
+        Popular APIs
+      </span>
 
       <div className="grid grid-cols-5 gap-2">
         {apis.map((api) => {

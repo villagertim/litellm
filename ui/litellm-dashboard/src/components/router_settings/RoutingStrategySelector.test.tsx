@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import RoutingStrategySelector from "./RoutingStrategySelector";
 
 // Ant Design's Select is complex to drive in JSDOM; swap it for a plain
@@ -22,13 +22,17 @@ vi.mock("antd", () => ({
       Option: ({ value, children }: any) => (
         <option value={value}>{children}</option>
       ),
-    }
+    },
   ),
 }));
 
 const baseProps = {
   selectedStrategy: null,
-  availableStrategies: ["simple-shuffle", "latency-based-routing", "least-busy"],
+  availableStrategies: [
+    "simple-shuffle",
+    "latency-based-routing",
+    "least-busy",
+  ],
   routingStrategyDescriptions: {
     "simple-shuffle": "Randomly pick a deployment",
     "latency-based-routing": "Pick the lowest-latency deployment",
@@ -73,7 +77,9 @@ describe("RoutingStrategySelector", () => {
   it("should display strategy descriptions alongside option labels", () => {
     render(<RoutingStrategySelector {...baseProps} />);
     expect(screen.getByText("Randomly pick a deployment")).toBeInTheDocument();
-    expect(screen.getByText("Pick the lowest-latency deployment")).toBeInTheDocument();
+    expect(
+      screen.getByText("Pick the lowest-latency deployment"),
+    ).toBeInTheDocument();
   });
 
   it("should not render a description for a strategy that has none", () => {
@@ -85,9 +91,17 @@ describe("RoutingStrategySelector", () => {
   it("should call onStrategyChange with the selected strategy value", async () => {
     const onStrategyChange = vi.fn();
     const user = userEvent.setup();
-    render(<RoutingStrategySelector {...baseProps} onStrategyChange={onStrategyChange} />);
+    render(
+      <RoutingStrategySelector
+        {...baseProps}
+        onStrategyChange={onStrategyChange}
+      />,
+    );
 
-    await user.selectOptions(screen.getByTestId("strategy-select"), "latency-based-routing");
+    await user.selectOptions(
+      screen.getByTestId("strategy-select"),
+      "latency-based-routing",
+    );
 
     expect(onStrategyChange).toHaveBeenCalledWith("latency-based-routing");
   });

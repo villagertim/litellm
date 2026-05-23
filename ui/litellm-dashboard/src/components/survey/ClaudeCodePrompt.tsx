@@ -1,5 +1,5 @@
-import React from "react";
 import { Code } from "lucide-react";
+import React from "react";
 import { NudgePrompt } from "./NudgePrompt";
 
 interface ClaudeCodePromptProps {
@@ -8,7 +8,11 @@ interface ClaudeCodePromptProps {
   isVisible: boolean;
 }
 
-export function ClaudeCodePrompt({ onOpen, onDismiss, isVisible }: ClaudeCodePromptProps) {
+export function ClaudeCodePrompt({
+  onOpen,
+  onDismiss,
+  isVisible,
+}: ClaudeCodePromptProps) {
   return (
     <NudgePrompt
       onOpen={onOpen}
@@ -19,8 +23,7 @@ export function ClaudeCodePrompt({ onOpen, onDismiss, isVisible }: ClaudeCodePro
       buttonText="Share feedback"
       icon={Code}
       accentColor="#7c3aed"
-      buttonStyle={{ backgroundColor: '#7c3aed', borderColor: '#7c3aed' }}
+      buttonStyle={{ backgroundColor: "#7c3aed", borderColor: "#7c3aed" }}
     />
   );
 }
-

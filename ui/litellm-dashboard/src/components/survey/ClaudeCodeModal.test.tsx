@@ -11,23 +11,29 @@ describe("ClaudeCodeModal", () => {
 
   it("should render nothing when isOpen is false", () => {
     renderWithProviders(
-      <ClaudeCodeModal isOpen={false} onClose={vi.fn()} onComplete={vi.fn()} />
+      <ClaudeCodeModal isOpen={false} onClose={vi.fn()} onComplete={vi.fn()} />,
     );
-    expect(screen.queryByText(/Help us improve your experience/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Help us improve your experience/i),
+    ).not.toBeInTheDocument();
   });
 
   it("should render the feedback modal content when isOpen is true", () => {
     renderWithProviders(
-      <ClaudeCodeModal isOpen={true} onClose={vi.fn()} onComplete={vi.fn()} />
+      <ClaudeCodeModal isOpen={true} onClose={vi.fn()} onComplete={vi.fn()} />,
     );
-    expect(screen.getByText(/Help us improve your experience/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Help us improve your experience/i),
+    ).toBeInTheDocument();
   });
 
   it("should show the survey description text", () => {
     renderWithProviders(
-      <ClaudeCodeModal isOpen={true} onClose={vi.fn()} onComplete={vi.fn()} />
+      <ClaudeCodeModal isOpen={true} onClose={vi.fn()} onComplete={vi.fn()} />,
     );
-    expect(screen.getByText(/your experience using LiteLLM with Claude Code/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/your experience using LiteLLM with Claude Code/i),
+    ).toBeInTheDocument();
   });
 
   it("should open the Google Form and call onComplete when the feedback button is clicked", async () => {
@@ -36,15 +42,21 @@ describe("ClaudeCodeModal", () => {
     const user = userEvent.setup();
 
     renderWithProviders(
-      <ClaudeCodeModal isOpen={true} onClose={vi.fn()} onComplete={onComplete} />
+      <ClaudeCodeModal
+        isOpen={true}
+        onClose={vi.fn()}
+        onComplete={onComplete}
+      />,
     );
 
-    await user.click(screen.getByRole("button", { name: /Open Feedback Form/i }));
+    await user.click(
+      screen.getByRole("button", { name: /Open Feedback Form/i }),
+    );
 
     expect(openSpy).toHaveBeenCalledWith(
       "https://forms.gle/LZeJQ3XytBakckYa9",
       "_blank",
-      "noopener,noreferrer"
+      "noopener,noreferrer",
     );
     expect(onComplete).toHaveBeenCalled();
   });
@@ -54,7 +66,7 @@ describe("ClaudeCodeModal", () => {
     const user = userEvent.setup();
 
     renderWithProviders(
-      <ClaudeCodeModal isOpen={true} onClose={onClose} onComplete={vi.fn()} />
+      <ClaudeCodeModal isOpen={true} onClose={onClose} onComplete={vi.fn()} />,
     );
 
     // The X close button is the first button; the "Open Feedback Form" button is the second

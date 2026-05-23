@@ -5,7 +5,12 @@ import {
   updateGuardrailCall,
 } from "@/components/networking";
 import { copyToClipboard as utilCopyToClipboard } from "@/utils/dataUtils";
-import { CodeOutlined, EyeInvisibleOutlined, InfoCircleOutlined, StopOutlined } from "@ant-design/icons";
+import {
+  CodeOutlined,
+  EyeInvisibleOutlined,
+  InfoCircleOutlined,
+  StopOutlined,
+} from "@ant-design/icons";
 import { ArrowLeftIcon } from "@heroicons/react/outline";
 import {
   Badge,
@@ -23,21 +28,25 @@ import { Button, Divider, Form, Input, Select, Tooltip } from "antd";
 import { CheckIcon, CopyIcon } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import NotificationsManager from "../molecules/notifications_manager";
-import ContentFilterManager, { formatContentFilterDataForAPI } from "./content_filter/ContentFilterManager";
-import CustomCodeModal, { EditGuardrailData } from "./custom_code/CustomCodeModal";
+import ContentFilterManager, {
+  formatContentFilterDataForAPI,
+} from "./content_filter/ContentFilterManager";
+import CustomCodeModal, {
+  type EditGuardrailData,
+} from "./custom_code/CustomCodeModal";
 import {
+  type SkipSystemMessageChoice,
+  type SkipToolMessageChoice,
   getGuardrailLogoAndName,
   guardrail_provider_map,
   skipSystemMessageToChoice,
   skipToolMessageToChoice,
-  type SkipSystemMessageChoice,
-  type SkipToolMessageChoice,
 } from "./guardrail_info_helpers";
 import GuardrailOptionalParams from "./guardrail_optional_params";
 import GuardrailProviderFields from "./guardrail_provider_fields";
 import PiiConfiguration from "./pii_configuration";
 import ToolPermissionRulesEditor, {
-  ToolPermissionConfig,
+  type ToolPermissionConfig,
 } from "./tool_permission/ToolPermissionRulesEditor";
 
 export interface GuardrailInfoProps {
@@ -63,14 +72,22 @@ interface ProviderParamsResponse {
   [provider: string]: { [key: string]: ProviderParam };
 }
 
-const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose, accessToken, isAdmin }) => {
+const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({
+  guardrailId,
+  onClose,
+  accessToken,
+  isAdmin,
+}) => {
   const [guardrailData, setGuardrailData] = useState<any>(null);
-  const [guardrailProviderSpecificParams, setGuardrailProviderSpecificParams] = useState<any>(null);
+  const [guardrailProviderSpecificParams, setGuardrailProviderSpecificParams] =
+    useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [form] = Form.useForm();
   const [selectedPiiEntities, setSelectedPiiEntities] = useState<string[]>([]);
-  const [selectedPiiActions, setSelectedPiiActions] = useState<{ [key: string]: string }>({});
+  const [selectedPiiActions, setSelectedPiiActions] = useState<{
+    [key: string]: string;
+  }>({});
   const [guardrailSettings, setGuardrailSettings] = useState<{
     supported_entities: string[];
     supported_actions: string[];
@@ -97,14 +114,16 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
     };
   } | null>(null);
   const [copiedStates, setCopiedStates] = useState<Record<string, boolean>>({});
-  const [hasUnsavedContentFilterChanges, setHasUnsavedContentFilterChanges] = useState(false);
+  const [hasUnsavedContentFilterChanges, setHasUnsavedContentFilterChanges] =
+    useState(false);
   const emptyToolPermissionConfig: ToolPermissionConfig = {
     rules: [],
     default_action: "deny",
     on_disallowed_action: "block",
     violation_message_template: "",
   };
-  const [toolPermissionConfig, setToolPermissionConfig] = useState<ToolPermissionConfig>(emptyToolPermissionConfig);
+  const [toolPermissionConfig, setToolPermissionConfig] =
+    useState<ToolPermissionConfig>(emptyToolPermissionConfig);
   const [toolPermissionDirty, setToolPermissionDirty] = useState(false);
   const [customCodeModalVisible, setCustomCodeModalVisible] = useState(false);
 
@@ -128,7 +147,7 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
       blockedWords: any[],
       categories: any[],
       competitorIntentEnabled?: boolean,
-      competitorIntentConfig?: any
+      competitorIntentConfig?: any,
     ) => {
       contentFilterDataRef.current = {
         patterns,
@@ -138,7 +157,7 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
         competitorIntentConfig,
       };
     },
-    []
+    [],
   );
 
   const fetchGuardrailInfo = async () => {
@@ -161,10 +180,12 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
           const entities: string[] = [];
           const actions: { [key: string]: string } = {};
 
-          Object.entries(piiConfig).forEach(([entity, action]: [string, any]) => {
-            entities.push(entity);
-            actions[entity] = typeof action === "string" ? action : "MASK";
-          });
+          Object.entries(piiConfig).forEach(
+            ([entity, action]: [string, any]) => {
+              entities.push(entity);
+              actions[entity] = typeof action === "string" ? action : "MASK";
+            },
+          );
 
           setSelectedPiiEntities(entities);
           setSelectedPiiActions(actions);
@@ -188,7 +209,10 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
       const response = await getGuardrailProviderSpecificParams(accessToken);
       setGuardrailProviderSpecificParams(response);
     } catch (error) {
-      console.error("Error fetching guardrail provider specific params:", error);
+      console.error(
+        "Error fetching guardrail provider specific params:",
+        error,
+      );
     }
   };
 
@@ -226,7 +250,9 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
         skip_tool_message_choice: skipToolMessageToChoice(
           guardrailData.litellm_params?.skip_tool_message_in_guardrail,
         ),
-        guardrail_info: guardrailData.guardrail_info ? JSON.stringify(guardrailData.guardrail_info, null, 2) : "",
+        guardrail_info: guardrailData.guardrail_info
+          ? JSON.stringify(guardrailData.guardrail_info, null, 2)
+          : "",
         // Include any optional_params if they exist
         ...(guardrailData.litellm_params?.optional_params && {
           optional_params: guardrailData.litellm_params.optional_params,
@@ -238,10 +264,19 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
   const resetToolPermissionEditor = useCallback(() => {
     if (guardrailData?.litellm_params?.guardrail === "tool_permission") {
       setToolPermissionConfig({
-        rules: (guardrailData.litellm_params?.rules as ToolPermissionConfig["rules"]) || [],
-        default_action: ((guardrailData.litellm_params?.default_action || "deny") as ToolPermissionConfig["default_action"]).toLowerCase() as ToolPermissionConfig["default_action"],
-        on_disallowed_action: ((guardrailData.litellm_params?.on_disallowed_action || "block") as ToolPermissionConfig["on_disallowed_action"]).toLowerCase() as ToolPermissionConfig["on_disallowed_action"],
-        violation_message_template: guardrailData.litellm_params?.violation_message_template || "",
+        rules:
+          (guardrailData.litellm_params
+            ?.rules as ToolPermissionConfig["rules"]) || [],
+        default_action: (
+          (guardrailData.litellm_params?.default_action ||
+            "deny") as ToolPermissionConfig["default_action"]
+        ).toLowerCase() as ToolPermissionConfig["default_action"],
+        on_disallowed_action: (
+          (guardrailData.litellm_params?.on_disallowed_action ||
+            "block") as ToolPermissionConfig["on_disallowed_action"]
+        ).toLowerCase() as ToolPermissionConfig["on_disallowed_action"],
+        violation_message_template:
+          guardrailData.litellm_params?.violation_message_template || "",
       });
     } else {
       setToolPermissionConfig(emptyToolPermissionConfig);
@@ -297,7 +332,9 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
       const prevSkipChoice = skipSystemMessageToChoice(
         guardrailData.litellm_params?.skip_system_message_in_guardrail,
       );
-      const nextSkipChoice = values.skip_system_message_choice as SkipSystemMessageChoice | undefined;
+      const nextSkipChoice = values.skip_system_message_choice as
+        | SkipSystemMessageChoice
+        | undefined;
       if (nextSkipChoice !== undefined && nextSkipChoice !== prevSkipChoice) {
         if (nextSkipChoice === "inherit") {
           updateData.litellm_params.skip_system_message_in_guardrail = null;
@@ -311,8 +348,13 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
       const prevSkipToolChoice = skipToolMessageToChoice(
         guardrailData.litellm_params?.skip_tool_message_in_guardrail,
       );
-      const nextSkipToolChoice = values.skip_tool_message_choice as SkipToolMessageChoice | undefined;
-      if (nextSkipToolChoice !== undefined && nextSkipToolChoice !== prevSkipToolChoice) {
+      const nextSkipToolChoice = values.skip_tool_message_choice as
+        | SkipToolMessageChoice
+        | undefined;
+      if (
+        nextSkipToolChoice !== undefined &&
+        nextSkipToolChoice !== prevSkipToolChoice
+      ) {
         if (nextSkipToolChoice === "inherit") {
           updateData.litellm_params.skip_tool_message_in_guardrail = null;
         } else if (nextSkipToolChoice === "yes") {
@@ -324,13 +366,19 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
 
       // Only include guardrail_info if it has changed
       const originalGuardrailInfo = guardrailData.guardrail_info;
-      const newGuardrailInfo = values.guardrail_info ? JSON.parse(values.guardrail_info) : undefined;
-      if (JSON.stringify(originalGuardrailInfo) !== JSON.stringify(newGuardrailInfo)) {
+      const newGuardrailInfo = values.guardrail_info
+        ? JSON.parse(values.guardrail_info)
+        : undefined;
+      if (
+        JSON.stringify(originalGuardrailInfo) !==
+        JSON.stringify(newGuardrailInfo)
+      ) {
         updateData.guardrail_info = newGuardrailInfo;
       }
 
       // Only add PII entities config if there are changes
-      const originalPiiConfig = guardrailData.litellm_params?.pii_entities_config || {};
+      const originalPiiConfig =
+        guardrailData.litellm_params?.pii_entities_config || {};
       const newPiiEntitiesConfig: { [key: string]: string } = {};
 
       selectedPiiEntities.forEach((entity) => {
@@ -338,18 +386,24 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
       });
 
       // Only update if PII config has changed
-      if (JSON.stringify(originalPiiConfig) !== JSON.stringify(newPiiEntitiesConfig)) {
+      if (
+        JSON.stringify(originalPiiConfig) !==
+        JSON.stringify(newPiiEntitiesConfig)
+      ) {
         updateData.litellm_params.pii_entities_config = newPiiEntitiesConfig;
       }
 
       // Only add Content Filter patterns if there are changes
-      if (guardrailData.litellm_params?.guardrail === "litellm_content_filter" && hasUnsavedContentFilterChanges) {
+      if (
+        guardrailData.litellm_params?.guardrail === "litellm_content_filter" &&
+        hasUnsavedContentFilterChanges
+      ) {
         const formattedData = formatContentFilterDataForAPI(
           contentFilterDataRef.current.patterns || [],
           contentFilterDataRef.current.blockedWords || [],
           contentFilterDataRef.current.categories || [],
           contentFilterDataRef.current.competitorIntentEnabled,
-          contentFilterDataRef.current.competitorIntentConfig
+          contentFilterDataRef.current.competitorIntentConfig,
         );
 
         updateData.litellm_params.patterns = formattedData.patterns;
@@ -362,25 +416,44 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
       if (guardrailData.litellm_params?.guardrail === "tool_permission") {
         const originalRules = guardrailData.litellm_params?.rules || [];
         const currentRules = toolPermissionConfig.rules || [];
-        const rulesChanged = JSON.stringify(originalRules) !== JSON.stringify(currentRules);
+        const rulesChanged =
+          JSON.stringify(originalRules) !== JSON.stringify(currentRules);
 
-        const originalDefault = (guardrailData.litellm_params?.default_action || "deny").toLowerCase();
-        const currentDefault = (toolPermissionConfig.default_action || "deny").toLowerCase();
+        const originalDefault = (
+          guardrailData.litellm_params?.default_action || "deny"
+        ).toLowerCase();
+        const currentDefault = (
+          toolPermissionConfig.default_action || "deny"
+        ).toLowerCase();
         const defaultChanged = originalDefault !== currentDefault;
 
-        const originalOnDisallowed = (guardrailData.litellm_params?.on_disallowed_action || "block").toLowerCase();
-        const currentOnDisallowed = (toolPermissionConfig.on_disallowed_action || "block").toLowerCase();
-        const onDisallowedChanged = originalOnDisallowed !== currentOnDisallowed;
+        const originalOnDisallowed = (
+          guardrailData.litellm_params?.on_disallowed_action || "block"
+        ).toLowerCase();
+        const currentOnDisallowed = (
+          toolPermissionConfig.on_disallowed_action || "block"
+        ).toLowerCase();
+        const onDisallowedChanged =
+          originalOnDisallowed !== currentOnDisallowed;
 
-        const originalMessage = guardrailData.litellm_params?.violation_message_template || "";
-        const currentMessage = toolPermissionConfig.violation_message_template || "";
+        const originalMessage =
+          guardrailData.litellm_params?.violation_message_template || "";
+        const currentMessage =
+          toolPermissionConfig.violation_message_template || "";
         const messageChanged = originalMessage !== currentMessage;
 
-        if (toolPermissionDirty || rulesChanged || defaultChanged || onDisallowedChanged || messageChanged) {
+        if (
+          toolPermissionDirty ||
+          rulesChanged ||
+          defaultChanged ||
+          onDisallowedChanged ||
+          messageChanged
+        ) {
           updateData.litellm_params.rules = currentRules;
           updateData.litellm_params.default_action = currentDefault;
           updateData.litellm_params.on_disallowed_action = currentOnDisallowed;
-          updateData.litellm_params.violation_message_template = currentMessage || null;
+          updateData.litellm_params.violation_message_template =
+            currentMessage || null;
         }
       }
 
@@ -395,21 +468,33 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
 
       // Get the current provider from the guardrail data
       const currentProvider = Object.keys(guardrail_provider_map).find(
-        (key) => guardrail_provider_map[key] === guardrailData.litellm_params?.guardrail,
+        (key) =>
+          guardrail_provider_map[key] ===
+          guardrailData.litellm_params?.guardrail,
       );
 
       console.log("values: ", JSON.stringify(values));
       console.log("currentProvider: ", currentProvider);
 
       // Use pre-fetched provider params to copy recognised params
-      const isToolPermissionGuardrail = guardrailData.litellm_params?.guardrail === "tool_permission";
-      if (guardrailProviderSpecificParams && currentProvider && !isToolPermissionGuardrail) {
-        const providerKey = guardrail_provider_map[currentProvider]?.toLowerCase();
-        const providerSpecificParams = guardrailProviderSpecificParams[providerKey] || {};
+      const isToolPermissionGuardrail =
+        guardrailData.litellm_params?.guardrail === "tool_permission";
+      if (
+        guardrailProviderSpecificParams &&
+        currentProvider &&
+        !isToolPermissionGuardrail
+      ) {
+        const providerKey =
+          guardrail_provider_map[currentProvider]?.toLowerCase();
+        const providerSpecificParams =
+          guardrailProviderSpecificParams[providerKey] || {};
 
         const allowedParams = new Set<string>();
 
-        console.log("providerSpecificParams: ", JSON.stringify(providerSpecificParams));
+        console.log(
+          "providerSpecificParams: ",
+          JSON.stringify(providerSpecificParams),
+        );
 
         // Add root-level parameters (like api_key, api_base, api_version)
         Object.keys(providerSpecificParams).forEach((paramName) => {
@@ -419,20 +504,33 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
         });
 
         // Add nested parameters from optional_params.fields
-        if (providerSpecificParams.optional_params && providerSpecificParams.optional_params.fields) {
-          Object.keys(providerSpecificParams.optional_params.fields).forEach((paramName) => {
-            allowedParams.add(paramName);
-          });
+        if (
+          providerSpecificParams.optional_params &&
+          providerSpecificParams.optional_params.fields
+        ) {
+          Object.keys(providerSpecificParams.optional_params.fields).forEach(
+            (paramName) => {
+              allowedParams.add(paramName);
+            },
+          );
         }
 
         console.log("allowedParams: ", allowedParams);
         allowedParams.forEach((paramName) => {
-          if (paramName === "patterns" || paramName === "blocked_words" || paramName === "categories") {
+          if (
+            paramName === "patterns" ||
+            paramName === "blocked_words" ||
+            paramName === "categories"
+          ) {
             return;
           }
           // Check for both direct parameter name and nested optional_params object
           let paramValue = values[paramName];
-          if (paramValue === undefined || paramValue === null || paramValue === "") {
+          if (
+            paramValue === undefined ||
+            paramValue === null ||
+            paramValue === ""
+          ) {
             paramValue = values.optional_params?.[paramName];
           }
 
@@ -440,14 +538,23 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
           const originalValue = guardrailData.litellm_params?.[paramName];
 
           // Check if the value has changed from the original
-          const hasChanged = JSON.stringify(paramValue) !== JSON.stringify(originalValue);
+          const hasChanged =
+            JSON.stringify(paramValue) !== JSON.stringify(originalValue);
 
           // Include if value has changed and has a meaningful value, OR if user explicitly cleared a value
           if (hasChanged) {
-            if (paramValue !== undefined && paramValue !== null && paramValue !== "") {
+            if (
+              paramValue !== undefined &&
+              paramValue !== null &&
+              paramValue !== ""
+            ) {
               // User set a new value
               updateData.litellm_params[paramName] = paramValue;
-            } else if (originalValue !== undefined && originalValue !== null && originalValue !== "") {
+            } else if (
+              originalValue !== undefined &&
+              originalValue !== null &&
+              originalValue !== ""
+            ) {
               // User cleared an existing value - set to null to indicate removal
               updateData.litellm_params[paramName] = null;
             }
@@ -494,9 +601,14 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
   };
 
   // Format the provider display name and logo
-  const { logo, displayName } = getGuardrailLogoAndName(guardrailData.litellm_params?.guardrail || "");
+  const { logo, displayName } = getGuardrailLogoAndName(
+    guardrailData.litellm_params?.guardrail || "",
+  );
 
-  const copyToClipboard = async (text: string | null | undefined, key: string) => {
+  const copyToClipboard = async (
+    text: string | null | undefined,
+    key: string,
+  ) => {
     const success = await utilCopyToClipboard(text);
     if (success) {
       setCopiedStates((prev) => ({ ...prev, [key]: true }));
@@ -506,27 +618,44 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
     }
   };
 
-  const isConfigGuardrail = guardrailData.guardrail_definition_location === "config";
+  const isConfigGuardrail =
+    guardrailData.guardrail_definition_location === "config";
 
   return (
     <div className="p-4">
       <div>
-        <Button type="text" icon={<ArrowLeftIcon className="w-4 h-4" />} onClick={onClose} className="mb-4">
+        <Button
+          type="text"
+          icon={<ArrowLeftIcon className="w-4 h-4" />}
+          onClick={onClose}
+          className="mb-4"
+        >
           Back to Guardrails
         </Button>
         <Title>{guardrailData.guardrail_name || "Unnamed Guardrail"}</Title>
         <div className="flex items-center cursor-pointer">
-          <Text className="text-gray-500 font-mono">{guardrailData.guardrail_id}</Text>
+          <Text className="text-gray-500 font-mono">
+            {guardrailData.guardrail_id}
+          </Text>
 
           <Button
             type="text"
             size="small"
-            icon={copiedStates["guardrail-id"] ? <CheckIcon size={12} /> : <CopyIcon size={12} />}
-            onClick={() => copyToClipboard(guardrailData.guardrail_id, "guardrail-id")}
-            className={`left-2 z-10 transition-all duration-200 ${copiedStates["guardrail-id"]
-              ? "text-green-600 bg-green-50 border-green-200"
-              : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
-              }`}
+            icon={
+              copiedStates["guardrail-id"] ? (
+                <CheckIcon size={12} />
+              ) : (
+                <CopyIcon size={12} />
+              )
+            }
+            onClick={() =>
+              copyToClipboard(guardrailData.guardrail_id, "guardrail-id")
+            }
+            className={`left-2 z-10 transition-all duration-200 ${
+              copiedStates["guardrail-id"]
+                ? "text-green-600 bg-green-50 border-green-200"
+                : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+            }`}
           />
         </div>
       </div>
@@ -563,8 +692,16 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                 <Text>Mode</Text>
                 <div className="mt-2">
                   <Title>{guardrailData.litellm_params?.mode || "-"}</Title>
-                  <Badge color={guardrailData.litellm_params?.default_on ? "green" : "gray"}>
-                    {guardrailData.litellm_params?.default_on ? "Default On" : "Default Off"}
+                  <Badge
+                    color={
+                      guardrailData.litellm_params?.default_on
+                        ? "green"
+                        : "gray"
+                    }
+                  >
+                    {guardrailData.litellm_params?.default_on
+                      ? "Default On"
+                      : "Default Off"}
                   </Badge>
                 </div>
               </Card>
@@ -573,42 +710,71 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                 <Text>Created At</Text>
                 <div className="mt-2">
                   <Title>{formatDate(guardrailData.created_at)}</Title>
-                  <Text>Last Updated: {formatDate(guardrailData.updated_at)}</Text>
+                  <Text>
+                    Last Updated: {formatDate(guardrailData.updated_at)}
+                  </Text>
                 </div>
               </Card>
             </Grid>
 
             {guardrailData.litellm_params?.pii_entities_config &&
-              Object.keys(guardrailData.litellm_params.pii_entities_config).length > 0 && (
+              Object.keys(guardrailData.litellm_params.pii_entities_config)
+                .length > 0 && (
                 <Card className="mt-6">
                   <div className="flex justify-between items-center">
                     <Text className="font-medium">PII Protection</Text>
                     <Badge color="blue">
-                      {Object.keys(guardrailData.litellm_params.pii_entities_config).length} PII entities configured
+                      {
+                        Object.keys(
+                          guardrailData.litellm_params.pii_entities_config,
+                        ).length
+                      }{" "}
+                      PII entities configured
                     </Badge>
                   </div>
                 </Card>
               )}
 
             {guardrailData.litellm_params?.pii_entities_config &&
-              Object.keys(guardrailData.litellm_params.pii_entities_config).length > 0 && (
+              Object.keys(guardrailData.litellm_params.pii_entities_config)
+                .length > 0 && (
                 <Card className="mt-6">
-                  <Text className="mb-4 text-lg font-semibold">PII Entity Configuration</Text>
+                  <Text className="mb-4 text-lg font-semibold">
+                    PII Entity Configuration
+                  </Text>
                   <div className="border rounded-lg overflow-hidden shadow-sm">
                     <div className="bg-gray-50 px-5 py-3 border-b flex">
-                      <Text className="flex-1 font-semibold text-gray-700">Entity Type</Text>
-                      <Text className="flex-1 font-semibold text-gray-700">Configuration</Text>
+                      <Text className="flex-1 font-semibold text-gray-700">
+                        Entity Type
+                      </Text>
+                      <Text className="flex-1 font-semibold text-gray-700">
+                        Configuration
+                      </Text>
                     </div>
                     <div className="max-h-[400px] overflow-y-auto">
-                      {Object.entries(guardrailData.litellm_params?.pii_entities_config).map(([key, value]) => (
-                        <div key={key} className="px-5 py-3 flex border-b hover:bg-gray-50 transition-colors">
-                          <Text className="flex-1 font-medium text-gray-900">{key}</Text>
+                      {Object.entries(
+                        guardrailData.litellm_params?.pii_entities_config,
+                      ).map(([key, value]) => (
+                        <div
+                          key={key}
+                          className="px-5 py-3 flex border-b hover:bg-gray-50 transition-colors"
+                        >
+                          <Text className="flex-1 font-medium text-gray-900">
+                            {key}
+                          </Text>
                           <Text className="flex-1">
                             <span
-                              className={`inline-flex items-center gap-1.5 ${value === "MASK" ? "text-blue-600" : "text-red-600"
-                                }`}
+                              className={`inline-flex items-center gap-1.5 ${
+                                value === "MASK"
+                                  ? "text-blue-600"
+                                  : "text-red-600"
+                              }`}
                             >
-                              {value === "MASK" ? <EyeInvisibleOutlined /> : <StopOutlined />}
+                              {value === "MASK" ? (
+                                <EyeInvisibleOutlined />
+                              ) : (
+                                <StopOutlined />
+                              )}
                               {String(value)}
                             </span>
                           </Text>
@@ -621,35 +787,45 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
 
             {guardrailData.litellm_params?.guardrail === "tool_permission" && (
               <Card className="mt-6">
-                <ToolPermissionRulesEditor value={toolPermissionConfig} disabled />
+                <ToolPermissionRulesEditor
+                  value={toolPermissionConfig}
+                  disabled
+                />
               </Card>
             )}
 
             {/* Custom Code Display */}
-            {guardrailData.litellm_params?.guardrail === "custom_code" && guardrailData.litellm_params?.custom_code && (
-              <Card className="mt-6">
-                <div className="flex justify-between items-center mb-4">
-                  <div className="flex items-center gap-2">
-                    <CodeOutlined className="text-blue-500" />
-                    <Text className="font-medium text-lg">Custom Code</Text>
+            {guardrailData.litellm_params?.guardrail === "custom_code" &&
+              guardrailData.litellm_params?.custom_code && (
+                <Card className="mt-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <div className="flex items-center gap-2">
+                      <CodeOutlined className="text-blue-500" />
+                      <Text className="font-medium text-lg">Custom Code</Text>
+                    </div>
+                    {isAdmin && !isConfigGuardrail && (
+                      <Button
+                        size="small"
+                        icon={<CodeOutlined />}
+                        onClick={() => setCustomCodeModalVisible(true)}
+                      >
+                        Edit Code
+                      </Button>
+                    )}
                   </div>
-                  {isAdmin && !isConfigGuardrail && (
-                    <Button
-                      size="small"
-                      icon={<CodeOutlined />}
-                      onClick={() => setCustomCodeModalVisible(true)}
+                  <div className="relative rounded-lg overflow-hidden border border-gray-700 bg-[#1e1e1e]">
+                    <pre
+                      className="p-4 text-sm text-gray-200 overflow-x-auto"
+                      style={{
+                        fontFamily:
+                          "'Fira Code', 'Monaco', 'Consolas', monospace",
+                      }}
                     >
-                      Edit Code
-                    </Button>
-                  )}
-                </div>
-                <div className="relative rounded-lg overflow-hidden border border-gray-700 bg-[#1e1e1e]">
-                  <pre className="p-4 text-sm text-gray-200 overflow-x-auto" style={{ fontFamily: "'Fira Code', 'Monaco', 'Consolas', monospace" }}>
-                    <code>{guardrailData.litellm_params.custom_code}</code>
-                  </pre>
-                </div>
-              </Card>
-            )}
+                      <code>{guardrailData.litellm_params.custom_code}</code>
+                    </pre>
+                  </div>
+                </Card>
+              )}
 
             {/* Content Filter Configuration Display */}
             <ContentFilterManager
@@ -671,8 +847,10 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                       <InfoCircleOutlined />
                     </Tooltip>
                   )}
-                  {!isEditing && !isConfigGuardrail && (
-                    guardrailData.litellm_params?.guardrail === "custom_code" ? (
+                  {!isEditing &&
+                    !isConfigGuardrail &&
+                    (guardrailData.litellm_params?.guardrail ===
+                    "custom_code" ? (
                       <Button
                         icon={<CodeOutlined />}
                         onClick={() => setCustomCodeModalVisible(true)}
@@ -680,9 +858,10 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                         Edit Code
                       </Button>
                     ) : (
-                      <Button onClick={() => setIsEditing(true)}>Edit Settings</Button>
-                    )
-                  )}
+                      <Button onClick={() => setIsEditing(true)}>
+                        Edit Settings
+                      </Button>
+                    ))}
                 </div>
 
                 {isEditing ? (
@@ -698,17 +877,20 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                         return lp;
                       })(),
                       skip_system_message_choice: skipSystemMessageToChoice(
-                        guardrailData.litellm_params?.skip_system_message_in_guardrail,
+                        guardrailData.litellm_params
+                          ?.skip_system_message_in_guardrail,
                       ),
                       skip_tool_message_choice: skipToolMessageToChoice(
-                        guardrailData.litellm_params?.skip_tool_message_in_guardrail,
+                        guardrailData.litellm_params
+                          ?.skip_tool_message_in_guardrail,
                       ),
                       guardrail_info: guardrailData.guardrail_info
                         ? JSON.stringify(guardrailData.guardrail_info, null, 2)
                         : "",
                       // Include any optional_params if they exist
                       ...(guardrailData.litellm_params?.optional_params && {
-                        optional_params: guardrailData.litellm_params.optional_params,
+                        optional_params:
+                          guardrailData.litellm_params.optional_params,
                       }),
                     }}
                     layout="vertical"
@@ -716,7 +898,12 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                     <Form.Item
                       label="Guardrail Name"
                       name="guardrail_name"
-                      rules={[{ required: true, message: "Please input a guardrail name" }]}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input a guardrail name",
+                        },
+                      ]}
                     >
                       <Input placeholder="Enter guardrail name" />
                     </Form.Item>
@@ -734,9 +921,15 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                       tooltip="Unified guardrails: omit role: system from guardrail input (LLM still gets full messages). Use global default follows litellm_settings.skip_system_message_in_guardrail."
                     >
                       <Select>
-                        <Select.Option value="inherit">Use global default</Select.Option>
-                        <Select.Option value="yes">Yes — exclude from guardrail scan</Select.Option>
-                        <Select.Option value="no">No — always include in scan</Select.Option>
+                        <Select.Option value="inherit">
+                          Use global default
+                        </Select.Option>
+                        <Select.Option value="yes">
+                          Yes — exclude from guardrail scan
+                        </Select.Option>
+                        <Select.Option value="no">
+                          No — always include in scan
+                        </Select.Option>
                       </Select>
                     </Form.Item>
 
@@ -746,9 +939,15 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                       tooltip="Unified guardrails: omit role: tool from guardrail input (LLM still gets full messages). Use global default follows litellm_settings.skip_tool_message_in_guardrail."
                     >
                       <Select>
-                        <Select.Option value="inherit">Use global default</Select.Option>
-                        <Select.Option value="yes">Yes — exclude from guardrail scan</Select.Option>
-                        <Select.Option value="no">No — always include in scan</Select.Option>
+                        <Select.Option value="inherit">
+                          Use global default
+                        </Select.Option>
+                        <Select.Option value="yes">
+                          Yes — exclude from guardrail scan
+                        </Select.Option>
+                        <Select.Option value="no">
+                          No — always include in scan
+                        </Select.Option>
                       </Select>
                     </Form.Item>
 
@@ -764,7 +963,9 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                               selectedActions={selectedPiiActions}
                               onEntitySelect={handlePiiEntitySelect}
                               onActionSelect={handlePiiActionSelect}
-                              entityCategories={guardrailSettings.pii_entity_categories}
+                              entityCategories={
+                                guardrailSettings.pii_entity_categories
+                              }
                             />
                           )}
                         </div>
@@ -780,9 +981,14 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                       onUnsavedChanges={setHasUnsavedContentFilterChanges}
                     />
 
-                    {(guardrailData.litellm_params?.guardrail === "tool_permission" || guardrailProviderSpecificParams) && <Divider orientation="left">Provider Settings</Divider>}
+                    {(guardrailData.litellm_params?.guardrail ===
+                      "tool_permission" ||
+                      guardrailProviderSpecificParams) && (
+                      <Divider orientation="left">Provider Settings</Divider>
+                    )}
 
-                    {guardrailData.litellm_params?.guardrail === "tool_permission" ? (
+                    {guardrailData.litellm_params?.guardrail ===
+                    "tool_permission" ? (
                       <ToolPermissionRulesEditor
                         value={toolPermissionConfig}
                         onChange={setToolPermissionConfig}
@@ -793,7 +999,9 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                         <GuardrailProviderFields
                           selectedProvider={
                             Object.keys(guardrail_provider_map).find(
-                              (key) => guardrail_provider_map[key] === guardrailData.litellm_params?.guardrail,
+                              (key) =>
+                                guardrail_provider_map[key] ===
+                                guardrailData.litellm_params?.guardrail,
                             ) || null
                           }
                           accessToken={accessToken}
@@ -804,15 +1012,27 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                         {/* Optional parameters */}
                         {guardrailProviderSpecificParams &&
                           (() => {
-                            const currentProvider = Object.keys(guardrail_provider_map).find(
-                              (key) => guardrail_provider_map[key] === guardrailData.litellm_params?.guardrail,
+                            const currentProvider = Object.keys(
+                              guardrail_provider_map,
+                            ).find(
+                              (key) =>
+                                guardrail_provider_map[key] ===
+                                guardrailData.litellm_params?.guardrail,
                             );
                             if (!currentProvider) return null;
 
-                            const providerKey = guardrail_provider_map[currentProvider]?.toLowerCase();
-                            const providerFields = guardrailProviderSpecificParams[providerKey];
+                            const providerKey =
+                              guardrail_provider_map[
+                                currentProvider
+                              ]?.toLowerCase();
+                            const providerFields =
+                              guardrailProviderSpecificParams[providerKey];
 
-                            if (!providerFields || !providerFields.optional_params) return null;
+                            if (
+                              !providerFields ||
+                              !providerFields.optional_params
+                            )
+                              return null;
 
                             return (
                               <GuardrailOptionalParams
@@ -826,7 +1046,10 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                     )}
 
                     <Divider orientation="left">Advanced Settings</Divider>
-                    <Form.Item label="Guardrail Information" name="guardrail_info">
+                    <Form.Item
+                      label="Guardrail Information"
+                      name="guardrail_info"
+                    >
                       <Input.TextArea rows={5} />
                     </Form.Item>
 
@@ -840,18 +1063,24 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                       >
                         Cancel
                       </Button>
-                      <Button type="primary" htmlType="submit">Save Changes</Button>
+                      <Button type="primary" htmlType="submit">
+                        Save Changes
+                      </Button>
                     </div>
                   </Form>
                 ) : (
                   <div className="space-y-4">
                     <div>
                       <Text className="font-medium">Guardrail ID</Text>
-                      <div className="font-mono">{guardrailData.guardrail_id}</div>
+                      <div className="font-mono">
+                        {guardrailData.guardrail_id}
+                      </div>
                     </div>
                     <div>
                       <Text className="font-medium">Guardrail Name</Text>
-                      <div>{guardrailData.guardrail_name || "Unnamed Guardrail"}</div>
+                      <div>
+                        {guardrailData.guardrail_name || "Unnamed Guardrail"}
+                      </div>
                     </div>
                     <div>
                       <Text className="font-medium">Provider</Text>
@@ -863,19 +1092,34 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                     </div>
                     <div>
                       <Text className="font-medium">Default On</Text>
-                      <Badge color={guardrailData.litellm_params?.default_on ? "green" : "gray"}>
-                        {guardrailData.litellm_params?.default_on ? "Yes" : "No"}
+                      <Badge
+                        color={
+                          guardrailData.litellm_params?.default_on
+                            ? "green"
+                            : "gray"
+                        }
+                      >
+                        {guardrailData.litellm_params?.default_on
+                          ? "Yes"
+                          : "No"}
                       </Badge>
                     </div>
 
                     {guardrailData.litellm_params?.pii_entities_config &&
-                      Object.keys(guardrailData.litellm_params.pii_entities_config).length > 0 && (
+                      Object.keys(
+                        guardrailData.litellm_params.pii_entities_config,
+                      ).length > 0 && (
                         <div>
                           <Text className="font-medium">PII Protection</Text>
                           <div className="mt-2">
                             <Badge color="blue">
-                              {Object.keys(guardrailData.litellm_params.pii_entities_config).length} PII entities
-                              configured
+                              {
+                                Object.keys(
+                                  guardrailData.litellm_params
+                                    .pii_entities_config,
+                                ).length
+                              }{" "}
+                              PII entities configured
                             </Badge>
                           </div>
                         </div>
@@ -890,8 +1134,12 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                       <div>{formatDate(guardrailData.updated_at)}</div>
                     </div>
 
-                    {guardrailData.litellm_params?.guardrail === "tool_permission" && (
-                      <ToolPermissionRulesEditor value={toolPermissionConfig} disabled />
+                    {guardrailData.litellm_params?.guardrail ===
+                      "tool_permission" && (
+                      <ToolPermissionRulesEditor
+                        value={toolPermissionConfig}
+                        disabled
+                      />
                     )}
                   </div>
                 )}
@@ -910,11 +1158,15 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
           fetchGuardrailInfo();
         }}
         accessToken={accessToken}
-        editData={guardrailData ? {
-          guardrail_id: guardrailData.guardrail_id,
-          guardrail_name: guardrailData.guardrail_name,
-          litellm_params: guardrailData.litellm_params,
-        } as EditGuardrailData : null}
+        editData={
+          guardrailData
+            ? ({
+                guardrail_id: guardrailData.guardrail_id,
+                guardrail_name: guardrailData.guardrail_name,
+                litellm_params: guardrailData.litellm_params,
+              } as EditGuardrailData)
+            : null
+        }
       />
     </div>
   );

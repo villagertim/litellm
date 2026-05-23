@@ -1,6 +1,6 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import React from "react";
+import { describe, expect, it } from "vitest";
 import { SimpleToolCallBlock } from "./SimpleToolCallBlock";
 
 describe("SimpleToolCallBlock", () => {
@@ -8,7 +8,7 @@ describe("SimpleToolCallBlock", () => {
     render(
       <SimpleToolCallBlock
         tool={{ id: "1", name: "get_weather", arguments: {} }}
-      />
+      />,
     );
     expect(screen.getByText("get_weather")).toBeInTheDocument();
   });
@@ -17,7 +17,7 @@ describe("SimpleToolCallBlock", () => {
     render(
       <SimpleToolCallBlock
         tool={{ id: "1", name: "get_weather", arguments: {} }}
-      />
+      />,
     );
     expect(screen.getByText("function")).toBeInTheDocument();
   });
@@ -30,7 +30,7 @@ describe("SimpleToolCallBlock", () => {
           name: "get_weather",
           arguments: { city: "London", units: "metric" },
         }}
-      />
+      />,
     );
     expect(screen.getByText("city:")).toBeInTheDocument();
     expect(screen.getByText('"London"')).toBeInTheDocument();
@@ -42,7 +42,7 @@ describe("SimpleToolCallBlock", () => {
     const { container } = render(
       <SimpleToolCallBlock
         tool={{ id: "1", name: "get_weather", arguments: {} }}
-      />
+      />,
     );
     // The tool name and "function" badge should be there, but no key: value pairs
     expect(screen.getByText("get_weather")).toBeInTheDocument();

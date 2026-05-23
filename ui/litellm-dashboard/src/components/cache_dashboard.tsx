@@ -2,7 +2,7 @@ import {
   BarChart,
   Card,
   Col,
-  DateRangePickerValue,
+  type DateRangePickerValue,
   Grid,
   Icon,
   MultiSelect,
@@ -15,7 +15,8 @@ import {
   TabPanels,
   Text,
 } from "@tremor/react";
-import React, { useEffect, useState } from "react";
+import type React from "react";
+import { useEffect, useState } from "react";
 import NotificationsManager from "./molecules/notifications_manager";
 import UsageDatePicker from "./shared/usage_date_picker";
 
@@ -96,7 +97,13 @@ const deepParse = (input: any) => {
   return parsed;
 };
 
-const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole, userID, premiumUser }) => {
+const CacheDashboard: React.FC<CachePageProps> = ({
+  accessToken,
+  token,
+  userRole,
+  userID,
+  premiumUser,
+}) => {
   const [filteredData, setFilteredData] = useState<uiData[]>([]);
   const [selectedApiKeys, setSelectedApiKeys] = useState<string[]>([]);
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
@@ -131,16 +138,25 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
     setLastRefreshed(currentDate.toLocaleString());
   }, [accessToken]);
 
-  const uniqueApiKeys = Array.from(new Set(data.map((item) => item?.api_key ?? "")));
-  const uniqueModels = Array.from(new Set(data.map((item) => item?.model ?? "")));
-  const uniqueCallTypes = Array.from(new Set(data.map((item) => item?.call_type ?? "")));
+  const uniqueApiKeys = Array.from(
+    new Set(data.map((item) => item?.api_key ?? "")),
+  );
+  const uniqueModels = Array.from(
+    new Set(data.map((item) => item?.model ?? "")),
+  );
+  const uniqueCallTypes = Array.from(
+    new Set(data.map((item) => item?.call_type ?? "")),
+  );
 
-  const updateCachingData = async (startTime: Date | undefined, endTime: Date | undefined) => {
+  const updateCachingData = async (
+    startTime: Date | undefined,
+    endTime: Date | undefined,
+  ) => {
     if (!startTime || !endTime || !accessToken) {
       return;
     }
 
-    let new_cache_data = await adminGlobalCacheActivity(
+    const new_cache_data = await adminGlobalCacheActivity(
       accessToken,
       formatDateWithoutTZ(startTime),
       formatDateWithoutTZ(endTime),
@@ -153,7 +169,9 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
     console.log("DATA IN CACHE DASHBOARD", data);
     let newData: cacheDataItem[] = data;
     if (selectedApiKeys.length > 0) {
-      newData = newData.filter((item) => selectedApiKeys.includes(item.api_key));
+      newData = newData.filter((item) =>
+        selectedApiKeys.includes(item.api_key),
+      );
     }
 
     if (selectedModels.length > 0) {
@@ -193,20 +211,25 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
         item.call_type = "Unknown";
       }
 
-      llm_api_requests += (item.total_rows || 0) - (item.cache_hit_true_rows || 0);
+      llm_api_requests +=
+        (item.total_rows || 0) - (item.cache_hit_true_rows || 0);
       cache_hits += item.cache_hit_true_rows || 0;
       cached_tokens += item.cached_completion_tokens || 0;
 
       const existingItem = acc.find((i) => i.name === item.call_type);
       if (existingItem) {
-        existingItem["LLM API requests"] += (item.total_rows || 0) - (item.cache_hit_true_rows || 0);
+        existingItem["LLM API requests"] +=
+          (item.total_rows || 0) - (item.cache_hit_true_rows || 0);
         existingItem["Cache hit"] += item.cache_hit_true_rows || 0;
-        existingItem["Cached Completion Tokens"] += item.cached_completion_tokens || 0;
-        existingItem["Generated Completion Tokens"] += item.generated_completion_tokens || 0;
+        existingItem["Cached Completion Tokens"] +=
+          item.cached_completion_tokens || 0;
+        existingItem["Generated Completion Tokens"] +=
+          item.generated_completion_tokens || 0;
       } else {
         acc.push({
           name: item.call_type,
-          "LLM API requests": (item.total_rows || 0) - (item.cache_hit_true_rows || 0),
+          "LLM API requests":
+            (item.total_rows || 0) - (item.cache_hit_true_rows || 0),
           "Cache hit": item.cache_hit_true_rows || 0,
           "Cached Completion Tokens": item.cached_completion_tokens || 0,
           "Generated Completion Tokens": item.generated_completion_tokens || 0,
@@ -218,9 +241,9 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
     // set header cache statistics
     setCachedResponses(valueFormatterNumbers(cache_hits));
     setCachedTokens(valueFormatterNumbers(cached_tokens));
-    let allRequests = cache_hits + llm_api_requests;
+    const allRequests = cache_hits + llm_api_requests;
     if (allRequests > 0) {
-      let cache_hit_ratio = ((cache_hits / allRequests) * 100).toFixed(2);
+      const cache_hit_ratio = ((cache_hits / allRequests) * 100).toFixed(2);
       setCacheHitRatio(cache_hit_ratio);
     } else {
       setCacheHitRatio("0");
@@ -241,7 +264,9 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
     try {
       NotificationsManager.info("Running cache health check...");
       setHealthCheckResponse("");
-      const response = await cachingHealthCheckCall(accessToken !== null ? accessToken : "");
+      const response = await cachingHealthCheckCall(
+        accessToken !== null ? accessToken : "",
+      );
       console.log("CACHING HEALTH CHECK RESPONSE", response);
       setHealthCheckResponse(response);
     } catch (error: any) {
@@ -304,7 +329,11 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
                 </MultiSelect>
               </Col>
               <Col>
-                <MultiSelect placeholder="Select Models" value={selectedModels} onValueChange={setSelectedModels}>
+                <MultiSelect
+                  placeholder="Select Models"
+                  value={selectedModels}
+                  onValueChange={setSelectedModels}
+                >
                   {uniqueModels.map((model) => (
                     <MultiSelectItem key={model} value={model}>
                       {model}
@@ -369,14 +398,19 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
               yAxisWidth={48}
             />
 
-            <Subtitle className="mt-4">Cached Completion Tokens vs Generated Completion Tokens</Subtitle>
+            <Subtitle className="mt-4">
+              Cached Completion Tokens vs Generated Completion Tokens
+            </Subtitle>
             <BarChart
               className="mt-6"
               data={filteredData}
               stack={true}
               index="name"
               valueFormatter={valueFormatterNumbers}
-              categories={["Generated Completion Tokens", "Cached Completion Tokens"]}
+              categories={[
+                "Generated Completion Tokens",
+                "Cached Completion Tokens",
+              ]}
               colors={["sky", "teal"]}
               yAxisWidth={48}
             />
@@ -390,7 +424,11 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
           />
         </TabPanel>
         <TabPanel>
-          <CacheSettings accessToken={accessToken} userRole={userRole} userID={userID} />
+          <CacheSettings
+            accessToken={accessToken}
+            userRole={userRole}
+            userID={userID}
+          />
         </TabPanel>
       </TabPanels>
     </TabGroup>

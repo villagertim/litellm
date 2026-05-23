@@ -1,30 +1,31 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import { useRegisterGuardrail } from "@/app/(dashboard)/hooks/guardrails/useRegisterGuardrail";
+import TeamDropdown from "@/components/common_components/team_dropdown";
+import NotificationsManager from "@/components/molecules/notifications_manager";
 import {
-  SearchIcon,
-  PlusIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-  XIcon,
-  CheckIcon,
-  ExternalLinkIcon,
-  KeyIcon,
-  ServerIcon,
-  AlertCircleIcon,
-  InfoIcon,
-} from "lucide-react";
-import { Modal, Form, Input, Select } from "antd";
-import {
-  listGuardrailSubmissions,
+  type GuardrailSubmissionItem,
   approveGuardrailSubmission,
+  listGuardrailSubmissions,
   rejectGuardrailSubmission,
   updateGuardrailCall,
-  type GuardrailSubmissionItem,
 } from "@/components/networking";
-import NotificationsManager from "@/components/molecules/notifications_manager";
-import TeamDropdown from "@/components/common_components/team_dropdown";
-import { useRegisterGuardrail } from "@/app/(dashboard)/hooks/guardrails/useRegisterGuardrail";
+import { Form, Input, Modal, Select } from "antd";
+import {
+  AlertCircleIcon,
+  CheckIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  ExternalLinkIcon,
+  InfoIcon,
+  KeyIcon,
+  PlusIcon,
+  SearchIcon,
+  ServerIcon,
+  XIcon,
+} from "lucide-react";
+import type React from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type GuardrailStatus = "active" | "pending" | "rejected";
 
@@ -67,7 +68,9 @@ function formatSubmissionDate(value: string | null | undefined): string {
   }
 }
 
-function submissionToTeamGuardrail(item: GuardrailSubmissionItem): TeamGuardrail {
+function submissionToTeamGuardrail(
+  item: GuardrailSubmissionItem,
+): TeamGuardrail {
   const params = item.litellm_params ?? {};
   const info = item.guardrail_info ?? {};
   const headers = params.headers;
@@ -82,13 +85,13 @@ function submissionToTeamGuardrail(item: GuardrailSubmissionItem): TeamGuardrail
           value: String(value ?? ""),
         }))
       : [];
-  const endpoint =
-    (params.api_base as string) ?? (params.url as string) ?? "";
-  const model =
-    (info.model as string) ?? (params.model as string) ?? "—";
+  const endpoint = (params.api_base as string) ?? (params.url as string) ?? "";
+  const model = (info.model as string) ?? (params.model as string) ?? "—";
   const forwardKey = (params.forward_api_key as boolean) ?? true;
   const extraHeaders = Array.isArray(params.extra_headers)
-    ? (params.extra_headers as string[]).filter((h): h is string => typeof h === "string")
+    ? (params.extra_headers as string[]).filter(
+        (h): h is string => typeof h === "string",
+      )
     : [];
   return {
     id: item.guardrail_id,
@@ -106,7 +109,9 @@ function submissionToTeamGuardrail(item: GuardrailSubmissionItem): TeamGuardrail
     submittedBy: item.submitted_by_email ?? item.submitted_by_user_id ?? "—",
     mode: params.mode as string | undefined,
     unreachable_fallback: params.unreachable_fallback as string | undefined,
-    additionalProviderParams: params.additional_provider_specific_params as Record<string, unknown> | undefined,
+    additionalProviderParams: params.additional_provider_specific_params as
+      | Record<string, unknown>
+      | undefined,
     guardrailType: params.guardrail as string | undefined,
   };
 }
@@ -148,7 +153,7 @@ function buildEquivalentConfigYaml(g: TeamGuardrail): string {
   const lines: string[] = [
     "litellm_settings:",
     "  guardrails:",
-    `    - guardrail_name: "${g.name.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`,
+    `    - guardrail_name: "${g.name.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`,
     "      litellm_params:",
     `        guardrail: ${g.guardrailType ?? "generic_guardrail_api"}`,
     `        mode: ${g.mode ?? "pre_call"}  # or post_call, during_call`,
@@ -158,21 +163,30 @@ function buildEquivalentConfigYaml(g: TeamGuardrail): string {
     `        forward_api_key: ${g.forwardKey}`,
   ];
   if (g.model && g.model !== "—") {
-    lines.push(`        model: "${g.model}"  # LLM model name sent to the guardrail for context`);
+    lines.push(
+      `        model: "${g.model}"  # LLM model name sent to the guardrail for context`,
+    );
   }
   if (g.customHeaders.length > 0) {
     lines.push("        headers:  # static headers (sent with every request)");
     for (const h of g.customHeaders) {
-      lines.push(`          ${h.key}: "${String(h.value).replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`);
+      lines.push(
+        `          ${h.key}: "${String(h.value).replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`,
+      );
     }
   }
   if (g.extraHeaders.length > 0) {
-    lines.push("        extra_headers:  # forward these client request headers to the guardrail");
+    lines.push(
+      "        extra_headers:  # forward these client request headers to the guardrail",
+    );
     for (const name of g.extraHeaders) {
       lines.push(`          - ${name}`);
     }
   }
-  if (g.additionalProviderParams && Object.keys(g.additionalProviderParams).length > 0) {
+  if (
+    g.additionalProviderParams &&
+    Object.keys(g.additionalProviderParams).length > 0
+  ) {
     lines.push("        additional_provider_specific_params:");
     for (const [k, v] of Object.entries(g.additionalProviderParams)) {
       const val = typeof v === "string" ? `"${v}"` : String(v);
@@ -281,7 +295,8 @@ function GuardrailCard({
           </div>
           <div className="flex items-center gap-4 text-xs text-gray-500">
             <span>
-              Model: <span className="font-medium text-gray-700">{g.model}</span>
+              Model:{" "}
+              <span className="font-medium text-gray-700">{g.model}</span>
             </span>
             <span>
               Submitted:{" "}
@@ -326,16 +341,16 @@ function GuardrailCard({
         </div>
       </div>
       <div className="mt-3 pt-3 border-t border-gray-100">
-          <button
-            type="button"
-            onClick={onToggleHeaders}
-            className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 transition-colors"
-          >
-            {isHeadersExpanded ? (
-              <ChevronUpIcon className="h-3.5 w-3.5" />
-            ) : (
-              <ChevronDownIcon className="h-3.5 w-3.5" />
-            )}
+        <button
+          type="button"
+          onClick={onToggleHeaders}
+          className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 transition-colors"
+        >
+          {isHeadersExpanded ? (
+            <ChevronUpIcon className="h-3.5 w-3.5" />
+          ) : (
+            <ChevronDownIcon className="h-3.5 w-3.5" />
+          )}
           Static headers
           {g.customHeaders.length > 0 && (
             <span className="ml-1 bg-gray-100 text-gray-600 rounded-full px-1.5 py-0.5 text-xs">
@@ -396,7 +411,7 @@ type DetailPanelProps = {
   onReject: () => void;
   onToggleForwardKey: () => void;
   onUpdateCustomHeaders: (
-    customHeaders: { key: string; value: string }[]
+    customHeaders: { key: string; value: string }[],
   ) => Promise<void>;
   onUpdateExtraHeaders: (extraHeaders: string[]) => Promise<void>;
 };
@@ -522,7 +537,7 @@ function DetailPanel({
                       type="button"
                       onClick={() =>
                         onUpdateCustomHeaders(
-                          g.customHeaders.filter((_, idx) => idx !== i)
+                          g.customHeaders.filter((_, idx) => idx !== i),
                         )
                       }
                       className="text-gray-400 hover:text-red-600 flex-shrink-0"
@@ -546,8 +561,16 @@ function DetailPanel({
                     e.preventDefault();
                     const key = newStaticHeaderKey.trim();
                     const value = newStaticHeaderValue.trim();
-                    if (key && !g.customHeaders.some((h) => h.key.toLowerCase() === key.toLowerCase())) {
-                      onUpdateCustomHeaders([...g.customHeaders, { key, value }]);
+                    if (
+                      key &&
+                      !g.customHeaders.some(
+                        (h) => h.key.toLowerCase() === key.toLowerCase(),
+                      )
+                    ) {
+                      onUpdateCustomHeaders([
+                        ...g.customHeaders,
+                        { key, value },
+                      ]);
                       setNewStaticHeaderKey("");
                       setNewStaticHeaderValue("");
                     }
@@ -565,8 +588,16 @@ function DetailPanel({
                     e.preventDefault();
                     const key = newStaticHeaderKey.trim();
                     const value = newStaticHeaderValue.trim();
-                    if (key && !g.customHeaders.some((h) => h.key.toLowerCase() === key.toLowerCase())) {
-                      onUpdateCustomHeaders([...g.customHeaders, { key, value }]);
+                    if (
+                      key &&
+                      !g.customHeaders.some(
+                        (h) => h.key.toLowerCase() === key.toLowerCase(),
+                      )
+                    ) {
+                      onUpdateCustomHeaders([
+                        ...g.customHeaders,
+                        { key, value },
+                      ]);
                       setNewStaticHeaderKey("");
                       setNewStaticHeaderValue("");
                     }
@@ -578,7 +609,12 @@ function DetailPanel({
                 onClick={() => {
                   const key = newStaticHeaderKey.trim();
                   const value = newStaticHeaderValue.trim();
-                  if (key && !g.customHeaders.some((h) => h.key.toLowerCase() === key.toLowerCase())) {
+                  if (
+                    key &&
+                    !g.customHeaders.some(
+                      (h) => h.key.toLowerCase() === key.toLowerCase(),
+                    )
+                  ) {
                     onUpdateCustomHeaders([...g.customHeaders, { key, value }]);
                     setNewStaticHeaderKey("");
                     setNewStaticHeaderValue("");
@@ -602,7 +638,8 @@ function DetailPanel({
               )}
             </div>
             <p className="text-xs text-gray-400 mb-2">
-              Allowed header names to forward from the client request to the guardrail (e.g. x-request-id).
+              Allowed header names to forward from the client request to the
+              guardrail (e.g. x-request-id).
             </p>
             {g.extraHeaders.length === 0 ? (
               <p className="text-xs text-gray-400 italic mb-2">
@@ -620,7 +657,7 @@ function DetailPanel({
                       type="button"
                       onClick={() =>
                         onUpdateExtraHeaders(
-                          g.extraHeaders.filter((_, idx) => idx !== i)
+                          g.extraHeaders.filter((_, idx) => idx !== i),
                         )
                       }
                       className="text-gray-400 hover:text-red-600 flex-shrink-0"
@@ -643,7 +680,10 @@ function DetailPanel({
                   if (e.key === "Enter") {
                     e.preventDefault();
                     const name = newExtraHeader.trim().toLowerCase();
-                    if (name && !g.extraHeaders.map((h) => h.toLowerCase()).includes(name)) {
+                    if (
+                      name &&
+                      !g.extraHeaders.map((h) => h.toLowerCase()).includes(name)
+                    ) {
                       onUpdateExtraHeaders([...g.extraHeaders, name]);
                       setNewExtraHeader("");
                     }
@@ -654,7 +694,10 @@ function DetailPanel({
                 type="button"
                 onClick={() => {
                   const name = newExtraHeader.trim().toLowerCase();
-                  if (name && !g.extraHeaders.map((h) => h.toLowerCase()).includes(name)) {
+                  if (
+                    name &&
+                    !g.extraHeaders.map((h) => h.toLowerCase()).includes(name)
+                  ) {
                     onUpdateExtraHeaders([...g.extraHeaders, name]);
                     setNewExtraHeader("");
                   }
@@ -688,7 +731,8 @@ function DetailPanel({
             <InfoIcon className="h-3.5 w-3.5 text-gray-400 flex-shrink-0 mt-0.5" />
             <p className="text-xs text-gray-500 leading-relaxed">
               This guardrail runs on a separate instance. It receives the user
-              request and forwards the result to the next step in the pipeline. See{" "}
+              request and forwards the result to the next step in the pipeline.
+              See{" "}
               <a
                 href="https://docs.litellm.ai/docs/adding_provider/generic_guardrail_api"
                 target="_blank"
@@ -768,7 +812,10 @@ function ConfirmDialog({
         </h3>
         <p className="text-sm text-gray-500 mb-5">
           Are you sure you want to {action}{" "}
-          <span className="font-medium text-gray-700">&quot;{guardrailName}&quot;</span>?{" "}
+          <span className="font-medium text-gray-700">
+            &quot;{guardrailName}&quot;
+          </span>
+          ?{" "}
           {isApprove
             ? "This will make it active and available for use."
             : "This will mark it as rejected and notify the team."}
@@ -811,11 +858,13 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
     rejected: 0,
   });
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<
-    "all" | GuardrailStatus
-  >("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | GuardrailStatus>(
+    "all",
+  );
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [expandedHeaders, setExpandedHeaders] = useState<Set<string>>(new Set());
+  const [expandedHeaders, setExpandedHeaders] = useState<Set<string>>(
+    new Set(),
+  );
   const [confirmAction, setConfirmAction] = useState<{
     id: string;
     action: "approve" | "reject";
@@ -853,7 +902,9 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
       setGuardrails(res.submissions.map(submissionToTeamGuardrail));
       setSummary(res.summary);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load submissions");
+      setError(
+        err instanceof Error ? err.message : "Failed to load submissions",
+      );
       setGuardrails([]);
     } finally {
       setIsLoading(false);
@@ -881,10 +932,10 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
         litellm_params: { forward_api_key: newValue },
       });
       setGuardrails((prev) =>
-        prev.map((x) => (x.id === id ? { ...x, forwardKey: newValue } : x))
+        prev.map((x) => (x.id === id ? { ...x, forwardKey: newValue } : x)),
       );
       NotificationsManager.success(
-        newValue ? "Forward API key enabled" : "Forward API key disabled"
+        newValue ? "Forward API key enabled" : "Forward API key disabled",
       );
     } catch {
       NotificationsManager.fromBackend("Failed to update forward API key");
@@ -893,7 +944,7 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
 
   async function updateCustomHeaders(
     id: string,
-    customHeaders: { key: string; value: string }[]
+    customHeaders: { key: string; value: string }[],
   ) {
     if (!accessToken) return;
     const headersObj: Record<string, string> = {};
@@ -911,8 +962,8 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
                 ...x,
                 customHeaders: customHeaders.filter((h) => h.key.trim()),
               }
-            : x
-        )
+            : x,
+        ),
       );
       NotificationsManager.success("Static headers updated");
     } catch {
@@ -927,11 +978,13 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
         litellm_params: { extra_headers: extraHeaders },
       });
       setGuardrails((prev) =>
-        prev.map((x) => (x.id === id ? { ...x, extraHeaders } : x))
+        prev.map((x) => (x.id === id ? { ...x, extraHeaders } : x)),
       );
       NotificationsManager.success("Forward client headers updated");
     } catch {
-      NotificationsManager.fromBackend("Failed to update forward client headers");
+      NotificationsManager.fromBackend(
+        "Failed to update forward client headers",
+      );
     }
   }
 
@@ -978,14 +1031,22 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
         }`}
       >
         <div className="grid grid-cols-4 gap-4 mb-6">
-          <StatCard label="Total Submitted" value={totalCount} color="text-gray-900" />
+          <StatCard
+            label="Total Submitted"
+            value={totalCount}
+            color="text-gray-900"
+          />
           <StatCard
             label="Pending Review"
             value={pendingCount}
             color="text-yellow-600"
           />
           <StatCard label="Active" value={activeCount} color="text-green-600" />
-          <StatCard label="Rejected" value={rejectedCount} color="text-red-600" />
+          <StatCard
+            label="Rejected"
+            value={rejectedCount}
+            color="text-red-600"
+          />
         </div>
         <div className="flex items-center gap-3 mb-5">
           <div className="relative flex-1 max-w-xs">
@@ -1035,19 +1096,27 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
               No guardrails match your filters.
             </div>
           )}
-          {!isLoading && !error && filtered.map((g) => (
-            <GuardrailCard
-              key={g.id}
-              guardrail={g}
-              isSelected={selectedId === g.id}
-              isHeadersExpanded={expandedHeaders.has(g.id)}
-              onSelect={() => setSelectedId(selectedId === g.id ? null : g.id)}
-              onToggleForwardKey={() => toggleForwardKey(g.id)}
-              onToggleHeaders={() => toggleHeaders(g.id)}
-              onApprove={() => setConfirmAction({ id: g.id, action: "approve" })}
-              onReject={() => setConfirmAction({ id: g.id, action: "reject" })}
-            />
-          ))}
+          {!isLoading &&
+            !error &&
+            filtered.map((g) => (
+              <GuardrailCard
+                key={g.id}
+                guardrail={g}
+                isSelected={selectedId === g.id}
+                isHeadersExpanded={expandedHeaders.has(g.id)}
+                onSelect={() =>
+                  setSelectedId(selectedId === g.id ? null : g.id)
+                }
+                onToggleForwardKey={() => toggleForwardKey(g.id)}
+                onToggleHeaders={() => toggleHeaders(g.id)}
+                onApprove={() =>
+                  setConfirmAction({ id: g.id, action: "approve" })
+                }
+                onReject={() =>
+                  setConfirmAction({ id: g.id, action: "reject" })
+                }
+              />
+            ))}
         </div>
       </div>
       {selected && (
@@ -1103,7 +1172,9 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
           initialValues={{ mode: "pre_call" }}
           onFinish={async (values) => {
             const litellm_params: Record<string, unknown> = {
-              ...(values.extra_litellm_params ? JSON.parse(values.extra_litellm_params) : {}),
+              ...(values.extra_litellm_params
+                ? JSON.parse(values.extra_litellm_params)
+                : {}),
               guardrail: "generic_guardrail_api",
               mode: values.mode,
               api_base: values.api_base,
@@ -1113,7 +1184,9 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
                 team_id: values.team_id,
                 guardrail_name: values.guardrail_name,
                 litellm_params,
-                guardrail_info: values.guardrail_info ? JSON.parse(values.guardrail_info) : undefined,
+                guardrail_info: values.guardrail_info
+                  ? JSON.parse(values.guardrail_info)
+                  : undefined,
               });
               NotificationsManager.success("Guardrail submitted for review");
               setIsSubmitModalOpen(false);
@@ -1157,7 +1230,10 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
               { type: "url", message: "Must be a valid URL" },
             ]}
           >
-            <Input placeholder="https://your-guardrail-api.com/v1/check" className="font-mono" />
+            <Input
+              placeholder="https://your-guardrail-api.com/v1/check"
+              className="font-mono"
+            />
           </Form.Item>
           <Form.Item
             label="Additional litellm_params (optional)"

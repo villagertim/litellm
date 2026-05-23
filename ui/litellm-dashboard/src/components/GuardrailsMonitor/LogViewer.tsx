@@ -1,3 +1,6 @@
+import { uiSpendLogsCall } from "@/components/networking";
+import { LogDetailsDrawer } from "@/components/view_logs/LogDetailsDrawer";
+import type { LogEntry as ViewLogsLogEntry } from "@/components/view_logs/columns";
 import {
   CheckCircleOutlined,
   CloseOutlined,
@@ -5,17 +8,21 @@ import {
   WarningOutlined,
 } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import moment from "moment";
 import { Button, Spin } from "antd";
-import React, { useState } from "react";
-import { uiSpendLogsCall } from "@/components/networking";
-import { LogDetailsDrawer } from "@/components/view_logs/LogDetailsDrawer";
-import type { LogEntry as ViewLogsLogEntry } from "@/components/view_logs/columns";
+import moment from "moment";
+import type React from "react";
+import { useState } from "react";
 import type { LogEntry } from "./mockData";
 
 const actionConfig: Record<
   "blocked" | "passed" | "flagged",
-  { icon: React.ElementType; color: string; bg: string; border: string; label: string }
+  {
+    icon: React.ElementType;
+    color: string;
+    bg: string;
+    border: string;
+    label: string;
+  }
 > = {
   blocked: {
     icon: CloseOutlined,
@@ -63,11 +70,13 @@ export function LogViewer({
 }: LogViewerProps) {
   const [sampleSize, setSampleSize] = useState(10);
   const [activeFilter, setActiveFilter] = useState<string>(filterAction);
-  const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
+  const [selectedRequestId, setSelectedRequestId] = useState<string | null>(
+    null,
+  );
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const filteredLogs = logs.filter(
-    (log) => activeFilter === "all" || log.action === activeFilter
+    (log) => activeFilter === "all" || log.action === activeFilter,
   );
   const displayLogs = filteredLogs.slice(0, sampleSize);
   const total = totalLogs ?? logs.length;
@@ -197,7 +206,9 @@ export function LogViewer({
                     >
                       {config.label}
                     </span>
-                    <span className="text-xs text-gray-400">{log.timestamp}</span>
+                    <span className="text-xs text-gray-400">
+                      {log.timestamp}
+                    </span>
                     <span className="text-xs text-gray-400">·</span>
                     {log.model && (
                       <span className="text-xs text-gray-500">{log.model}</span>

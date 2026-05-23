@@ -1,5 +1,12 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { getProxyBaseUrl } from "@/components/networking";
+import type React from "react";
+import {
+  type ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 interface ThemeContextType {
   logoUrl: string | null;
@@ -23,7 +30,10 @@ interface ThemeProviderProps {
   accessToken?: string | null;
 }
 
-export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children, accessToken }) => {
+export const ThemeProvider: React.FC<ThemeProviderProps> = ({
+  children,
+  accessToken,
+}) => {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [faviconUrl, setFaviconUrl] = useState<string | null>(null);
 
@@ -31,7 +41,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children, accessTo
     const loadThemeSettings = async () => {
       try {
         const proxyBaseUrl = getProxyBaseUrl();
-        const url = proxyBaseUrl ? `${proxyBaseUrl}/get/ui_theme_settings` : "/get/ui_theme_settings";
+        const url = proxyBaseUrl
+          ? `${proxyBaseUrl}/get/ui_theme_settings`
+          : "/get/ui_theme_settings";
         const response = await fetch(url, {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -71,7 +83,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children, accessTo
   }, [faviconUrl]);
 
   return (
-    <ThemeContext.Provider value={{ logoUrl, setLogoUrl, faviconUrl, setFaviconUrl }}>
+    <ThemeContext.Provider
+      value={{ logoUrl, setLogoUrl, faviconUrl, setFaviconUrl }}
+    >
       {children}
     </ThemeContext.Provider>
   );

@@ -11,7 +11,9 @@ interface ErrorViewerProps {
 }
 
 export const ErrorViewer: React.FC<ErrorViewerProps> = ({ errorInfo }) => {
-  const [expandedFrames, setExpandedFrames] = React.useState<{ [key: number]: boolean }>({});
+  const [expandedFrames, setExpandedFrames] = React.useState<{
+    [key: number]: boolean;
+  }>({});
   const [allExpanded, setAllExpanded] = React.useState(false);
 
   // Toggle individual frame
@@ -70,18 +72,27 @@ export const ErrorViewer: React.FC<ErrorViewerProps> = ({ errorInfo }) => {
         fileName,
         lineNumber,
         code,
-        inFunction: frameContent.includes(" in ") ? frameContent.split(" in ")[1].split("\n")[0] : "",
+        inFunction: frameContent.includes(" in ")
+          ? frameContent.split(" in ")[1].split("\n")[0]
+          : "",
       };
     });
   };
 
-  const tracebackFrames = errorInfo.traceback ? parseTraceback(errorInfo.traceback) : [];
+  const tracebackFrames = errorInfo.traceback
+    ? parseTraceback(errorInfo.traceback)
+    : [];
 
   return (
     <div className="bg-white rounded-lg shadow">
       <div className="p-4 border-b">
         <h3 className="text-lg font-medium flex items-center text-red-600">
-          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className="w-5 h-5 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -97,10 +108,14 @@ export const ErrorViewer: React.FC<ErrorViewerProps> = ({ errorInfo }) => {
         <div className="bg-red-50 rounded-md p-4 mb-4">
           <div className="flex">
             <span className="text-red-800 font-medium w-20">Type:</span>
-            <span className="text-red-700">{errorInfo.error_class || "Unknown Error"}</span>
+            <span className="text-red-700">
+              {errorInfo.error_class || "Unknown Error"}
+            </span>
           </div>
           <div className="flex mt-2">
-            <span className="text-red-800 font-medium w-20 flex-shrink-0">Message:</span>
+            <span className="text-red-800 font-medium w-20 flex-shrink-0">
+              Message:
+            </span>
             <span className="text-red-700 break-words whitespace-pre-wrap">
               {errorInfo.error_message || "Unknown error occurred"}
             </span>
@@ -119,7 +134,9 @@ export const ErrorViewer: React.FC<ErrorViewerProps> = ({ errorInfo }) => {
                   {allExpanded ? "Collapse All" : "Expand All"}
                 </button>
                 <button
-                  onClick={() => navigator.clipboard.writeText(errorInfo.traceback || "")}
+                  onClick={() =>
+                    navigator.clipboard.writeText(errorInfo.traceback || "")
+                  }
                   className="text-gray-500 hover:text-gray-700 flex items-center"
                   title="Copy traceback"
                 >
@@ -134,7 +151,14 @@ export const ErrorViewer: React.FC<ErrorViewerProps> = ({ errorInfo }) => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <rect
+                      x="9"
+                      y="9"
+                      width="13"
+                      height="13"
+                      rx="2"
+                      ry="2"
+                    ></rect>
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                   </svg>
                   <span className="ml-1">Copy</span>
@@ -144,16 +168,25 @@ export const ErrorViewer: React.FC<ErrorViewerProps> = ({ errorInfo }) => {
 
             <div className="bg-white rounded-md border border-gray-200 overflow-hidden shadow-sm">
               {tracebackFrames.map((frame, index) => (
-                <div key={index} className="border-b border-gray-200 last:border-b-0">
+                <div
+                  key={index}
+                  className="border-b border-gray-200 last:border-b-0"
+                >
                   <div
                     className="px-4 py-2 flex items-center justify-between cursor-pointer hover:bg-gray-50"
                     onClick={() => toggleFrame(index)}
                   >
                     <div className="flex items-center">
-                      <span className="text-gray-400 mr-2 w-12 text-right">{frame.lineNumber}</span>
-                      <span className="text-gray-600 font-medium">{frame.fileName}</span>
+                      <span className="text-gray-400 mr-2 w-12 text-right">
+                        {frame.lineNumber}
+                      </span>
+                      <span className="text-gray-600 font-medium">
+                        {frame.fileName}
+                      </span>
                       <span className="text-gray-500 mx-1">in</span>
-                      <span className="text-indigo-600 font-medium">{frame.inFunction || frame.fileName}</span>
+                      <span className="text-indigo-600 font-medium">
+                        {frame.inFunction || frame.fileName}
+                      </span>
                     </div>
                     <svg
                       className={`w-5 h-5 text-gray-500 transition-transform ${expandedFrames[index] ? "transform rotate-180" : ""}`}
@@ -161,7 +194,12 @@ export const ErrorViewer: React.FC<ErrorViewerProps> = ({ errorInfo }) => {
                       viewBox="0 0 24 24"
                       stroke="currentColor"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </div>
                   {(expandedFrames[index] || false) && frame.code && (

@@ -1,17 +1,32 @@
-import React, { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, Icon, Badge } from "@tremor/react";
-import { TrashIcon, SwitchVerticalIcon, ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/outline";
-import { Tooltip, Tag } from "antd";
 import {
-  ColumnDef,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  SwitchVerticalIcon,
+  TrashIcon,
+} from "@heroicons/react/outline";
+import {
+  type ColumnDef,
+  type SortingState,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { PolicyAttachment } from "./types";
+import {
+  Badge,
+  Icon,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+} from "@tremor/react";
+import { Tag, Tooltip } from "antd";
+import type React from "react";
+import { useState } from "react";
 import ImpactPopover from "./impact_popover";
+import type { PolicyAttachment } from "./types";
 
 interface AttachmentTableProps {
   attachments: PolicyAttachment[];
@@ -28,7 +43,9 @@ const AttachmentTable: React.FC<AttachmentTableProps> = ({
   isAdmin,
   accessToken,
 }) => {
-  const [sorting, setSorting] = useState<SortingState>([{ id: "created_at", desc: true }]);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "created_at", desc: true },
+  ]);
 
   // Format date helper function
   const formatDate = (dateString?: string) => {
@@ -239,20 +256,31 @@ const AttachmentTable: React.FC<AttachmentTableProps> = ({
                   <TableHeaderCell
                     key={header.id}
                     className={`py-1 h-8 ${
-                      header.id === "actions" ? "sticky right-0 bg-white shadow-[-4px_0_8px_-6px_rgba(0,0,0,0.1)]" : ""
+                      header.id === "actions"
+                        ? "sticky right-0 bg-white shadow-[-4px_0_8px_-6px_rgba(0,0,0,0.1)]"
+                        : ""
                     }`}
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center">
-                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                       </div>
                       {header.id !== "actions" && (
                         <div className="w-4">
                           {header.column.getIsSorted() ? (
                             {
-                              asc: <ChevronUpIcon className="h-4 w-4 text-blue-500" />,
-                              desc: <ChevronDownIcon className="h-4 w-4 text-blue-500" />,
+                              asc: (
+                                <ChevronUpIcon className="h-4 w-4 text-blue-500" />
+                              ),
+                              desc: (
+                                <ChevronDownIcon className="h-4 w-4 text-blue-500" />
+                              ),
                             }[header.column.getIsSorted() as string]
                           ) : (
                             <SwitchVerticalIcon className="h-4 w-4 text-gray-400" />
@@ -286,7 +314,10 @@ const AttachmentTable: React.FC<AttachmentTableProps> = ({
                           : ""
                       }`}
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>

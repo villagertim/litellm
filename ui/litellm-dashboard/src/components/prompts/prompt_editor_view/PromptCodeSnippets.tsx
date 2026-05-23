@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { Modal, Select, Button as AntdButton, Tabs } from "antd";
 import { CodeOutlined } from "@ant-design/icons";
-import { Button as TremorButton, Text } from "@tremor/react";
+import { Text, Button as TremorButton } from "@tremor/react";
+import { Button as AntdButton, Modal, Select, Tabs } from "antd";
+import React, { useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coy } from "react-syntax-highlighter/dist/esm/styles/prism";
 import NotificationsManager from "../../molecules/notifications_manager";
@@ -27,7 +27,9 @@ const PromptCodeSnippets: React.FC<PromptCodeSnippetsProps> = ({
   proxySettings,
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState<"curl" | "python" | "javascript">("curl");
+  const [selectedLanguage, setSelectedLanguage] = useState<
+    "curl" | "python" | "javascript"
+  >("curl");
   const [selectedTab, setSelectedTab] = useState("basic");
   const [generatedCode, setGeneratedCode] = useState("");
 
@@ -53,7 +55,7 @@ const PromptCodeSnippets: React.FC<PromptCodeSnippetsProps> = ({
   // Generate code based on selected language and tab
   const generateCode = () => {
     const hasVariables = Object.keys(promptVariables).length > 0;
-    
+
     if (selectedLanguage === "curl") {
       if (selectedTab === "basic") {
         return `curl -X POST '${apiBase}/chat/completions' \\
@@ -61,8 +63,12 @@ const PromptCodeSnippets: React.FC<PromptCodeSnippetsProps> = ({
   -H 'Authorization: Bearer ${effectiveApiKey}' \\
   -d '{
     "model": "${model}",
-    "prompt_id": "${promptId}"${hasVariables ? `,
-    "prompt_variables": ${JSON.stringify(promptVariables, null, 6).replace(/\n/g, '\n    ')}` : ''}
+    "prompt_id": "${promptId}"${
+      hasVariables
+        ? `,
+    "prompt_variables": ${JSON.stringify(promptVariables, null, 6).replace(/\n/g, "\n    ")}`
+        : ""
+    }
   }' | jq`;
       } else if (selectedTab === "messages") {
         return `curl -X POST '${apiBase}/chat/completions' \\
@@ -70,8 +76,12 @@ const PromptCodeSnippets: React.FC<PromptCodeSnippetsProps> = ({
   -H 'Authorization: Bearer ${effectiveApiKey}' \\
   -d '{
     "model": "${model}",
-    "prompt_id": "${promptId}"${hasVariables ? `,
-    "prompt_variables": ${JSON.stringify(promptVariables, null, 6).replace(/\n/g, '\n    ')}` : ''},
+    "prompt_id": "${promptId}"${
+      hasVariables
+        ? `,
+    "prompt_variables": ${JSON.stringify(promptVariables, null, 6).replace(/\n/g, "\n    ")}`
+        : ""
+    },
     "messages": [
       {
         "role": "user",
@@ -108,8 +118,12 @@ client = openai.OpenAI(
 response = client.chat.completions.create(
     model="${model}",
     extra_body={
-        "prompt_id": "${promptId}"${hasVariables ? `,
-        "prompt_variables": ${JSON.stringify(promptVariables, null, 8).replace(/\n/g, '\n        ')}` : ''}
+        "prompt_id": "${promptId}"${
+          hasVariables
+            ? `,
+        "prompt_variables": ${JSON.stringify(promptVariables, null, 8).replace(/\n/g, "\n        ")}`
+            : ""
+        }
     }
 )
 
@@ -122,8 +136,12 @@ response = client.chat.completions.create(
         {"role": "user", "content": "hi"}
     ],
     extra_body={
-        "prompt_id": "${promptId}"${hasVariables ? `,
-        "prompt_variables": ${JSON.stringify(promptVariables, null, 8).replace(/\n/g, '\n        ')}` : ''}
+        "prompt_id": "${promptId}"${
+          hasVariables
+            ? `,
+        "prompt_variables": ${JSON.stringify(promptVariables, null, 8).replace(/\n/g, "\n        ")}`
+            : ""
+        }
     }
 )
 
@@ -157,8 +175,12 @@ const client = new OpenAI({
 async function main() {
     const response = await client.chat.completions.create({
         model: "${model}",
-        ${hasVariables ? `prompt_id: "${promptId}",
-        prompt_variables: ${JSON.stringify(promptVariables, null, 8).replace(/\n/g, '\n        ')}` : `prompt_id: "${promptId}"`}
+        ${
+          hasVariables
+            ? `prompt_id: "${promptId}",
+        prompt_variables: ${JSON.stringify(promptVariables, null, 8).replace(/\n/g, "\n        ")}`
+            : `prompt_id: "${promptId}"`
+        }
     });
     
     console.log(response);
@@ -173,8 +195,12 @@ async function main() {
         messages: [
             { role: "user", content: "hi" }
         ],
-        ${hasVariables ? `prompt_id: "${promptId}",
-        prompt_variables: ${JSON.stringify(promptVariables, null, 8).replace(/\n/g, '\n        ')}` : `prompt_id: "${promptId}"`}
+        ${
+          hasVariables
+            ? `prompt_id: "${promptId}",
+        prompt_variables: ${JSON.stringify(promptVariables, null, 8).replace(/\n/g, "\n        ")}`
+            : `prompt_id: "${promptId}"`
+        }
     });
     
     console.log(response);
@@ -206,15 +232,18 @@ main();`;
     if (isModalVisible) {
       setGeneratedCode(generateCode());
     }
-  }, [isModalVisible, selectedLanguage, selectedTab, promptId, model, promptVariables]);
+  }, [
+    isModalVisible,
+    selectedLanguage,
+    selectedTab,
+    promptId,
+    model,
+    promptVariables,
+  ]);
 
   return (
     <>
-      <TremorButton
-        variant="secondary"
-        icon={CodeOutlined}
-        onClick={showModal}
-      >
+      <TremorButton variant="secondary" icon={CodeOutlined} onClick={showModal}>
         Get Code
       </TremorButton>
 
@@ -227,10 +256,14 @@ main();`;
       >
         <div className="flex justify-between items-center mb-4">
           <div>
-            <Text className="font-medium block mb-1 text-gray-700">Language</Text>
+            <Text className="font-medium block mb-1 text-gray-700">
+              Language
+            </Text>
             <Select
               value={selectedLanguage}
-              onChange={(value) => setSelectedLanguage(value as "curl" | "python" | "javascript")}
+              onChange={(value) =>
+                setSelectedLanguage(value as "curl" | "python" | "javascript")
+              }
               style={{ width: 180 }}
               options={[
                 { value: "curl", label: "cURL" },
@@ -249,7 +282,7 @@ main();`;
           </AntdButton>
         </div>
 
-        <Tabs 
+        <Tabs
           activeKey={selectedTab}
           onChange={setSelectedTab}
           items={[
@@ -260,7 +293,13 @@ main();`;
         />
 
         <SyntaxHighlighter
-          language={selectedLanguage === "curl" ? "bash" : selectedLanguage === "python" ? "python" : "javascript"}
+          language={
+            selectedLanguage === "curl"
+              ? "bash"
+              : selectedLanguage === "python"
+                ? "python"
+                : "javascript"
+          }
           style={coy as any}
           wrapLines={true}
           wrapLongLines={true}
@@ -281,4 +320,3 @@ main();`;
 };
 
 export default PromptCodeSnippets;
-

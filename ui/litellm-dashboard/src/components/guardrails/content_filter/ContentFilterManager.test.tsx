@@ -1,15 +1,17 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import ContentFilterManager, {
   formatContentFilterDataForAPI,
 } from "./ContentFilterManager";
-import React from "react";
 
 const CONTENT_FILTER_GUARDRAIL_DATA = {
   litellm_params: {
     guardrail: "litellm_content_filter",
-    patterns: [{ pattern_type: "prebuilt", pattern_name: "email", action: "BLOCK" }],
+    patterns: [
+      { pattern_type: "prebuilt", pattern_name: "email", action: "BLOCK" },
+    ],
     blocked_words: [{ keyword: "test", action: "BLOCK", description: null }],
   },
 };
@@ -132,7 +134,7 @@ describe("ContentFilterManager", () => {
         guardrailSettings={GUARDRAIL_SETTINGS}
         isEditing={true}
         accessToken="test-token"
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -140,7 +142,7 @@ describe("ContentFilterManager", () => {
     });
 
     expect(screen.getByTestId("divider")).toHaveTextContent(
-      "Content Filter Configuration"
+      "Content Filter Configuration",
     );
   });
 
@@ -155,11 +157,15 @@ describe("ContentFilterManager", () => {
         guardrailSettings={GUARDRAIL_SETTINGS}
         isEditing={true}
         accessToken="test-token"
-      />
+      />,
     );
 
-    expect(screen.queryByTestId("content-filter-config")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("content-filter-display")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("content-filter-config"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("content-filter-display"),
+    ).not.toBeInTheDocument();
     expect(container.firstChild).toBeNull();
   });
 
@@ -170,14 +176,16 @@ describe("ContentFilterManager", () => {
         guardrailSettings={GUARDRAIL_SETTINGS}
         isEditing={false}
         accessToken="test-token"
-      />
+      />,
     );
 
     await waitFor(() => {
       expect(screen.getByTestId("content-filter-display")).toBeInTheDocument();
     });
 
-    expect(screen.queryByTestId("content-filter-config")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("content-filter-config"),
+    ).not.toBeInTheDocument();
     expect(screen.getByText(/email/)).toBeInTheDocument();
     expect(screen.getByText(/test/)).toBeInTheDocument();
   });
@@ -194,7 +202,7 @@ describe("ContentFilterManager", () => {
         accessToken="test-token"
         onDataChange={mockOnDataChange}
         onUnsavedChanges={mockOnUnsavedChanges}
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -219,7 +227,7 @@ describe("ContentFilterManager", () => {
         isEditing={true}
         accessToken="test-token"
         onUnsavedChanges={mockOnUnsavedChanges}
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -244,7 +252,7 @@ describe("ContentFilterManager", () => {
         isEditing={true}
         accessToken="test-token"
         onUnsavedChanges={mockOnUnsavedChanges}
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -269,11 +277,13 @@ describe("ContentFilterManager", () => {
         isEditing={true}
         accessToken="test-token"
         onUnsavedChanges={mockOnUnsavedChanges}
-      />
+      />,
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /remove pattern/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /remove pattern/i }),
+      ).toBeInTheDocument();
     });
 
     await user.click(screen.getByRole("button", { name: /remove pattern/i }));
@@ -292,7 +302,7 @@ describe("ContentFilterManager", () => {
         guardrailSettings={GUARDRAIL_SETTINGS}
         isEditing={true}
         accessToken="test-token"
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -308,7 +318,7 @@ describe("ContentFilterManager", () => {
     });
 
     expect(screen.getByTestId("unsaved-alert")).toHaveTextContent(
-      /unsaved changes.*Save Changes/i
+      /unsaved changes.*Save Changes/i,
     );
   });
 
@@ -323,7 +333,7 @@ describe("ContentFilterManager", () => {
         isEditing={true}
         accessToken="test-token"
         onDataChange={mockOnDataChange}
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -337,10 +347,11 @@ describe("ContentFilterManager", () => {
       expect(mockOnDataChange.mock.calls.length).toBeGreaterThan(initialCalls);
     });
 
-    const lastCall = mockOnDataChange.mock.calls[mockOnDataChange.mock.calls.length - 1];
+    const lastCall =
+      mockOnDataChange.mock.calls[mockOnDataChange.mock.calls.length - 1];
     const blockedWords = lastCall[1];
     expect(blockedWords).toContainEqual(
-      expect.objectContaining({ keyword: "secret", action: "MASK" })
+      expect.objectContaining({ keyword: "secret", action: "MASK" }),
     );
   });
 
@@ -354,7 +365,7 @@ describe("ContentFilterManager", () => {
         isEditing={false}
         accessToken="test-token"
         onUnsavedChanges={mockOnUnsavedChanges}
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -380,7 +391,7 @@ describe("ContentFilterManager", () => {
         isEditing={true}
         accessToken="test-token"
         onDataChange={mockOnDataChange}
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -395,14 +406,16 @@ describe("ContentFilterManager", () => {
         guardrailSettings={null}
         isEditing={true}
         accessToken="test-token"
-      />
+      />,
     );
 
     await waitFor(() => {
       expect(screen.getByTestId("divider")).toBeInTheDocument();
     });
 
-    expect(screen.queryByTestId("content-filter-config")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("content-filter-config"),
+    ).not.toBeInTheDocument();
   });
 });
 
@@ -458,7 +471,8 @@ describe("formatContentFilterDataForAPI", () => {
 
   it("should include categories when provided", () => {
     const patterns: Parameters<typeof formatContentFilterDataForAPI>[0] = [];
-    const blockedWords: Parameters<typeof formatContentFilterDataForAPI>[1] = [];
+    const blockedWords: Parameters<typeof formatContentFilterDataForAPI>[1] =
+      [];
     const categories = [
       {
         id: "c1",
@@ -469,7 +483,11 @@ describe("formatContentFilterDataForAPI", () => {
       },
     ];
 
-    const result = formatContentFilterDataForAPI(patterns, blockedWords, categories);
+    const result = formatContentFilterDataForAPI(
+      patterns,
+      blockedWords,
+      categories,
+    );
 
     expect(result.categories).toEqual([
       {
@@ -483,7 +501,8 @@ describe("formatContentFilterDataForAPI", () => {
 
   it("should use medium as default severity_threshold when category has none", () => {
     const patterns: Parameters<typeof formatContentFilterDataForAPI>[0] = [];
-    const blockedWords: Parameters<typeof formatContentFilterDataForAPI>[1] = [];
+    const blockedWords: Parameters<typeof formatContentFilterDataForAPI>[1] =
+      [];
     const categories = [
       {
         id: "c1",
@@ -494,7 +513,11 @@ describe("formatContentFilterDataForAPI", () => {
       },
     ];
 
-    const result = formatContentFilterDataForAPI(patterns, blockedWords, categories);
+    const result = formatContentFilterDataForAPI(
+      patterns,
+      blockedWords,
+      categories,
+    );
 
     expect(result.categories).toEqual([
       {

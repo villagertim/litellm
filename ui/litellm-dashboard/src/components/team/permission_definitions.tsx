@@ -15,8 +15,10 @@ export const PERMISSION_DESCRIPTIONS: Record<string, string> = {
   "/key/update": "Member can update a virtual key belonging to this team",
   "/key/delete": "Member can delete a virtual key belonging to this team",
   "/key/info": "Member can get info about a virtual key belonging to this team",
-  "/key/regenerate": "Member can regenerate a virtual key belonging to this team",
-  "/key/{key_id}/regenerate": "Member can regenerate a virtual key belonging to this team",
+  "/key/regenerate":
+    "Member can regenerate a virtual key belonging to this team",
+  "/key/{key_id}/regenerate":
+    "Member can regenerate a virtual key belonging to this team",
   "/key/list": "Member can list virtual keys belonging to this team",
   "/key/block": "Member can block a virtual key belonging to this team",
   "/key/unblock": "Member can unblock a virtual key belonging to this team",
@@ -30,7 +32,12 @@ export const PERMISSION_DESCRIPTIONS: Record<string, string> = {
  * Determines the HTTP method for a given permission endpoint
  */
 export const getMethodForEndpoint = (endpoint: string): string => {
-  if (endpoint.includes("/info") || endpoint.includes("/list") || endpoint.includes("/activity") || endpoint === "/spend/logs") {
+  if (
+    endpoint.includes("/info") ||
+    endpoint.includes("/list") ||
+    endpoint.includes("/activity") ||
+    endpoint === "/spend/logs"
+  ) {
     return "GET";
   }
   return "POST";

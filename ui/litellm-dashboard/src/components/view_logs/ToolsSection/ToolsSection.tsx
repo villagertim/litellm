@@ -4,9 +4,9 @@
  */
 
 import { Collapse, Typography } from "antd";
-import { LogEntry } from "../columns";
-import { parseToolsFromLog } from "./utils";
+import type { LogEntry } from "../columns";
 import { ToolItem } from "./ToolItem";
+import { parseToolsFromLog } from "./utils";
 
 const { Text } = Typography;
 
@@ -23,7 +23,7 @@ export function ToolsSection({ log }: ToolsSectionProps) {
   // Calculate summary stats
   const totalTools = tools.length;
   const calledTools = tools.filter((t) => t.called).length;
-  
+
   // Get preview of first 2 tool names
   const toolNamePreview = tools
     .slice(0, 2)
@@ -39,7 +39,14 @@ export function ToolsSection({ log }: ToolsSectionProps) {
           {
             key: "1",
             label: (
-              <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  flexWrap: "wrap",
+                }}
+              >
                 <h3 className="text-lg font-medium text-gray-900">Tools</h3>
                 <Text type="secondary" style={{ fontSize: 14 }}>
                   {totalTools} provided, {calledTools} called

@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import CacheFieldRenderer from "./CacheFieldRenderer";
 
 // Mock the useAuthorized hook to avoid Next.js router dependency

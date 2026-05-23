@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { formatNumberWithCommas } from "@/utils/dataUtils";
+import { isAdminRole } from "@/utils/roles";
+import { CheckCircleOutlined } from "@ant-design/icons";
 import {
+  Badge,
   Button,
   Card,
   Table,
@@ -8,20 +11,18 @@ import {
   TableHead,
   TableHeaderCell,
   TableRow,
-  Badge,
   Text,
 } from "@tremor/react";
-import { Modal, Alert, Tooltip, Skeleton, Switch } from "antd";
-import { CheckCircleOutlined } from "@ant-design/icons";
-import { getAgentsList, deleteAgentCall, keyListCall } from "./networking";
+import { Alert, Modal, Skeleton, Switch, Tooltip } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
 import AddAgentForm from "./agents/add_agent_form";
-import { isAdminRole } from "@/utils/roles";
 import AgentInfoView from "./agents/agent_info";
-import NotificationsManager from "./molecules/notifications_manager";
-import { Agent, AgentKeyInfo } from "./agents/types";
-import { Team } from "./key_team_helpers/key_list";
-import { formatNumberWithCommas } from "@/utils/dataUtils";
+import type { Agent, AgentKeyInfo } from "./agents/types";
 import TableIconActionButton from "./common_components/IconActionButton/TableIconActionButtons/TableIconActionButton";
+import type { Team } from "./key_team_helpers/key_list";
+import NotificationsManager from "./molecules/notifications_manager";
+import { deleteAgentCall, getAgentsList, keyListCall } from "./networking";
 
 interface AgentsPanelProps {
   accessToken: string | null;
@@ -33,13 +34,22 @@ interface AgentsResponse {
   agents: Agent[];
 }
 
-const AgentsPanel: React.FC<AgentsPanelProps> = ({ accessToken, userRole, teams }) => {
+const AgentsPanel: React.FC<AgentsPanelProps> = ({
+  accessToken,
+  userRole,
+  teams,
+}) => {
   const [agentsList, setAgentsList] = useState<Agent[]>([]);
-  const [keyInfoMap, setKeyInfoMap] = useState<Record<string, AgentKeyInfo>>({});
+  const [keyInfoMap, setKeyInfoMap] = useState<Record<string, AgentKeyInfo>>(
+    {},
+  );
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [agentToDelete, setAgentToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [agentToDelete, setAgentToDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
   const [healthCheckEnabled, setHealthCheckEnabled] = useState(false);
 
@@ -52,7 +62,10 @@ const AgentsPanel: React.FC<AgentsPanelProps> = ({ accessToken, userRole, teams 
 
     setIsLoading(true);
     try {
-      const response: AgentsResponse = await getAgentsList(accessToken, healthCheck ?? healthCheckEnabled);
+      const response: AgentsResponse = await getAgentsList(
+        accessToken,
+        healthCheck ?? healthCheckEnabled,
+      );
       setAgentsList(response.agents || []);
     } catch (error) {
       console.error("Error fetching agents:", error);
@@ -72,7 +85,7 @@ const AgentsPanel: React.FC<AgentsPanelProps> = ({ accessToken, userRole, teams 
         null,
         null,
         1,
-        500
+        500,
       );
       const map: Record<string, AgentKeyInfo> = {};
       for (const key of keys) {
@@ -135,7 +148,9 @@ const AgentsPanel: React.FC<AgentsPanelProps> = ({ accessToken, userRole, teams 
     setIsDeleting(true);
     try {
       await deleteAgentCall(accessToken, agentToDelete.id);
-      NotificationsManager.success(`Agent "${agentToDelete.name}" deleted successfully`);
+      NotificationsManager.success(
+        `Agent "${agentToDelete.name}" deleted successfully`,
+      );
       fetchAgents();
     } catch (error) {
       console.error("Error deleting agent:", error);
@@ -162,7 +177,10 @@ const AgentsPanel: React.FC<AgentsPanelProps> = ({ accessToken, userRole, teams 
     <div className="w-full mx-auto flex-auto overflow-y-auto m-8 p-2">
       <div className="flex flex-col gap-2 mb-4">
         <h1 className="text-2xl font-bold">Agents</h1>
-        <p className="text-sm text-gray-600">List of A2A-spec agents that are available to be used in your organization. Go to AI Hub, to make agents public.</p>
+        <p className="text-sm text-gray-600">
+          List of A2A-spec agents that are available to be used in your
+          organization. Go to AI Hub, to make agents public.
+        </p>
         <Alert
           message="Why do agents need keys?"
           description="Keys scope access to an agent and allow it to call MCP tools. Assign a key when creating an agent or from the Virtual Keys page."
@@ -178,7 +196,11 @@ const AgentsPanel: React.FC<AgentsPanelProps> = ({ accessToken, userRole, teams 
           )}
           <Tooltip title="When enabled, only agents with reachable URLs are shown">
             <div className="flex items-center gap-2">
-              <CheckCircleOutlined className={healthCheckEnabled ? "text-green-500" : "text-gray-400"} />
+              <CheckCircleOutlined
+                className={
+                  healthCheckEnabled ? "text-green-500" : "text-gray-400"
+                }
+              />
               <span className="text-sm text-gray-600">Health Check</span>
               <Switch
                 size="small"
@@ -219,7 +241,10 @@ const AgentsPanel: React.FC<AgentsPanelProps> = ({ accessToken, userRole, teams 
                 {sortedAgents.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={columnCount}>
-                      <Text className="text-center">No agents found. Click &quot;+ Add New Agent&quot; to create one.</Text>
+                      <Text className="text-center">
+                        No agents found. Click &quot;+ Add New Agent&quot; to
+                        create one.
+                      </Text>
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -266,7 +291,12 @@ const AgentsPanel: React.FC<AgentsPanelProps> = ({ accessToken, userRole, teams 
                         <TableCell>
                           <TableIconActionButton
                             variant="Delete"
-                            onClick={() => handleDeleteClick(agent.agent_id, agent.agent_name)}
+                            onClick={() =>
+                              handleDeleteClick(
+                                agent.agent_id,
+                                agent.agent_name,
+                              )
+                            }
                           />
                         </TableCell>
                       )}

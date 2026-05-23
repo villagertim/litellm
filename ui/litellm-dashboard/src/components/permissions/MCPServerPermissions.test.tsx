@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import MCPServerPermissions from "./MCPServerPermissions";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as networking from "../networking";
+import MCPServerPermissions from "./MCPServerPermissions";
 
 vi.mock("../networking");
 
@@ -43,7 +43,7 @@ describe("MCPServerPermissions", () => {
         mcpAccessGroups={[]}
         mcpToolPermissions={{}}
         accessToken={mockAccessToken}
-      />
+      />,
     );
 
     // Wait for servers to load and display
@@ -76,7 +76,11 @@ describe("MCPServerPermissions", () => {
     ];
 
     const mockToolPermissions = {
-      [mockServerId1]: ["read_wiki_structure", "read_wiki_contents", "ask_question"],
+      [mockServerId1]: [
+        "read_wiki_structure",
+        "read_wiki_contents",
+        "ask_question",
+      ],
     };
 
     vi.mocked(networking.fetchMCPServers).mockResolvedValue(mockServers);
@@ -87,7 +91,7 @@ describe("MCPServerPermissions", () => {
         mcpAccessGroups={[]}
         mcpToolPermissions={mockToolPermissions}
         accessToken={mockAccessToken}
-      />
+      />,
     );
 
     // Wait for server to load
@@ -145,7 +149,7 @@ describe("MCPServerPermissions", () => {
         mcpAccessGroups={[]}
         mcpToolPermissions={{}}
         accessToken={mockAccessToken}
-      />
+      />,
     );
 
     // Wait for server to load
@@ -164,7 +168,9 @@ describe("MCPServerPermissions", () => {
      */
     const mockAccessGroups = ["production-group", "development-group"];
 
-    vi.mocked(networking.fetchMCPAccessGroups).mockResolvedValue(mockAccessGroups);
+    vi.mocked(networking.fetchMCPAccessGroups).mockResolvedValue(
+      mockAccessGroups,
+    );
 
     render(
       <MCPServerPermissions
@@ -172,7 +178,7 @@ describe("MCPServerPermissions", () => {
         mcpAccessGroups={mockAccessGroups}
         mcpToolPermissions={{}}
         accessToken={mockAccessToken}
-      />
+      />,
     );
 
     // Wait for access groups to load
@@ -203,7 +209,9 @@ describe("MCPServerPermissions", () => {
     const mockAccessGroups = ["production-group"];
 
     vi.mocked(networking.fetchMCPServers).mockResolvedValue(mockServers);
-    vi.mocked(networking.fetchMCPAccessGroups).mockResolvedValue(mockAccessGroups);
+    vi.mocked(networking.fetchMCPAccessGroups).mockResolvedValue(
+      mockAccessGroups,
+    );
 
     render(
       <MCPServerPermissions
@@ -211,7 +219,7 @@ describe("MCPServerPermissions", () => {
         mcpAccessGroups={mockAccessGroups}
         mcpToolPermissions={{}}
         accessToken={mockAccessToken}
-      />
+      />,
     );
 
     // Wait for both to load
@@ -238,11 +246,13 @@ describe("MCPServerPermissions", () => {
         mcpAccessGroups={[]}
         mcpToolPermissions={{}}
         accessToken={mockAccessToken}
-      />
+      />,
     );
 
     // Verify empty state message
-    expect(screen.getByText("No MCP servers, access groups, or toolsets configured")).toBeInTheDocument();
+    expect(
+      screen.getByText("No MCP servers, access groups, or toolsets configured"),
+    ).toBeInTheDocument();
 
     // Verify count badge shows 0
     expect(screen.getByText("0")).toBeInTheDocument();
@@ -279,7 +289,7 @@ describe("MCPServerPermissions", () => {
         mcpAccessGroups={[]}
         mcpToolPermissions={mockToolPermissions}
         accessToken={mockAccessToken}
-      />
+      />,
     );
 
     // Wait for servers to load
@@ -298,7 +308,7 @@ describe("MCPServerPermissions", () => {
     // Expand both servers by clicking their rows
     const server1Row = screen.getByText(/DW_MCP/).closest("div");
     const server2Row = screen.getByText(/Test Server/).closest("div");
-    
+
     await userEvent.click(server1Row!); // Expand server 1
     await userEvent.click(server2Row!); // Expand server 2
 
@@ -318,7 +328,7 @@ describe("MCPServerPermissions", () => {
      * and falls back to showing server IDs instead of names.
      */
     vi.mocked(networking.fetchMCPServers).mockRejectedValue(
-      new Error("Failed to fetch servers")
+      new Error("Failed to fetch servers"),
     );
 
     render(
@@ -327,7 +337,7 @@ describe("MCPServerPermissions", () => {
         mcpAccessGroups={[]}
         mcpToolPermissions={{}}
         accessToken={mockAccessToken}
-      />
+      />,
     );
 
     // Should still render with server ID (fallback)
@@ -350,11 +360,10 @@ describe("MCPServerPermissions", () => {
         mcpAccessGroups={[]}
         mcpToolPermissions={{}}
         accessToken={null}
-      />
+      />,
     );
 
     // API should not be called without token
     expect(networking.fetchMCPServers).not.toHaveBeenCalled();
   });
 });
-

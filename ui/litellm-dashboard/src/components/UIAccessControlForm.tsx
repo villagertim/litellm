@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Form, Button as Button2, Select } from "antd";
 import { Text, TextInput } from "@tremor/react";
-import { getSSOSettings, updateSSOSettings } from "./networking";
+import { Button as Button2, Form, Select } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
 import NotificationManager from "./molecules/notifications_manager";
+import { getSSOSettings, updateSSOSettings } from "./networking";
 
 interface UIAccessControlFormProps {
   accessToken: string | null;
@@ -10,7 +11,10 @@ interface UIAccessControlFormProps {
 }
 
 // Separate UI Access Control Form Component
-const UIAccessControlForm: React.FC<UIAccessControlFormProps> = ({ accessToken, onSuccess }) => {
+const UIAccessControlForm: React.FC<UIAccessControlFormProps> = ({
+  accessToken,
+  onSuccess,
+}) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
@@ -36,7 +40,9 @@ const UIAccessControlForm: React.FC<UIAccessControlFormProps> = ({ accessToken, 
               formValues = {
                 ui_access_mode_type: uiAccessMode,
                 restricted_sso_group: ssoData.values.restricted_sso_group,
-                sso_group_jwt_field: ssoData.values.team_ids_jwt_field || ssoData.values.sso_group_jwt_field,
+                sso_group_jwt_field:
+                  ssoData.values.team_ids_jwt_field ||
+                  ssoData.values.sso_group_jwt_field,
               };
             }
 
@@ -91,15 +97,24 @@ const UIAccessControlForm: React.FC<UIAccessControlFormProps> = ({ accessToken, 
     <div style={{ padding: "16px" }}>
       <div style={{ marginBottom: "16px" }}>
         <Text style={{ fontSize: "14px", color: "#6b7280" }}>
-          Configure who can access the UI interface and how group information is extracted from JWT tokens.
+          Configure who can access the UI interface and how group information is
+          extracted from JWT tokens.
         </Text>
       </div>
 
       <Form form={form} onFinish={handleUIAccessSubmit} layout="vertical">
-        <Form.Item label="UI Access Mode" name="ui_access_mode_type" tooltip="Controls who can access the UI interface">
+        <Form.Item
+          label="UI Access Mode"
+          name="ui_access_mode_type"
+          tooltip="Controls who can access the UI interface"
+        >
           <Select placeholder="Select access mode">
-            <Select.Option value="all_authenticated_users">All Authenticated Users</Select.Option>
-            <Select.Option value="restricted_sso_group">Restricted SSO Group</Select.Option>
+            <Select.Option value="all_authenticated_users">
+              All Authenticated Users
+            </Select.Option>
+            <Select.Option value="restricted_sso_group">
+              Restricted SSO Group
+            </Select.Option>
           </Select>
         </Form.Item>
 
@@ -115,7 +130,12 @@ const UIAccessControlForm: React.FC<UIAccessControlFormProps> = ({ accessToken, 
               <Form.Item
                 label="Restricted SSO Group"
                 name="restricted_sso_group"
-                rules={[{ required: true, message: "Please enter the restricted SSO group" }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter the restricted SSO group",
+                  },
+                ]}
               >
                 <TextInput placeholder="ui-access-group" />
               </Form.Item>

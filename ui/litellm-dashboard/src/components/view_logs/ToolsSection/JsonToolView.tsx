@@ -2,7 +2,7 @@
  * JSON view of tool definition
  */
 
-import { ParsedTool } from "./types";
+import type { ParsedTool } from "./types";
 
 interface JsonToolViewProps {
   tool: ParsedTool;

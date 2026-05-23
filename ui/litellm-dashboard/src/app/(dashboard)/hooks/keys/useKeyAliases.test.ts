@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { ReactNode } from "react";
-import { useInfiniteKeyAliases } from "./useKeyAliases";
 import type { PaginatedKeyAliasResponse } from "@/components/networking";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { renderHook, waitFor } from "@testing-library/react";
+import React, { type ReactNode } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useInfiniteKeyAliases } from "./useKeyAliases";
 
 // Mock networking module
 vi.mock("@/components/networking", () => ({
@@ -65,7 +65,13 @@ describe("useInfiniteKeyAliases", () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(mockKeyAliasesCall).toHaveBeenCalledWith("test-token", 1, 50, undefined, undefined);
+    expect(mockKeyAliasesCall).toHaveBeenCalledWith(
+      "test-token",
+      1,
+      50,
+      undefined,
+      undefined,
+    );
     expect(result.current.data?.pages[0]).toEqual(mockPage1);
   });
 
@@ -74,7 +80,13 @@ describe("useInfiniteKeyAliases", () => {
     renderHook(() => useInfiniteKeyAliases(25), { wrapper });
 
     await waitFor(() => {
-      expect(mockKeyAliasesCall).toHaveBeenCalledWith("test-token", 1, 25, undefined, undefined);
+      expect(mockKeyAliasesCall).toHaveBeenCalledWith(
+        "test-token",
+        1,
+        25,
+        undefined,
+        undefined,
+      );
     });
   });
 
@@ -83,7 +95,13 @@ describe("useInfiniteKeyAliases", () => {
     renderHook(() => useInfiniteKeyAliases(50, "my-alias"), { wrapper });
 
     await waitFor(() => {
-      expect(mockKeyAliasesCall).toHaveBeenCalledWith("test-token", 1, 50, "my-alias", undefined);
+      expect(mockKeyAliasesCall).toHaveBeenCalledWith(
+        "test-token",
+        1,
+        50,
+        "my-alias",
+        undefined,
+      );
     });
   });
 
@@ -145,7 +163,13 @@ describe("useInfiniteKeyAliases", () => {
       expect(result.current.data?.pages).toHaveLength(2);
     });
 
-    expect(mockKeyAliasesCall).toHaveBeenCalledWith("test-token", 2, 2, undefined, undefined);
+    expect(mockKeyAliasesCall).toHaveBeenCalledWith(
+      "test-token",
+      2,
+      2,
+      undefined,
+      undefined,
+    );
     expect(result.current.data?.pages[1]).toEqual(mockPage2);
   });
 
@@ -171,7 +195,13 @@ describe("useInfiniteKeyAliases", () => {
     rerender({ search: "search-result" });
 
     await waitFor(() => {
-      expect(mockKeyAliasesCall).toHaveBeenCalledWith("test-token", 1, 50, "search-result", undefined);
+      expect(mockKeyAliasesCall).toHaveBeenCalledWith(
+        "test-token",
+        1,
+        50,
+        "search-result",
+        undefined,
+      );
     });
   });
 });

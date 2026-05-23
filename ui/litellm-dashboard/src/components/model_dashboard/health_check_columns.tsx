@@ -1,8 +1,12 @@
-import { ColumnDef } from "@tanstack/react-table";
-import { Tooltip, Checkbox } from "antd";
+import type { Team } from "@/components/key_team_helpers/key_list";
+import {
+  InformationCircleIcon,
+  PlayIcon,
+  RefreshIcon,
+} from "@heroicons/react/outline";
+import type { ColumnDef } from "@tanstack/react-table";
 import { Text } from "@tremor/react";
-import { InformationCircleIcon, PlayIcon, RefreshIcon } from "@heroicons/react/outline";
-import { Team } from "@/components/key_team_helpers/key_list";
+import { Checkbox, Tooltip } from "antd";
 
 interface HealthCheckData {
   model_name: string;
@@ -40,7 +44,11 @@ export const healthCheckColumns = (
   runIndividualHealthCheck: (modelId: string) => void,
   getStatusBadge: (status: string) => JSX.Element,
   getDisplayModelName: (model: any) => string,
-  showErrorModal?: (modelName: string, cleanedError: string, fullError: string) => void,
+  showErrorModal?: (
+    modelName: string,
+    cleanedError: string,
+    fullError: string,
+  ) => void,
   showSuccessModal?: (modelName: string, response: any) => void,
   setSelectedModelId?: (modelId: string) => void,
   teams?: Team[] | null,
@@ -50,7 +58,9 @@ export const healthCheckColumns = (
       <div className="flex items-center gap-2">
         <Checkbox
           checked={allModelsSelected}
-          indeterminate={selectedModelsForHealth.length > 0 && !allModelsSelected}
+          indeterminate={
+            selectedModelsForHealth.length > 0 && !allModelsSelected
+          }
           onChange={(e) => handleSelectAll(e.target.checked)}
           onClick={(e) => e.stopPropagation()}
         />
@@ -75,7 +85,9 @@ export const healthCheckColumns = (
           <Tooltip title={model.model_info.id}>
             <div
               className="font-mono text-blue-500 bg-blue-50 hover:bg-blue-100 text-xs font-normal px-2 py-0.5 text-left w-full truncate whitespace-nowrap cursor-pointer max-w-[15ch]"
-              onClick={() => setSelectedModelId && setSelectedModelId(model.model_info.id)}
+              onClick={() =>
+                setSelectedModelId && setSelectedModelId(model.model_info.id)
+              }
             >
               {model.model_info.id}
             </div>
@@ -171,7 +183,9 @@ export const healthCheckColumns = (
 
       const modelId = model.model_info?.id ?? "";
       const displayName = getDisplayModelName(model) || model.model_name;
-      const hasSuccessResponse = healthStatus.status === "healthy" && modelHealthStatuses[modelId]?.successResponse;
+      const hasSuccessResponse =
+        healthStatus.status === "healthy" &&
+        modelHealthStatuses[modelId]?.successResponse;
 
       return (
         <div className="flex items-center space-x-2">
@@ -179,7 +193,12 @@ export const healthCheckColumns = (
           {hasSuccessResponse && showSuccessModal && (
             <Tooltip title="View response details" placement="top">
               <button
-                onClick={() => showSuccessModal(displayName, modelHealthStatuses[modelId]?.successResponse)}
+                onClick={() =>
+                  showSuccessModal(
+                    displayName,
+                    modelHealthStatuses[modelId]?.successResponse,
+                  )
+                }
                 className="p-1 text-green-600 hover:text-green-800 hover:bg-green-50 rounded cursor-pointer transition-colors"
               >
                 <InformationCircleIcon className="h-4 w-4" />
@@ -211,13 +230,17 @@ export const healthCheckColumns = (
         <div className="flex items-center space-x-2">
           <div className="max-w-[200px]">
             <Tooltip title={cleanedError} placement="top">
-              <Text className="text-red-600 text-sm truncate">{cleanedError}</Text>
+              <Text className="text-red-600 text-sm truncate">
+                {cleanedError}
+              </Text>
             </Tooltip>
           </div>
           {showErrorModal && fullError !== cleanedError && (
             <Tooltip title="View full error details" placement="top">
               <button
-                onClick={() => showErrorModal(displayName, cleanedError, fullError)}
+                onClick={() =>
+                  showErrorModal(displayName, cleanedError, fullError)
+                }
                 className="p-1 text-red-600 hover:text-red-800 hover:bg-red-50 rounded cursor-pointer transition-colors"
               >
                 <InformationCircleIcon className="h-4 w-4" />
@@ -233,14 +256,21 @@ export const healthCheckColumns = (
     accessorKey: "last_check",
     enableSorting: true,
     sortingFn: (rowA, rowB, columnId) => {
-      const lastCheckA = (rowA.getValue("last_check") as string) || "Never checked";
-      const lastCheckB = (rowB.getValue("last_check") as string) || "Never checked";
+      const lastCheckA =
+        (rowA.getValue("last_check") as string) || "Never checked";
+      const lastCheckB =
+        (rowB.getValue("last_check") as string) || "Never checked";
 
       // Handle special cases
-      if (lastCheckA === "Never checked" && lastCheckB === "Never checked") return 0;
+      if (lastCheckA === "Never checked" && lastCheckB === "Never checked")
+        return 0;
       if (lastCheckA === "Never checked") return 1; // Never checked goes to bottom
       if (lastCheckB === "Never checked") return -1;
-      if (lastCheckA === "Check in progress..." && lastCheckB === "Check in progress...") return 0;
+      if (
+        lastCheckA === "Check in progress..." &&
+        lastCheckB === "Check in progress..."
+      )
+        return 0;
       if (lastCheckA === "Check in progress...") return -1; // In progress goes to top
       if (lastCheckB === "Check in progress...") return 1;
 
@@ -271,11 +301,17 @@ export const healthCheckColumns = (
     accessorKey: "last_success",
     enableSorting: true,
     sortingFn: (rowA, rowB, columnId) => {
-      const lastSuccessA = (rowA.getValue("last_success") as string) || "Never succeeded";
-      const lastSuccessB = (rowB.getValue("last_success") as string) || "Never succeeded";
+      const lastSuccessA =
+        (rowA.getValue("last_success") as string) || "Never succeeded";
+      const lastSuccessB =
+        (rowB.getValue("last_success") as string) || "Never succeeded";
 
       // Handle special cases
-      if (lastSuccessA === "Never succeeded" && lastSuccessB === "Never succeeded") return 0;
+      if (
+        lastSuccessA === "Never succeeded" &&
+        lastSuccessB === "Never succeeded"
+      )
+        return 0;
       if (lastSuccessA === "Never succeeded") return 1; // Never succeeded goes to bottom
       if (lastSuccessB === "Never succeeded") return -1;
       if (lastSuccessA === "None" && lastSuccessB === "None") return 0;
@@ -310,7 +346,8 @@ export const healthCheckColumns = (
       const model = row.original;
       const modelId = model.model_info?.id ?? "";
 
-      const hasExistingStatus = model.health_status && model.health_status !== "none";
+      const hasExistingStatus =
+        model.health_status && model.health_status !== "none";
       const tooltipText = model.health_loading
         ? "Checking..."
         : hasExistingStatus

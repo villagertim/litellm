@@ -24,17 +24,39 @@ describe("RoleMappings", () => {
   });
 
   it("should return null when roleMappings is undefined", () => {
-    const { container } = renderWithProviders(<RoleMappings roleMappings={undefined} />);
+    const { container } = renderWithProviders(
+      <RoleMappings roleMappings={undefined} />,
+    );
 
     expect(container.firstChild).toBeNull();
   });
 
   it("should display Group Claim and Default Role with correct values and display names", () => {
-    const testCases: Array<{ role: RoleMappingsType["default_role"]; displayName: string; groupClaim: string }> = [
-      { role: "internal_user_viewer", displayName: "Internal Viewer", groupClaim: "custom-groups-1" },
-      { role: "internal_user", displayName: "Internal User", groupClaim: "custom-groups-2" },
-      { role: "proxy_admin_viewer", displayName: "Proxy Admin Viewer", groupClaim: "custom-groups-3" },
-      { role: "proxy_admin", displayName: "Proxy Admin", groupClaim: "custom-groups-4" },
+    const testCases: Array<{
+      role: RoleMappingsType["default_role"];
+      displayName: string;
+      groupClaim: string;
+    }> = [
+      {
+        role: "internal_user_viewer",
+        displayName: "Internal Viewer",
+        groupClaim: "custom-groups-1",
+      },
+      {
+        role: "internal_user",
+        displayName: "Internal User",
+        groupClaim: "custom-groups-2",
+      },
+      {
+        role: "proxy_admin_viewer",
+        displayName: "Proxy Admin Viewer",
+        groupClaim: "custom-groups-3",
+      },
+      {
+        role: "proxy_admin",
+        displayName: "Proxy Admin",
+        groupClaim: "custom-groups-4",
+      },
     ];
 
     testCases.forEach(({ role, displayName, groupClaim }) => {
@@ -50,7 +72,9 @@ describe("RoleMappings", () => {
         },
       };
 
-      const { unmount } = renderWithProviders(<RoleMappings roleMappings={roleMappings} />);
+      const { unmount } = renderWithProviders(
+        <RoleMappings roleMappings={roleMappings} />,
+      );
 
       expect(screen.getByText("Group Claim")).toBeInTheDocument();
       expect(screen.getByText(groupClaim)).toBeInTheDocument();

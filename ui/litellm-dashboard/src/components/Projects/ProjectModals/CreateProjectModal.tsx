@@ -1,14 +1,11 @@
-import { Modal, Form, Button, Typography } from "antd";
-import { FolderAddOutlined } from "@ant-design/icons";
-import MessageManager from "@/components/molecules/message_manager";
 import {
+  type ProjectCreateParams,
   useCreateProject,
-  ProjectCreateParams,
 } from "@/app/(dashboard)/hooks/projects/useCreateProject";
-import {
-  ProjectBaseForm,
-  ProjectFormValues,
-} from "./ProjectBaseForm";
+import MessageManager from "@/components/molecules/message_manager";
+import { FolderAddOutlined } from "@ant-design/icons";
+import { Button, Form, Modal, Typography } from "antd";
+import { ProjectBaseForm, type ProjectFormValues } from "./ProjectBaseForm";
 import { buildProjectApiParams } from "./projectFormUtils";
 
 interface CreateProjectModalProps {

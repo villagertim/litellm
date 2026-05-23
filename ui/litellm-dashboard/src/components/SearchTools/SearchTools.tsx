@@ -15,7 +15,7 @@ import {
 import CreateSearchTool from "./CreateSearchTools";
 import { searchToolColumns } from "./SearchToolColumn";
 import { SearchToolView } from "./SearchToolView";
-import { AvailableSearchProvider, SearchTool } from "./types";
+import type { AvailableSearchProvider, SearchTool } from "./types";
 
 interface SearchToolsProps {
   accessToken: string | null;
@@ -23,8 +23,11 @@ interface SearchToolsProps {
   userID: string | null;
 }
 
-
-const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID }) => {
+const SearchTools: React.FC<SearchToolsProps> = ({
+  accessToken,
+  userRole,
+  userID,
+}) => {
   const {
     data: searchTools,
     isLoading: isLoadingTools,
@@ -33,15 +36,14 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
     queryKey: ["searchTools"],
     queryFn: () => {
       if (!accessToken) throw new Error("Access Token required");
-      return fetchSearchTools(accessToken).then((res) => res.search_tools || []);
+      return fetchSearchTools(accessToken).then(
+        (res) => res.search_tools || [],
+      );
     },
     enabled: !!accessToken,
   }) as { data: SearchTool[]; isLoading: boolean; refetch: () => void };
 
-  const {
-    data: providersResponse,
-    isLoading: isLoadingProviders,
-  } = useQuery({
+  const { data: providersResponse, isLoading: isLoadingProviders } = useQuery({
     queryKey: ["searchProviders"],
     queryFn: () => {
       if (!accessToken) throw new Error("Access Token required");
@@ -120,9 +122,13 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
     setToolToDelete(null);
   };
 
-  const toolToDelete = searchTools?.find((t) => t.search_tool_id === toolIdToDelete);
+  const toolToDelete = searchTools?.find(
+    (t) => t.search_tool_id === toolIdToDelete,
+  );
   const providerInfo = toolToDelete
-    ? availableProviders.find((p) => p.provider_name === toolToDelete.litellm_params.search_provider)
+    ? availableProviders.find(
+        (p) => p.provider_name === toolToDelete.litellm_params.search_provider,
+      )
     : null;
 
   const handleCreateSuccess = (newSearchTool: SearchTool) => {
@@ -141,12 +147,18 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
           search_provider: values.search_provider,
           api_key: values.api_key,
           api_base: values.api_base,
-          timeout: values.timeout ? parseFloat(values.timeout) : undefined,
-          max_retries: values.max_retries ? parseInt(values.max_retries) : undefined,
+          timeout: values.timeout
+            ? Number.parseFloat(values.timeout)
+            : undefined,
+          max_retries: values.max_retries
+            ? Number.parseInt(values.max_retries)
+            : undefined,
         },
-        search_tool_info: values.description ? {
-          description: values.description,
-        } : undefined,
+        search_tool_info: values.description
+          ? {
+              description: values.description,
+            }
+          : undefined,
       };
 
       await updateSearchTool(accessToken, selectedToolId, searchToolData);
@@ -176,35 +188,58 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
         label="Search Provider"
         rules={[{ required: true, message: "Please select a search provider" }]}
       >
-        <Select placeholder="Select a search provider" loading={isLoadingProviders}>
+        <Select
+          placeholder="Select a search provider"
+          loading={isLoadingProviders}
+        >
           {availableProviders.map((provider) => (
-            <Select.Option key={provider.provider_name} value={provider.provider_name}>
+            <Select.Option
+              key={provider.provider_name}
+              value={provider.provider_name}
+            >
               {provider.ui_friendly_name}
             </Select.Option>
           ))}
         </Select>
       </Form.Item>
 
-      <Form.Item name="api_key" label="API Key" extra="API key for the search provider">
+      <Form.Item
+        name="api_key"
+        label="API Key"
+        extra="API key for the search provider"
+      >
         <Input.Password placeholder="Enter API key" />
       </Form.Item>
 
       <Form.Item name="description" label="Description">
-        <Input.TextArea rows={3} placeholder="Description of this search tool" />
+        <Input.TextArea
+          rows={3}
+          placeholder="Description of this search tool"
+        />
       </Form.Item>
     </Form>
   );
 
   if (!accessToken || !userRole || !userID) {
-    console.log("Missing required authentication parameters", { accessToken, userRole, userID });
-    return <div className="p-6 text-center text-gray-500">Missing required authentication parameters.</div>;
+    console.log("Missing required authentication parameters", {
+      accessToken,
+      userRole,
+      userID,
+    });
+    return (
+      <div className="p-6 text-center text-gray-500">
+        Missing required authentication parameters.
+      </div>
+    );
   }
 
   const ToolsTab = () =>
     selectedToolId ? (
       <SearchToolView
         searchTool={
-          searchTools?.find((tool: SearchTool) => tool.search_tool_id === selectedToolId) || {
+          searchTools?.find(
+            (tool: SearchTool) => tool.search_tool_id === selectedToolId,
+          ) || {
             search_tool_id: "",
             search_tool_name: "",
             litellm_params: {
@@ -223,12 +258,18 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
       />
     ) : (
       <div className="w-full h-full">
-        <Spin spinning={isLoadingTools} indicator={<LoadingOutlined spin />} size="large">
+        <Spin
+          spinning={isLoadingTools}
+          indicator={<LoadingOutlined spin />}
+          size="large"
+        >
           <Table
             bordered
             dataSource={searchTools || []}
             columns={columns}
-            rowKey={(record) => record.search_tool_id || record.search_tool_name}
+            rowKey={(record) =>
+              record.search_tool_id || record.search_tool_name
+            }
             pagination={false}
             locale={{
               emptyText: "No search tools configured",
@@ -236,7 +277,6 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
             size="small"
           />
         </Spin>
-
       </div>
     );
 
@@ -250,14 +290,19 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
         resourceInformation={
           toolToDelete
             ? [
-              { label: "Name", value: toolToDelete.search_tool_name },
-              { label: "ID", value: toolToDelete.search_tool_id, code: true },
-              {
-                label: "Provider",
-                value: providerInfo?.ui_friendly_name || toolToDelete.litellm_params.search_provider,
-              },
-              { label: "Description", value: toolToDelete.search_tool_info?.description || "-" },
-            ]
+                { label: "Name", value: toolToDelete.search_tool_name },
+                { label: "ID", value: toolToDelete.search_tool_id, code: true },
+                {
+                  label: "Provider",
+                  value:
+                    providerInfo?.ui_friendly_name ||
+                    toolToDelete.litellm_params.search_provider,
+                },
+                {
+                  label: "Description",
+                  value: toolToDelete.search_tool_info?.description || "-",
+                },
+              ]
             : []
         }
         onCancel={cancelDelete}
@@ -289,9 +334,14 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
       </Modal>
 
       <Title>Search Tools</Title>
-      <Text className="text-tremor-content mt-2">Configure and manage your search providers</Text>
+      <Text className="text-tremor-content mt-2">
+        Configure and manage your search providers
+      </Text>
       {isAdminRole(userRole) && (
-        <Button className="mt-4 mb-4" onClick={() => setCreateModalVisible(true)}>
+        <Button
+          className="mt-4 mb-4"
+          onClick={() => setCreateModalVisible(true)}
+        >
           + Add New Search Tool
         </Button>
       )}

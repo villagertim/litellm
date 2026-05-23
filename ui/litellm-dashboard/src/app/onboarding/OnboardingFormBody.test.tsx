@@ -1,7 +1,7 @@
-import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { OnboardingFormBody } from "./OnboardingFormBody";
 
 const defaultProps = {
@@ -19,12 +19,16 @@ describe("OnboardingFormBody", () => {
 
   it("should show 'Sign Up' heading for signup variant", () => {
     render(<OnboardingFormBody {...defaultProps} />);
-    expect(screen.getByRole("heading", { name: "Sign Up" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Sign Up" }),
+    ).toBeInTheDocument();
   });
 
   it("should show 'Reset Password' heading for reset_password variant", () => {
     render(<OnboardingFormBody {...defaultProps} variant="reset_password" />);
-    expect(screen.getByRole("heading", { name: "Reset Password" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Reset Password" }),
+    ).toBeInTheDocument();
   });
 
   it("should show SSO alert for signup variant", () => {
@@ -38,9 +42,13 @@ describe("OnboardingFormBody", () => {
   });
 
   it("should pre-fill the email field with userEmail", async () => {
-    render(<OnboardingFormBody {...defaultProps} userEmail="user@example.com" />);
+    render(
+      <OnboardingFormBody {...defaultProps} userEmail="user@example.com" />,
+    );
     await waitFor(() => {
-      expect(screen.getByLabelText("Email Address")).toHaveValue("user@example.com");
+      expect(screen.getByLabelText("Email Address")).toHaveValue(
+        "user@example.com",
+      );
     });
   });
 
@@ -50,7 +58,12 @@ describe("OnboardingFormBody", () => {
   });
 
   it("should show claimError message when claimError is set", () => {
-    render(<OnboardingFormBody {...defaultProps} claimError="Something went wrong" />);
+    render(
+      <OnboardingFormBody
+        {...defaultProps}
+        claimError="Something went wrong"
+      />,
+    );
     expect(screen.getByText("Something went wrong")).toBeInTheDocument();
   });
 
@@ -75,7 +88,7 @@ describe("OnboardingFormBody", () => {
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith(
-        expect.objectContaining({ password: "mypassword" })
+        expect.objectContaining({ password: "mypassword" }),
       );
     });
   });
@@ -83,7 +96,7 @@ describe("OnboardingFormBody", () => {
   it("should show 'Reset Password' on the submit button for reset_password variant", () => {
     render(<OnboardingFormBody {...defaultProps} variant="reset_password" />);
     expect(
-      screen.getByRole("button", { name: /reset password/i })
+      screen.getByRole("button", { name: /reset password/i }),
     ).toBeInTheDocument();
   });
 });

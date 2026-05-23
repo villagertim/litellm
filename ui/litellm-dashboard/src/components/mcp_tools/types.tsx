@@ -54,7 +54,10 @@ export const TRANSPORT = {
   OPENAPI: "openapi",
 };
 
-export const handleTransport = (transport?: string | null, specPath?: string | null): string => {
+export const handleTransport = (
+  transport?: string | null,
+  specPath?: string | null,
+): string => {
   if (transport === null || transport === undefined) {
     return TRANSPORT.SSE;
   }
@@ -262,7 +265,11 @@ export interface DiscoverableMCPServer {
   url?: string | null;
   command?: string | null;
   args?: string[] | null;
-  env_vars?: Array<{ name: string; description?: string; secret?: boolean }> | null;
+  env_vars?: Array<{
+    name: string;
+    description?: string;
+    secret?: boolean;
+  }> | null;
 }
 
 export interface DiscoverMCPServersResponse {

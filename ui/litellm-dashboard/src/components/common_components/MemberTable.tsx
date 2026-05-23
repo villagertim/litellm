@@ -1,5 +1,10 @@
-import { Member } from "@/components/networking";
-import { CrownOutlined, InfoCircleOutlined, UserAddOutlined, UserOutlined } from "@ant-design/icons";
+import type { Member } from "@/components/networking";
+import {
+  CrownOutlined,
+  InfoCircleOutlined,
+  UserAddOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 import { Button, Space, Table, Tag, Tooltip, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import React from "react";
@@ -65,7 +70,8 @@ export default function MemberTable({
       key: "role",
       render: (role: string) => (
         <Space>
-          {role?.toLowerCase() === "admin" || role?.toLowerCase() === "org_admin" ? (
+          {role?.toLowerCase() === "admin" ||
+          role?.toLowerCase() === "org_admin" ? (
             <CrownOutlined />
           ) : (
             <UserOutlined />
@@ -110,7 +116,9 @@ export default function MemberTable({
       <Table
         columns={baseColumns}
         dataSource={members}
-        rowKey={(record) => record.user_id ?? record.user_email ?? JSON.stringify(record)}
+        rowKey={(record) =>
+          record.user_id ?? record.user_email ?? JSON.stringify(record)
+        }
         pagination={false}
         size="small"
         scroll={{ x: "max-content" }}

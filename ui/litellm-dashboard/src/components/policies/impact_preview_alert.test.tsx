@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
-import { renderWithProviders } from "../../../tests/test-utils";
 import { describe, expect, it } from "vitest";
+import { renderWithProviders } from "../../../tests/test-utils";
 import ImpactPreviewAlert from "./impact_preview_alert";
 
 const globalImpact = {
@@ -64,13 +64,23 @@ describe("ImpactPreviewAlert", () => {
     });
 
     it("should use singular 'key' when exactly one key is affected", () => {
-      const oneKey = { affected_keys_count: 1, affected_teams_count: 0, sample_keys: ["sk-1"], sample_teams: [] };
+      const oneKey = {
+        affected_keys_count: 1,
+        affected_teams_count: 0,
+        sample_keys: ["sk-1"],
+        sample_teams: [],
+      };
       renderWithProviders(<ImpactPreviewAlert impactResult={oneKey} />);
       expect(screen.getByText(/1 key\b/i)).toBeInTheDocument();
     });
 
     it("should not show a key section when there are no sample keys", () => {
-      const noKeys = { affected_keys_count: 0, affected_teams_count: 2, sample_keys: [], sample_teams: ["t1", "t2"] };
+      const noKeys = {
+        affected_keys_count: 0,
+        affected_teams_count: 2,
+        sample_keys: [],
+        sample_teams: ["t1", "t2"],
+      };
       renderWithProviders(<ImpactPreviewAlert impactResult={noKeys} />);
       expect(screen.queryByText(/^Keys:/i)).not.toBeInTheDocument();
     });

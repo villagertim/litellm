@@ -1,4 +1,8 @@
-import { getProxyBaseUrl, getGlobalLitellmHeaderName, deriveErrorMessage } from "@/components/networking";
+import {
+  deriveErrorMessage,
+  getGlobalLitellmHeaderName,
+  getProxyBaseUrl,
+} from "@/components/networking";
 
 export const getHashicorpVaultConfig = async (accessToken: string) => {
   const proxyBaseUrl = getProxyBaseUrl();

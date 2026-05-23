@@ -1,5 +1,5 @@
+import { ChevronDown, ExternalLink } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
-import { ExternalLink, ChevronDown } from "lucide-react";
 
 interface HelpLinkProps {
   href: string;
@@ -21,19 +21,19 @@ interface DocsMenuProps {
 
 /**
  * A reusable component for linking to documentation, styled similar to Linear's help links.
- * 
+ *
  * @example
  * // Inline "Learn more" style
  * <HelpLink href="https://docs.litellm.ai/docs/proxy/custom_pricing">
  *   Learn more about custom pricing
  * </HelpLink>
- * 
+ *
  * @example
  * // Subtle link (just icon + text, minimal styling)
  * <HelpLink href="https://docs.litellm.ai/docs/proxy/cost_tracking" variant="subtle">
  *   View docs
  * </HelpLink>
- * 
+ *
  * @example
  * // Button style (more prominent)
  * <HelpLink href="https://docs.litellm.ai/docs/proxy/custom_pricing" variant="button">
@@ -46,12 +46,15 @@ export const HelpLink: React.FC<HelpLinkProps> = ({
   variant = "inline",
   className = "",
 }) => {
-  const baseClasses = "inline-flex items-center gap-1.5 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded";
-  
+  const baseClasses =
+    "inline-flex items-center gap-1.5 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded";
+
   const variantClasses = {
-    inline: "text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline",
+    inline:
+      "text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline",
     subtle: "text-gray-500 hover:text-gray-700 text-xs",
-    button: "text-blue-600 hover:text-blue-700 border border-gray-200 hover:border-gray-300 px-3 py-1.5 rounded-md bg-white hover:bg-gray-50 text-sm font-medium shadow-sm",
+    button:
+      "text-blue-600 hover:text-blue-700 border border-gray-200 hover:border-gray-300 px-3 py-1.5 rounded-md bg-white hover:bg-gray-50 text-sm font-medium shadow-sm",
   };
 
   return (
@@ -105,7 +108,11 @@ export const HelpIcon: React.FC<HelpIconProps> = ({
           aria-hidden="true"
         >
           <circle cx="12" cy="12" r="10" strokeWidth="1.5" />
-          <path strokeLinecap="round" d="M12 17h0M12 13.5a1.5 1.5 0 0 1 1-1.415A1.5 1.5 0 1 0 12 9" strokeWidth="1.5" />
+          <path
+            strokeLinecap="round"
+            d="M12 17h0M12 13.5a1.5 1.5 0 0 1 1-1.415A1.5 1.5 0 1 0 12 9"
+            strokeWidth="1.5"
+          />
         </svg>
       </button>
       {showTooltip && (
@@ -143,7 +150,7 @@ export const HelpIcon: React.FC<HelpIconProps> = ({
 /**
  * A dropdown menu for multiple documentation links.
  * Linear-style: Single "Docs" button that expands to show multiple relevant links.
- * 
+ *
  * @example
  * <DocsMenu items={[
  *   { label: "Custom pricing for models", href: "https://docs.litellm.ai/docs/proxy/custom_pricing" },
@@ -186,7 +193,10 @@ export const DocsMenu: React.FC<DocsMenuProps> = ({
         aria-haspopup="true"
       >
         <span>{children}</span>
-        <ChevronDown className={`h-3 w-3 transition-transform ${isOpen ? "rotate-180" : ""}`} aria-hidden="true" />
+        <ChevronDown
+          className={`h-3 w-3 transition-transform ${isOpen ? "rotate-180" : ""}`}
+          aria-hidden="true"
+        />
       </button>
 
       {isOpen && (
@@ -201,7 +211,10 @@ export const DocsMenu: React.FC<DocsMenuProps> = ({
               onClick={() => setIsOpen(false)}
             >
               <span>{item.label}</span>
-              <ExternalLink className="h-3.5 w-3.5 text-gray-400 flex-shrink-0 ml-2" aria-hidden="true" />
+              <ExternalLink
+                className="h-3.5 w-3.5 text-gray-400 flex-shrink-0 ml-2"
+                aria-hidden="true"
+              />
             </a>
           ))}
         </div>
@@ -209,4 +222,3 @@ export const DocsMenu: React.FC<DocsMenuProps> = ({
     </div>
   );
 };
-

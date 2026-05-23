@@ -1,15 +1,34 @@
-import { ColumnDef, flexRender, getCoreRowModel, SortingState, useReactTable } from "@tanstack/react-table";
-import React from "react";
-import { Table, TableHead, TableHeaderCell, TableBody, TableRow, TableCell, Select, SelectItem } from "@tremor/react";
-import { SwitchVerticalIcon, ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/outline";
-import { Skeleton } from "antd";
-import { UserInfo } from "./types";
-import UserInfoView from "./user_info_view";
-import { columns as createColumns } from "./columns";
 import { FilterInput } from "@/components/common_components/Filters/FilterInput";
 import { FiltersButton } from "@/components/common_components/Filters/FiltersButton";
 import { ResetFiltersButton } from "@/components/common_components/Filters/ResetFiltersButton";
-import { Search, User, CircleUserRound } from "lucide-react";
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  SwitchVerticalIcon,
+} from "@heroicons/react/outline";
+import {
+  type ColumnDef,
+  type SortingState,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import {
+  Select,
+  SelectItem,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+} from "@tremor/react";
+import { Skeleton } from "antd";
+import { CircleUserRound, Search, User } from "lucide-react";
+import React from "react";
+import { columns as createColumns } from "./columns";
+import type { UserInfo } from "./types";
+import UserInfoView from "./user_info_view";
 
 interface FilterState {
   email: string;
@@ -82,11 +101,13 @@ export function UserDataTable({
       desc: currentSort?.sortOrder === "desc",
     },
   ]);
-  const [selectedUserId, setSelectedUserId] = React.useState<string | null>(null);
+  const [selectedUserId, setSelectedUserId] = React.useState<string | null>(
+    null,
+  );
   const [openInEditMode, setOpenInEditMode] = React.useState<boolean>(false);
   const [showFilters, setShowFilters] = React.useState<boolean>(false);
 
-  const handleUserClick = (userId: string, openInEditMode: boolean = false) => {
+  const handleUserClick = (userId: string, openInEditMode = false) => {
     setSelectedUserId(userId);
     setOpenInEditMode(openInEditMode);
   };
@@ -103,7 +124,9 @@ export function UserDataTable({
     if (isSelected) {
       onSelectionChange([...selectedUsers, user]);
     } else {
-      onSelectionChange(selectedUsers.filter((u) => u.user_id !== user.user_id));
+      onSelectionChange(
+        selectedUsers.filter((u) => u.user_id !== user.user_id),
+      );
     }
   };
 
@@ -122,7 +145,8 @@ export function UserDataTable({
   };
 
   const isAllSelected = data.length > 0 && selectedUsers.length === data.length;
-  const isIndeterminate = selectedUsers.length > 0 && selectedUsers.length < data.length;
+  const isIndeterminate =
+    selectedUsers.length > 0 && selectedUsers.length < data.length;
 
   // Create columns with the handleUserClick function
   const columns = React.useMemo(() => {
@@ -166,9 +190,17 @@ export function UserDataTable({
       sorting,
     },
     onSortingChange: (updaterOrValue: any) => {
-      const newSorting = typeof updaterOrValue === "function" ? updaterOrValue(sorting) : updaterOrValue;
+      const newSorting =
+        typeof updaterOrValue === "function"
+          ? updaterOrValue(sorting)
+          : updaterOrValue;
       setSorting(newSorting);
-      if (newSorting && Array.isArray(newSorting) && newSorting.length > 0 && newSorting[0]) {
+      if (
+        newSorting &&
+        Array.isArray(newSorting) &&
+        newSorting.length > 0 &&
+        newSorting[0]
+      ) {
         const sortState = newSorting[0];
         if (sortState.id) {
           const sortBy = sortState.id;
@@ -230,7 +262,9 @@ export function UserDataTable({
             <FiltersButton
               onClick={() => setShowFilters(!showFilters)}
               active={showFilters}
-              hasActiveFilters={!!(filters.user_id || filters.user_role || filters.team)}
+              hasActiveFilters={
+                !!(filters.user_id || filters.user_role || filters.team)
+              }
             />
 
             {/* Reset Filters Button */}
@@ -299,12 +333,17 @@ export function UserDataTable({
             ) : (
               <span className="text-sm text-gray-700">
                 Showing{" "}
-                {userListResponse && userListResponse.users && userListResponse.users.length > 0
+                {userListResponse &&
+                userListResponse.users &&
+                userListResponse.users.length > 0
                   ? (userListResponse.page - 1) * userListResponse.page_size + 1
                   : 0}{" "}
                 -{" "}
                 {userListResponse && userListResponse.users
-                  ? Math.min(userListResponse.page * userListResponse.page_size, userListResponse.total)
+                  ? Math.min(
+                      userListResponse.page * userListResponse.page_size,
+                      userListResponse.total,
+                    )
                   : 0}{" "}
                 of {userListResponse ? userListResponse.total : 0} results
               </span>
@@ -314,8 +353,16 @@ export function UserDataTable({
             <div className="flex space-x-2">
               {isLoading ? (
                 <>
-                  <Skeleton.Button active size="small" style={{ width: 80, height: 30 }} />
-                  <Skeleton.Button active size="small" style={{ width: 60, height: 30 }} />
+                  <Skeleton.Button
+                    active
+                    size="small"
+                    style={{ width: 80, height: 30 }}
+                  />
+                  <Skeleton.Button
+                    active
+                    size="small"
+                    style={{ width: 60, height: 30 }}
+                  />
                 </>
               ) : (
                 <>
@@ -323,16 +370,22 @@ export function UserDataTable({
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                     className={`px-3 py-1 text-sm border rounded-md ${
-                      currentPage === 1 ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "hover:bg-gray-50"
+                      currentPage === 1
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "hover:bg-gray-50"
                     }`}
                   >
                     Previous
                   </button>
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={!userListResponse || currentPage >= userListResponse.total_pages}
+                    disabled={
+                      !userListResponse ||
+                      currentPage >= userListResponse.total_pages
+                    }
                     className={`px-3 py-1 text-sm border rounded-md ${
-                      !userListResponse || currentPage >= userListResponse.total_pages
+                      !userListResponse ||
+                      currentPage >= userListResponse.total_pages
                         ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                         : "hover:bg-gray-50"
                     }`}
@@ -368,20 +421,28 @@ export function UserDataTable({
                           <div className="flex items-center">
                             {header.isPlaceholder
                               ? null
-                              : flexRender(header.column.columnDef.header, header.getContext())}
+                              : flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext(),
+                                )}
                           </div>
-                          {header.id !== "actions" && header.column.getCanSort() && (
-                            <div className="w-4">
-                              {header.column.getIsSorted() ? (
-                                {
-                                  asc: <ChevronUpIcon className="h-4 w-4 text-blue-500" />,
-                                  desc: <ChevronDownIcon className="h-4 w-4 text-blue-500" />,
-                                }[header.column.getIsSorted() as string]
-                              ) : (
-                                <SwitchVerticalIcon className="h-4 w-4 text-gray-400" />
-                              )}
-                            </div>
-                          )}
+                          {header.id !== "actions" &&
+                            header.column.getCanSort() && (
+                              <div className="w-4">
+                                {header.column.getIsSorted() ? (
+                                  {
+                                    asc: (
+                                      <ChevronUpIcon className="h-4 w-4 text-blue-500" />
+                                    ),
+                                    desc: (
+                                      <ChevronDownIcon className="h-4 w-4 text-blue-500" />
+                                    ),
+                                  }[header.column.getIsSorted() as string]
+                                ) : (
+                                  <SwitchVerticalIcon className="h-4 w-4 text-gray-400" />
+                                )}
+                              </div>
+                            )}
                         </div>
                       </TableHeaderCell>
                     ))}
@@ -391,7 +452,10 @@ export function UserDataTable({
               <TableBody>
                 {isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={columns.length} className="h-8 text-center">
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-8 text-center"
+                    >
                       <div className="text-center text-gray-500">
                         <p>🚅 Loading users...</p>
                       </div>
@@ -414,18 +478,30 @@ export function UserDataTable({
                             }
                           }}
                           style={{
-                            cursor: cell.column.id === "user_id" ? "pointer" : "default",
-                            color: cell.column.id === "user_id" ? "#3b82f6" : "inherit",
+                            cursor:
+                              cell.column.id === "user_id"
+                                ? "pointer"
+                                : "default",
+                            color:
+                              cell.column.id === "user_id"
+                                ? "#3b82f6"
+                                : "inherit",
                           }}
                         >
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
                         </TableCell>
                       ))}
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={columns.length} className="h-8 text-center">
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-8 text-center"
+                    >
                       <div className="text-center text-gray-500">
                         <p>No users found</p>
                       </div>

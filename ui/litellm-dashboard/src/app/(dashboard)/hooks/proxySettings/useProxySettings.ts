@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { fetchProxySettings } from "@/utils/proxyUtils";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { fetchProxySettings } from "@/utils/proxyUtils";
+import { useEffect, useState } from "react";
 
 export default function useProxySettings() {
   const { accessToken } = useAuthorized();

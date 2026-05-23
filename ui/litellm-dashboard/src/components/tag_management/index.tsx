@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { Icon, Button, Col, Text, Grid } from "@tremor/react";
 import { RefreshIcon } from "@heroicons/react/outline";
-import TagInfoView from "./tag_info";
-import { modelInfoCall } from "../networking";
-import { tagCreateCall, tagListCall, tagDeleteCall } from "../networking";
-import { Tag } from "./types";
-import TagTable from "./TagTable";
+import { Button, Col, Grid, Icon, Text } from "@tremor/react";
+import type React from "react";
+import { useEffect, useState } from "react";
 import NotificationsManager from "../molecules/notifications_manager";
+import { modelInfoCall } from "../networking";
+import { tagCreateCall, tagDeleteCall, tagListCall } from "../networking";
+import TagTable from "./TagTable";
 import CreateTagModal from "./components/CreateTagModal";
+import TagInfoView from "./tag_info";
+import type { Tag } from "./types";
 
 interface ModelInfo {
   model_name: string;
@@ -25,7 +26,11 @@ interface TagProps {
   userRole: string | null;
 }
 
-const TagManagement: React.FC<TagProps> = ({ accessToken, userID, userRole }) => {
+const TagManagement: React.FC<TagProps> = ({
+  accessToken,
+  userID,
+  userRole,
+}) => {
   const [tags, setTags] = useState<Tag[]>([]);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [selectedTagId, setSelectedTagId] = useState<string | null>(null);
@@ -147,16 +152,23 @@ const TagManagement: React.FC<TagProps> = ({ accessToken, userID, userRole }) =>
           <Text className="mb-4">
             Click on a tag name to view and edit its details.
             <p>
-              You can use tags to restrict the usage of certain LLMs based on tags passed in the request. Read more
-              about tag routing{" "}
-              <a href="https://docs.litellm.ai/docs/proxy/tag_routing" target="_blank" rel="noopener noreferrer">
+              You can use tags to restrict the usage of certain LLMs based on
+              tags passed in the request. Read more about tag routing{" "}
+              <a
+                href="https://docs.litellm.ai/docs/proxy/tag_routing"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 here
               </a>
               .
             </p>
           </Text>
 
-          <Button className="mb-4" onClick={() => setIsCreateModalVisible(true)}>
+          <Button
+            className="mb-4"
+            onClick={() => setIsCreateModalVisible(true)}
+          >
             + Create New Tag
           </Button>
 
@@ -186,22 +198,33 @@ const TagManagement: React.FC<TagProps> = ({ accessToken, userID, userRole }) =>
           {isDeleteModalOpen && (
             <div className="fixed z-10 inset-0 overflow-y-auto">
               <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div
+                  className="fixed inset-0 transition-opacity"
+                  aria-hidden="true"
+                >
                   <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
                 </div>
                 <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                   <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div className="sm:flex sm:items-start">
                       <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                        <h3 className="text-lg leading-6 font-medium text-gray-900">Delete Tag</h3>
+                        <h3 className="text-lg leading-6 font-medium text-gray-900">
+                          Delete Tag
+                        </h3>
                         <div className="mt-2">
-                          <p className="text-sm text-gray-500">Are you sure you want to delete this tag?</p>
+                          <p className="text-sm text-gray-500">
+                            Are you sure you want to delete this tag?
+                          </p>
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <Button onClick={confirmDelete} color="red" className="ml-2">
+                    <Button
+                      onClick={confirmDelete}
+                      color="red"
+                      className="ml-2"
+                    >
                       Delete
                     </Button>
                     <Button

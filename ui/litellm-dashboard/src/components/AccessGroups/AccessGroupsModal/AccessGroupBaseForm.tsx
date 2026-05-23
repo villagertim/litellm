@@ -55,10 +55,7 @@ export function AccessGroupBaseForm({
               disabled={isNameDisabled}
             />
           </Form.Item>
-          <Form.Item
-            name="description"
-            label="Description"
-          >
+          <Form.Item name="description" label="Description">
             <TextArea
               rows={4}
               placeholder="Describe the purpose of this access group..."

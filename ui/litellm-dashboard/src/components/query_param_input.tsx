@@ -1,14 +1,18 @@
-import React, { useState } from "react";
-import { Button, Space } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { TextInput } from "@tremor/react";
+import { Button, Space } from "antd";
+import type React from "react";
+import { useState } from "react";
 
 interface QueryParamInputProps {
   value?: Record<string, string>;
   onChange?: (value: Record<string, string>) => void;
 }
 
-const QueryParamInput: React.FC<QueryParamInputProps> = ({ value = {}, onChange }) => {
+const QueryParamInput: React.FC<QueryParamInputProps> = ({
+  value = {},
+  onChange,
+}) => {
   const [pairs, setPairs] = useState<[string, string][]>(Object.entries(value));
 
   const handleAdd = () => {
@@ -31,7 +35,11 @@ const QueryParamInput: React.FC<QueryParamInputProps> = ({ value = {}, onChange 
   return (
     <div>
       {pairs.map(([key, val], index) => (
-        <Space key={index} style={{ display: "flex", marginBottom: 8 }} align="center">
+        <Space
+          key={index}
+          style={{ display: "flex", marginBottom: 8 }}
+          align="center"
+        >
           <TextInput
             placeholder="Parameter Name (e.g., version)"
             value={key}
@@ -42,8 +50,18 @@ const QueryParamInput: React.FC<QueryParamInputProps> = ({ value = {}, onChange 
             value={val}
             onChange={(e) => handleChange(index, key, e.target.value)}
           />
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
-            <MinusCircleOutlined onClick={() => handleRemove(index)} style={{ cursor: "pointer" }} />
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "100%",
+            }}
+          >
+            <MinusCircleOutlined
+              onClick={() => handleRemove(index)}
+              style={{ cursor: "pointer" }}
+            />
           </div>
         </Space>
       ))}

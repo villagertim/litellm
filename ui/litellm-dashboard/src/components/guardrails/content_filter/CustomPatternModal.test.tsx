@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import CustomPatternModal from "./CustomPatternModal";
 
 describe("CustomPatternModal", () => {
@@ -32,7 +32,7 @@ describe("CustomPatternModal", () => {
         onActionChange={mockOnActionChange}
         onAdd={mockOnAdd}
         onCancel={mockOnCancel}
-      />
+      />,
     );
 
     // Wait for modal to be visible
@@ -41,7 +41,9 @@ describe("CustomPatternModal", () => {
     });
 
     // Find and fill the pattern name input
-    const nameInput = screen.getByPlaceholderText("e.g., internal_id, employee_code");
+    const nameInput = screen.getByPlaceholderText(
+      "e.g., internal_id, employee_code",
+    );
     await user.type(nameInput, "employee_id");
 
     // Find and fill the regex pattern input - use paste instead of type to avoid special char issues
@@ -61,4 +63,3 @@ describe("CustomPatternModal", () => {
     expect(mockOnAdd).toHaveBeenCalledTimes(1);
   });
 });
-

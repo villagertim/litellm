@@ -1,4 +1,10 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import * as networking from "../../../networking";
 import EntityUsage from "./EntityUsage";
@@ -60,9 +66,15 @@ vi.mock("@/app/(dashboard)/hooks/useTeams", () => ({
 describe("EntityUsage", () => {
   const mockTagDailyActivityCall = vi.mocked(networking.tagDailyActivityCall);
   const mockTeamDailyActivityCall = vi.mocked(networking.teamDailyActivityCall);
-  const mockOrganizationDailyActivityCall = vi.mocked(networking.organizationDailyActivityCall);
-  const mockCustomerDailyActivityCall = vi.mocked(networking.customerDailyActivityCall);
-  const mockAgentDailyActivityCall = vi.mocked(networking.agentDailyActivityCall);
+  const mockOrganizationDailyActivityCall = vi.mocked(
+    networking.organizationDailyActivityCall,
+  );
+  const mockCustomerDailyActivityCall = vi.mocked(
+    networking.customerDailyActivityCall,
+  );
+  const mockAgentDailyActivityCall = vi.mocked(
+    networking.agentDailyActivityCall,
+  );
   const mockUserDailyActivityCall = vi.mocked(networking.userDailyActivityCall);
 
   const mockSpendData = {
@@ -628,7 +640,9 @@ describe("EntityUsage", () => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
     });
 
-    expect(screen.queryByText("Top Agents Driving Spend")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Top Agents Driving Spend"),
+    ).not.toBeInTheDocument();
   });
 
   it("should fetch agent activity data when entity type is team", async () => {

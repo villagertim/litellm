@@ -1,5 +1,5 @@
-import React from "react";
 import { RobotOutlined } from "@ant-design/icons";
+import type React from "react";
 
 interface EmptyStateProps {
   hasVariables: boolean;
@@ -19,4 +19,3 @@ const EmptyState: React.FC<EmptyStateProps> = ({ hasVariables }) => {
 };
 
 export default EmptyState;
-

@@ -1,8 +1,8 @@
+import type { DeletedTeam } from "@/app/(dashboard)/hooks/teams/useTeams";
 import { screen } from "@testing-library/react";
-import { vi, it, expect, beforeEach } from "vitest";
+import { beforeEach, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../../tests/test-utils";
 import { DeletedTeamsTable } from "./DeletedTeamsTable";
-import { DeletedTeam } from "@/app/(dashboard)/hooks/teams/useTeams";
 
 const mockDeletedTeam: DeletedTeam = {
   team_id: "team-1",
@@ -27,7 +27,11 @@ beforeEach(() => {
 
 it("should render DeletedTeamsTable component", () => {
   renderWithProviders(
-    <DeletedTeamsTable teams={[mockDeletedTeam]} isLoading={false} isFetching={false} />,
+    <DeletedTeamsTable
+      teams={[mockDeletedTeam]}
+      isLoading={false}
+      isFetching={false}
+    />,
   );
 
   expect(screen.getByText("Test Team")).toBeInTheDocument();
@@ -35,7 +39,11 @@ it("should render DeletedTeamsTable component", () => {
 
 it("should display team information correctly", () => {
   renderWithProviders(
-    <DeletedTeamsTable teams={[mockDeletedTeam]} isLoading={false} isFetching={false} />,
+    <DeletedTeamsTable
+      teams={[mockDeletedTeam]}
+      isLoading={false}
+      isFetching={false}
+    />,
   );
 
   expect(screen.getByText("Test Team")).toBeInTheDocument();

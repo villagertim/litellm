@@ -1,4 +1,7 @@
-import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "@/components/networking";
+import {
+  getGlobalLitellmHeaderName,
+  getProxyBaseUrl,
+} from "@/components/networking";
 import { useMutation } from "@tanstack/react-query";
 
 interface CreateParams {
@@ -11,9 +14,14 @@ interface CreateResponse {
   [key: string]: any;
 }
 
-const performCloudZeroCreate = async (accessToken: string, params: CreateParams): Promise<CreateResponse> => {
+const performCloudZeroCreate = async (
+  accessToken: string,
+  params: CreateParams,
+): Promise<CreateResponse> => {
   const proxyBaseUrl = getProxyBaseUrl();
-  const url = proxyBaseUrl ? `${proxyBaseUrl}/cloudzero/init` : `/cloudzero/init`;
+  const url = proxyBaseUrl
+    ? `${proxyBaseUrl}/cloudzero/init`
+    : `/cloudzero/init`;
 
   const response = await fetch(url, {
     method: "POST",
@@ -31,7 +39,10 @@ const performCloudZeroCreate = async (accessToken: string, params: CreateParams)
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     const errorMessage =
-      errorData?.error?.message || errorData?.message || errorData?.detail || "Failed to create CloudZero integration";
+      errorData?.error?.message ||
+      errorData?.message ||
+      errorData?.detail ||
+      "Failed to create CloudZero integration";
     throw new Error(errorMessage);
   }
 

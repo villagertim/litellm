@@ -4,7 +4,7 @@
  */
 
 import { Select, Spin } from "antd";
-import { SelectorOption, EndpointConfig } from "../endpoint_config";
+import type { EndpointConfig, SelectorOption } from "../endpoint_config";
 
 interface UnifiedSelectorProps {
   value: string;
@@ -24,7 +24,11 @@ export function UnifiedSelector({
   return (
     <Select
       value={value || undefined}
-      placeholder={loading ? `Loading ${config.selectorLabel.toLowerCase()}s...` : config.selectorPlaceholder}
+      placeholder={
+        loading
+          ? `Loading ${config.selectorLabel.toLowerCase()}s...`
+          : config.selectorPlaceholder
+      }
       onChange={onChange}
       loading={loading}
       showSearch
@@ -45,4 +49,3 @@ export function UnifiedSelector({
     />
   );
 }
-

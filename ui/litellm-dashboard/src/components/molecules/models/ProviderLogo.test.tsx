@@ -1,8 +1,8 @@
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { screen, render, fireEvent, act } from "@testing-library/react";
-import { ProviderLogo } from "./ProviderLogo";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as providerInfoHelpers from "../../provider_info_helpers";
+import { ProviderLogo } from "./ProviderLogo";
 
 vi.mock("../../provider_info_helpers");
 

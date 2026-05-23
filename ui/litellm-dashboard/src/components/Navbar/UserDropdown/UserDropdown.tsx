@@ -18,7 +18,16 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import { Button, Divider, Dropdown, Space, Switch, Tag, Tooltip, Typography } from "antd";
+import {
+  Button,
+  Divider,
+  Dropdown,
+  Space,
+  Switch,
+  Tag,
+  Tooltip,
+  Typography,
+} from "antd";
 import React, { useEffect, useState } from "react";
 
 const { Text } = Typography;
@@ -54,26 +63,26 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout }) => {
   ];
 
   const renderUserInfoSection = () => (
-    <Space direction="vertical" size="small" style={{ width: "100%", padding: "12px" }}>
+    <Space
+      direction="vertical"
+      size="small"
+      style={{ width: "100%", padding: "12px" }}
+    >
       <Space style={{ width: "100%", justifyContent: "space-between" }}>
         <Space>
           <MailOutlined />
           <Text type="secondary">{userEmail || "-"}</Text>
         </Space>
         {premiumUser ? (
-          <Tag
-            icon={<CrownOutlined />}
-            color="gold"
-          >
+          <Tag icon={<CrownOutlined />} color="gold">
             Premium
           </Tag>
         ) : (
-          <Tooltip title="Upgrade to Premium for advanced features" placement="left">
-            <Tag
-              icon={<CrownOutlined />}
-            >
-              Standard
-            </Tag>
+          <Tooltip
+            title="Upgrade to Premium for advanced features"
+            placement="left"
+          >
+            <Tag icon={<CrownOutlined />}>Standard</Tag>
           </Tooltip>
         )}
       </Space>
@@ -193,9 +202,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout }) => {
     <Dropdown
       menu={{ items: userItems }}
       popupRender={(menu) => (
-        <div
-          className="bg-white rounded-lg shadow-lg"
-        >
+        <div className="bg-white rounded-lg shadow-lg">
           {renderUserInfoSection()}
           <Divider style={{ margin: 0 }} />
           {React.cloneElement(menu as React.ReactElement, {
@@ -204,7 +211,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout }) => {
         </div>
       )}
     >
-      <Button type="text" >
+      <Button type="text">
         <Space>
           <UserOutlined />
           <Text>User</Text>

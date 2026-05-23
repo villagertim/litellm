@@ -1,11 +1,11 @@
-import React from "react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../../tests/test-utils";
+import type { CostEstimateResponse } from "../types";
 import MultiCostResults from "./multi_cost_results";
 import type { MultiModelResult } from "./types";
-import type { CostEstimateResponse } from "../types";
 
 vi.mock("./multi_export_utils", () => ({
   exportMultiToPDF: vi.fn(),
@@ -13,12 +13,14 @@ vi.mock("./multi_export_utils", () => ({
 }));
 
 vi.mock("@/utils/dataUtils", () => ({
-  formatNumberWithCommas: vi.fn((v: number, d: number = 0) =>
-    Number.isFinite(v) ? v.toFixed(d) : "-"
+  formatNumberWithCommas: vi.fn((v: number, d = 0) =>
+    Number.isFinite(v) ? v.toFixed(d) : "-",
   ),
 }));
 
-function makeCostResponse(overrides: Partial<CostEstimateResponse> = {}): CostEstimateResponse {
+function makeCostResponse(
+  overrides: Partial<CostEstimateResponse> = {},
+): CostEstimateResponse {
   return {
     model: "gpt-4",
     input_tokens: 1000,
@@ -44,11 +46,18 @@ function makeCostResponse(overrides: Partial<CostEstimateResponse> = {}): CostEs
   };
 }
 
-function makeMultiResult(overrides: Partial<MultiModelResult> = {}): MultiModelResult {
+function makeMultiResult(
+  overrides: Partial<MultiModelResult> = {},
+): MultiModelResult {
   return {
     entries: [
       {
-        entry: { id: "e1", model: "gpt-4", input_tokens: 1000, output_tokens: 500 },
+        entry: {
+          id: "e1",
+          model: "gpt-4",
+          input_tokens: 1000,
+          output_tokens: 500,
+        },
         result: makeCostResponse(),
         loading: false,
         error: null,
@@ -95,9 +104,14 @@ describe("MultiCostResults", () => {
   describe("when no model has been selected", () => {
     it("should show a prompt to select models", () => {
       renderWithProviders(
-        <MultiCostResults multiResult={emptyMultiResult()} timePeriod="month" />
+        <MultiCostResults
+          multiResult={emptyMultiResult()}
+          timePeriod="month"
+        />,
       );
-      expect(screen.getByText(/select models above to see cost estimates/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/select models above to see cost estimates/i),
+      ).toBeInTheDocument();
     });
   });
 
@@ -106,7 +120,12 @@ describe("MultiCostResults", () => {
       const multiResult: MultiModelResult = {
         entries: [
           {
-            entry: { id: "e1", model: "gpt-4", input_tokens: 1000, output_tokens: 500 },
+            entry: {
+              id: "e1",
+              model: "gpt-4",
+              input_tokens: 1000,
+              output_tokens: 500,
+            },
             result: null,
             loading: true,
             error: null,
@@ -122,7 +141,9 @@ describe("MultiCostResults", () => {
         },
       };
 
-      renderWithProviders(<MultiCostResults multiResult={multiResult} timePeriod="month" />);
+      renderWithProviders(
+        <MultiCostResults multiResult={multiResult} timePeriod="month" />,
+      );
       expect(screen.getByText(/calculating costs/i)).toBeInTheDocument();
     });
   });
@@ -132,7 +153,12 @@ describe("MultiCostResults", () => {
       const multiResult: MultiModelResult = {
         entries: [
           {
-            entry: { id: "e1", model: "bad-model", input_tokens: 0, output_tokens: 0 },
+            entry: {
+              id: "e1",
+              model: "bad-model",
+              input_tokens: 0,
+              output_tokens: 0,
+            },
             result: null,
             loading: false,
             error: "Pricing not found",
@@ -148,7 +174,9 @@ describe("MultiCostResults", () => {
         },
       };
 
-      renderWithProviders(<MultiCostResults multiResult={multiResult} timePeriod="month" />);
+      renderWithProviders(
+        <MultiCostResults multiResult={multiResult} timePeriod="month" />,
+      );
       expect(screen.getByText(/bad-model/i)).toBeInTheDocument();
       expect(screen.getByText(/Pricing not found/i)).toBeInTheDocument();
     });
@@ -157,21 +185,21 @@ describe("MultiCostResults", () => {
   describe("when valid results are available", () => {
     it("should show the Cost Estimates heading", () => {
       renderWithProviders(
-        <MultiCostResults multiResult={makeMultiResult()} timePeriod="day" />
+        <MultiCostResults multiResult={makeMultiResult()} timePeriod="day" />,
       );
       expect(screen.getByText("Cost Estimates")).toBeInTheDocument();
     });
 
     it("should display the Total Per Request statistic", () => {
       renderWithProviders(
-        <MultiCostResults multiResult={makeMultiResult()} timePeriod="day" />
+        <MultiCostResults multiResult={makeMultiResult()} timePeriod="day" />,
       );
       expect(screen.getByText("Total Per Request")).toBeInTheDocument();
     });
 
     it("should display Total Daily statistic when timePeriod is day", () => {
       renderWithProviders(
-        <MultiCostResults multiResult={makeMultiResult()} timePeriod="day" />
+        <MultiCostResults multiResult={makeMultiResult()} timePeriod="day" />,
       );
       expect(screen.getByText("Total Daily")).toBeInTheDocument();
     });
@@ -180,46 +208,55 @@ describe("MultiCostResults", () => {
       renderWithProviders(
         <MultiCostResults
           multiResult={makeMultiResult({
-            totals: { cost_per_request: 0.05, daily_cost: null, monthly_cost: 150.0, margin_per_request: 0, daily_margin: null, monthly_margin: null },
+            totals: {
+              cost_per_request: 0.05,
+              daily_cost: null,
+              monthly_cost: 150.0,
+              margin_per_request: 0,
+              daily_margin: null,
+              monthly_margin: null,
+            },
           })}
           timePeriod="month"
-        />
+        />,
       );
       expect(screen.getByText("Total Monthly")).toBeInTheDocument();
     });
 
     it("should show the model name in the summary table", () => {
       renderWithProviders(
-        <MultiCostResults multiResult={makeMultiResult()} timePeriod="day" />
+        <MultiCostResults multiResult={makeMultiResult()} timePeriod="day" />,
       );
       expect(screen.getByText("gpt-4")).toBeInTheDocument();
     });
 
     it("should show the provider tag next to the model name", () => {
       renderWithProviders(
-        <MultiCostResults multiResult={makeMultiResult()} timePeriod="day" />
+        <MultiCostResults multiResult={makeMultiResult()} timePeriod="day" />,
       );
       expect(screen.getByText("openai")).toBeInTheDocument();
     });
 
     it("should show the Export button when results are available", () => {
       renderWithProviders(
-        <MultiCostResults multiResult={makeMultiResult()} timePeriod="day" />
+        <MultiCostResults multiResult={makeMultiResult()} timePeriod="day" />,
       );
-      expect(screen.getByRole("button", { name: /export/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /export/i }),
+      ).toBeInTheDocument();
     });
 
     it("should expand the model breakdown row when the expand button is clicked", async () => {
       const user = userEvent.setup();
       renderWithProviders(
-        <MultiCostResults multiResult={makeMultiResult()} timePeriod="day" />
+        <MultiCostResults multiResult={makeMultiResult()} timePeriod="day" />,
       );
 
       // The expand column renders a button (RightOutlined icon) for rows without errors
       const expandButtons = screen.getAllByRole("button");
       // Find the small expand button (not the Export button)
       const expandButton = expandButtons.find(
-        (btn) => !btn.textContent?.toLowerCase().includes("export")
+        (btn) => !btn.textContent?.toLowerCase().includes("export"),
       );
       expect(expandButton).toBeDefined();
 
@@ -232,12 +269,14 @@ describe("MultiCostResults", () => {
     it("should show the collapse icon after expanding a row", async () => {
       const user = userEvent.setup();
       renderWithProviders(
-        <MultiCostResults multiResult={makeMultiResult()} timePeriod="day" />
+        <MultiCostResults multiResult={makeMultiResult()} timePeriod="day" />,
       );
 
       const getExpandButton = () => {
         const allButtons = screen.getAllByRole("button");
-        return allButtons.find((btn) => !btn.textContent?.toLowerCase().includes("export"));
+        return allButtons.find(
+          (btn) => !btn.textContent?.toLowerCase().includes("export"),
+        );
       };
 
       // Before expand: button has the "down" aria-label (RightOutlined renders as down in ant icons)
@@ -257,8 +296,16 @@ describe("MultiCostResults", () => {
       const multiResult = makeMultiResult({
         entries: [
           {
-            entry: { id: "e1", model: "gpt-4", input_tokens: 1000, output_tokens: 500 },
-            result: makeCostResponse({ margin_cost_per_request: 0.01, daily_margin_cost: 1.0 }),
+            entry: {
+              id: "e1",
+              model: "gpt-4",
+              input_tokens: 1000,
+              output_tokens: 500,
+            },
+            result: makeCostResponse({
+              margin_cost_per_request: 0.01,
+              daily_margin_cost: 1.0,
+            }),
             loading: false,
             error: null,
           },
@@ -273,13 +320,15 @@ describe("MultiCostResults", () => {
         },
       });
 
-      renderWithProviders(<MultiCostResults multiResult={multiResult} timePeriod="day" />);
+      renderWithProviders(
+        <MultiCostResults multiResult={multiResult} timePeriod="day" />,
+      );
       expect(screen.getByText("Margin Fee/Request")).toBeInTheDocument();
     });
 
     it("should not show margin fee details when margin per request is zero", () => {
       renderWithProviders(
-        <MultiCostResults multiResult={makeMultiResult()} timePeriod="day" />
+        <MultiCostResults multiResult={makeMultiResult()} timePeriod="day" />,
       );
       expect(screen.queryByText("Margin Fee/Request")).not.toBeInTheDocument();
     });
@@ -290,15 +339,25 @@ describe("MultiCostResults", () => {
       const multiResult = makeMultiResult({
         entries: [
           {
-            entry: { id: "e1", model: "custom-model", input_tokens: 1000, output_tokens: 500 },
-            result: makeCostResponse({ model: "custom-model", cost_per_request: 0 }),
+            entry: {
+              id: "e1",
+              model: "custom-model",
+              input_tokens: 1000,
+              output_tokens: 500,
+            },
+            result: makeCostResponse({
+              model: "custom-model",
+              cost_per_request: 0,
+            }),
             loading: false,
             error: null,
           },
         ],
       });
 
-      renderWithProviders(<MultiCostResults multiResult={multiResult} timePeriod="day" />);
+      renderWithProviders(
+        <MultiCostResults multiResult={multiResult} timePeriod="day" />,
+      );
       expect(screen.getByText(/no pricing data found/i)).toBeInTheDocument();
     });
   });

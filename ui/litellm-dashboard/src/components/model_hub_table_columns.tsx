@@ -1,7 +1,7 @@
-import { ColumnDef } from "@tanstack/react-table";
-import { Button, Badge, Text } from "@tremor/react";
-import { Tooltip, Tag } from "antd";
 import { CopyOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import type { ColumnDef } from "@tanstack/react-table";
+import { Badge, Button, Text } from "@tremor/react";
+import { Tag, Tooltip } from "antd";
 
 interface ModelHubData {
   model_group: string;
@@ -51,7 +51,7 @@ const formatTokens = (tokens: number) => {
 export const modelHubColumns = (
   showModal: (model: ModelHubData) => void,
   copyToClipboard: (text: string) => void,
-  publicPage: boolean = false,
+  publicPage = false,
 ): ColumnDef<ModelHubData>[] => {
   const allColumns: ColumnDef<ModelHubData>[] = [
     {
@@ -75,7 +75,9 @@ export const modelHubColumns = (
             </div>
             {/* Show provider on mobile when provider column is hidden */}
             <div className="md:hidden">
-              <Text className="text-xs text-gray-600">{model.providers.join(", ")}</Text>
+              <Text className="text-xs text-gray-600">
+                {model.providers.join(", ")}
+              </Text>
             </div>
           </div>
         );
@@ -100,7 +102,11 @@ export const modelHubColumns = (
                 {provider}
               </Tag>
             ))}
-            {model.providers.length > 2 && <Text className="text-xs text-gray-500">+{model.providers.length - 2}</Text>}
+            {model.providers.length > 2 && (
+              <Text className="text-xs text-gray-500">
+                +{model.providers.length - 2}
+              </Text>
+            )}
           </div>
         );
       },
@@ -133,8 +139,12 @@ export const modelHubColumns = (
       accessorKey: "max_input_tokens",
       enableSorting: true,
       sortingFn: (rowA, rowB) => {
-        const tokensA = (rowA.original.max_input_tokens || 0) + (rowA.original.max_output_tokens || 0);
-        const tokensB = (rowB.original.max_input_tokens || 0) + (rowB.original.max_output_tokens || 0);
+        const tokensA =
+          (rowA.original.max_input_tokens || 0) +
+          (rowA.original.max_output_tokens || 0);
+        const tokensB =
+          (rowB.original.max_input_tokens || 0) +
+          (rowB.original.max_output_tokens || 0);
         return tokensA - tokensB;
       },
       cell: ({ row }) => {
@@ -143,8 +153,13 @@ export const modelHubColumns = (
         return (
           <div className="space-y-1">
             <Text className="text-xs">
-              {model.max_input_tokens ? formatTokens(model.max_input_tokens) : "-"} /{" "}
-              {model.max_output_tokens ? formatTokens(model.max_output_tokens) : "-"}
+              {model.max_input_tokens
+                ? formatTokens(model.max_input_tokens)
+                : "-"}{" "}
+              /{" "}
+              {model.max_output_tokens
+                ? formatTokens(model.max_output_tokens)
+                : "-"}
             </Text>
           </div>
         );
@@ -158,8 +173,12 @@ export const modelHubColumns = (
       accessorKey: "input_cost_per_token",
       enableSorting: true,
       sortingFn: (rowA, rowB) => {
-        const costA = (rowA.original.input_cost_per_token || 0) + (rowA.original.output_cost_per_token || 0);
-        const costB = (rowB.original.input_cost_per_token || 0) + (rowB.original.output_cost_per_token || 0);
+        const costA =
+          (rowA.original.input_cost_per_token || 0) +
+          (rowA.original.output_cost_per_token || 0);
+        const costB =
+          (rowB.original.input_cost_per_token || 0) +
+          (rowB.original.output_cost_per_token || 0);
         return costA - costB;
       },
       cell: ({ row }) => {
@@ -167,9 +186,15 @@ export const modelHubColumns = (
 
         return (
           <div className="space-y-1">
-            <Text className="text-xs">{model.input_cost_per_token ? formatCost(model.input_cost_per_token) : "-"}</Text>
+            <Text className="text-xs">
+              {model.input_cost_per_token
+                ? formatCost(model.input_cost_per_token)
+                : "-"}
+            </Text>
             <Text className="text-xs text-gray-500">
-              {model.output_cost_per_token ? formatCost(model.output_cost_per_token) : "-"}
+              {model.output_cost_per_token
+                ? formatCost(model.output_cost_per_token)
+                : "-"}
             </Text>
           </div>
         );
@@ -190,7 +215,11 @@ export const modelHubColumns = (
               <Text className="text-gray-500 text-xs">-</Text>
             ) : (
               capabilities.map((capability, index) => (
-                <Badge key={capability} color={colors[index % colors.length]} size="xs">
+                <Badge
+                  key={capability}
+                  color={colors[index % colors.length]}
+                  size="xs"
+                >
                   {formatCapabilityName(capability)}
                 </Badge>
               ))
@@ -233,7 +262,12 @@ export const modelHubColumns = (
         const model = row.original;
 
         return (
-          <Button size="xs" variant="secondary" onClick={() => showModal(model)} icon={InfoCircleOutlined}>
+          <Button
+            size="xs"
+            variant="secondary"
+            onClick={() => showModal(model)}
+            icon={InfoCircleOutlined}
+          >
             <span className="hidden lg:inline">Details</span>
             <span className="lg:hidden">Info</span>
           </Button>
@@ -246,7 +280,11 @@ export const modelHubColumns = (
   if (publicPage) {
     return allColumns.filter((column) => {
       // Remove the public column
-      if ("accessorKey" in column && column.accessorKey === "is_public_model_group") return false;
+      if (
+        "accessorKey" in column &&
+        column.accessorKey === "is_public_model_group"
+      )
+        return false;
 
       return true;
     });

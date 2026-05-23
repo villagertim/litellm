@@ -1,9 +1,12 @@
+import {
+  type BlogPost,
+  useBlogPosts,
+} from "@/app/(dashboard)/hooks/blogPosts/useBlogPosts";
 import { useDisableBlogPosts } from "@/app/(dashboard)/hooks/useDisableBlogPosts";
-import { useBlogPosts, type BlogPost } from "@/app/(dashboard)/hooks/blogPosts/useBlogPosts";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Button, Dropdown, Space, Typography } from "antd";
 import type { MenuProps } from "antd";
-import React from "react";
+import type React from "react";
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -45,13 +48,24 @@ export const BlogDropdown: React.FC = () => {
       },
     ];
   } else if (!data || data.posts.length === 0) {
-    items = [{ key: "empty", label: <Text type="secondary">No posts available</Text>, disabled: true }];
+    items = [
+      {
+        key: "empty",
+        label: <Text type="secondary">No posts available</Text>,
+        disabled: true,
+      },
+    ];
   } else {
     items = [
       ...data.posts.slice(0, 5).map((post: BlogPost) => ({
         key: post.url,
         label: (
-          <a href={post.url} target="_blank" rel="noopener noreferrer" style={{ display: "block", width: 380 }}>
+          <a
+            href={post.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ display: "block", width: 380 }}
+          >
             <Title level={5} style={{ marginBottom: 2 }}>
               {post.title}
             </Title>
@@ -66,7 +80,11 @@ export const BlogDropdown: React.FC = () => {
       {
         key: "view-all",
         label: (
-          <a href="https://docs.litellm.ai/blog" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://docs.litellm.ai/blog"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             View all posts
           </a>
         ),

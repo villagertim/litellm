@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import { ErrorViewer } from "./ErrorViewer";
 
 const basicError = {
@@ -52,7 +52,7 @@ describe("ErrorViewer", () => {
     await user.click(screen.getByText("main.py"));
 
     expect(
-      screen.getByText("result = await client.chat(model=\"gpt-4\")")
+      screen.getByText('result = await client.chat(model="gpt-4")'),
     ).toBeInTheDocument();
   });
 

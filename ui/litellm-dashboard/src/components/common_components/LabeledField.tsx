@@ -1,5 +1,5 @@
-import React from "react";
-import { Typography, Space } from "antd";
+import { Space, Typography } from "antd";
+import type React from "react";
 import DefaultProxyAdminTag from "./DefaultProxyAdminTag";
 
 const { Text } = Typography;
@@ -42,7 +42,14 @@ export default function LabeledField({
     <div>
       <Space size={4}>
         <Text type="secondary">{icon}</Text>
-        <Text type="secondary" style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+        <Text
+          type="secondary"
+          style={{
+            fontSize: 12,
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
+          }}
+        >
           {label}
         </Text>
       </Space>

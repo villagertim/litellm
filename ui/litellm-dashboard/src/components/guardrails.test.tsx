@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import GuardrailsPanel from "./guardrails";
 import { getGuardrailsList } from "./networking";
@@ -21,7 +21,12 @@ vi.mock("./guardrails/guardrail_table", () => ({
       {guardrailsList.length > 0 && (
         <button
           data-testid="delete-button"
-          onClick={() => onDeleteClick(guardrailsList[0].guardrail_id, guardrailsList[0].guardrail_name)}
+          onClick={() =>
+            onDeleteClick(
+              guardrailsList[0].guardrail_id,
+              guardrailsList[0].guardrail_name,
+            )
+          }
         >
           Delete
         </button>

@@ -1,9 +1,15 @@
-import React from "react";
-import { render, screen, waitFor, fireEvent, act } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { InputCard } from "./InputCard";
-import { ParsedMessage } from "./prettyMessagesTypes";
+import type { ParsedMessage } from "./prettyMessagesTypes";
 
 vi.mock("antd", async () => {
   const actual = await vi.importActual<typeof import("antd")>("antd");
@@ -118,7 +124,7 @@ describe("InputCard", () => {
     });
 
     expect(copyButton).toBeInTheDocument();
-    
+
     await act(async () => {
       fireEvent.click(copyButton!);
     });

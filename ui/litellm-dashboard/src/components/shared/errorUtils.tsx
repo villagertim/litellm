@@ -21,7 +21,9 @@ export const parseErrorMessage = (error: any): string => {
       }
 
       // If parsed successfully but no nested message found, stringify it nicely
-      return typeof parsedError === "string" ? parsedError : JSON.stringify(parsedError, null, 2);
+      return typeof parsedError === "string"
+        ? parsedError
+        : JSON.stringify(parsedError, null, 2);
     } catch (e) {
       // If parsing fails, just return the original message
       return error.message;
@@ -35,7 +37,8 @@ export const parseErrorMessage = (error: any): string => {
     if (error.response.data.error) {
       return typeof error.response.data.error === "string"
         ? error.response.data.error
-        : error.response.data.error.message || JSON.stringify(error.response.data.error);
+        : error.response.data.error.message ||
+            JSON.stringify(error.response.data.error);
     }
   }
 

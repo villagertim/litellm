@@ -1,12 +1,22 @@
-import { Button, Icon, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, Text } from "@tremor/react";
-import { Tooltip } from "antd";
-import { formatNumberWithCommas } from "@/utils/dataUtils";
-import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
-import React from "react";
-import { type KeyResponse, Team } from "@/components/key_team_helpers/key_list";
-import { Member, Organization } from "@/components/networking";
 import ModelsCell from "@/app/(dashboard)/teams/components/TeamsTable/ModelsCell";
 import YourRoleCell from "@/app/(dashboard)/teams/components/TeamsTable/YourRoleCell/YourRoleCell";
+import type { KeyResponse, Team } from "@/components/key_team_helpers/key_list";
+import type { Member, Organization } from "@/components/networking";
+import { formatNumberWithCommas } from "@/utils/dataUtils";
+import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
+import {
+  Button,
+  Icon,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+  Text,
+} from "@tremor/react";
+import { Tooltip } from "antd";
+import React from "react";
 
 type TeamsTableProps = {
   teams: Team[] | null;
@@ -61,7 +71,11 @@ const TeamsTable = ({
                 if (!currentOrg) return true;
                 return team.organization_id === currentOrg.organization_id;
               })
-              .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+              .sort(
+                (a, b) =>
+                  new Date(b.created_at).getTime() -
+                  new Date(a.created_at).getTime(),
+              )
               .map((team: any) => (
                 <TableRow key={team.team_id}>
                   <TableCell
@@ -98,7 +112,9 @@ const TeamsTable = ({
                       overflow: "hidden",
                     }}
                   >
-                    {team.created_at ? new Date(team.created_at).toLocaleDateString() : "N/A"}
+                    {team.created_at
+                      ? new Date(team.created_at).toLocaleDateString()
+                      : "N/A"}
                   </TableCell>
                   <TableCell
                     style={{
@@ -116,7 +132,10 @@ const TeamsTable = ({
                       overflow: "hidden",
                     }}
                   >
-                    {team["max_budget"] !== null && team["max_budget"] !== undefined ? team["max_budget"] : "No limit"}
+                    {team["max_budget"] !== null &&
+                    team["max_budget"] !== undefined
+                      ? team["max_budget"]
+                      : "No limit"}
                   </TableCell>
                   <ModelsCell team={team} />
                   <TableCell>{team.organization_id}</TableCell>
@@ -135,8 +154,10 @@ const TeamsTable = ({
                         team.team_id &&
                         perTeamInfo[team.team_id] &&
                         perTeamInfo[team.team_id].team_info &&
-                        perTeamInfo[team.team_id].team_info.members_with_roles &&
-                        perTeamInfo[team.team_id].team_info.members_with_roles.length}{" "}
+                        perTeamInfo[team.team_id].team_info
+                          .members_with_roles &&
+                        perTeamInfo[team.team_id].team_info.members_with_roles
+                          .length}{" "}
                       Members
                     </Text>
                   </TableCell>
@@ -151,7 +172,11 @@ const TeamsTable = ({
                             setEditTeam(true);
                           }}
                         />
-                        <Icon onClick={() => onDeleteTeam(team.team_id)} icon={TrashIcon} size="sm" />
+                        <Icon
+                          onClick={() => onDeleteTeam(team.team_id)}
+                          icon={TrashIcon}
+                          size="sm"
+                        />
                       </>
                     ) : null}
                   </TableCell>

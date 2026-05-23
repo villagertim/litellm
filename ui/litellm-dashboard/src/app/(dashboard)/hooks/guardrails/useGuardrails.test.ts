@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { ReactNode } from "react";
-import { useGuardrails } from "./useGuardrails";
 import { getGuardrailsList } from "@/components/networking";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { renderHook, waitFor } from "@testing-library/react";
+import React, { type ReactNode } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useGuardrails } from "./useGuardrails";
 
 // Mock the networking function
 vi.mock("@/components/networking", () => ({
@@ -25,7 +25,11 @@ const mockGuardrailsResponse = {
   ],
 };
 
-const expectedGuardrailNames = ["content-safety", "toxicity-filter", "pii-detection"];
+const expectedGuardrailNames = [
+  "content-safety",
+  "toxicity-filter",
+  "pii-detection",
+];
 
 describe("useGuardrails", () => {
   let queryClient: QueryClient;
@@ -74,7 +78,9 @@ describe("useGuardrails", () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(result.current.data?.guardrails.map((g) => g.guardrail_name)).toEqual(expectedGuardrailNames);
+    expect(
+      result.current.data?.guardrails.map((g) => g.guardrail_name),
+    ).toEqual(expectedGuardrailNames);
     expect(result.current.error).toBeNull();
     expect(getGuardrailsList).toHaveBeenCalledWith("test-access-token");
     expect(getGuardrailsList).toHaveBeenCalledTimes(1);
@@ -251,7 +257,10 @@ describe("useGuardrails", () => {
 
   it("should correctly transform guardrail objects to names array", async () => {
     const customGuardrailsResponse = {
-      guardrails: [{ guardrail_name: "custom-guardrail-1" }, { guardrail_name: "custom-guardrail-2" }],
+      guardrails: [
+        { guardrail_name: "custom-guardrail-1" },
+        { guardrail_name: "custom-guardrail-2" },
+      ],
     };
     const expectedNames = ["custom-guardrail-1", "custom-guardrail-2"];
 
@@ -275,9 +284,18 @@ describe("useGuardrails", () => {
   it("should partition guardrails into global and optional sets based on default_on", async () => {
     const mockMixedResponse = {
       guardrails: [
-        { guardrail_name: "global-guard-a", litellm_params: { default_on: true } },
-        { guardrail_name: "global-guard-b", litellm_params: { default_on: true } },
-        { guardrail_name: "optional-guard-a", litellm_params: { default_on: false } },
+        {
+          guardrail_name: "global-guard-a",
+          litellm_params: { default_on: true },
+        },
+        {
+          guardrail_name: "global-guard-b",
+          litellm_params: { default_on: true },
+        },
+        {
+          guardrail_name: "optional-guard-a",
+          litellm_params: { default_on: false },
+        },
         { guardrail_name: "optional-guard-b" },
       ],
     };

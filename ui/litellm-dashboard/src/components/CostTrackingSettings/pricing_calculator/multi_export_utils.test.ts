@@ -1,15 +1,17 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { exportMultiToPDF, exportMultiToCSV } from "./multi_export_utils";
-import type { MultiModelResult } from "./types";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { CostEstimateResponse } from "../types";
+import { exportMultiToCSV, exportMultiToPDF } from "./multi_export_utils";
+import type { MultiModelResult } from "./types";
 
 vi.mock("@/utils/dataUtils", () => ({
-  formatNumberWithCommas: vi.fn((v: number, d: number = 0) =>
-    Number.isFinite(v) ? v.toFixed(d) : "-"
+  formatNumberWithCommas: vi.fn((v: number, d = 0) =>
+    Number.isFinite(v) ? v.toFixed(d) : "-",
   ),
 }));
 
-function makeCostResponse(overrides: Partial<CostEstimateResponse> = {}): CostEstimateResponse {
+function makeCostResponse(
+  overrides: Partial<CostEstimateResponse> = {},
+): CostEstimateResponse {
   return {
     model: "gpt-4",
     input_tokens: 1000,
@@ -35,11 +37,18 @@ function makeCostResponse(overrides: Partial<CostEstimateResponse> = {}): CostEs
   };
 }
 
-function makeMultiResult(overrides: Partial<MultiModelResult> = {}): MultiModelResult {
+function makeMultiResult(
+  overrides: Partial<MultiModelResult> = {},
+): MultiModelResult {
   return {
     entries: [
       {
-        entry: { id: "entry-1", model: "gpt-4", input_tokens: 1000, output_tokens: 500 },
+        entry: {
+          id: "entry-1",
+          model: "gpt-4",
+          input_tokens: 1000,
+          output_tokens: 500,
+        },
         result: makeCostResponse(),
         loading: false,
         error: null,
@@ -59,7 +68,10 @@ function makeMultiResult(overrides: Partial<MultiModelResult> = {}): MultiModelR
 
 describe("exportMultiToPDF", () => {
   let mockPrintWindow: {
-    document: { write: ReturnType<typeof vi.fn>; close: ReturnType<typeof vi.fn> };
+    document: {
+      write: ReturnType<typeof vi.fn>;
+      close: ReturnType<typeof vi.fn>;
+    };
     print: ReturnType<typeof vi.fn>;
     onload: (() => void) | null;
   };
@@ -70,7 +82,9 @@ describe("exportMultiToPDF", () => {
       print: vi.fn(),
       onload: null,
     };
-    vi.spyOn(window, "open").mockReturnValue(mockPrintWindow as unknown as Window);
+    vi.spyOn(window, "open").mockReturnValue(
+      mockPrintWindow as unknown as Window,
+    );
   });
 
   afterEach(() => {
@@ -139,10 +153,40 @@ describe("exportMultiToPDF", () => {
   it("should only include entries that have a result", () => {
     const multiResult: MultiModelResult = {
       entries: [
-        { entry: { id: "e1", model: "gpt-4", input_tokens: 1000, output_tokens: 500 }, result: null, loading: false, error: null },
-        { entry: { id: "e2", model: "claude-3", input_tokens: 500, output_tokens: 250 }, result: makeCostResponse({ model: "claude-3", provider: "anthropic" }), loading: false, error: null },
+        {
+          entry: {
+            id: "e1",
+            model: "gpt-4",
+            input_tokens: 1000,
+            output_tokens: 500,
+          },
+          result: null,
+          loading: false,
+          error: null,
+        },
+        {
+          entry: {
+            id: "e2",
+            model: "claude-3",
+            input_tokens: 500,
+            output_tokens: 250,
+          },
+          result: makeCostResponse({
+            model: "claude-3",
+            provider: "anthropic",
+          }),
+          loading: false,
+          error: null,
+        },
       ],
-      totals: { cost_per_request: 0.05, daily_cost: 5.0, monthly_cost: 150.0, margin_per_request: 0, daily_margin: null, monthly_margin: null },
+      totals: {
+        cost_per_request: 0.05,
+        daily_cost: 5.0,
+        monthly_cost: 150.0,
+        margin_per_request: 0,
+        daily_margin: null,
+        monthly_margin: null,
+      },
     };
     exportMultiToPDF(multiResult);
     const html = mockPrintWindow.document.write.mock.calls[0][0] as string;
@@ -153,10 +197,37 @@ describe("exportMultiToPDF", () => {
   it("should show plural 'models' when multiple results are present", () => {
     const multiResult: MultiModelResult = {
       entries: [
-        { entry: { id: "e1", model: "gpt-4", input_tokens: 1000, output_tokens: 500 }, result: makeCostResponse(), loading: false, error: null },
-        { entry: { id: "e2", model: "claude-3", input_tokens: 500, output_tokens: 250 }, result: makeCostResponse({ model: "claude-3" }), loading: false, error: null },
+        {
+          entry: {
+            id: "e1",
+            model: "gpt-4",
+            input_tokens: 1000,
+            output_tokens: 500,
+          },
+          result: makeCostResponse(),
+          loading: false,
+          error: null,
+        },
+        {
+          entry: {
+            id: "e2",
+            model: "claude-3",
+            input_tokens: 500,
+            output_tokens: 250,
+          },
+          result: makeCostResponse({ model: "claude-3" }),
+          loading: false,
+          error: null,
+        },
       ],
-      totals: { cost_per_request: 0.10, daily_cost: 10.0, monthly_cost: 300.0, margin_per_request: 0, daily_margin: null, monthly_margin: null },
+      totals: {
+        cost_per_request: 0.1,
+        daily_cost: 10.0,
+        monthly_cost: 300.0,
+        margin_per_request: 0,
+        daily_margin: null,
+        monthly_margin: null,
+      },
     };
     exportMultiToPDF(multiResult);
     const html = mockPrintWindow.document.write.mock.calls[0][0] as string;
@@ -193,7 +264,9 @@ describe("exportMultiToCSV", () => {
     const today = new Date().toISOString().split("T")[0];
     exportMultiToCSV(makeMultiResult());
 
-    expect(createdAnchors[0].download).toBe(`cost_estimate_multi_model_${today}.csv`);
+    expect(createdAnchors[0].download).toBe(
+      `cost_estimate_multi_model_${today}.csv`,
+    );
   });
 
   it("should generate CSV content containing a header row and model data", () => {
@@ -250,9 +323,26 @@ describe("exportMultiToCSV", () => {
   it("should skip entries with null results", () => {
     const multiResult: MultiModelResult = {
       entries: [
-        { entry: { id: "e1", model: "gpt-4", input_tokens: 1000, output_tokens: 500 }, result: null, loading: false, error: null },
+        {
+          entry: {
+            id: "e1",
+            model: "gpt-4",
+            input_tokens: 1000,
+            output_tokens: 500,
+          },
+          result: null,
+          loading: false,
+          error: null,
+        },
       ],
-      totals: { cost_per_request: 0, daily_cost: null, monthly_cost: null, margin_per_request: 0, daily_margin: null, monthly_margin: null },
+      totals: {
+        cost_per_request: 0,
+        daily_cost: null,
+        monthly_cost: null,
+        margin_per_request: 0,
+        daily_margin: null,
+        monthly_margin: null,
+      },
     };
 
     let csvContent = "";

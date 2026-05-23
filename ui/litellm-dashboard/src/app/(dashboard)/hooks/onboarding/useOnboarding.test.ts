@@ -1,9 +1,15 @@
-import { getOnboardingCredentials, claimOnboardingToken } from "@/components/networking";
+import {
+  claimOnboardingToken,
+  getOnboardingCredentials,
+} from "@/components/networking";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { renderHook, waitFor, act } from "@testing-library/react";
-import React, { ReactNode } from "react";
+import { act, renderHook, waitFor } from "@testing-library/react";
+import React, { type ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useOnboardingCredentials, useClaimOnboardingToken } from "./useOnboarding";
+import {
+  useClaimOnboardingToken,
+  useOnboardingCredentials,
+} from "./useOnboarding";
 
 vi.mock("@/components/networking", () => ({
   getOnboardingCredentials: vi.fn(),
@@ -15,7 +21,10 @@ vi.mock("@/app/(dashboard)/hooks/uiConfig/useUIConfig", () => ({
   useUIConfig: () => mockUseUIConfig(),
 }));
 
-const mockCredentialsResponse = { token: "mock.jwt.token", login_url: "http://example.com/login" };
+const mockCredentialsResponse = {
+  token: "mock.jwt.token",
+  login_url: "http://example.com/login",
+};
 
 describe("useOnboardingCredentials", () => {
   let queryClient: QueryClient;
@@ -35,9 +44,14 @@ describe("useOnboardingCredentials", () => {
     React.createElement(QueryClientProvider, { client: queryClient }, children);
 
   it("fetches credentials when inviteId is provided and UIConfig is loaded", async () => {
-    (getOnboardingCredentials as any).mockResolvedValue(mockCredentialsResponse);
+    (getOnboardingCredentials as any).mockResolvedValue(
+      mockCredentialsResponse,
+    );
 
-    const { result } = renderHook(() => useOnboardingCredentials("invite-123"), { wrapper });
+    const { result } = renderHook(
+      () => useOnboardingCredentials("invite-123"),
+      { wrapper },
+    );
 
     expect(result.current.isLoading).toBe(true);
 
@@ -49,7 +63,9 @@ describe("useOnboardingCredentials", () => {
   });
 
   it("does not fetch when inviteId is null", async () => {
-    const { result } = renderHook(() => useOnboardingCredentials(null), { wrapper });
+    const { result } = renderHook(() => useOnboardingCredentials(null), {
+      wrapper,
+    });
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.isFetched).toBe(false);
@@ -59,7 +75,10 @@ describe("useOnboardingCredentials", () => {
   it("does not fetch while UIConfig is loading", async () => {
     mockUseUIConfig.mockReturnValue({ isLoading: true });
 
-    const { result } = renderHook(() => useOnboardingCredentials("invite-123"), { wrapper });
+    const { result } = renderHook(
+      () => useOnboardingCredentials("invite-123"),
+      { wrapper },
+    );
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.isFetched).toBe(false);
@@ -70,7 +89,10 @@ describe("useOnboardingCredentials", () => {
     const error = new Error("Invalid invite");
     (getOnboardingCredentials as any).mockRejectedValue(error);
 
-    const { result } = renderHook(() => useOnboardingCredentials("bad-invite"), { wrapper });
+    const { result } = renderHook(
+      () => useOnboardingCredentials("bad-invite"),
+      { wrapper },
+    );
 
     await waitFor(() => expect(result.current.isError).toBe(true));
 
@@ -111,7 +133,12 @@ describe("useClaimOnboardingToken", () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(claimOnboardingToken).toHaveBeenCalledWith("acc-token", "invite-123", "user-456", "secret");
+    expect(claimOnboardingToken).toHaveBeenCalledWith(
+      "acc-token",
+      "invite-123",
+      "user-456",
+      "secret",
+    );
   });
 
   it("exposes error state when mutation fails", async () => {

@@ -1,10 +1,10 @@
-import React from "react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../tests/test-utils";
 import AddMarginForm from "./add_margin_form";
-import { MarginConfig } from "./types";
+import type { MarginConfig } from "./types";
 
 vi.mock("../provider_info_helpers", () => ({
   Providers: {
@@ -45,26 +45,36 @@ describe("AddMarginForm", () => {
 
   it("should render", () => {
     renderWithProviders(<AddMarginForm {...DEFAULT_PROPS} />);
-    expect(screen.getByRole("button", { name: /add provider margin/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /add provider margin/i }),
+    ).toBeInTheDocument();
   });
 
   it("should show the percentage input when marginType is percentage", () => {
-    renderWithProviders(<AddMarginForm {...DEFAULT_PROPS} marginType="percentage" />);
+    renderWithProviders(
+      <AddMarginForm {...DEFAULT_PROPS} marginType="percentage" />,
+    );
     expect(screen.getByPlaceholderText("10")).toBeInTheDocument();
   });
 
   it("should show the fixed amount input when marginType is fixed", () => {
-    renderWithProviders(<AddMarginForm {...DEFAULT_PROPS} marginType="fixed" />);
+    renderWithProviders(
+      <AddMarginForm {...DEFAULT_PROPS} marginType="fixed" />,
+    );
     expect(screen.getByPlaceholderText("0.001")).toBeInTheDocument();
   });
 
   it("should not show the fixed amount input when marginType is percentage", () => {
-    renderWithProviders(<AddMarginForm {...DEFAULT_PROPS} marginType="percentage" />);
+    renderWithProviders(
+      <AddMarginForm {...DEFAULT_PROPS} marginType="percentage" />,
+    );
     expect(screen.queryByPlaceholderText("0.001")).not.toBeInTheDocument();
   });
 
   it("should not show the percentage input when marginType is fixed", () => {
-    renderWithProviders(<AddMarginForm {...DEFAULT_PROPS} marginType="fixed" />);
+    renderWithProviders(
+      <AddMarginForm {...DEFAULT_PROPS} marginType="fixed" />,
+    );
     expect(screen.queryByPlaceholderText("10")).not.toBeInTheDocument();
   });
 
@@ -76,23 +86,41 @@ describe("AddMarginForm", () => {
 
   it("should disable the submit button when no provider is selected (percentage mode)", () => {
     renderWithProviders(
-      <AddMarginForm {...DEFAULT_PROPS} selectedProvider={undefined} percentageValue="10" />
+      <AddMarginForm
+        {...DEFAULT_PROPS}
+        selectedProvider={undefined}
+        percentageValue="10"
+      />,
     );
-    expect(screen.getByRole("button", { name: /add provider margin/i })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /add provider margin/i }),
+    ).toBeDisabled();
   });
 
   it("should disable the submit button when provider is selected but no percentage value (percentage mode)", () => {
     renderWithProviders(
-      <AddMarginForm {...DEFAULT_PROPS} selectedProvider="OpenAI" percentageValue="" />
+      <AddMarginForm
+        {...DEFAULT_PROPS}
+        selectedProvider="OpenAI"
+        percentageValue=""
+      />,
     );
-    expect(screen.getByRole("button", { name: /add provider margin/i })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /add provider margin/i }),
+    ).toBeDisabled();
   });
 
   it("should enable the submit button when provider and percentage value are both provided", () => {
     renderWithProviders(
-      <AddMarginForm {...DEFAULT_PROPS} selectedProvider="OpenAI" percentageValue="10" />
+      <AddMarginForm
+        {...DEFAULT_PROPS}
+        selectedProvider="OpenAI"
+        percentageValue="10"
+      />,
     );
-    expect(screen.getByRole("button", { name: /add provider margin/i })).not.toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /add provider margin/i }),
+    ).not.toBeDisabled();
   });
 
   it("should disable the submit button in fixed mode when no fixed amount is provided", () => {
@@ -102,9 +130,11 @@ describe("AddMarginForm", () => {
         selectedProvider="OpenAI"
         marginType="fixed"
         fixedAmountValue=""
-      />
+      />,
     );
-    expect(screen.getByRole("button", { name: /add provider margin/i })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /add provider margin/i }),
+    ).toBeDisabled();
   });
 
   it("should enable the submit button in fixed mode when provider and fixed amount are provided", () => {
@@ -114,9 +144,11 @@ describe("AddMarginForm", () => {
         selectedProvider="OpenAI"
         marginType="fixed"
         fixedAmountValue="0.001"
-      />
+      />,
     );
-    expect(screen.getByRole("button", { name: /add provider margin/i })).not.toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /add provider margin/i }),
+    ).not.toBeDisabled();
   });
 
   it("should call onAddProvider when the enabled submit button is clicked", async () => {
@@ -128,10 +160,12 @@ describe("AddMarginForm", () => {
         selectedProvider="OpenAI"
         percentageValue="10"
         onAddProvider={onAddProvider}
-      />
+      />,
     );
 
-    await user.click(screen.getByRole("button", { name: /add provider margin/i }));
+    await user.click(
+      screen.getByRole("button", { name: /add provider margin/i }),
+    );
     expect(onAddProvider).toHaveBeenCalledTimes(1);
   });
 
@@ -139,7 +173,10 @@ describe("AddMarginForm", () => {
     const onMarginTypeChange = vi.fn();
     const user = userEvent.setup();
     renderWithProviders(
-      <AddMarginForm {...DEFAULT_PROPS} onMarginTypeChange={onMarginTypeChange} />
+      <AddMarginForm
+        {...DEFAULT_PROPS}
+        onMarginTypeChange={onMarginTypeChange}
+      />,
     );
 
     await user.click(screen.getByText("Fixed Amount"));

@@ -1,5 +1,5 @@
-import React from "react";
 import { Alert, Button, Card, Form, Input, Typography } from "antd";
+import React from "react";
 
 type OnboardingFormBodyProps = {
   variant: "signup" | "reset_password";
@@ -59,7 +59,12 @@ export function OnboardingFormBody({
           />
         )}
 
-        <Form className="mt-10 mb-5" layout="vertical" form={form} onFinish={(values) => onSubmit({ password: values.password })}>
+        <Form
+          className="mt-10 mb-5"
+          layout="vertical"
+          form={form}
+          onFinish={(values) => onSubmit({ password: values.password })}
+        >
           <Form.Item label="Email Address" name="user_email">
             <Input type="email" disabled />
           </Form.Item>
@@ -67,7 +72,9 @@ export function OnboardingFormBody({
           <Form.Item
             label="Password"
             name="password"
-            rules={[{ required: true, message: "password required to sign up" }]}
+            rules={[
+              { required: true, message: "password required to sign up" },
+            ]}
             help={
               variant === "reset_password"
                 ? "Enter your new password"
@@ -78,7 +85,12 @@ export function OnboardingFormBody({
           </Form.Item>
 
           {claimError && (
-            <Alert type="error" message={claimError} showIcon className="mb-4" />
+            <Alert
+              type="error"
+              message={claimError}
+              showIcon
+              className="mb-4"
+            />
           )}
 
           <div className="mt-10">

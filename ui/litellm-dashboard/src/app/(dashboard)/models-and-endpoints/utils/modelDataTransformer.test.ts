@@ -1,5 +1,5 @@
+import { describe, expect, it } from "vitest";
 import { transformModelData } from "./modelDataTransformer";
-import { describe, it, expect } from "vitest";
 describe("transformModelData", () => {
   const mockGetProviderFromModel = (model: string) => {
     if (model.includes("gpt")) return "openai";

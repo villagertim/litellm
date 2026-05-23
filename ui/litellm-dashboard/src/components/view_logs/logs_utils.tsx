@@ -1,7 +1,11 @@
 import moment from "moment";
 
 // Add this function to format the time range display
-export const getTimeRangeDisplay = (isCustomDate: boolean, startTime: string, endTime: string) => {
+export const getTimeRangeDisplay = (
+  isCustomDate: boolean,
+  startTime: string,
+  endTime: string,
+) => {
   if (isCustomDate) {
     return `${moment(startTime).format("MMM D, h:mm A")} - ${moment(endTime).format("MMM D, h:mm A")}`;
   }

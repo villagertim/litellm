@@ -1,16 +1,16 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
-import React, { ReactNode } from "react";
+import React, { type ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  type AllProxyModelsResponse,
+  type PaginatedModelInfoResponse,
+  type ProxyModel,
   useAllProxyModels,
   useInfiniteModelInfo,
   useModelHub,
   useModelsInfo,
   useSelectedTeamModels,
-  type AllProxyModelsResponse,
-  type PaginatedModelInfoResponse,
-  type ProxyModel,
 } from "./useModels";
 
 vi.mock("@/components/networking", () => ({
@@ -24,7 +24,11 @@ vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({
   default: () => mockUseAuthorized(),
 }));
 
-import { modelAvailableCall, modelHubCall, modelInfoCall } from "@/components/networking";
+import {
+  modelAvailableCall,
+  modelHubCall,
+  modelInfoCall,
+} from "@/components/networking";
 
 const mockProxyModel: ProxyModel = {
   id: "model-1",
@@ -512,7 +516,9 @@ describe("useSelectedTeamModels", () => {
   it("should render without crashing", () => {
     (modelAvailableCall as any).mockResolvedValue(mockAllProxyModelsResponse);
 
-    const { result } = renderHook(() => useSelectedTeamModels("team-1"), { wrapper });
+    const { result } = renderHook(() => useSelectedTeamModels("team-1"), {
+      wrapper,
+    });
 
     expect(result.current).toBeDefined();
   });
@@ -520,7 +526,9 @@ describe("useSelectedTeamModels", () => {
   it("should return team models data when query is successful", async () => {
     (modelAvailableCall as any).mockResolvedValue(mockAllProxyModelsResponse);
 
-    const { result } = renderHook(() => useSelectedTeamModels("team-1"), { wrapper });
+    const { result } = renderHook(() => useSelectedTeamModels("team-1"), {
+      wrapper,
+    });
 
     expect(result.current.isLoading).toBe(true);
     expect(result.current.data).toBeUndefined();
@@ -532,7 +540,13 @@ describe("useSelectedTeamModels", () => {
 
     expect(result.current.data).toEqual(mockAllProxyModelsResponse);
     expect(result.current.error).toBeNull();
-    expect(modelAvailableCall).toHaveBeenCalledWith("test-access-token", "test-user-id", "Admin", true, "team-1");
+    expect(modelAvailableCall).toHaveBeenCalledWith(
+      "test-access-token",
+      "test-user-id",
+      "Admin",
+      true,
+      "team-1",
+    );
     expect(modelAvailableCall).toHaveBeenCalledTimes(1);
   });
 
@@ -542,7 +556,9 @@ describe("useSelectedTeamModels", () => {
 
     (modelAvailableCall as any).mockRejectedValue(testError);
 
-    const { result } = renderHook(() => useSelectedTeamModels("team-1"), { wrapper });
+    const { result } = renderHook(() => useSelectedTeamModels("team-1"), {
+      wrapper,
+    });
 
     expect(result.current.isLoading).toBe(true);
 
@@ -557,7 +573,9 @@ describe("useSelectedTeamModels", () => {
   });
 
   it("should not execute query when teamID is null", () => {
-    const { result } = renderHook(() => useSelectedTeamModels(null), { wrapper });
+    const { result } = renderHook(() => useSelectedTeamModels(null), {
+      wrapper,
+    });
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toBeUndefined();
@@ -577,7 +595,9 @@ describe("useSelectedTeamModels", () => {
       showSSOBanner: false,
     });
 
-    const { result } = renderHook(() => useSelectedTeamModels("team-1"), { wrapper });
+    const { result } = renderHook(() => useSelectedTeamModels("team-1"), {
+      wrapper,
+    });
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toBeUndefined();
@@ -597,7 +617,9 @@ describe("useSelectedTeamModels", () => {
       showSSOBanner: false,
     });
 
-    const { result } = renderHook(() => useSelectedTeamModels("team-1"), { wrapper });
+    const { result } = renderHook(() => useSelectedTeamModels("team-1"), {
+      wrapper,
+    });
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toBeUndefined();
@@ -617,7 +639,9 @@ describe("useSelectedTeamModels", () => {
       showSSOBanner: false,
     });
 
-    const { result } = renderHook(() => useSelectedTeamModels("team-1"), { wrapper });
+    const { result } = renderHook(() => useSelectedTeamModels("team-1"), {
+      wrapper,
+    });
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toBeUndefined();
@@ -626,7 +650,9 @@ describe("useSelectedTeamModels", () => {
   });
 
   it("should not execute query when teamID is missing and other auth values are present", () => {
-    const { result } = renderHook(() => useSelectedTeamModels(null), { wrapper });
+    const { result } = renderHook(() => useSelectedTeamModels(null), {
+      wrapper,
+    });
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toBeUndefined();
@@ -708,7 +734,14 @@ describe("useInfiniteModelInfo", () => {
     expect(result.current.data?.pages).toHaveLength(1);
     expect(result.current.data?.pages[0]).toEqual(mockPageOneResponse);
     expect(result.current.hasNextPage).toBe(true);
-    expect(modelInfoCall).toHaveBeenCalledWith("test-access-token", "test-user-id", "Admin", 1, 50, undefined);
+    expect(modelInfoCall).toHaveBeenCalledWith(
+      "test-access-token",
+      "test-user-id",
+      "Admin",
+      1,
+      50,
+      undefined,
+    );
     expect(modelInfoCall).toHaveBeenCalledTimes(1);
   });
 
@@ -721,23 +754,41 @@ describe("useInfiniteModelInfo", () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(modelInfoCall).toHaveBeenCalledWith("test-access-token", "test-user-id", "Admin", 1, 25, undefined);
+    expect(modelInfoCall).toHaveBeenCalledWith(
+      "test-access-token",
+      "test-user-id",
+      "Admin",
+      1,
+      25,
+      undefined,
+    );
   });
 
   it("should pass search parameter to modelInfoCall", async () => {
     (modelInfoCall as any).mockResolvedValue(mockPageOneResponse);
 
-    const { result } = renderHook(() => useInfiniteModelInfo(50, "gpt"), { wrapper });
+    const { result } = renderHook(() => useInfiniteModelInfo(50, "gpt"), {
+      wrapper,
+    });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(modelInfoCall).toHaveBeenCalledWith("test-access-token", "test-user-id", "Admin", 1, 50, "gpt");
+    expect(modelInfoCall).toHaveBeenCalledWith(
+      "test-access-token",
+      "test-user-id",
+      "Admin",
+      1,
+      50,
+      "gpt",
+    );
   });
 
   it("should fetch next page when fetchNextPage is called", async () => {
-    (modelInfoCall as any).mockResolvedValueOnce(mockPageOneResponse).mockResolvedValueOnce(mockPageTwoResponse);
+    (modelInfoCall as any)
+      .mockResolvedValueOnce(mockPageOneResponse)
+      .mockResolvedValueOnce(mockPageTwoResponse);
 
     const { result } = renderHook(() => useInfiniteModelInfo(), { wrapper });
 
@@ -754,7 +805,15 @@ describe("useInfiniteModelInfo", () => {
       expect(result.current.hasNextPage).toBe(false);
     });
 
-    expect(modelInfoCall).toHaveBeenNthCalledWith(2, "test-access-token", "test-user-id", "Admin", 2, 50, undefined);
+    expect(modelInfoCall).toHaveBeenNthCalledWith(
+      2,
+      "test-access-token",
+      "test-user-id",
+      "Admin",
+      2,
+      50,
+      undefined,
+    );
   });
 
   it("should return undefined for hasNextPage when on last page", async () => {

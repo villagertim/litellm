@@ -4,7 +4,9 @@ import { Users } from "lucide-react";
 import { defaultRoleDisplayNames } from "./constants";
 const { Title, Text } = Typography;
 
-export default function RoleMappings({ roleMappings }: { roleMappings: RoleMappingsType | undefined }) {
+export default function RoleMappings({
+  roleMappings,
+}: { roleMappings: RoleMappingsType | undefined }) {
   if (!roleMappings) {
     return null;
   }
@@ -14,7 +16,9 @@ export default function RoleMappings({ roleMappings }: { roleMappings: RoleMappi
       title: "Role",
       dataIndex: "role",
       key: "role",
-      render: (text: string) => <Text strong>{defaultRoleDisplayNames[text]}</Text>,
+      render: (text: string) => (
+        <Text strong>{defaultRoleDisplayNames[text]}</Text>
+      ),
     },
     {
       title: "Mapped Groups",
@@ -52,17 +56,21 @@ export default function RoleMappings({ roleMappings }: { roleMappings: RoleMappi
           <div>
             <Title level={5}>Default Role</Title>
             <div>
-              <Text strong>{defaultRoleDisplayNames[roleMappings.default_role]}</Text>
+              <Text strong>
+                {defaultRoleDisplayNames[roleMappings.default_role]}
+              </Text>
             </div>
           </div>
         </div>
         <Divider />
         <Table
           columns={roleMappingsColumns}
-          dataSource={Object.entries(roleMappings.roles).map(([role, groups]) => ({
-            role,
-            groups,
-          }))}
+          dataSource={Object.entries(roleMappings.roles).map(
+            ([role, groups]) => ({
+              role,
+              groups,
+            }),
+          )}
           pagination={false}
           bordered
           size="small"

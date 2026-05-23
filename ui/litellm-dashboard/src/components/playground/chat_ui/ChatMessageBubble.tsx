@@ -1,21 +1,21 @@
 import { RobotOutlined, UserOutlined } from "@ant-design/icons";
-import React from "react";
+import type React from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coy } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { CodeInterpreterResult } from "../llm_calls/code_interpreter_handler";
+import type { MCPEvent } from "../../mcp_tools/types";
+import type { CodeInterpreterResult } from "../llm_calls/code_interpreter_handler";
 import A2AMetrics from "./A2AMetrics";
 import AudioRenderer from "./AudioRenderer";
 import ChatImageRenderer from "./ChatImageRenderer";
 import CodeInterpreterOutput from "./CodeInterpreterOutput";
-import { EndpointType } from "./mode_endpoint_mapping";
 import MCPEventsDisplay from "./MCPEventsDisplay";
-import type { MCPEvent } from "../../mcp_tools/types";
 import ReasoningContent from "./ReasoningContent";
 import ResponseMetrics from "./ResponseMetrics";
 import ResponsesImageRenderer from "./ResponsesImageRenderer";
 import { SearchResultsDisplay } from "./SearchResultsDisplay";
-import { MessageType } from "./types";
+import { EndpointType } from "./mode_endpoint_mapping";
+import type { MessageType } from "./types";
 
 interface ChatMessageBubbleProps {
   message: MessageType;
@@ -73,13 +73,16 @@ function ChatMessageBubble({
         </div>
 
         {/* Reasoning content (chain-of-thought) */}
-        {message.reasoningContent && <ReasoningContent reasoningContent={message.reasoningContent} />}
+        {message.reasoningContent && (
+          <ReasoningContent reasoningContent={message.reasoningContent} />
+        )}
 
         {/* MCP events at the start of the last assistant message */}
         {message.role === "assistant" &&
           isLastMessage &&
           mcpEvents.length > 0 &&
-          (endpointType === EndpointType.RESPONSES || endpointType === EndpointType.CHAT) && (
+          (endpointType === EndpointType.RESPONSES ||
+            endpointType === EndpointType.CHAT) && (
             <div className="mb-3">
               <MCPEventsDisplay events={mcpEvents} />
             </div>
@@ -125,8 +128,12 @@ function ChatMessageBubble({
           ) : (
             <>
               {/* Attached image for user messages based on endpoint */}
-              {endpointType === EndpointType.RESPONSES && <ResponsesImageRenderer message={message} />}
-              {endpointType === EndpointType.CHAT && <ChatImageRenderer message={message} />}
+              {endpointType === EndpointType.RESPONSES && (
+                <ResponsesImageRenderer message={message} />
+              )}
+              {endpointType === EndpointType.CHAT && (
+                <ChatImageRenderer message={message} />
+              )}
 
               <ReactMarkdown
                 components={{
@@ -164,7 +171,10 @@ function ChatMessageBubble({
                     );
                   },
                   pre: ({ node, ...props }) => (
-                    <pre style={{ overflowX: "auto", maxWidth: "100%" }} {...props} />
+                    <pre
+                      style={{ overflowX: "auto", maxWidth: "100%" }}
+                      {...props}
+                    />
                   ),
                 }}
               >
@@ -187,7 +197,9 @@ function ChatMessageBubble({
 
           {/* Response metrics */}
           {message.role === "assistant" &&
-            (message.timeToFirstToken || message.totalLatency || message.usage) &&
+            (message.timeToFirstToken ||
+              message.totalLatency ||
+              message.usage) &&
             !message.a2aMetadata && (
               <ResponseMetrics
                 timeToFirstToken={message.timeToFirstToken}

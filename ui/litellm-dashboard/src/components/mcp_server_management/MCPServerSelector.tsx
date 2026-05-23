@@ -2,10 +2,14 @@ import { useMCPAccessGroups } from "@/app/(dashboard)/hooks/mcpServers/useMCPAcc
 import { useMCPServers } from "@/app/(dashboard)/hooks/mcpServers/useMCPServers";
 import { useMCPToolsets } from "@/app/(dashboard)/hooks/mcpServers/useMCPToolsets";
 import { Select } from "antd";
-import React from "react";
+import type React from "react";
 
 interface MCPServerSelectorProps {
-  onChange: (selected: { servers: string[]; accessGroups: string[]; toolsets: string[] }) => void;
+  onChange: (selected: {
+    servers: string[];
+    accessGroups: string[];
+    toolsets: string[];
+  }) => void;
   value?: {
     servers: string[];
     accessGroups: string[];
@@ -29,8 +33,10 @@ const MCPServerSelector: React.FC<MCPServerSelectorProps> = ({
   disabled = false,
   teamId,
 }) => {
-  const { data: mcpServers = [], isLoading: serversLoading } = useMCPServers(teamId);
-  const { data: accessGroups = [], isLoading: groupsLoading } = useMCPAccessGroups();
+  const { data: mcpServers = [], isLoading: serversLoading } =
+    useMCPServers(teamId);
+  const { data: accessGroups = [], isLoading: groupsLoading } =
+    useMCPAccessGroups();
   const { data: toolsets = [], isLoading: toolsetsLoading } = useMCPToolsets();
 
   const loading = serversLoading || groupsLoading || toolsetsLoading;
@@ -85,7 +91,11 @@ const MCPServerSelector: React.FC<MCPServerSelectorProps> = ({
     const rest = selected.filter((v) => !v.startsWith(TOOLSET_PREFIX));
     const servers = rest.filter((v) => !accessGroupSet.has(v));
     const accessGroupsSelected = rest.filter((v) => accessGroupSet.has(v));
-    onChange({ servers, accessGroups: accessGroupsSelected, toolsets: toolsetsSelected });
+    onChange({
+      servers,
+      accessGroups: accessGroupsSelected,
+      toolsets: toolsetsSelected,
+    });
   };
 
   return (
@@ -102,7 +112,9 @@ const MCPServerSelector: React.FC<MCPServerSelectorProps> = ({
         style={{ width: "100%" }}
         disabled={disabled}
         filterOption={(input, option) => {
-          const searchText = options.find((opt) => opt.value === option?.value)?.searchText || "";
+          const searchText =
+            options.find((opt) => opt.value === option?.value)?.searchText ||
+            "";
           return searchText.toLowerCase().includes(input.toLowerCase());
         }}
       >

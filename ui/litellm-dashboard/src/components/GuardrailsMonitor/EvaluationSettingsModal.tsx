@@ -1,7 +1,10 @@
+import {
+  type ModelGroup,
+  fetchAvailableModels,
+} from "@/components/playground/llm_calls/fetch_models";
 import { CloseOutlined, PlayCircleOutlined } from "@ant-design/icons";
-import { Button, Modal, Select, Input } from "antd";
+import { Button, Input, Modal, Select } from "antd";
 import React, { useEffect, useState } from "react";
-import { fetchAvailableModels, type ModelGroup } from "@/components/playground/llm_calls/fetch_models";
 
 const DEFAULT_PROMPT = `Evaluate whether this guardrail's decision was correct.
 Analyze the user input, the guardrail action taken, and determine if it was appropriate.
@@ -27,7 +30,11 @@ export interface EvaluationSettingsModalProps {
   onClose: () => void;
   guardrailName?: string;
   accessToken: string | null;
-  onRunEvaluation?: (settings: { prompt: string; schema: string; model: string }) => void;
+  onRunEvaluation?: (settings: {
+    prompt: string;
+    schema: string;
+    model: string;
+  }) => void;
 }
 
 export function EvaluationSettingsModal({
@@ -97,7 +104,9 @@ export function EvaluationSettingsModal({
       <div className="space-y-4">
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <label className="text-sm font-medium text-gray-700">Evaluation Prompt</label>
+            <label className="text-sm font-medium text-gray-700">
+              Evaluation Prompt
+            </label>
             <button
               type="button"
               onClick={handleResetPrompt}
@@ -113,7 +122,8 @@ export function EvaluationSettingsModal({
             className="font-mono text-sm"
           />
           <p className="text-xs text-gray-400 mt-1">
-            System prompt sent to the evaluation model. Output is structured via response_format.
+            System prompt sent to the evaluation model. Output is structured via
+            response_format.
           </p>
         </div>
 
@@ -121,7 +131,9 @@ export function EvaluationSettingsModal({
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
             Response Schema
           </label>
-          <p className="text-xs text-gray-400 mb-1">response_format: json_schema</p>
+          <p className="text-xs text-gray-400 mb-1">
+            response_format: json_schema
+          </p>
           <Input.TextArea
             value={schema}
             onChange={(e) => setSchema(e.target.value)}
@@ -131,7 +143,9 @@ export function EvaluationSettingsModal({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Model</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            Model
+          </label>
           <Select
             placeholder={loadingModels ? "Loading models…" : "Select a model"}
             value={model ?? undefined}
@@ -141,14 +155,21 @@ export function EvaluationSettingsModal({
             showSearch
             optionFilterProp="label"
             loading={loadingModels}
-            notFoundContent={!accessToken ? "Sign in to see models" : "No models available"}
+            notFoundContent={
+              !accessToken ? "Sign in to see models" : "No models available"
+            }
           />
         </div>
       </div>
 
       <div className="flex items-center justify-end gap-2 mt-6 pt-4 border-t border-gray-100">
         <Button onClick={onClose}>Cancel</Button>
-        <Button type="primary" icon={<PlayCircleOutlined />} onClick={handleRun} disabled={!model}>
+        <Button
+          type="primary"
+          icon={<PlayCircleOutlined />}
+          onClick={handleRun}
+          disabled={!model}
+        >
           Run Evaluation
         </Button>
       </div>

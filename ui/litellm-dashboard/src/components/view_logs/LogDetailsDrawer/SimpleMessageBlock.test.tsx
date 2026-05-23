@@ -1,6 +1,6 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import React from "react";
+import { describe, expect, it } from "vitest";
 import { SimpleMessageBlock } from "./SimpleMessageBlock";
 
 describe("SimpleMessageBlock", () => {
@@ -12,14 +12,14 @@ describe("SimpleMessageBlock", () => {
 
   it("should return null when content is empty and no tool calls", () => {
     const { container } = render(
-      <SimpleMessageBlock label="USER" content="" />
+      <SimpleMessageBlock label="USER" content="" />,
     );
     expect(container.innerHTML).toBe("");
   });
 
   it('should return null when content is "null" string and no tool calls', () => {
     const { container } = render(
-      <SimpleMessageBlock label="USER" content="null" />
+      <SimpleMessageBlock label="USER" content="null" />,
     );
     expect(container.innerHTML).toBe("");
   });
@@ -31,7 +31,7 @@ describe("SimpleMessageBlock", () => {
         toolCalls={[
           { id: "tc1", name: "get_weather", arguments: { city: "Paris" } },
         ]}
-      />
+      />,
     );
     expect(screen.getByText("ASSISTANT")).toBeInTheDocument();
     expect(screen.getByText("get_weather")).toBeInTheDocument();
@@ -45,11 +45,9 @@ describe("SimpleMessageBlock", () => {
         toolCalls={[
           { id: "tc1", name: "get_weather", arguments: { city: "Paris" } },
         ]}
-      />
+      />,
     );
-    expect(
-      screen.getByText("Let me check the weather.")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Let me check the weather.")).toBeInTheDocument();
     expect(screen.getByText("get_weather")).toBeInTheDocument();
   });
 });

@@ -1,21 +1,22 @@
-import React, { useState } from "react";
-import { Card, Title, Text } from "@tremor/react";
-import { Upload, Button, Select, Form, Alert, Tooltip, Input } from "antd";
 import MessageManager from "@/components/molecules/message_manager";
 import { InboxOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import { Card, Text, Title } from "@tremor/react";
+import { Alert, Button, Form, Input, Select, Tooltip, Upload } from "antd";
 import type { UploadProps } from "antd";
+import type React from "react";
+import { useState } from "react";
+import NotificationsManager from "../molecules/notifications_manager";
 import { ragIngestCall } from "../networking";
-import { DocumentUpload, RAGIngestResponse } from "./types";
-import DocumentsTable from "./DocumentsTable";
 import {
+  type VectorStoreFieldConfig,
   VectorStoreProviders,
+  getProviderSpecificFields,
   vectorStoreProviderLogoMap,
   vectorStoreProviderMap,
-  getProviderSpecificFields,
-  VectorStoreFieldConfig,
 } from "../vector_store_providers";
-import NotificationsManager from "../molecules/notifications_manager";
+import DocumentsTable from "./DocumentsTable";
 import S3VectorsConfig from "./S3VectorsConfig";
+import type { DocumentUpload, RAGIngestResponse } from "./types";
 
 const { Dragger } = Upload;
 
@@ -24,13 +25,17 @@ interface CreateVectorStoreProps {
   onSuccess?: (vectorStoreId: string) => void;
 }
 
-const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSuccess }) => {
+const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({
+  accessToken,
+  onSuccess,
+}) => {
   const [form] = Form.useForm();
   const [documents, setDocuments] = useState<DocumentUpload[]>([]);
   const [isCreating, setIsCreating] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState<string>("bedrock");
   const [vectorStoreName, setVectorStoreName] = useState<string>("");
-  const [vectorStoreDescription, setVectorStoreDescription] = useState<string>("");
+  const [vectorStoreDescription, setVectorStoreDescription] =
+    useState<string>("");
   const [ingestResults, setIngestResults] = useState<RAGIngestResponse[]>([]);
   const [providerParams, setProviderParams] = useState<Record<string, any>>({});
 
@@ -48,7 +53,9 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
       ].includes(file.type);
 
       if (!isValidType) {
-        MessageManager.error(`${file.name} is not a supported file type. Please upload PDF, TXT, DOCX, or MD files.`);
+        MessageManager.error(
+          `${file.name} is not a supported file type. Please upload PDF, TXT, DOCX, or MD files.`,
+        );
         return Upload.LIST_IGNORE;
       }
 
@@ -98,7 +105,9 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
     }
 
     // Validate provider-specific required fields
-    const requiredFields = getProviderSpecificFields(selectedProvider).filter((field) => field.required);
+    const requiredFields = getProviderSpecificFields(selectedProvider).filter(
+      (field) => field.required,
+    );
     for (const field of requiredFields) {
       if (!providerParams[field.name]) {
         MessageManager.warning(`Please provide ${field.label}`);
@@ -108,12 +117,23 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
 
     // S3 Vectors specific validation
     if (selectedProvider === "s3_vectors") {
-      if (providerParams.vector_bucket_name && providerParams.vector_bucket_name.length < 3) {
-        MessageManager.warning("Vector bucket name must be at least 3 characters");
+      if (
+        providerParams.vector_bucket_name &&
+        providerParams.vector_bucket_name.length < 3
+      ) {
+        MessageManager.warning(
+          "Vector bucket name must be at least 3 characters",
+        );
         return;
       }
-      if (providerParams.index_name && providerParams.index_name.length > 0 && providerParams.index_name.length < 3) {
-        MessageManager.warning("Index name must be at least 3 characters if provided");
+      if (
+        providerParams.index_name &&
+        providerParams.index_name.length > 0 &&
+        providerParams.index_name.length < 3
+      ) {
+        MessageManager.warning(
+          "Index name must be at least 3 characters if provided",
+        );
         return;
       }
     }
@@ -134,7 +154,9 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
 
         // Update document status to uploading
         setDocuments((prev) =>
-          prev.map((d) => (d.uid === doc.uid ? { ...d, status: "uploading" as const } : d))
+          prev.map((d) =>
+            d.uid === doc.uid ? { ...d, status: "uploading" as const } : d,
+          ),
         );
 
         try {
@@ -145,7 +167,7 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
             vectorStoreId, // Use the same vector store ID for subsequent uploads
             vectorStoreName || undefined,
             vectorStoreDescription || undefined,
-            providerParams
+            providerParams,
           );
 
           // Store the vector store ID from the first successful ingest
@@ -157,13 +179,17 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
 
           // Update document status to done
           setDocuments((prev) =>
-            prev.map((d) => (d.uid === doc.uid ? { ...d, status: "done" as const } : d))
+            prev.map((d) =>
+              d.uid === doc.uid ? { ...d, status: "done" as const } : d,
+            ),
           );
         } catch (error) {
           console.error(`Error ingesting ${doc.name}:`, error);
           // Update document status to error
           setDocuments((prev) =>
-            prev.map((d) => (d.uid === doc.uid ? { ...d, status: "error" as const } : d))
+            prev.map((d) =>
+              d.uid === doc.uid ? { ...d, status: "error" as const } : d,
+            ),
           );
           throw error; // Stop processing on first error
         }
@@ -171,7 +197,7 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
 
       setIngestResults(results);
       NotificationsManager.success(
-        `Successfully created vector store with ${results.length} document(s). Vector Store ID: ${vectorStoreId}`
+        `Successfully created vector store with ${results.length} document(s). Vector Store ID: ${vectorStoreId}`,
       );
 
       if (onSuccess && vectorStoreId) {
@@ -185,7 +211,9 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
       }, 3000);
     } catch (error) {
       console.error("Error creating vector store:", error);
-      NotificationsManager.fromBackend(`Failed to create vector store: ${error}`);
+      NotificationsManager.fromBackend(
+        `Failed to create vector store: ${error}`,
+      );
     } finally {
       setIsCreating(false);
     }
@@ -196,7 +224,8 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
       <div>
         <Title>Create Vector Store</Title>
         <Text className="text-gray-500">
-          Upload documents and select a provider to create a new vector store with embedded content.
+          Upload documents and select a provider to create a new vector store
+          with embedded content.
         </Text>
       </div>
 
@@ -205,16 +234,20 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
         <div className="mb-4">
           <Text className="font-medium">Step 1: Upload Documents</Text>
           <Text className="text-sm text-gray-500 block mt-1">
-            Upload one or more documents (PDF, TXT, DOCX, MD). Maximum file size: 50MB per file.
+            Upload one or more documents (PDF, TXT, DOCX, MD). Maximum file
+            size: 50MB per file.
           </Text>
         </div>
         <Dragger {...uploadProps}>
           <p className="ant-upload-drag-icon">
             <InboxOutlined style={{ fontSize: "48px", color: "#1890ff" }} />
           </p>
-          <p className="ant-upload-text">Click or drag files to this area to upload</p>
+          <p className="ant-upload-text">
+            Click or drag files to this area to upload
+          </p>
           <p className="ant-upload-hint">
-            Support for single or bulk upload. Supported formats: PDF, TXT, DOCX, MD
+            Support for single or bulk upload. Supported formats: PDF, TXT,
+            DOCX, MD
           </p>
         </Dragger>
       </Card>
@@ -223,9 +256,14 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
       {documents.length > 0 && (
         <Card>
           <div className="mb-4">
-            <Text className="font-medium">Uploaded Documents ({documents.length})</Text>
+            <Text className="font-medium">
+              Uploaded Documents ({documents.length})
+            </Text>
           </div>
-          <DocumentsTable documents={documents} onRemove={handleRemoveDocument} />
+          <DocumentsTable
+            documents={documents}
+            onRemove={handleRemoveDocument}
+          />
         </Card>
       )}
 
@@ -235,7 +273,8 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
           <div>
             <Text className="font-medium">Step 2: Configure Vector Store</Text>
             <Text className="text-sm text-gray-500 block mt-1">
-              Choose the provider and optionally provide a name and description for your vector store.
+              Choose the provider and optionally provide a name and description
+              for your vector store.
             </Text>
           </div>
 
@@ -297,32 +336,41 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
                 size="large"
                 style={{ width: "100%" }}
               >
-                {Object.entries(VectorStoreProviders).map(([providerEnum, providerDisplayName]) => {
-                  return (
-                    <Select.Option key={providerEnum} value={vectorStoreProviderMap[providerEnum]}>
-                      <div className="flex items-center space-x-2">
-                        <img
-                          src={vectorStoreProviderLogoMap[providerDisplayName]}
-                          alt={`${providerEnum} logo`}
-                          className="w-5 h-5"
-                          onError={(e) => {
-                            // Create a div with provider initial as fallback
-                            const target = e.target as HTMLImageElement;
-                            const parent = target.parentElement;
-                            if (parent) {
-                              const fallbackDiv = document.createElement("div");
-                              fallbackDiv.className =
-                                "w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-xs";
-                              fallbackDiv.textContent = providerDisplayName.charAt(0);
-                              parent.replaceChild(fallbackDiv, target);
+                {Object.entries(VectorStoreProviders).map(
+                  ([providerEnum, providerDisplayName]) => {
+                    return (
+                      <Select.Option
+                        key={providerEnum}
+                        value={vectorStoreProviderMap[providerEnum]}
+                      >
+                        <div className="flex items-center space-x-2">
+                          <img
+                            src={
+                              vectorStoreProviderLogoMap[providerDisplayName]
                             }
-                          }}
-                        />
-                        <span>{providerDisplayName}</span>
-                      </div>
-                    </Select.Option>
-                  );
-                })}
+                            alt={`${providerEnum} logo`}
+                            className="w-5 h-5"
+                            onError={(e) => {
+                              // Create a div with provider initial as fallback
+                              const target = e.target as HTMLImageElement;
+                              const parent = target.parentElement;
+                              if (parent) {
+                                const fallbackDiv =
+                                  document.createElement("div");
+                                fallbackDiv.className =
+                                  "w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-xs";
+                                fallbackDiv.textContent =
+                                  providerDisplayName.charAt(0);
+                                parent.replaceChild(fallbackDiv, target);
+                              }
+                            }}
+                          />
+                          <span>{providerDisplayName}</span>
+                        </div>
+                      </Select.Option>
+                    );
+                  },
+                )}
               </Select>
             </Form.Item>
 
@@ -337,10 +385,42 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
 
             {/* Other Provider-specific fields */}
             {selectedProvider !== "s3_vectors" &&
-              getProviderSpecificFields(selectedProvider).map((field: VectorStoreFieldConfig) => {
-                if (field.type === "select") {
-                  // For embedding model selection, we'd need to fetch available models
-                  // For now, provide a text input as fallback
+              getProviderSpecificFields(selectedProvider).map(
+                (field: VectorStoreFieldConfig) => {
+                  if (field.type === "select") {
+                    // For embedding model selection, we'd need to fetch available models
+                    // For now, provide a text input as fallback
+                    return (
+                      <Form.Item
+                        key={field.name}
+                        label={
+                          <span>
+                            {field.label}{" "}
+                            <Tooltip title={field.tooltip}>
+                              <InfoCircleOutlined
+                                style={{ marginLeft: "4px" }}
+                              />
+                            </Tooltip>
+                          </span>
+                        }
+                        required={field.required}
+                      >
+                        <Input
+                          value={providerParams[field.name] || ""}
+                          onChange={(e) =>
+                            setProviderParams((prev) => ({
+                              ...prev,
+                              [field.name]: e.target.value,
+                            }))
+                          }
+                          placeholder={field.placeholder}
+                          size="large"
+                          className="rounded-md"
+                        />
+                      </Form.Item>
+                    );
+                  }
+
                   return (
                     <Form.Item
                       key={field.name}
@@ -355,9 +435,13 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
                       required={field.required}
                     >
                       <Input
+                        type={field.type === "password" ? "password" : "text"}
                         value={providerParams[field.name] || ""}
                         onChange={(e) =>
-                          setProviderParams((prev) => ({ ...prev, [field.name]: e.target.value }))
+                          setProviderParams((prev) => ({
+                            ...prev,
+                            [field.name]: e.target.value,
+                          }))
                         }
                         placeholder={field.placeholder}
                         size="large"
@@ -365,34 +449,8 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
                       />
                     </Form.Item>
                   );
-                }
-
-                return (
-                  <Form.Item
-                    key={field.name}
-                    label={
-                      <span>
-                        {field.label}{" "}
-                        <Tooltip title={field.tooltip}>
-                          <InfoCircleOutlined style={{ marginLeft: "4px" }} />
-                        </Tooltip>
-                      </span>
-                    }
-                    required={field.required}
-                  >
-                    <Input
-                      type={field.type === "password" ? "password" : "text"}
-                      value={providerParams[field.name] || ""}
-                      onChange={(e) =>
-                        setProviderParams((prev) => ({ ...prev, [field.name]: e.target.value }))
-                      }
-                      placeholder={field.placeholder}
-                      size="large"
-                      className="rounded-md"
-                    />
-                  </Form.Item>
-                );
-              })}
+                },
+              )}
           </Form>
 
           <div className="flex justify-end">
@@ -416,7 +474,8 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
           description={
             <div>
               <p>
-                <strong>Vector Store ID:</strong> {ingestResults[0]?.vector_store_id}
+                <strong>Vector Store ID:</strong>{" "}
+                {ingestResults[0]?.vector_store_id}
               </p>
               <p>
                 <strong>Documents Ingested:</strong> {ingestResults.length}

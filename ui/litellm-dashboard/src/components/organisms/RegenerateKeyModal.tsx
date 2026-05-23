@@ -1,10 +1,22 @@
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { CheckOutlined, CopyOutlined, SyncOutlined } from "@ant-design/icons";
-import { Alert, Button, Col, Flex, Form, Input, InputNumber, Modal, Row, Space, Typography } from "antd";
+import {
+  Alert,
+  Button,
+  Col,
+  Flex,
+  Form,
+  Input,
+  InputNumber,
+  Modal,
+  Row,
+  Space,
+  Typography,
+} from "antd";
 import { add } from "date-fns";
 import { useEffect, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { KeyResponse } from "../key_team_helpers/key_list";
+import type { KeyResponse } from "../key_team_helpers/key_list";
 import NotificationManager from "../molecules/notifications_manager";
 import { regenerateKeyCall } from "../networking";
 
@@ -17,7 +29,12 @@ interface RegenerateKeyModalProps {
   onKeyUpdate?: (updatedKeyData: Partial<KeyResponse>) => void;
 }
 
-export function RegenerateKeyModal({ selectedToken, visible, onClose, onKeyUpdate }: RegenerateKeyModalProps) {
+export function RegenerateKeyModal({
+  selectedToken,
+  visible,
+  onClose,
+  onKeyUpdate,
+}: RegenerateKeyModalProps) {
   const { accessToken } = useAuthorized();
   const [form] = Form.useForm();
   const [regeneratedKey, setRegeneratedKey] = useState<string | null>(null);
@@ -39,11 +56,13 @@ export function RegenerateKeyModal({ selectedToken, visible, onClose, onKeyUpdat
     }
   }, [visible, selectedToken, form, accessToken]);
 
-  const calculateNewExpiryTime = (duration: string | undefined): string | null => {
+  const calculateNewExpiryTime = (
+    duration: string | undefined,
+  ): string | null => {
     if (!duration) return null;
 
     try {
-      const amount = parseInt(duration);
+      const amount = Number.parseInt(duration);
       if (Number.isNaN(amount)) {
         throw new Error("Invalid duration format");
       }
@@ -107,7 +126,7 @@ export function RegenerateKeyModal({ selectedToken, visible, onClose, onKeyUpdat
         tpm_limit: formValues.tpm_limit,
         rpm_limit: formValues.rpm_limit,
         expires: formValues.duration
-          ? (calculateNewExpiryTime(formValues.duration) ?? selectedToken.expires)
+          ? calculateNewExpiryTime(formValues.duration) ?? selectedToken.expires
           : selectedToken.expires,
       };
 
@@ -149,7 +168,10 @@ export function RegenerateKeyModal({ selectedToken, visible, onClose, onKeyUpdat
               <Space key="footer-actions">
                 <Button onClick={handleClose}>Close</Button>
                 <CopyToClipboard text={regeneratedKey} onCopy={handleCopyKey}>
-                  <Button type="primary" icon={copied ? <CheckOutlined /> : <CopyOutlined />}>
+                  <Button
+                    type="primary"
+                    icon={copied ? <CheckOutlined /> : <CopyOutlined />}
+                  >
                     {copied ? "Copied" : "Copy Key"}
                   </Button>
                 </CopyToClipboard>
@@ -158,7 +180,12 @@ export function RegenerateKeyModal({ selectedToken, visible, onClose, onKeyUpdat
           : [
               <Space key="footer-actions">
                 <Button onClick={handleClose}>Cancel</Button>
-                <Button type="primary" icon={<SyncOutlined />} onClick={handleRegenerateKey} loading={isRegenerating}>
+                <Button
+                  type="primary"
+                  icon={<SyncOutlined />}
+                  onClick={handleRegenerateKey}
+                  loading={isRegenerating}
+                >
                   Regenerate
                 </Button>
               </Space>,
@@ -167,7 +194,11 @@ export function RegenerateKeyModal({ selectedToken, visible, onClose, onKeyUpdat
     >
       {regeneratedKey ? (
         <Flex vertical gap="middle">
-          <Alert type="warning" showIcon message="Save it now, you will not see it again" />
+          <Alert
+            type="warning"
+            showIcon
+            message="Save it now, you will not see it again"
+          />
 
           <Flex vertical gap={2}>
             <Text type="secondary" style={{ fontSize: 12 }}>
@@ -186,7 +217,8 @@ export function RegenerateKeyModal({ selectedToken, visible, onClose, onKeyUpdat
                 border: "1px solid #e8e8e8",
                 borderRadius: 6,
                 padding: "14px 16px",
-                fontFamily: "SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace",
+                fontFamily:
+                  "SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace",
                 fontSize: 16,
                 wordBreak: "break-all",
                 color: "#262626",
@@ -203,7 +235,10 @@ export function RegenerateKeyModal({ selectedToken, visible, onClose, onKeyUpdat
           style={{ marginTop: 4 }}
           onValuesChange={(changedValues) => {
             if ("duration" in changedValues) {
-              setRegenerateFormData((prev: { duration?: string }) => ({ ...prev, duration: changedValues.duration }));
+              setRegenerateFormData((prev: { duration?: string }) => ({
+                ...prev,
+                duration: changedValues.duration,
+              }));
             }
           }}
         >
@@ -214,7 +249,11 @@ export function RegenerateKeyModal({ selectedToken, visible, onClose, onKeyUpdat
           <Row gutter={12}>
             <Col span={8}>
               <Form.Item name="max_budget" label="Max Budget (USD)">
-                <InputNumber step={0.01} precision={2} style={{ width: "100%" }} />
+                <InputNumber
+                  step={0.01}
+                  precision={2}
+                  style={{ width: "100%" }}
+                />
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -238,7 +277,9 @@ export function RegenerateKeyModal({ selectedToken, visible, onClose, onKeyUpdat
                   <Flex vertical gap={2}>
                     <Text type="secondary" style={{ fontSize: 12 }}>
                       Current expiry:{" "}
-                      {selectedToken?.expires ? new Date(selectedToken.expires).toLocaleString() : "Never"}
+                      {selectedToken?.expires
+                        ? new Date(selectedToken.expires).toLocaleString()
+                        : "Never"}
                     </Text>
                     {newExpiryTime && (
                       <Text type="success" style={{ fontSize: 12 }}>
@@ -264,7 +305,8 @@ export function RegenerateKeyModal({ selectedToken, visible, onClose, onKeyUpdat
                 rules={[
                   {
                     pattern: /^(\d+(s|m|h|d|w|mo))?$/,
-                    message: "Must be a duration like 30s, 30m, 24h, 2d, 1w, or 1mo",
+                    message:
+                      "Must be a duration like 30s, 30m, 24h, 2d, 1w, or 1mo",
                   },
                 ]}
               >

@@ -1,4 +1,7 @@
-import { getLocalStorageItem, LOCAL_STORAGE_EVENT } from "@/utils/localStorageUtils";
+import {
+  LOCAL_STORAGE_EVENT,
+  getLocalStorageItem,
+} from "@/utils/localStorageUtils";
 import { useSyncExternalStore } from "react";
 
 function subscribe(callback: () => void) {

@@ -40,7 +40,9 @@ const mockPagesWithModels = {
 };
 
 const mockEmptyPages = {
-  pages: [{ data: [], total_count: 0, current_page: 1, total_pages: 1, size: 50 }],
+  pages: [
+    { data: [], total_count: 0, current_page: 1, total_pages: 1, size: 50 },
+  ],
 };
 
 describe("PaginatedModelSelect", () => {
@@ -68,7 +70,10 @@ describe("PaginatedModelSelect", () => {
 
   it("should display custom placeholder when provided", () => {
     renderWithProviders(
-      <PaginatedModelSelect onChange={mockOnChange} placeholder="Choose model" />,
+      <PaginatedModelSelect
+        onChange={mockOnChange}
+        placeholder="Choose model"
+      />,
     );
 
     expect(screen.getByText("Choose model")).toBeInTheDocument();
@@ -81,8 +86,12 @@ describe("PaginatedModelSelect", () => {
     await userEvent.click(combobox);
 
     await waitFor(() => {
-      expect(screen.getByRole("option", { name: "GPT-4 (model-1)" })).toBeInTheDocument();
-      expect(screen.getByRole("option", { name: "Claude-3 (model-2)" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("option", { name: "GPT-4 (model-1)" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("option", { name: "Claude-3 (model-2)" }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -110,7 +119,9 @@ describe("PaginatedModelSelect", () => {
     await userEvent.click(combobox);
 
     await waitFor(() => {
-      expect(screen.getByRole("option", { name: "GPT-4 (model-1)" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("option", { name: "GPT-4 (model-1)" }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -122,11 +133,16 @@ describe("PaginatedModelSelect", () => {
 
     renderWithProviders(<PaginatedModelSelect onChange={mockOnChange} />);
 
-    expect(screen.getByRole("combobox")).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("combobox")).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
   });
 
   it("should pass pageSize to useInfiniteModelInfo", () => {
-    renderWithProviders(<PaginatedModelSelect onChange={mockOnChange} pageSize={25} />);
+    renderWithProviders(
+      <PaginatedModelSelect onChange={mockOnChange} pageSize={25} />,
+    );
 
     expect(mockUseInfiniteModelInfo).toHaveBeenCalledWith(25, undefined);
   });
@@ -157,7 +173,9 @@ describe("PaginatedModelSelect", () => {
     await userEvent.click(combobox);
 
     await waitFor(() => {
-      expect(screen.getByRole("option", { name: "GPT-4 (model-1)" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("option", { name: "GPT-4 (model-1)" }),
+      ).toBeInTheDocument();
     });
 
     const scrollableContainer = document.querySelector(
@@ -196,7 +214,9 @@ describe("PaginatedModelSelect", () => {
     await userEvent.click(combobox);
 
     await waitFor(() => {
-      const model1Options = screen.queryAllByRole("option", { name: /model-1/ });
+      const model1Options = screen.queryAllByRole("option", {
+        name: /model-1/,
+      });
       expect(model1Options.length).toBe(1);
     });
   });
@@ -231,9 +251,15 @@ describe("PaginatedModelSelect", () => {
     await userEvent.click(combobox);
 
     await waitFor(() => {
-      expect(screen.getByRole("option", { name: "Valid Model (valid-id)" })).toBeInTheDocument();
-      expect(screen.queryByRole("option", { name: "No ID" })).not.toBeInTheDocument();
-      expect(screen.queryByRole("option", { name: "Empty ID" })).not.toBeInTheDocument();
+      expect(
+        screen.getByRole("option", { name: "Valid Model (valid-id)" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole("option", { name: "No ID" }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("option", { name: "Empty ID" }),
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -263,20 +289,28 @@ describe("PaginatedModelSelect", () => {
     await userEvent.click(combobox);
 
     await waitFor(() => {
-      expect(screen.getByRole("option", { name: "id-only" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("option", { name: "id-only" }),
+      ).toBeInTheDocument();
     });
   });
 
   it("should respect allowClear prop", () => {
     renderWithProviders(
-      <PaginatedModelSelect value="model-1" onChange={mockOnChange} allowClear={false} />,
+      <PaginatedModelSelect
+        value="model-1"
+        onChange={mockOnChange}
+        allowClear={false}
+      />,
     );
 
     expect(screen.getByRole("combobox")).toBeInTheDocument();
   });
 
   it("should respect disabled prop", () => {
-    renderWithProviders(<PaginatedModelSelect onChange={mockOnChange} disabled />);
+    renderWithProviders(
+      <PaginatedModelSelect onChange={mockOnChange} disabled />,
+    );
 
     const combobox = screen.getByRole("combobox");
     expect(combobox.closest(".ant-select")).toHaveClass("ant-select-disabled");
@@ -293,7 +327,9 @@ describe("PaginatedModelSelect", () => {
     await userEvent.click(screen.getByRole("combobox"));
 
     await waitFor(() => {
-      expect(screen.getByRole("option", { name: "GPT-4 (model-1)" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("option", { name: "GPT-4 (model-1)" }),
+      ).toBeInTheDocument();
     });
 
     expect(mockFetchNextPage).not.toHaveBeenCalled();

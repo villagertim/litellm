@@ -1,12 +1,14 @@
-import React from "react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../tests/test-utils";
 import HowItWorks from "./how_it_works";
 
 vi.mock("@/app/(dashboard)/api-reference/components/CodeBlock", () => ({
-  default: ({ code }: { code: string }) => <pre data-testid="code-block">{code}</pre>,
+  default: ({ code }: { code: string }) => (
+    <pre data-testid="code-block">{code}</pre>
+  ),
 }));
 
 describe("HowItWorks", () => {
@@ -38,8 +40,12 @@ describe("HowItWorks", () => {
   it("should show the response header names for discount verification", () => {
     renderWithProviders(<HowItWorks />);
     expect(screen.getByText("x-litellm-response-cost")).toBeInTheDocument();
-    expect(screen.getByText("x-litellm-response-cost-original")).toBeInTheDocument();
-    expect(screen.getByText("x-litellm-response-cost-discount-amount")).toBeInTheDocument();
+    expect(
+      screen.getByText("x-litellm-response-cost-original"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("x-litellm-response-cost-discount-amount"),
+    ).toBeInTheDocument();
   });
 
   it("should not show calculated results initially when no input is provided", () => {
@@ -84,8 +90,14 @@ describe("HowItWorks", () => {
     const user = userEvent.setup();
     renderWithProviders(<HowItWorks />);
 
-    await user.type(screen.getByPlaceholderText("0.0171938125"), "0.0171938125");
-    await user.type(screen.getByPlaceholderText("0.0009049375"), "0.0009049375");
+    await user.type(
+      screen.getByPlaceholderText("0.0171938125"),
+      "0.0171938125",
+    );
+    await user.type(
+      screen.getByPlaceholderText("0.0009049375"),
+      "0.0009049375",
+    );
 
     expect(await screen.findByText("Original Cost:")).toBeInTheDocument();
     expect(screen.getByText("Final Cost:")).toBeInTheDocument();

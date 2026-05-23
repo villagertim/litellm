@@ -50,13 +50,13 @@ export const runSemanticFilterTest = async ({
     const { headers } = await testMCPSemanticFilter(
       accessToken,
       testModel,
-      testQuery
+      testQuery,
     );
     const parsedResult = parseFilterHeaders(headers);
 
     if (!parsedResult) {
       NotificationManager.warning(
-        "Semantic filter is not enabled or no tools were filtered"
+        "Semantic filter is not enabled or no tools were filtered",
       );
       return;
     }

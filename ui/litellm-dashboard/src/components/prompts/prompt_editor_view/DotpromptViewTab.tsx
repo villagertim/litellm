@@ -1,5 +1,5 @@
-import React from "react";
-import { PromptType } from "./types";
+import type React from "react";
+import type { PromptType } from "./types";
 import { convertToDotPrompt } from "./utils";
 
 interface DotpromptViewTabProps {
@@ -29,4 +29,3 @@ const DotpromptViewTab: React.FC<DotpromptViewTabProps> = ({ prompt }) => {
 };
 
 export default DotpromptViewTab;
-

@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Form, Table } from "antd";
 import { TextInput } from "@tremor/react";
+import { Form, Table } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { Tooltip } from "../atoms/index";
 import { Providers } from "../provider_info_helpers";
 
@@ -19,7 +20,10 @@ const ConditionalPublicModelName: React.FC = () => {
     if (customModelName && selectedModels.includes("custom")) {
       const currentMappings = form.getFieldValue("model_mappings") || [];
       const updatedMappings = currentMappings.map((mapping: any) => {
-        if (mapping.public_name === "custom" || mapping.litellm_model === "custom") {
+        if (
+          mapping.public_name === "custom" ||
+          mapping.litellm_model === "custom"
+        ) {
           if (selectedProvider === Providers.Azure) {
             return {
               public_name: customModelName,
@@ -48,15 +52,20 @@ const ConditionalPublicModelName: React.FC = () => {
       const shouldUpdateMappings =
         currentMappings.length !== selectedModels.length ||
         !selectedModels.every((model) =>
-          currentMappings.some((mapping: { public_name: string; litellm_model: string }) => {
-            if (model === "custom") {
-              return mapping.litellm_model === "custom" || mapping.litellm_model === customModelName;
-            }
-            if (selectedProvider === Providers.Azure) {
-              return mapping.litellm_model === `azure/${model}`;
-            }
-            return mapping.litellm_model === model;
-          }),
+          currentMappings.some(
+            (mapping: { public_name: string; litellm_model: string }) => {
+              if (model === "custom") {
+                return (
+                  mapping.litellm_model === "custom" ||
+                  mapping.litellm_model === customModelName
+                );
+              }
+              if (selectedProvider === Providers.Azure) {
+                return mapping.litellm_model === `azure/${model}`;
+              }
+              return mapping.litellm_model === model;
+            },
+          ),
         );
 
       if (shouldUpdateMappings) {
@@ -95,24 +104,39 @@ const ConditionalPublicModelName: React.FC = () => {
 
   const publicNameTooltipContent = (
     <>
-      <div className="mb-2 font-normal">The name you specify in your API calls to LiteLLM Proxy</div>
+      <div className="mb-2 font-normal">
+        The name you specify in your API calls to LiteLLM Proxy
+      </div>
       <div className="mb-2 font-normal">
         <strong>Example:</strong> If you name your public model{" "}
-        <code className="bg-gray-700 px-1 py-0.5 rounded text-xs">example-name</code>, and choose{" "}
-        <code className="bg-gray-700 px-1 py-0.5 rounded text-xs">openai/qwen-plus-latest</code> as the LiteLLM model
+        <code className="bg-gray-700 px-1 py-0.5 rounded text-xs">
+          example-name
+        </code>
+        , and choose{" "}
+        <code className="bg-gray-700 px-1 py-0.5 rounded text-xs">
+          openai/qwen-plus-latest
+        </code>{" "}
+        as the LiteLLM model
       </div>
       <div className="mb-2 font-normal">
         <strong>Usage:</strong> You make an API call to the LiteLLM proxy with{" "}
-        <code className="bg-gray-700 px-1 py-0.5 rounded text-xs">model = &quot;example-name&quot;</code>
+        <code className="bg-gray-700 px-1 py-0.5 rounded text-xs">
+          model = &quot;example-name&quot;
+        </code>
       </div>
       <div className="font-normal">
         <strong>Result:</strong> LiteLLM sends{" "}
-        <code className="bg-gray-700 px-1 py-0.5 rounded text-xs">qwen-plus-latest</code> to the provider
+        <code className="bg-gray-700 px-1 py-0.5 rounded text-xs">
+          qwen-plus-latest
+        </code>{" "}
+        to the provider
       </div>
     </>
   );
 
-  const liteLLMModelTooltipContent = <div>The model name LiteLLM will send to the LLM API</div>;
+  const liteLLMModelTooltipContent = (
+    <div>The model name LiteLLM will send to the LLM API</div>
+  );
 
   const columns = [
     {
@@ -136,14 +160,19 @@ const ConditionalPublicModelName: React.FC = () => {
               const isAnthropic = selectedProvider === Providers.Anthropic;
               const endsWith1m = newValue.endsWith("-1m");
               const litellmParams = form.getFieldValue("litellm_extra_params");
-              const isLitellmParamsEmpty = !litellmParams || litellmParams.trim() === "";
+              const isLitellmParamsEmpty =
+                !litellmParams || litellmParams.trim() === "";
 
               let finalPublicName = newValue;
 
               if (isAnthropic && endsWith1m && isLitellmParamsEmpty) {
                 // Set litellm params with extra_headers
                 const litellmParamsValue = JSON.stringify(
-                  { extra_headers: { "anthropic-beta": "context-1m-2025-08-07" } },
+                  {
+                    extra_headers: {
+                      "anthropic-beta": "context-1m-2025-08-07",
+                    },
+                  },
                   null,
                   2,
                 );
@@ -190,10 +219,13 @@ const ConditionalPublicModelName: React.FC = () => {
               }
               // Check if all mappings have valid public names
               const invalidMappings = value.filter(
-                (mapping: any) => !mapping.public_name || mapping.public_name.trim() === "",
+                (mapping: any) =>
+                  !mapping.public_name || mapping.public_name.trim() === "",
               );
               if (invalidMappings.length > 0) {
-                throw new Error("All model mappings must have valid public names");
+                throw new Error(
+                  "All model mappings must have valid public names",
+                );
               }
             },
           },

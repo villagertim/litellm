@@ -1,8 +1,8 @@
+import type { DeletedKeyResponse } from "@/app/(dashboard)/hooks/keys/useKeys";
 import { screen } from "@testing-library/react";
-import { vi, it, expect, beforeEach } from "vitest";
+import { beforeEach, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../../tests/test-utils";
 import { DeletedKeysTable } from "./DeletedKeysTable";
-import { DeletedKeyResponse } from "@/app/(dashboard)/hooks/keys/useKeys";
 
 const mockDeletedKey: DeletedKeyResponse = {
   token: "sk-1234567890abcdef",

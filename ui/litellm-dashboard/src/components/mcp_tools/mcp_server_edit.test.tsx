@@ -1,9 +1,15 @@
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import React from "react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, fireEvent, act } from "@testing-library/react";
-import MCPServerEdit from "./mcp_server_edit";
-import * as networking from "../networking";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import NotificationsManager from "../molecules/notifications_manager";
+import * as networking from "../networking";
+import MCPServerEdit from "./mcp_server_edit";
 
 vi.mock("../networking", () => ({
   updateMCPServer: vi.fn(),
@@ -43,7 +49,7 @@ vi.mock("./mcp_tool_configuration", () => ({
 const interactiveOAuthServer = {
   server_id: "oauth_server_1",
   server_name: "OAuthServer",
-  alias: "oauth_server",   // underscores: hyphens fail validateMCPServerName
+  alias: "oauth_server", // underscores: hyphens fail validateMCPServerName
   description: "Interactive OAuth MCP server",
   transport: "http",
   url: "https://example.com/mcp",
@@ -94,7 +100,9 @@ describe("MCPServerEdit (stdio)", () => {
       />,
     );
 
-    expect(screen.getByRole("tab", { name: "Server Configuration" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("tab", { name: "Server Configuration" }),
+    ).toBeInTheDocument();
   });
 
   it("should allow updating stdio transport configuration", async () => {
@@ -153,7 +161,14 @@ describe("MCPServerEdit (stdio)", () => {
     await act(async () => {
       fireEvent.change(envTextarea, {
         target: {
-          value: JSON.stringify({ CIRCLECI_TOKEN: "new-token", CIRCLECI_BASE_URL: "https://circleci.com" }, null, 2),
+          value: JSON.stringify(
+            {
+              CIRCLECI_TOKEN: "new-token",
+              CIRCLECI_BASE_URL: "https://circleci.com",
+            },
+            null,
+            2,
+          ),
         },
       });
     });
@@ -168,12 +183,16 @@ describe("MCPServerEdit (stdio)", () => {
       expect(networking.updateMCPServer).toHaveBeenCalledTimes(1);
     });
 
-    const [_token, payload] = vi.mocked(networking.updateMCPServer).mock.calls[0];
+    const [_token, payload] = vi.mocked(networking.updateMCPServer).mock
+      .calls[0];
     expect(_token).toBe("access-token");
     expect(payload.transport).toBe("stdio");
     expect(payload.command).toBe("npx");
     expect(payload.args).toEqual(["-y", "@circleci/mcp-server-circleci"]);
-    expect(payload.env).toEqual({ CIRCLECI_TOKEN: "new-token", CIRCLECI_BASE_URL: "https://circleci.com" });
+    expect(payload.env).toEqual({
+      CIRCLECI_TOKEN: "new-token",
+      CIRCLECI_BASE_URL: "https://circleci.com",
+    });
   });
 });
 
@@ -235,8 +254,12 @@ describe("MCPServerEdit (interactive OAuth)", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Token Validation Rules (optional)")).toBeInTheDocument();
-      expect(screen.getByText("Token Storage TTL (seconds, optional)")).toBeInTheDocument();
+      expect(
+        screen.getByText("Token Validation Rules (optional)"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Token Storage TTL (seconds, optional)"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -248,7 +271,10 @@ describe("MCPServerEdit (interactive OAuth)", () => {
 
     render(
       <MCPServerEdit
-        mcpServer={{ ...interactiveOAuthServer, token_validation: tokenValidation }}
+        mcpServer={{
+          ...interactiveOAuthServer,
+          token_validation: tokenValidation,
+        }}
         accessToken={null}
         onCancel={vi.fn()}
         onSuccess={vi.fn()}
@@ -257,7 +283,9 @@ describe("MCPServerEdit (interactive OAuth)", () => {
     );
 
     await waitFor(() => {
-      const textarea = document.getElementById("token_validation_json") as HTMLTextAreaElement;
+      const textarea = document.getElementById(
+        "token_validation_json",
+      ) as HTMLTextAreaElement;
       expect(textarea).not.toBeNull();
       const parsed = JSON.parse(textarea.value);
       expect(parsed).toEqual(tokenValidation);
@@ -283,12 +311,18 @@ describe("MCPServerEdit (interactive OAuth)", () => {
 
     // Wait for the form to mount and the token_validation_json field to appear
     await waitFor(() => {
-      expect(screen.getByText("Token Validation Rules (optional)")).toBeInTheDocument();
+      expect(
+        screen.getByText("Token Validation Rules (optional)"),
+      ).toBeInTheDocument();
     });
 
-    const textarea = document.getElementById("token_validation_json") as HTMLTextAreaElement;
+    const textarea = document.getElementById(
+      "token_validation_json",
+    ) as HTMLTextAreaElement;
     await act(async () => {
-      fireEvent.change(textarea, { target: { value: '{"organization": "my-org"}' } });
+      fireEvent.change(textarea, {
+        target: { value: '{"organization": "my-org"}' },
+      });
     });
 
     const saveButtons = screen.getAllByRole("button", { name: "Save Changes" });
@@ -305,7 +339,9 @@ describe("MCPServerEdit (interactive OAuth)", () => {
   });
 
   it("does not include token_validation in payload when field is empty and server had none", async () => {
-    vi.mocked(networking.updateMCPServer).mockResolvedValue(interactiveOAuthServer);
+    vi.mocked(networking.updateMCPServer).mockResolvedValue(
+      interactiveOAuthServer,
+    );
 
     render(
       <MCPServerEdit
@@ -318,7 +354,9 @@ describe("MCPServerEdit (interactive OAuth)", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Token Validation Rules (optional)")).toBeInTheDocument();
+      expect(
+        screen.getByText("Token Validation Rules (optional)"),
+      ).toBeInTheDocument();
     });
 
     // Leave token_validation_json empty
@@ -343,7 +381,10 @@ describe("MCPServerEdit (interactive OAuth)", () => {
 
     render(
       <MCPServerEdit
-        mcpServer={{ ...interactiveOAuthServer, token_validation: { organization: "old-org" } }}
+        mcpServer={{
+          ...interactiveOAuthServer,
+          token_validation: { organization: "old-org" },
+        }}
         accessToken="access-token"
         onCancel={vi.fn()}
         onSuccess={vi.fn()}
@@ -352,12 +393,16 @@ describe("MCPServerEdit (interactive OAuth)", () => {
     );
 
     await waitFor(() => {
-      const textarea = document.getElementById("token_validation_json") as HTMLTextAreaElement;
+      const textarea = document.getElementById(
+        "token_validation_json",
+      ) as HTMLTextAreaElement;
       expect(textarea?.value).toContain("old-org");
     });
 
     // Clear the textarea
-    const textarea = document.getElementById("token_validation_json") as HTMLTextAreaElement;
+    const textarea = document.getElementById(
+      "token_validation_json",
+    ) as HTMLTextAreaElement;
     await act(async () => {
       fireEvent.change(textarea, { target: { value: "" } });
     });
@@ -388,10 +433,14 @@ describe("MCPServerEdit (interactive OAuth)", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Token Validation Rules (optional)")).toBeInTheDocument();
+      expect(
+        screen.getByText("Token Validation Rules (optional)"),
+      ).toBeInTheDocument();
     });
 
-    const textarea = document.getElementById("token_validation_json") as HTMLTextAreaElement;
+    const textarea = document.getElementById(
+      "token_validation_json",
+    ) as HTMLTextAreaElement;
     await act(async () => {
       fireEvent.change(textarea, { target: { value: "{ bad json" } });
     });
@@ -417,7 +466,10 @@ describe("MCPServerEdit (interactive OAuth)", () => {
 
     render(
       <MCPServerEdit
-        mcpServer={{ ...interactiveOAuthServer, token_storage_ttl_seconds: 7200 }}
+        mcpServer={{
+          ...interactiveOAuthServer,
+          token_storage_ttl_seconds: 7200,
+        }}
         accessToken="access-token"
         onCancel={vi.fn()}
         onSuccess={vi.fn()}
@@ -426,7 +478,9 @@ describe("MCPServerEdit (interactive OAuth)", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Token Storage TTL (seconds, optional)")).toBeInTheDocument();
+      expect(
+        screen.getByText("Token Storage TTL (seconds, optional)"),
+      ).toBeInTheDocument();
     });
 
     const saveButtons = screen.getAllByRole("button", { name: "Save Changes" });

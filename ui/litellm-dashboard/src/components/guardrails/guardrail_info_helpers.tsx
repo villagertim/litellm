@@ -9,7 +9,9 @@ export enum GuardrailProviders {
 export let DynamicGuardrailProviders: Record<string, string> = {};
 
 // Function to populate dynamic providers from API response
-export const populateGuardrailProviders = (providerParamsResponse: Record<string, any>) => {
+export const populateGuardrailProviders = (
+  providerParamsResponse: Record<string, any>,
+) => {
   const providers: Record<string, string> = {};
 
   // Legacy hardcoded providers for backward compatibility
@@ -25,7 +27,9 @@ export const populateGuardrailProviders = (providerParamsResponse: Record<string
       const providerKey = key
         .split("_")
         .map((word, index) =>
-          index === 0 ? word.charAt(0).toUpperCase() + word.slice(1) : word.charAt(0).toUpperCase() + word.slice(1),
+          index === 0
+            ? word.charAt(0).toUpperCase() + word.slice(1)
+            : word.charAt(0).toUpperCase() + word.slice(1),
         )
         .join("");
 
@@ -39,7 +43,9 @@ export const populateGuardrailProviders = (providerParamsResponse: Record<string
 
 // Function to get current guardrail providers (dynamic or fallback to legacy)
 export const getGuardrailProviders = () => {
-  return Object.keys(DynamicGuardrailProviders).length > 0 ? DynamicGuardrailProviders : GuardrailProviders;
+  return Object.keys(DynamicGuardrailProviders).length > 0
+    ? DynamicGuardrailProviders
+    : GuardrailProviders;
 };
 
 export const guardrail_provider_map: Record<string, string> = {
@@ -56,7 +62,9 @@ export const guardrail_provider_map: Record<string, string> = {
 };
 
 // Function to populate provider map from API response - updates the original map
-export const populateGuardrailProviderMap = (providerParamsResponse: Record<string, any>) => {
+export const populateGuardrailProviderMap = (
+  providerParamsResponse: Record<string, any>,
+) => {
   // Add dynamic providers from API response directly to the main map
   Object.entries(providerParamsResponse).forEach(([key, value]) => {
     if (value && typeof value === "object" && "ui_friendly_name" in value) {
@@ -64,7 +72,9 @@ export const populateGuardrailProviderMap = (providerParamsResponse: Record<stri
       const providerKey = key
         .split("_")
         .map((word, index) =>
-          index === 0 ? word.charAt(0).toUpperCase() + word.slice(1) : word.charAt(0).toUpperCase() + word.slice(1),
+          index === 0
+            ? word.charAt(0).toUpperCase() + word.slice(1)
+            : word.charAt(0).toUpperCase() + word.slice(1),
         )
         .join("");
 
@@ -81,29 +91,36 @@ export const shouldRenderPIIConfigSettings = (provider: string | null) => {
   }
   // Check both dynamic and legacy providers
   const currentProviders = getGuardrailProviders();
-  const providerEnum = currentProviders[provider as keyof typeof currentProviders];
+  const providerEnum =
+    currentProviders[provider as keyof typeof currentProviders];
   return providerEnum === "Presidio PII";
 };
 
 // Decides if we should render the Azure Text Moderation config settings for a given provider
-export const shouldRenderAzureTextModerationConfigSettings = (provider: string | null) => {
+export const shouldRenderAzureTextModerationConfigSettings = (
+  provider: string | null,
+) => {
   if (!provider) {
     return false;
   }
   // Check both dynamic and legacy providers
   const currentProviders = getGuardrailProviders();
-  const providerEnum = currentProviders[provider as keyof typeof currentProviders];
+  const providerEnum =
+    currentProviders[provider as keyof typeof currentProviders];
   return providerEnum === "Azure Content Safety Text Moderation";
 };
 
 // Decides if we should render the Content Filter config settings for a given provider
-export const shouldRenderContentFilterConfigSettings = (provider: string | null) => {
+export const shouldRenderContentFilterConfigSettings = (
+  provider: string | null,
+) => {
   if (!provider) {
     return false;
   }
   // Check both dynamic and legacy providers
   const currentProviders = getGuardrailProviders();
-  const providerEnum = currentProviders[provider as keyof typeof currentProviders];
+  const providerEnum =
+    currentProviders[provider as keyof typeof currentProviders];
   return providerEnum === "LiteLLM Content Filter";
 };
 
@@ -138,18 +155,22 @@ export const guardrailLogoMap: Record<string, string> = {
   XecGuard: `${asset_logos_folder}xecguard.svg`,
   "LiteLLM Content Filter": `${asset_logos_folder}litellm_logo.jpg`,
   "LiteLLM LLM as a Judge": `${asset_logos_folder}litellm_logo.jpg`,
-  "Akto": `${asset_logos_folder}akto.svg`,
+  Akto: `${asset_logos_folder}akto.svg`,
   "Qostodian Nexus": `${asset_logos_folder}qohash.jpg`,
 };
 
-export const getGuardrailLogoAndName = (guardrailValue: string): { logo: string; displayName: string } => {
+export const getGuardrailLogoAndName = (
+  guardrailValue: string,
+): { logo: string; displayName: string } => {
   if (!guardrailValue) {
     return { logo: "", displayName: "-" };
   }
 
   // Find the enum key by matching guardrail_provider_map values
   const enumKey = Object.keys(guardrail_provider_map).find(
-    (key) => guardrail_provider_map[key].toLowerCase() === guardrailValue.toLowerCase(),
+    (key) =>
+      guardrail_provider_map[key].toLowerCase() ===
+      guardrailValue.toLowerCase(),
   );
 
   if (!enumKey) {
@@ -158,7 +179,8 @@ export const getGuardrailLogoAndName = (guardrailValue: string): { logo: string;
 
   // Get the display name from current GuardrailProviders and logo from map
   const currentProviders = getGuardrailProviders();
-  const displayName = currentProviders[enumKey as keyof typeof currentProviders];
+  const displayName =
+    currentProviders[enumKey as keyof typeof currentProviders];
   const logo = guardrailLogoMap[displayName as keyof typeof guardrailLogoMap];
 
   return { logo: logo || "", displayName: displayName || guardrailValue };
@@ -167,14 +189,18 @@ export const getGuardrailLogoAndName = (guardrailValue: string): { logo: string;
 /** Tri-state UI value for `litellm_params.skip_system_message_in_guardrail` (inherit = use global). */
 export type SkipSystemMessageChoice = "inherit" | "yes" | "no";
 
-export function skipSystemMessageToChoice(v: boolean | null | undefined): SkipSystemMessageChoice {
+export function skipSystemMessageToChoice(
+  v: boolean | null | undefined,
+): SkipSystemMessageChoice {
   if (v === true) return "yes";
   if (v === false) return "no";
   return "inherit";
 }
 
 /** Create flow: omit key when inheriting global default. */
-export function choiceToSkipSystemForCreate(choice: SkipSystemMessageChoice | undefined): boolean | undefined {
+export function choiceToSkipSystemForCreate(
+  choice: SkipSystemMessageChoice | undefined,
+): boolean | undefined {
   if (choice === "yes") return true;
   if (choice === "no") return false;
   return undefined;
@@ -183,14 +209,18 @@ export function choiceToSkipSystemForCreate(choice: SkipSystemMessageChoice | un
 /** Tri-state UI value for `litellm_params.skip_tool_message_in_guardrail` (inherit = use global). */
 export type SkipToolMessageChoice = "inherit" | "yes" | "no";
 
-export function skipToolMessageToChoice(v: boolean | null | undefined): SkipToolMessageChoice {
+export function skipToolMessageToChoice(
+  v: boolean | null | undefined,
+): SkipToolMessageChoice {
   if (v === true) return "yes";
   if (v === false) return "no";
   return "inherit";
 }
 
 /** Create flow: omit key when inheriting global default. */
-export function choiceToSkipToolForCreate(choice: SkipToolMessageChoice | undefined): boolean | undefined {
+export function choiceToSkipToolForCreate(
+  choice: SkipToolMessageChoice | undefined,
+): boolean | undefined {
   if (choice === "yes") return true;
   if (choice === "no") return false;
   return undefined;

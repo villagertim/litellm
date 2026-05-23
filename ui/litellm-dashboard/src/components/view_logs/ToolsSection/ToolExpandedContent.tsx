@@ -2,11 +2,11 @@
  * Expanded content for a tool with view mode toggle
  */
 
+import { Radio, Typography } from "antd";
 import { useState } from "react";
-import { Typography, Radio } from "antd";
-import { ParsedTool } from "./types";
 import { FormattedToolView } from "./FormattedToolView";
 import { JsonToolView } from "./JsonToolView";
+import type { ParsedTool } from "./types";
 
 const { Text } = Typography;
 

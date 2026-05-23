@@ -1,10 +1,10 @@
-import { renderWithProviders, screen } from "../../../tests/test-utils";
 import { vi } from "vitest";
+import { renderWithProviders, screen } from "../../../tests/test-utils";
 import {
-  PolicySelect,
-  policyStyle,
   INPUT_POLICY_OPTIONS,
   OUTPUT_POLICY_OPTIONS,
+  PolicySelect,
+  policyStyle,
 } from "./PolicySelect";
 
 describe("policyStyle", () => {
@@ -29,7 +29,7 @@ describe("PolicySelect", () => {
         toolName="test-tool"
         saving={false}
         onChange={vi.fn()}
-      />
+      />,
     );
     expect(screen.getByText("untrusted")).toBeInTheDocument();
   });
@@ -41,7 +41,7 @@ describe("PolicySelect", () => {
         toolName="test-tool"
         saving={false}
         onChange={vi.fn()}
-      />
+      />,
     );
     expect(screen.getByText("trusted")).toBeInTheDocument();
   });
@@ -53,10 +53,15 @@ describe("PolicySelect", () => {
         toolName="test-tool"
         saving={true}
         onChange={vi.fn()}
-      />
+      />,
     );
-    expect(screen.getByRole("combobox")).toHaveAttribute("aria-expanded", "false");
-    expect(screen.getByRole("combobox").closest(".ant-select")).toHaveClass("ant-select-disabled");
+    expect(screen.getByRole("combobox")).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+    expect(screen.getByRole("combobox").closest(".ant-select")).toHaveClass(
+      "ant-select-disabled",
+    );
   });
 
   it("should not be disabled when saving is false", () => {
@@ -66,9 +71,11 @@ describe("PolicySelect", () => {
         toolName="test-tool"
         saving={false}
         onChange={vi.fn()}
-      />
+      />,
     );
-    expect(screen.getByRole("combobox").closest(".ant-select")).not.toHaveClass("ant-select-disabled");
+    expect(screen.getByRole("combobox").closest(".ant-select")).not.toHaveClass(
+      "ant-select-disabled",
+    );
   });
 });
 
@@ -79,6 +86,9 @@ describe("Policy option constants", () => {
 
   it("should have 2 output policy options (no blocked)", () => {
     expect(OUTPUT_POLICY_OPTIONS).toHaveLength(2);
-    expect(OUTPUT_POLICY_OPTIONS.map((o) => o.value)).toEqual(["untrusted", "trusted"]);
+    expect(OUTPUT_POLICY_OPTIONS.map((o) => o.value)).toEqual([
+      "untrusted",
+      "trusted",
+    ]);
   });
 });

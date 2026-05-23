@@ -1,20 +1,30 @@
-import React, { useState } from "react";
-import ToolModal from "../tool_modal";
+import type React from "react";
+import { useState } from "react";
 import NotificationsManager from "../../molecules/notifications_manager";
-import { createPromptCall, updatePromptCall, getPromptInfo } from "../../networking";
-import { PromptType, PromptEditorViewProps, Tool } from "./types";
-import { convertToDotPrompt, parseExistingPrompt } from "./utils";
-import PromptEditorHeader from "./PromptEditorHeader";
-import ModelConfigCard from "./ModelConfigCard";
-import ToolsCard from "./ToolsCard";
+import {
+  createPromptCall,
+  getPromptInfo,
+  updatePromptCall,
+} from "../../networking";
+import ToolModal from "../tool_modal";
 import DeveloperMessageCard from "./DeveloperMessageCard";
-import PromptMessagesCard from "./PromptMessagesCard";
-import ConversationPanel from "./conversation_panel";
-import PublishModal from "./PublishModal";
 import DotpromptViewTab from "./DotpromptViewTab";
+import ModelConfigCard from "./ModelConfigCard";
+import PromptEditorHeader from "./PromptEditorHeader";
+import PromptMessagesCard from "./PromptMessagesCard";
+import PublishModal from "./PublishModal";
+import ToolsCard from "./ToolsCard";
 import VersionHistorySidePanel from "./VersionHistorySidePanel";
+import ConversationPanel from "./conversation_panel";
+import type { PromptEditorViewProps, PromptType, Tool } from "./types";
+import { convertToDotPrompt, parseExistingPrompt } from "./utils";
 
-const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess, accessToken, initialPromptData }) => {
+const PromptEditorView: React.FC<PromptEditorViewProps> = ({
+  onClose,
+  onSuccess,
+  accessToken,
+  initialPromptData,
+}) => {
   const getInitialPrompt = (): PromptType => {
     if (initialPromptData) {
       try {
@@ -36,7 +46,8 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
       messages: [
         {
           role: "user",
-          content: "Enter task specifics. Use {{template_variables}} for dynamic inputs",
+          content:
+            "Enter task specifics. Use {{template_variables}} for dynamic inputs",
         },
       ],
       environment: "development",
@@ -46,28 +57,34 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
   const [prompt, setPrompt] = useState<PromptType>(getInitialPrompt());
   const [editMode, setEditMode] = useState<boolean>(!!initialPromptData);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
-  
+
   // Construct versioned ID from prompt_id and version field
   const getInitialVersionId = () => {
     if (!initialPromptData?.prompt_spec) return undefined;
     const baseId = initialPromptData.prompt_spec.prompt_id;
-    const version = initialPromptData.prompt_spec.version || 
-                   (initialPromptData.prompt_spec.litellm_params as any)?.prompt_id;
-    
+    const version =
+      initialPromptData.prompt_spec.version ||
+      (initialPromptData.prompt_spec.litellm_params as any)?.prompt_id;
+
     // If version is a number, construct versioned ID
-    if (typeof version === 'number') {
+    if (typeof version === "number") {
       return `${baseId}.v${version}`;
     }
-    
+
     // If version is a string with version suffix, use it
-    if (typeof version === 'string' && (version.includes('.v') || version.includes('_v'))) {
+    if (
+      typeof version === "string" &&
+      (version.includes(".v") || version.includes("_v"))
+    ) {
       return version;
     }
-    
+
     return baseId;
   };
-  
-  const [activeVersionId, setActiveVersionId] = useState<string | undefined>(getInitialVersionId());
+
+  const [activeVersionId, setActiveVersionId] = useState<string | undefined>(
+    getInitialVersionId(),
+  );
 
   const [showToolModal, setShowToolModal] = useState(false);
   const [showNameModal, setShowNameModal] = useState(false);
@@ -88,7 +105,11 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
     });
   };
 
-  const updateMessage = (index: number, field: "role" | "content", value: string) => {
+  const updateMessage = (
+    index: number,
+    field: "role" | "content",
+    value: string,
+  ) => {
     const newMessages = [...prompt.messages];
     newMessages[index][field] = value;
     setPrompt({
@@ -177,7 +198,11 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
   };
 
   const handleSaveClick = () => {
-    if (!prompt.name || prompt.name.trim() === "" || prompt.name === "New prompt") {
+    if (
+      !prompt.name ||
+      prompt.name.trim() === "" ||
+      prompt.name === "New prompt"
+    ) {
       setShowNameModal(true);
     } else {
       handleSave();
@@ -197,7 +222,9 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
 
     setIsSaving(true);
     try {
-      const promptId = prompt.name.replace(/[^a-zA-Z0-9_-]/g, "_").toLowerCase();
+      const promptId = prompt.name
+        .replace(/[^a-zA-Z0-9_-]/g, "_")
+        .toLowerCase();
       const dotpromptContent = convertToDotPrompt(prompt);
 
       const promptData = {
@@ -214,7 +241,11 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
       };
 
       if (editMode && initialPromptData?.prompt_spec?.prompt_id) {
-        await updatePromptCall(accessToken, initialPromptData.prompt_spec.prompt_id, promptData);
+        await updatePromptCall(
+          accessToken,
+          initialPromptData.prompt_spec.prompt_id,
+          promptData,
+        );
         NotificationsManager.success("Prompt updated successfully!");
       } else {
         await createPromptCall(accessToken, promptData);
@@ -224,7 +255,9 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
       onClose();
     } catch (error) {
       console.error("Error saving prompt:", error);
-      NotificationsManager.fromBackend(editMode ? "Failed to update prompt" : "Failed to save prompt");
+      NotificationsManager.fromBackend(
+        editMode ? "Failed to update prompt" : "Failed to save prompt",
+      );
     } finally {
       setIsSaving(false);
       setShowNameModal(false);
@@ -246,9 +279,9 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
     const variables: Record<string, string> = {};
     const allContent = [
       prompt.developerMessage,
-      ...prompt.messages.map(m => m.content)
-    ].join(' ');
-    
+      ...prompt.messages.map((m) => m.content),
+    ].join(" ");
+
     const variableRegex = /\{\{(\w+)\}\}/g;
     let match;
     while ((match = variableRegex.exec(allContent)) !== null) {
@@ -278,14 +311,24 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
           environment={prompt.environment}
           onEnvironmentChange={async (env) => {
             setPrompt({ ...prompt, environment: env });
-            if (editMode && accessToken && initialPromptData?.prompt_spec?.prompt_id) {
+            if (
+              editMode &&
+              accessToken &&
+              initialPromptData?.prompt_spec?.prompt_id
+            ) {
               try {
-                const response = await getPromptInfo(accessToken, initialPromptData.prompt_spec.prompt_id, env);
+                const response = await getPromptInfo(
+                  accessToken,
+                  initialPromptData.prompt_spec.prompt_id,
+                  env,
+                );
                 if (response?.prompt_spec) {
                   const loadedPrompt = parseExistingPrompt(response);
                   setPrompt({ ...loadedPrompt, environment: env });
                   const versionNum = response.prompt_spec.version || 1;
-                  setActiveVersionId(`${response.prompt_spec.prompt_id}.v${versionNum}`);
+                  setActiveVersionId(
+                    `${response.prompt_spec.prompt_id}.v${versionNum}`,
+                  );
                 }
               } catch {
                 // No version in this environment yet — keep current content, just change env
@@ -320,7 +363,9 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
               <div className="ml-auto inline-flex items-center bg-gray-200 rounded-full p-0.5">
                 <button
                   className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
-                    viewMode === "pretty" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600"
+                    viewMode === "pretty"
+                      ? "bg-white text-gray-900 shadow-sm"
+                      : "text-gray-600"
                   }`}
                   onClick={() => setViewMode("pretty")}
                 >
@@ -328,7 +373,9 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
                 </button>
                 <button
                   className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
-                    viewMode === "dotprompt" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600"
+                    viewMode === "dotprompt"
+                      ? "bg-white text-gray-900 shadow-sm"
+                      : "text-gray-600"
                   }`}
                   onClick={() => setViewMode("dotprompt")}
                 >
@@ -348,7 +395,9 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
 
                 <DeveloperMessageCard
                   value={prompt.developerMessage}
-                  onChange={(developerMessage) => setPrompt({ ...prompt, developerMessage })}
+                  onChange={(developerMessage) =>
+                    setPrompt({ ...prompt, developerMessage })
+                  }
                 />
 
                 <PromptMessagesCard
@@ -382,7 +431,9 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
       {showToolModal && (
         <ToolModal
           visible={showToolModal}
-          initialJson={editingToolIndex !== null ? prompt.tools[editingToolIndex].json : ""}
+          initialJson={
+            editingToolIndex !== null ? prompt.tools[editingToolIndex].json : ""
+          }
           onSave={addTool}
           onClose={() => {
             setShowToolModal(false);

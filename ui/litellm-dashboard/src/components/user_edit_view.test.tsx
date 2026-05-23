@@ -9,7 +9,13 @@ vi.mock("./key_team_helpers/fetch_available_models_team_key", () => ({
 }));
 
 vi.mock("../utils/roles", () => ({
-  all_admin_roles: ["Admin", "Admin Viewer", "proxy_admin", "proxy_admin_viewer", "org_admin"],
+  all_admin_roles: [
+    "Admin",
+    "Admin Viewer",
+    "proxy_admin",
+    "proxy_admin_viewer",
+    "org_admin",
+  ],
 }));
 
 vi.mock("antd", async (importOriginal) => {
@@ -27,15 +33,24 @@ vi.mock("antd", async (importOriginal) => {
     ...props
   }: any) => {
     const isMultiple = mode === "multiple";
-    const selectValue = isMultiple ? (Array.isArray(value) ? value : []) : value || "";
+    const selectValue = isMultiple
+      ? Array.isArray(value)
+        ? value
+        : []
+      : value || "";
     return React.createElement(
       "select",
       {
         multiple: isMultiple,
         value: selectValue,
         onChange: (e: React.ChangeEvent<HTMLSelectElement>) => {
-          const selectedValues = Array.from(e.target.selectedOptions, (option) => option.value);
-          onChange(isMultiple ? selectedValues : selectedValues[0] || undefined);
+          const selectedValues = Array.from(
+            e.target.selectedOptions,
+            (option) => option.value,
+          );
+          onChange(
+            isMultiple ? selectedValues : selectedValues[0] || undefined,
+          );
         },
         disabled,
         placeholder,
@@ -48,11 +63,15 @@ vi.mock("antd", async (importOriginal) => {
     );
   };
   SelectComponent.displayName = "Select";
-  const SelectOption = ({ value: optionValue, children: optionChildren }: any) =>
+  const SelectOption = ({
+    value: optionValue,
+    children: optionChildren,
+  }: any) =>
     React.createElement("option", { value: optionValue }, optionChildren);
   SelectOption.displayName = "SelectOption";
   SelectComponent.Option = SelectOption;
-  const Tooltip = ({ children }: { children?: React.ReactNode }) => React.createElement(React.Fragment, null, children);
+  const Tooltip = ({ children }: { children?: React.ReactNode }) =>
+    React.createElement(React.Fragment, null, children);
   Tooltip.displayName = "Tooltip";
   const Checkbox = ({ checked, onChange, children, ...props }: any) =>
     React.createElement(
@@ -61,7 +80,8 @@ vi.mock("antd", async (importOriginal) => {
       React.createElement("input", {
         type: "checkbox",
         checked: checked,
-        onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange({ target: { checked: e.target.checked } }),
+        onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+          onChange({ target: { checked: e.target.checked } }),
         ...props,
       }),
       children,
@@ -80,9 +100,15 @@ vi.mock("@tremor/react", async (importOriginal) => {
   const React = await import("react");
   const SelectItem = ({ value, children, title }: any) => {
     const childText = React.Children.toArray(children)
-      .map((child: any) => (typeof child === "string" ? child : child?.props?.children || ""))
+      .map((child: any) =>
+        typeof child === "string" ? child : child?.props?.children || "",
+      )
       .join(" ");
-    return React.createElement("option", { value, title }, childText || title || value);
+    return React.createElement(
+      "option",
+      { value, title },
+      childText || title || value,
+    );
   };
   SelectItem.displayName = "SelectItem";
   return {
@@ -153,7 +179,9 @@ describe("UserEditView", () => {
     renderWithProviders(<UserEditView {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /save changes/i }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -173,7 +201,9 @@ describe("UserEditView", () => {
     renderWithProviders(<UserEditView {...defaultProps} isBulkEdit={true} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /save changes/i }),
+      ).toBeInTheDocument();
     });
 
     expect(screen.queryByLabelText("User ID")).not.toBeInTheDocument();
@@ -194,7 +224,9 @@ describe("UserEditView", () => {
     renderWithProviders(<UserEditView {...defaultProps} isBulkEdit={true} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /save changes/i }),
+      ).toBeInTheDocument();
     });
 
     expect(screen.queryByLabelText("Email")).not.toBeInTheDocument();
@@ -218,7 +250,9 @@ describe("UserEditView", () => {
       expect(screen.getByText("Personal Models")).toBeInTheDocument();
     });
 
-    const modelsSelect = screen.getByRole("combobox", { name: /select models/i });
+    const modelsSelect = screen.getByRole("combobox", {
+      name: /select models/i,
+    });
     expect(modelsSelect).toBeInTheDocument();
   });
 
@@ -226,7 +260,9 @@ describe("UserEditView", () => {
     renderWithProviders(<UserEditView {...defaultProps} userRole="user" />);
 
     await waitFor(() => {
-      const modelsSelect = screen.getByRole("combobox", { name: /select models/i });
+      const modelsSelect = screen.getByRole("combobox", {
+        name: /select models/i,
+      });
       expect(modelsSelect).toBeDisabled();
     });
   });
@@ -235,7 +271,9 @@ describe("UserEditView", () => {
     renderWithProviders(<UserEditView {...defaultProps} userRole="Admin" />);
 
     await waitFor(() => {
-      const modelsSelect = screen.getByRole("combobox", { name: /select models/i });
+      const modelsSelect = screen.getByRole("combobox", {
+        name: /select models/i,
+      });
       expect(modelsSelect).not.toBeDisabled();
     });
   });
@@ -265,7 +303,9 @@ describe("UserEditView", () => {
       },
     };
 
-    renderWithProviders(<UserEditView {...defaultProps} userData={userDataWithNullBudget} />);
+    renderWithProviders(
+      <UserEditView {...defaultProps} userData={userDataWithNullBudget} />,
+    );
 
     await waitFor(() => {
       const checkbox = screen.getByLabelText("Unlimited Budget");
@@ -282,10 +322,14 @@ describe("UserEditView", () => {
       },
     };
 
-    renderWithProviders(<UserEditView {...defaultProps} userData={userDataWithNullBudget} />);
+    renderWithProviders(
+      <UserEditView {...defaultProps} userData={userDataWithNullBudget} />,
+    );
 
     await waitFor(() => {
-      const budgetInput = screen.getByRole("spinbutton", { name: /max budget/i });
+      const budgetInput = screen.getByRole("spinbutton", {
+        name: /max budget/i,
+      });
       expect(budgetInput).toBeDisabled();
     });
   });
@@ -294,7 +338,9 @@ describe("UserEditView", () => {
     renderWithProviders(<UserEditView {...defaultProps} />);
 
     await waitFor(() => {
-      const budgetInput = screen.getByRole("spinbutton", { name: /max budget/i });
+      const budgetInput = screen.getByRole("spinbutton", {
+        name: /max budget/i,
+      });
       expect(budgetInput).not.toBeDisabled();
     });
   });
@@ -310,7 +356,9 @@ describe("UserEditView", () => {
     await userEvent.click(checkbox);
 
     await waitFor(() => {
-      const budgetInput = screen.getByRole("spinbutton", { name: /max budget/i });
+      const budgetInput = screen.getByRole("spinbutton", {
+        name: /max budget/i,
+      });
       expect(budgetInput).toHaveValue(null);
     });
   });
@@ -323,7 +371,11 @@ describe("UserEditView", () => {
     });
 
     const metadataTextarea = screen.getByLabelText("Metadata");
-    const expectedJson = JSON.stringify(MOCK_USER_DATA.user_info.metadata, null, 2);
+    const expectedJson = JSON.stringify(
+      MOCK_USER_DATA.user_info.metadata,
+      null,
+      2,
+    );
     expect(metadataTextarea).toHaveValue(expectedJson);
   });
 
@@ -336,7 +388,9 @@ describe("UserEditView", () => {
       },
     };
 
-    renderWithProviders(<UserEditView {...defaultProps} userData={userDataWithoutMetadata} />);
+    renderWithProviders(
+      <UserEditView {...defaultProps} userData={userDataWithoutMetadata} />,
+    );
 
     await waitFor(() => {
       const metadataTextarea = screen.getByLabelText("Metadata");
@@ -346,10 +400,14 @@ describe("UserEditView", () => {
 
   it("should call onCancel when cancel button is clicked", async () => {
     const onCancelMock = vi.fn();
-    renderWithProviders(<UserEditView {...defaultProps} onCancel={onCancelMock} />);
+    renderWithProviders(
+      <UserEditView {...defaultProps} onCancel={onCancelMock} />,
+    );
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /cancel/i }),
+      ).toBeInTheDocument();
     });
 
     const cancelButton = screen.getByRole("button", { name: /cancel/i });
@@ -360,10 +418,14 @@ describe("UserEditView", () => {
 
   it("should call onSubmit with form values when form is submitted", async () => {
     const onSubmitMock = vi.fn();
-    renderWithProviders(<UserEditView {...defaultProps} onSubmit={onSubmitMock} />);
+    renderWithProviders(
+      <UserEditView {...defaultProps} onSubmit={onSubmitMock} />,
+    );
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /save changes/i }),
+      ).toBeInTheDocument();
     });
 
     const submitButton = screen.getByRole("button", { name: /save changes/i });
@@ -394,10 +456,18 @@ describe("UserEditView", () => {
       },
     };
 
-    renderWithProviders(<UserEditView {...defaultProps} userData={userDataWithNullBudget} onSubmit={onSubmitMock} />);
+    renderWithProviders(
+      <UserEditView
+        {...defaultProps}
+        userData={userDataWithNullBudget}
+        onSubmit={onSubmitMock}
+      />,
+    );
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /save changes/i }),
+      ).toBeInTheDocument();
     });
 
     const submitButton = screen.getByRole("button", { name: /save changes/i });
@@ -428,13 +498,17 @@ describe("UserEditView", () => {
     await userEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText("Please enter a budget or select Unlimited Budget")).toBeInTheDocument();
+      expect(
+        screen.getByText("Please enter a budget or select Unlimited Budget"),
+      ).toBeInTheDocument();
     });
   });
 
   it("should allow submission when unlimited budget is checked even if budget is empty", async () => {
     const onSubmitMock = vi.fn();
-    renderWithProviders(<UserEditView {...defaultProps} onSubmit={onSubmitMock} />);
+    renderWithProviders(
+      <UserEditView {...defaultProps} onSubmit={onSubmitMock} />,
+    );
 
     await waitFor(() => {
       expect(screen.getByLabelText("Unlimited Budget")).toBeInTheDocument();
@@ -456,7 +530,9 @@ describe("UserEditView", () => {
   });
 
   it("should update form values when userData changes", async () => {
-    const { rerender } = renderWithProviders(<UserEditView {...defaultProps} />);
+    const { rerender } = renderWithProviders(
+      <UserEditView {...defaultProps} />,
+    );
 
     await waitFor(() => {
       expect(screen.getByLabelText("User Alias")).toHaveValue("Test User");
@@ -486,10 +562,14 @@ describe("UserEditView", () => {
       },
     };
 
-    renderWithProviders(<UserEditView {...defaultProps} userData={userDataWithEmptyModels} />);
+    renderWithProviders(
+      <UserEditView {...defaultProps} userData={userDataWithEmptyModels} />,
+    );
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /save changes/i }),
+      ).toBeInTheDocument();
     });
 
     const submitButton = screen.getByRole("button", { name: /save changes/i });
@@ -512,7 +592,9 @@ describe("UserEditView", () => {
       },
     };
 
-    renderWithProviders(<UserEditView {...defaultProps} userData={userDataWithUndefinedBudget} />);
+    renderWithProviders(
+      <UserEditView {...defaultProps} userData={userDataWithUndefinedBudget} />,
+    );
 
     await waitFor(() => {
       const checkbox = screen.getByLabelText("Unlimited Budget");

@@ -3,9 +3,10 @@ import { ArrowLeftIcon } from "@heroicons/react/outline";
 import { Button, Card, Grid, Text, Title } from "@tremor/react";
 import { Button as AntdButton } from "antd";
 import { CheckIcon, CopyIcon } from "lucide-react";
-import React, { useState } from "react";
+import type React from "react";
+import { useState } from "react";
 import { SearchToolTester } from "./SearchToolTester";
-import { AvailableSearchProvider, SearchTool } from "./types";
+import type { AvailableSearchProvider, SearchTool } from "./types";
 
 interface SearchToolViewProps {
   searchTool: SearchTool;
@@ -24,7 +25,10 @@ export const SearchToolView: React.FC<SearchToolViewProps> = ({
 }) => {
   const [copiedStates, setCopiedStates] = useState<Record<string, boolean>>({});
 
-  const copyToClipboard = async (text: string | null | undefined, key: string) => {
+  const copyToClipboard = async (
+    text: string | null | undefined,
+    key: string,
+  ) => {
     const success = await utilCopyToClipboard(text);
     if (success) {
       setCopiedStates((prev) => ({ ...prev, [key]: true }));
@@ -35,7 +39,9 @@ export const SearchToolView: React.FC<SearchToolViewProps> = ({
   };
 
   const getProviderDisplayName = (providerName: string) => {
-    const provider = availableProviders.find(p => p.provider_name === providerName);
+    const provider = availableProviders.find(
+      (p) => p.provider_name === providerName,
+    );
     return provider?.ui_friendly_name || providerName;
   };
 
@@ -43,7 +49,12 @@ export const SearchToolView: React.FC<SearchToolViewProps> = ({
     <div className="p-4 max-w-full">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <Button icon={ArrowLeftIcon} variant="light" className="mb-4" onClick={onBack}>
+          <Button
+            icon={ArrowLeftIcon}
+            variant="light"
+            className="mb-4"
+            onClick={onBack}
+          >
             Back to All Search Tools
           </Button>
           <div className="flex items-center cursor-pointer">
@@ -51,25 +62,45 @@ export const SearchToolView: React.FC<SearchToolViewProps> = ({
             <AntdButton
               type="text"
               size="small"
-              icon={copiedStates["search-tool-name"] ? <CheckIcon size={12} /> : <CopyIcon size={12} />}
-              onClick={() => copyToClipboard(searchTool.search_tool_name, "search-tool-name")}
-              className={`left-2 z-10 transition-all duration-200 ${copiedStates["search-tool-name"]
-                ? "text-green-600 bg-green-50 border-green-200"
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
-                }`}
+              icon={
+                copiedStates["search-tool-name"] ? (
+                  <CheckIcon size={12} />
+                ) : (
+                  <CopyIcon size={12} />
+                )
+              }
+              onClick={() =>
+                copyToClipboard(searchTool.search_tool_name, "search-tool-name")
+              }
+              className={`left-2 z-10 transition-all duration-200 ${
+                copiedStates["search-tool-name"]
+                  ? "text-green-600 bg-green-50 border-green-200"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+              }`}
             />
           </div>
           <div className="flex items-center cursor-pointer">
-            <Text className="text-gray-500 font-mono">{searchTool.search_tool_id}</Text>
+            <Text className="text-gray-500 font-mono">
+              {searchTool.search_tool_id}
+            </Text>
             <AntdButton
               type="text"
               size="small"
-              icon={copiedStates["search-tool-id"] ? <CheckIcon size={12} /> : <CopyIcon size={12} />}
-              onClick={() => copyToClipboard(searchTool.search_tool_id, "search-tool-id")}
-              className={`left-2 z-10 transition-all duration-200 ${copiedStates["search-tool-id"]
-                ? "text-green-600 bg-green-50 border-green-200"
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
-                }`}
+              icon={
+                copiedStates["search-tool-id"] ? (
+                  <CheckIcon size={12} />
+                ) : (
+                  <CopyIcon size={12} />
+                )
+              }
+              onClick={() =>
+                copyToClipboard(searchTool.search_tool_id, "search-tool-id")
+              }
+              className={`left-2 z-10 transition-all duration-200 ${
+                copiedStates["search-tool-id"]
+                  ? "text-green-600 bg-green-50 border-green-200"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+              }`}
             />
           </div>
         </div>
@@ -79,14 +110,20 @@ export const SearchToolView: React.FC<SearchToolViewProps> = ({
         <Card>
           <Text>Provider</Text>
           <div className="mt-2">
-            <Title>{getProviderDisplayName(searchTool.litellm_params.search_provider)}</Title>
+            <Title>
+              {getProviderDisplayName(
+                searchTool.litellm_params.search_provider,
+              )}
+            </Title>
           </div>
         </Card>
 
         <Card>
           <Text>API Key</Text>
           <div className="mt-2">
-            <Text>{searchTool.litellm_params.api_key ? "****" : "Not set"}</Text>
+            <Text>
+              {searchTool.litellm_params.api_key ? "****" : "Not set"}
+            </Text>
           </div>
         </Card>
 
@@ -94,7 +131,9 @@ export const SearchToolView: React.FC<SearchToolViewProps> = ({
           <Text>Created At</Text>
           <div className="mt-2">
             <Text>
-              {searchTool.created_at ? new Date(searchTool.created_at).toLocaleString() : "Unknown"}
+              {searchTool.created_at
+                ? new Date(searchTool.created_at).toLocaleString()
+                : "Unknown"}
             </Text>
           </div>
         </Card>
@@ -121,5 +160,3 @@ export const SearchToolView: React.FC<SearchToolViewProps> = ({
     </div>
   );
 };
-
-

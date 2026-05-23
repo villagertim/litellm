@@ -1,7 +1,7 @@
-import React from "react";
-import { Button, Modal, Typography } from "antd";
-import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Text } from "@tremor/react";
+import { Button, Modal, Typography } from "antd";
+import type React from "react";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 import NotificationsManager from "./molecules/notifications_manager";
 
 export interface InvitationLink {
@@ -19,7 +19,9 @@ export interface InvitationLink {
 
 interface OnboardingProps {
   isInvitationLinkModalVisible: boolean;
-  setIsInvitationLinkModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsInvitationLinkModalVisible: React.Dispatch<
+    React.SetStateAction<boolean>
+  >;
   baseUrl: string;
   invitationLinkData: InvitationLink | null;
   modalType?: "invitation" | "resetPassword";
@@ -62,7 +64,9 @@ export default function OnboardingModal({
 
   return (
     <Modal
-      title={modalType === "invitation" ? "Invitation Link" : "Reset Password Link"}
+      title={
+        modalType === "invitation" ? "Invitation Link" : "Reset Password Link"
+      }
       open={isInvitationLinkModalVisible}
       width={800}
       footer={null}
@@ -79,15 +83,24 @@ export default function OnboardingModal({
         <Text>{invitationLinkData?.user_id}</Text>
       </div>
       <div className="flex justify-between pt-5 pb-2">
-        <Text>{modalType === "invitation" ? "Invitation Link" : "Reset Password Link"}</Text>
+        <Text>
+          {modalType === "invitation"
+            ? "Invitation Link"
+            : "Reset Password Link"}
+        </Text>
         <Text>
           <Text>{getInvitationUrl()}</Text>
         </Text>
       </div>
       <div className="flex justify-end mt-5">
-        <CopyToClipboard text={getInvitationUrl()} onCopy={() => NotificationsManager.success("Copied!")}>
+        <CopyToClipboard
+          text={getInvitationUrl()}
+          onCopy={() => NotificationsManager.success("Copied!")}
+        >
           <Button type="primary">
-            {modalType === "invitation" ? "Copy invitation link" : "Copy password reset link"}
+            {modalType === "invitation"
+              ? "Copy invitation link"
+              : "Copy password reset link"}
           </Button>
         </CopyToClipboard>
       </div>

@@ -1,7 +1,15 @@
-import React from "react";
-import { Form, Input, InputNumber, Button as Button2 } from "antd";
-import { TrashIcon, CheckCircleIcon } from "@heroicons/react/outline";
-import { Button, Badge, Icon, Text, TableRow, TableCell, Switch } from "@tremor/react";
+import { CheckCircleIcon, TrashIcon } from "@heroicons/react/outline";
+import {
+  Badge,
+  Button,
+  Icon,
+  Switch,
+  TableCell,
+  TableRow,
+  Text,
+} from "@tremor/react";
+import { Button as Button2, Form, Input, InputNumber } from "antd";
+import type React from "react";
 interface AlertingSetting {
   field_name: string;
   field_description: string;
@@ -75,17 +83,26 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
                   ) : value.field_type === "Boolean" ? (
                     <Switch
                       checked={value.field_value}
-                      onChange={(checked) => handleInputChange(value.field_name, checked)}
+                      onChange={(checked) =>
+                        handleInputChange(value.field_name, checked)
+                      }
                     />
                   ) : (
-                    <Input value={value.field_value} onChange={(e) => handleInputChange(value.field_name, e)} />
+                    <Input
+                      value={value.field_value}
+                      onChange={(e) => handleInputChange(value.field_name, e)}
+                    />
                   )}
                 </TableCell>
               </Form.Item>
             ) : (
               <TableCell>
                 <Button className="flex items-center justify-center">
-                  <a href="https://forms.gle/W3U4PZpJGFHWtHyA9" target="_blank">
+                  <a
+                    href="https://forms.gle/W3U4PZpJGFHWtHyA9"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     ✨ Enterprise Feature
                   </a>
                 </Button>
@@ -95,7 +112,9 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
             <Form.Item
               name={value.field_name}
               className="mb-0"
-              valuePropName={value.field_type === "Boolean" ? "checked" : "value"}
+              valuePropName={
+                value.field_type === "Boolean" ? "checked" : "value"
+              }
             >
               <TableCell>
                 {value.field_type === "Integer" ? (
@@ -114,7 +133,10 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
                     }}
                   />
                 ) : (
-                  <Input value={value.field_value} onChange={(e) => handleInputChange(value.field_name, e)} />
+                  <Input
+                    value={value.field_value}
+                    onChange={(e) => handleInputChange(value.field_name, e)}
+                  />
                 )}
               </TableCell>
             </Form.Item>
@@ -131,7 +153,11 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
             )}
           </TableCell>
           <TableCell>
-            <Icon icon={TrashIcon} color="red" onClick={() => handleResetField(value.field_name, index)}>
+            <Icon
+              icon={TrashIcon}
+              color="red"
+              onClick={() => handleResetField(value.field_name, index)}
+            >
               Reset
             </Icon>
           </TableCell>

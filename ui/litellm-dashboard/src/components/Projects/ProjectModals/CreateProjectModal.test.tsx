@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders, screen } from "../../../../tests/test-utils";
 import { CreateProjectModal } from "./CreateProjectModal";
 
@@ -21,7 +21,9 @@ describe("CreateProjectModal", () => {
   });
 
   it("should not render modal content when closed", () => {
-    renderWithProviders(<CreateProjectModal isOpen={false} onClose={onClose} />);
+    renderWithProviders(
+      <CreateProjectModal isOpen={false} onClose={onClose} />,
+    );
     expect(screen.queryByText("Create New Project")).not.toBeInTheDocument();
   });
 
@@ -32,7 +34,9 @@ describe("CreateProjectModal", () => {
 
   it("should show a 'Create Project' submit button", () => {
     renderWithProviders(<CreateProjectModal isOpen={true} onClose={onClose} />);
-    expect(screen.getByRole("button", { name: /create project/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /create project/i }),
+    ).toBeInTheDocument();
   });
 
   it("should show a 'Cancel' button", () => {

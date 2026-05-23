@@ -1,10 +1,15 @@
-import { ColumnDef } from "@tanstack/react-table";
-import { Badge, Grid, Icon } from "@tremor/react";
-import { Tooltip, Checkbox, Tag } from "antd";
-import { UserInfo } from "./types";
-import { PencilAltIcon, TrashIcon, InformationCircleIcon, RefreshIcon } from "@heroicons/react/outline";
+import { copyToClipboard, formatNumberWithCommas } from "@/utils/dataUtils";
 import { CopyOutlined } from "@ant-design/icons";
-import { formatNumberWithCommas, copyToClipboard } from "@/utils/dataUtils";
+import {
+  InformationCircleIcon,
+  PencilAltIcon,
+  RefreshIcon,
+  TrashIcon,
+} from "@heroicons/react/outline";
+import type { ColumnDef } from "@tanstack/react-table";
+import { Badge, Grid, Icon } from "@tremor/react";
+import { Checkbox, Tag, Tooltip } from "antd";
+import type { UserInfo } from "./types";
 
 interface SelectionOptions {
   selectedUsers: UserInfo[];
@@ -32,14 +37,21 @@ export const columns = (
       cell: ({ row }) => (
         <div className="flex items-center space-x-2">
           <Tooltip title={row.original.user_id}>
-            <span className="text-xs">{row.original.user_id ? `${row.original.user_id.slice(0, 7)}...` : "-"}</span>
+            <span className="text-xs">
+              {row.original.user_id
+                ? `${row.original.user_id.slice(0, 7)}...`
+                : "-"}
+            </span>
           </Tooltip>
           {row.original.user_id && (
             <Tooltip title="Copy User ID">
               <CopyOutlined
                 onClick={(e) => {
                   e.stopPropagation();
-                  copyToClipboard(row.original.user_id, "User ID copied to clipboard");
+                  copyToClipboard(
+                    row.original.user_id,
+                    "User ID copied to clipboard",
+                  );
                 }}
                 className="cursor-pointer text-gray-500 hover:text-blue-500 text-xs"
               />
@@ -52,7 +64,9 @@ export const columns = (
       header: "Email",
       accessorKey: "user_email",
       enableSorting: true,
-      cell: ({ row }) => <span className="text-xs">{row.original.user_email || "-"}</span>,
+      cell: ({ row }) => (
+        <span className="text-xs">{row.original.user_email || "-"}</span>
+      ),
     },
     {
       id: "status",
@@ -65,14 +79,20 @@ export const columns = (
         if (isScimInactive) {
           return (
             <Tooltip title="Deactivated via SCIM (external identity provider). The user's virtual keys are blocked.">
-              <Tag color="red" data-testid={`user-status-${row.original.user_id}`}>
+              <Tag
+                color="red"
+                data-testid={`user-status-${row.original.user_id}`}
+              >
                 Inactive
               </Tag>
             </Tooltip>
           );
         }
         return (
-          <Tag color="green" data-testid={`user-status-${row.original.user_id}`}>
+          <Tag
+            color="green"
+            data-testid={`user-status-${row.original.user_id}`}
+          >
             Active
           </Tag>
         );
@@ -82,20 +102,30 @@ export const columns = (
       header: "Global Proxy Role",
       accessorKey: "user_role",
       enableSorting: true,
-      cell: ({ row }) => <span className="text-xs">{possibleUIRoles?.[row.original.user_role]?.ui_label || "-"}</span>,
+      cell: ({ row }) => (
+        <span className="text-xs">
+          {possibleUIRoles?.[row.original.user_role]?.ui_label || "-"}
+        </span>
+      ),
     },
     {
       header: "User Alias",
       accessorKey: "user_alias",
       enableSorting: false,
-      cell: ({ row }) => <span className="text-xs">{row.original.user_alias || "-"}</span>,
+      cell: ({ row }) => (
+        <span className="text-xs">{row.original.user_alias || "-"}</span>
+      ),
     },
     {
       header: "Spend (USD)",
       accessorKey: "spend",
       enableSorting: true,
       cell: ({ row }) => (
-        <span className="text-xs">{row.original.spend ? formatNumberWithCommas(row.original.spend, 4) : "-"}</span>
+        <span className="text-xs">
+          {row.original.spend
+            ? formatNumberWithCommas(row.original.spend, 4)
+            : "-"}
+        </span>
       ),
     },
     {
@@ -103,7 +133,11 @@ export const columns = (
       accessorKey: "max_budget",
       enableSorting: false,
       cell: ({ row }) => (
-        <span className="text-xs">{row.original.max_budget !== null ? row.original.max_budget : "Unlimited"}</span>
+        <span className="text-xs">
+          {row.original.max_budget !== null
+            ? row.original.max_budget
+            : "Unlimited"}
+        </span>
       ),
     },
     {
@@ -118,7 +152,9 @@ export const columns = (
       accessorKey: "sso_user_id",
       enableSorting: false,
       cell: ({ row }) => (
-        <span className="text-xs">{row.original.sso_user_id !== null ? row.original.sso_user_id : "-"}</span>
+        <span className="text-xs">
+          {row.original.sso_user_id !== null ? row.original.sso_user_id : "-"}
+        </span>
       ),
     },
     {
@@ -129,7 +165,8 @@ export const columns = (
         <Grid numItems={2}>
           {row.original.key_count > 0 ? (
             <Badge size="xs" color="indigo">
-              {row.original.key_count} {row.original.key_count === 1 ? "Key" : "Keys"}
+              {row.original.key_count}{" "}
+              {row.original.key_count === 1 ? "Key" : "Keys"}
             </Badge>
           ) : (
             <Badge size="xs" color="gray">
@@ -145,7 +182,9 @@ export const columns = (
       enableSorting: true,
       cell: ({ row }) => (
         <span className="text-xs">
-          {row.original.created_at ? new Date(row.original.created_at).toLocaleDateString() : "-"}
+          {row.original.created_at
+            ? new Date(row.original.created_at).toLocaleDateString()
+            : "-"}
         </span>
       ),
     },
@@ -155,7 +194,9 @@ export const columns = (
       enableSorting: false,
       cell: ({ row }) => (
         <span className="text-xs">
-          {row.original.updated_at ? new Date(row.original.updated_at).toLocaleDateString() : "-"}
+          {row.original.updated_at
+            ? new Date(row.original.updated_at).toLocaleDateString()
+            : "-"}
         </span>
       ),
     },
@@ -196,7 +237,13 @@ export const columns = (
 
   // Add selection column if selection is enabled
   if (selectionOptions) {
-    const { onSelectUser, onSelectAll, isUserSelected, isAllSelected, isIndeterminate } = selectionOptions;
+    const {
+      onSelectUser,
+      onSelectAll,
+      isUserSelected,
+      isAllSelected,
+      isIndeterminate,
+    } = selectionOptions;
 
     return [
       {

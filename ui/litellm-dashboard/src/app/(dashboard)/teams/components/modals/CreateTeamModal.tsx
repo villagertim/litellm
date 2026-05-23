@@ -1,32 +1,46 @@
-import { Button as Button2, Form, Input, Modal, Select as Select2, Switch, Tooltip } from "antd";
-import { Accordion, AccordionBody, AccordionHeader, Text, TextInput } from "@tremor/react";
-import { InfoCircleOutlined } from "@ant-design/icons";
+import { organizationKeys } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
+import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import SearchToolSelector from "@/components/SearchTools/SearchToolSelector";
+import AgentSelector from "@/components/agent_management/AgentSelector";
+import ModelAliasManager from "@/components/common_components/ModelAliasManager";
+import PremiumLoggingSettings from "@/components/common_components/PremiumLoggingSettings";
 import {
   fetchAvailableModelsForTeamOrKey,
   getModelDisplayName,
   unfurlWildcardModelsInList,
 } from "@/components/key_team_helpers/fetch_available_models_team_key";
-import NumericalInput from "@/components/shared/numerical_input";
-import VectorStoreSelector from "@/components/vector_store_management/VectorStoreSelector";
 import MCPServerSelector from "@/components/mcp_server_management/MCPServerSelector";
-import AgentSelector from "@/components/agent_management/AgentSelector";
-import PremiumLoggingSettings from "@/components/common_components/PremiumLoggingSettings";
-import ModelAliasManager from "@/components/common_components/ModelAliasManager";
-import React, { useEffect, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import MCPToolPermissions from "@/components/mcp_server_management/MCPToolPermissions";
 import NotificationsManager from "@/components/molecules/notifications_manager";
 import {
+  type Organization,
+  type Team,
   fetchMCPAccessGroups,
   getGuardrailsList,
   getPoliciesList,
-  Organization,
-  Team,
   teamCreateCall,
 } from "@/components/networking";
-import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { organizationKeys } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
-import MCPToolPermissions from "@/components/mcp_server_management/MCPToolPermissions";
-import SearchToolSelector from "@/components/SearchTools/SearchToolSelector";
+import NumericalInput from "@/components/shared/numerical_input";
+import VectorStoreSelector from "@/components/vector_store_management/VectorStoreSelector";
+import { InfoCircleOutlined } from "@ant-design/icons";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  Accordion,
+  AccordionBody,
+  AccordionHeader,
+  Text,
+  TextInput,
+} from "@tremor/react";
+import {
+  Button as Button2,
+  Form,
+  Input,
+  Modal,
+  Select as Select2,
+  Switch,
+  Tooltip,
+} from "antd";
+import React, { useEffect, useState } from "react";
 
 interface ModelAliases {
   [key: string]: string;
@@ -47,7 +61,10 @@ interface CreateTeamModalProps {
   setIsTeamModalVisible: (isTeamModalVisible: boolean) => void;
 }
 
-const getOrganizationModels = (organization: Organization | null, userModels: string[]) => {
+const getOrganizationModels = (
+  organization: Organization | null,
+  userModels: string[],
+) => {
   let tempModelsToPick = [];
 
   if (organization) {
@@ -80,11 +97,17 @@ const CreateTeamModal = ({
   setLoggingSettings,
   setIsTeamModalVisible,
 }: CreateTeamModalProps) => {
-  const { userId: userID, userRole, accessToken, premiumUser } = useAuthorized();
+  const {
+    userId: userID,
+    userRole,
+    accessToken,
+    premiumUser,
+  } = useAuthorized();
   const queryClient = useQueryClient();
   const [form] = Form.useForm();
   const [userModels, setUserModels] = useState<string[]>([]);
-  const [currentOrgForCreateTeam, setCurrentOrgForCreateTeam] = useState<Organization | null>(null);
+  const [currentOrgForCreateTeam, setCurrentOrgForCreateTeam] =
+    useState<Organization | null>(null);
   const [modelsToPick, setModelsToPick] = useState<string[]>([]);
   const [guardrailsList, setGuardrailsList] = useState<string[]>([]);
   const [policiesList, setPoliciesList] = useState<string[]>([]);
@@ -97,7 +120,11 @@ const CreateTeamModal = ({
         if (userID === null || userRole === null || accessToken === null) {
           return;
         }
-        const models = await fetchAvailableModelsForTeamOrKey(userID, userRole, accessToken);
+        const models = await fetchAvailableModelsForTeamOrKey(
+          userID,
+          userRole,
+          accessToken,
+        );
         if (models) {
           setUserModels(models);
         }
@@ -141,7 +168,9 @@ const CreateTeamModal = ({
         }
 
         const response = await getGuardrailsList(accessToken);
-        const guardrailNames = response.guardrails.map((g: { guardrail_name: string }) => g.guardrail_name);
+        const guardrailNames = response.guardrails.map(
+          (g: { guardrail_name: string }) => g.guardrail_name,
+        );
         setGuardrailsList(guardrailNames);
       } catch (error) {
         console.error("Failed to fetch guardrails:", error);
@@ -155,7 +184,9 @@ const CreateTeamModal = ({
         }
 
         const response = await getPoliciesList(accessToken);
-        const policyNames = response.policies.map((p: { policy_name: string }) => p.policy_name);
+        const policyNames = response.policies.map(
+          (p: { policy_name: string }) => p.policy_name,
+        );
         setPoliciesList(policyNames);
       } catch (error) {
         console.error("Failed to fetch policies:", error);
@@ -172,7 +203,8 @@ const CreateTeamModal = ({
       if (accessToken != null) {
         const newTeamAlias = formValues?.team_alias;
         const existingTeamAliases = teams?.map((t) => t.team_alias) ?? [];
-        let organizationId = formValues?.organization_id || currentOrg?.organization_id;
+        const organizationId =
+          formValues?.organization_id || currentOrg?.organization_id;
         if (organizationId === "" || typeof organizationId !== "string") {
           formValues.organization_id = null;
         } else {
@@ -181,7 +213,9 @@ const CreateTeamModal = ({
 
         // Remove guardrails from top level since it's now in metadata
         if (existingTeamAliases.includes(newTeamAlias)) {
-          throw new Error(`Team alias ${newTeamAlias} already exists, please pick another alias`);
+          throw new Error(
+            `Team alias ${newTeamAlias} already exists, please pick another alias`,
+          );
         }
 
         NotificationsManager.info("Creating Team");
@@ -193,7 +227,9 @@ const CreateTeamModal = ({
             try {
               metadata = JSON.parse(formValues.metadata);
             } catch (e) {
-              console.warn("Invalid JSON in metadata field, starting with empty object");
+              console.warn(
+                "Invalid JSON in metadata field, starting with empty object",
+              );
             }
           }
 
@@ -212,9 +248,13 @@ const CreateTeamModal = ({
               delete formValues.secret_manager_settings;
             } else {
               try {
-                formValues.secret_manager_settings = JSON.parse(formValues.secret_manager_settings);
+                formValues.secret_manager_settings = JSON.parse(
+                  formValues.secret_manager_settings,
+                );
               } catch (e) {
-                throw new Error("Failed to parse secret manager settings: " + e);
+                throw new Error(
+                  "Failed to parse secret manager settings: " + e,
+                );
               }
             }
           }
@@ -224,16 +264,19 @@ const CreateTeamModal = ({
         const hasAgents =
           formValues.allowed_agents_and_groups &&
           ((formValues.allowed_agents_and_groups.agents?.length ?? 0) > 0 ||
-            (formValues.allowed_agents_and_groups.accessGroups?.length ?? 0) > 0);
+            (formValues.allowed_agents_and_groups.accessGroups?.length ?? 0) >
+              0);
         const hasSearchTools =
           Array.isArray(formValues.object_permission_search_tools) &&
           formValues.object_permission_search_tools.length > 0;
 
         if (
-          (formValues.allowed_vector_store_ids && formValues.allowed_vector_store_ids.length > 0) ||
+          (formValues.allowed_vector_store_ids &&
+            formValues.allowed_vector_store_ids.length > 0) ||
           (formValues.allowed_mcp_servers_and_groups &&
             (formValues.allowed_mcp_servers_and_groups.servers?.length > 0 ||
-              formValues.allowed_mcp_servers_and_groups.accessGroups?.length > 0 ||
+              formValues.allowed_mcp_servers_and_groups.accessGroups?.length >
+                0 ||
               formValues.allowed_mcp_servers_and_groups.toolPermissions)) ||
           hasAgents ||
           hasSearchTools
@@ -241,12 +284,17 @@ const CreateTeamModal = ({
           if (!formValues.object_permission) {
             formValues.object_permission = {};
           }
-          if (formValues.allowed_vector_store_ids && formValues.allowed_vector_store_ids.length > 0) {
-            formValues.object_permission.vector_stores = formValues.allowed_vector_store_ids;
+          if (
+            formValues.allowed_vector_store_ids &&
+            formValues.allowed_vector_store_ids.length > 0
+          ) {
+            formValues.object_permission.vector_stores =
+              formValues.allowed_vector_store_ids;
             delete formValues.allowed_vector_store_ids;
           }
           if (formValues.allowed_mcp_servers_and_groups) {
-            const { servers, accessGroups } = formValues.allowed_mcp_servers_and_groups;
+            const { servers, accessGroups } =
+              formValues.allowed_mcp_servers_and_groups;
             if (servers && servers.length > 0) {
               formValues.object_permission.mcp_servers = servers;
             }
@@ -257,14 +305,19 @@ const CreateTeamModal = ({
           }
 
           // Add tool permissions separately
-          if (formValues.mcp_tool_permissions && Object.keys(formValues.mcp_tool_permissions).length > 0) {
-            formValues.object_permission.mcp_tool_permissions = formValues.mcp_tool_permissions;
+          if (
+            formValues.mcp_tool_permissions &&
+            Object.keys(formValues.mcp_tool_permissions).length > 0
+          ) {
+            formValues.object_permission.mcp_tool_permissions =
+              formValues.mcp_tool_permissions;
             delete formValues.mcp_tool_permissions;
           }
 
           // Handle agent permissions
           if (formValues.allowed_agents_and_groups) {
-            const { agents, accessGroups } = formValues.allowed_agents_and_groups;
+            const { agents, accessGroups } =
+              formValues.allowed_agents_and_groups;
             if (agents && agents.length > 0) {
               formValues.object_permission.agents = agents;
             }
@@ -275,17 +328,22 @@ const CreateTeamModal = ({
           }
 
           if (hasSearchTools) {
-            formValues.object_permission.search_tools = formValues.object_permission_search_tools;
+            formValues.object_permission.search_tools =
+              formValues.object_permission_search_tools;
             delete formValues.object_permission_search_tools;
           }
         }
 
         // Transform allowed_mcp_access_groups into object_permission
-        if (formValues.allowed_mcp_access_groups && formValues.allowed_mcp_access_groups.length > 0) {
+        if (
+          formValues.allowed_mcp_access_groups &&
+          formValues.allowed_mcp_access_groups.length > 0
+        ) {
           if (!formValues.object_permission) {
             formValues.object_permission = {};
           }
-          formValues.object_permission.mcp_access_groups = formValues.allowed_mcp_access_groups;
+          formValues.object_permission.mcp_access_groups =
+            formValues.allowed_mcp_access_groups;
           delete formValues.allowed_mcp_access_groups;
         }
 
@@ -323,7 +381,13 @@ const CreateTeamModal = ({
       onOk={handleOk}
       onCancel={handleCancel}
     >
-      <Form form={form} onFinish={handleCreate} labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} labelAlign="left">
+      <Form
+        form={form}
+        onFinish={handleCreate}
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 16 }}
+        labelAlign="left"
+      >
         <>
           <Form.Item
             label="Team Name"
@@ -374,7 +438,10 @@ const CreateTeamModal = ({
               placeholder="Search or select an Organization"
               onChange={(value) => {
                 form.setFieldValue("organization_id", value);
-                setCurrentOrgForCreateTeam(organizations?.find((org) => org.organization_id === value) || null);
+                setCurrentOrgForCreateTeam(
+                  organizations?.find((org) => org.organization_id === value) ||
+                    null,
+                );
               }}
               filterOption={(input, option) => {
                 if (!option) return false;
@@ -384,7 +451,10 @@ const CreateTeamModal = ({
               optionFilterProp="children"
             >
               {organizations?.map((org) => (
-                <Select2.Option key={org.organization_id} value={org.organization_id}>
+                <Select2.Option
+                  key={org.organization_id}
+                  value={org.organization_id}
+                >
                   <span className="font-medium">{org.organization_alias}</span>{" "}
                   <span className="text-gray-500">({org.organization_id})</span>
                 </Select2.Option>
@@ -402,7 +472,12 @@ const CreateTeamModal = ({
             }
             name="models"
           >
-            <Select2 mode="multiple" placeholder="Select models" style={{ width: "100%" }} data-testid="team-models-select">
+            <Select2
+              mode="multiple"
+              placeholder="Select models"
+              style={{ width: "100%" }}
+              data-testid="team-models-select"
+            >
               <Select2.Option key="all-proxy-models" value="all-proxy-models">
                 All Proxy Models
               </Select2.Option>
@@ -420,7 +495,8 @@ const CreateTeamModal = ({
             </AccordionHeader>
             <AccordionBody>
               <Text className="text-xs text-gray-500 mb-4">
-                Optional defaults applied when members join this team. All fields can be overridden per member.
+                Optional defaults applied when members join this team. All
+                fields can be overridden per member.
               </Text>
               <Form.Item
                 noStyle
@@ -428,7 +504,8 @@ const CreateTeamModal = ({
               >
                 {({ getFieldValue }) => {
                   const teamModels: string[] = getFieldValue("models") || [];
-                  const opts = teamModels.length > 0 ? teamModels : modelsToPick;
+                  const opts =
+                    teamModels.length > 0 ? teamModels : modelsToPick;
                   return (
                     <Form.Item
                       label={
@@ -491,7 +568,11 @@ const CreateTeamModal = ({
           <Form.Item label="Max Budget (USD)" name="max_budget">
             <NumericalInput step={0.01} precision={2} width={200} />
           </Form.Item>
-          <Form.Item className="mt-8" label="Reset Budget" name="budget_duration">
+          <Form.Item
+            className="mt-8"
+            label="Reset Budget"
+            name="budget_duration"
+          >
             <Select2 defaultValue={null} placeholder="n/a">
               <Select2.Option value="24h">daily</Select2.Option>
               <Select2.Option value="7d">weekly</Select2.Option>
@@ -554,7 +635,9 @@ const CreateTeamModal = ({
                         JSON.parse(value);
                         return Promise.resolve();
                       } catch (error) {
-                        return Promise.reject(new Error("Please enter valid JSON"));
+                        return Promise.reject(
+                          new Error("Please enter valid JSON"),
+                        );
                       }
                     },
                   },
@@ -610,10 +693,7 @@ const CreateTeamModal = ({
                 valuePropName="checked"
                 help="Bypass global guardrails for this team"
               >
-                <Switch
-                  checkedChildren="Yes"
-                  unCheckedChildren="No"
-                />
+                <Switch checkedChildren="Yes" unCheckedChildren="No" />
               </Form.Item>
               <Form.Item
                 label={
@@ -659,7 +739,9 @@ const CreateTeamModal = ({
                 help="Select vector stores this team can access. Leave empty for access to all vector stores"
               >
                 <VectorStoreSelector
-                  onChange={(values: string[]) => form.setFieldValue("allowed_vector_store_ids", values)}
+                  onChange={(values: string[]) =>
+                    form.setFieldValue("allowed_vector_store_ids", values)
+                  }
                   value={form.getFieldValue("allowed_vector_store_ids")}
                   accessToken={accessToken || ""}
                   placeholder="Select vector stores (optional)"
@@ -687,7 +769,9 @@ const CreateTeamModal = ({
                 help="Select MCP servers or access groups this team can access"
               >
                 <MCPServerSelector
-                  onChange={(val: any) => form.setFieldValue("allowed_mcp_servers_and_groups", val)}
+                  onChange={(val: any) =>
+                    form.setFieldValue("allowed_mcp_servers_and_groups", val)
+                  }
                   value={form.getFieldValue("allowed_mcp_servers_and_groups")}
                   accessToken={accessToken || ""}
                   placeholder="Select MCP servers or access groups (optional)"
@@ -702,17 +786,26 @@ const CreateTeamModal = ({
               <Form.Item
                 noStyle
                 shouldUpdate={(prevValues, currentValues) =>
-                  prevValues.allowed_mcp_servers_and_groups !== currentValues.allowed_mcp_servers_and_groups ||
-                  prevValues.mcp_tool_permissions !== currentValues.mcp_tool_permissions
+                  prevValues.allowed_mcp_servers_and_groups !==
+                    currentValues.allowed_mcp_servers_and_groups ||
+                  prevValues.mcp_tool_permissions !==
+                    currentValues.mcp_tool_permissions
                 }
               >
                 {() => (
                   <div className="mt-6">
                     <MCPToolPermissions
                       accessToken={accessToken || ""}
-                      selectedServers={form.getFieldValue("allowed_mcp_servers_and_groups")?.servers || []}
-                      toolPermissions={form.getFieldValue("mcp_tool_permissions") || {}}
-                      onChange={(toolPerms) => form.setFieldsValue({ mcp_tool_permissions: toolPerms })}
+                      selectedServers={
+                        form.getFieldValue("allowed_mcp_servers_and_groups")
+                          ?.servers || []
+                      }
+                      toolPermissions={
+                        form.getFieldValue("mcp_tool_permissions") || {}
+                      }
+                      onChange={(toolPerms) =>
+                        form.setFieldsValue({ mcp_tool_permissions: toolPerms })
+                      }
                     />
                   </div>
                 )}
@@ -739,7 +832,9 @@ const CreateTeamModal = ({
                 help="Select agents or access groups this team can access"
               >
                 <AgentSelector
-                  onChange={(val: any) => form.setFieldValue("allowed_agents_and_groups", val)}
+                  onChange={(val: any) =>
+                    form.setFieldValue("allowed_agents_and_groups", val)
+                  }
                   value={form.getFieldValue("allowed_agents_and_groups")}
                   accessToken={accessToken || ""}
                   placeholder="Select agents or access groups (optional)"
@@ -767,7 +862,9 @@ const CreateTeamModal = ({
                 help="Restrict which configured search tools keys on this team may call."
               >
                 <SearchToolSelector
-                  onChange={(vals: string[]) => form.setFieldValue("object_permission_search_tools", vals)}
+                  onChange={(vals: string[]) =>
+                    form.setFieldValue("object_permission_search_tools", vals)
+                  }
                   value={form.getFieldValue("object_permission_search_tools")}
                   accessToken={accessToken || ""}
                   placeholder="Select search tools (optional, empty = all allowed)"
@@ -798,8 +895,9 @@ const CreateTeamModal = ({
             <AccordionBody>
               <div className="mt-4">
                 <Text className="text-sm text-gray-600 mb-4">
-                  Create custom aliases for models that can be used by team members in API calls. This allows you to
-                  create shortcuts for specific models.
+                  Create custom aliases for models that can be used by team
+                  members in API calls. This allows you to create shortcuts for
+                  specific models.
                 </Text>
                 <ModelAliasManager
                   accessToken={accessToken || ""}
@@ -812,7 +910,9 @@ const CreateTeamModal = ({
           </Accordion>
         </>
         <div style={{ textAlign: "right", marginTop: "10px" }}>
-          <Button2 htmlType="submit" data-testid="create-team-submit">Create Team</Button2>
+          <Button2 htmlType="submit" data-testid="create-team-submit">
+            Create Team
+          </Button2>
         </div>
       </Form>
     </Modal>

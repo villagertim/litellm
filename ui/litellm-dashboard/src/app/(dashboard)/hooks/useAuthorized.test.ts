@@ -1,14 +1,22 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { renderHook, waitFor } from "@testing-library/react";
 /* @vitest-environment jsdom */
 import React from "react";
-import { renderHook, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import useAuthorized from "./useAuthorized";
 
 // Unmock useAuthorized to test the actual implementation
 vi.unmock("@/app/(dashboard)/hooks/useAuthorized");
 
-const { replaceMock, clearTokenCookiesMock, getProxyBaseUrlMock, getUiConfigMock, decodeTokenMock, checkTokenValidityMock, buildLoginUrlWithReturnMock } = vi.hoisted(() => ({
+const {
+  replaceMock,
+  clearTokenCookiesMock,
+  getProxyBaseUrlMock,
+  getUiConfigMock,
+  decodeTokenMock,
+  checkTokenValidityMock,
+  buildLoginUrlWithReturnMock,
+} = vi.hoisted(() => ({
   replaceMock: vi.fn(),
   clearTokenCookiesMock: vi.fn(),
   getProxyBaseUrlMock: vi.fn(() => "http://proxy.example"),
@@ -25,7 +33,8 @@ vi.mock("next/navigation", () => ({
 }));
 
 vi.mock("@/components/networking", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/components/networking")>();
+  const actual =
+    await importOriginal<typeof import("@/components/networking")>();
   return {
     ...actual,
     getProxyBaseUrl: getProxyBaseUrlMock,
@@ -51,7 +60,8 @@ vi.mock("@/utils/jwtUtils", async (importOriginal) => {
 });
 
 vi.mock("@/utils/returnUrlUtils", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/utils/returnUrlUtils")>();
+  const actual =
+    await importOriginal<typeof import("@/utils/returnUrlUtils")>();
   return {
     ...actual,
     buildLoginUrlWithReturn: buildLoginUrlWithReturnMock,
@@ -70,11 +80,18 @@ const createQueryClient = () =>
 
 const wrapper = ({ children }: { children: React.ReactNode }) => {
   const queryClient = createQueryClient();
-  return React.createElement(QueryClientProvider, { client: queryClient }, children);
+  return React.createElement(
+    QueryClientProvider,
+    { client: queryClient },
+    children,
+  );
 };
 
 const createJwt = (payload: Record<string, unknown>) => {
-  const base64Url = btoa(JSON.stringify(payload)).replace(/=+$/, "").replace(/\+/g, "-").replace(/\//g, "_");
+  const base64Url = btoa(JSON.stringify(payload))
+    .replace(/=+$/, "")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_");
   return `eyJhbGciOiJub25lIn0.${base64Url}.signature`;
 };
 
@@ -102,7 +119,7 @@ describe("useAuthorized", () => {
       admin_ui_disabled: false,
       sso_configured: false,
     });
-    
+
     const decodedPayload = {
       key: "api-key-123",
       user_id: "user-1",
@@ -112,7 +129,7 @@ describe("useAuthorized", () => {
       disabled_non_admin_personal_key_creation: false,
       login_method: "username_password",
     };
-    
+
     decodeTokenMock.mockReturnValue(decodedPayload);
     checkTokenValidityMock.mockReturnValue(true);
 

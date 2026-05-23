@@ -1,37 +1,49 @@
 import { describe, expect, it } from "vitest";
 import {
-  formatInstallCommand,
   extractCategories,
-  validatePluginName,
+  filterPluginsByCategory,
+  filterPluginsBySearch,
+  formatDateString,
+  formatInstallCommand,
+  formatKeywords,
+  getCategoryBadgeColor,
   getSourceDisplayText,
   getSourceLink,
-  getCategoryBadgeColor,
-  formatDateString,
-  truncateText,
-  filterPluginsBySearch,
-  filterPluginsByCategory,
-  isValidSemanticVersion,
   isValidEmail,
+  isValidSemanticVersion,
   isValidUrl,
   parseKeywords,
-  formatKeywords,
+  truncateText,
+  validatePluginName,
 } from "./helpers";
-import { MarketplacePluginEntry, PluginSource } from "./types";
+import { type MarketplacePluginEntry, PluginSource } from "./types";
 
 describe("formatInstallCommand", () => {
   it("formats github source with repo", () => {
-    const plugin = { name: "my-plugin", source: { source: "github" as const, repo: "org/repo" } };
-    expect(formatInstallCommand(plugin)).toBe("/plugin marketplace add org/repo");
+    const plugin = {
+      name: "my-plugin",
+      source: { source: "github" as const, repo: "org/repo" },
+    };
+    expect(formatInstallCommand(plugin)).toBe(
+      "/plugin marketplace add org/repo",
+    );
   });
 
   it("formats url source", () => {
-    const plugin = { name: "my-plugin", source: { source: "url" as const, url: "https://example.com/plugin" } };
-    expect(formatInstallCommand(plugin)).toBe("/plugin marketplace add https://example.com/plugin");
+    const plugin = {
+      name: "my-plugin",
+      source: { source: "url" as const, url: "https://example.com/plugin" },
+    };
+    expect(formatInstallCommand(plugin)).toBe(
+      "/plugin marketplace add https://example.com/plugin",
+    );
   });
 
   it("falls back to plugin name when no repo or url", () => {
     const plugin = { name: "my-plugin", source: { source: "github" as const } };
-    expect(formatInstallCommand(plugin)).toBe("/plugin marketplace add my-plugin");
+    expect(formatInstallCommand(plugin)).toBe(
+      "/plugin marketplace add my-plugin",
+    );
   });
 });
 
@@ -46,11 +58,20 @@ describe("extractCategories", () => {
       { category: "Analytics" },
       { category: "Development" },
     ];
-    expect(extractCategories(plugins)).toEqual(["All", "Analytics", "Development", "Other"]);
+    expect(extractCategories(plugins)).toEqual([
+      "All",
+      "Analytics",
+      "Development",
+      "Other",
+    ]);
   });
 
   it("ignores empty/whitespace categories", () => {
-    const plugins = [{ category: "" }, { category: "  " }, { category: "Tools" }];
+    const plugins = [
+      { category: "" },
+      { category: "  " },
+      { category: "Tools" },
+    ];
     expect(extractCategories(plugins)).toEqual(["All", "Tools", "Other"]);
   });
 
@@ -88,11 +109,15 @@ describe("validatePluginName", () => {
 
 describe("getSourceDisplayText", () => {
   it("shows github repo", () => {
-    expect(getSourceDisplayText({ source: "github", repo: "org/repo" })).toBe("GitHub: org/repo");
+    expect(getSourceDisplayText({ source: "github", repo: "org/repo" })).toBe(
+      "GitHub: org/repo",
+    );
   });
 
   it("shows url", () => {
-    expect(getSourceDisplayText({ source: "url", url: "https://example.com" })).toBe("https://example.com");
+    expect(
+      getSourceDisplayText({ source: "url", url: "https://example.com" }),
+    ).toBe("https://example.com");
   });
 
   it("returns unknown for missing data", () => {
@@ -102,11 +127,15 @@ describe("getSourceDisplayText", () => {
 
 describe("getSourceLink", () => {
   it("returns github link for github source", () => {
-    expect(getSourceLink({ source: "github", repo: "org/repo" })).toBe("https://github.com/org/repo");
+    expect(getSourceLink({ source: "github", repo: "org/repo" })).toBe(
+      "https://github.com/org/repo",
+    );
   });
 
   it("returns url for url source", () => {
-    expect(getSourceLink({ source: "url", url: "https://example.com" })).toBe("https://example.com");
+    expect(getSourceLink({ source: "url", url: "https://example.com" })).toBe(
+      "https://example.com",
+    );
   });
 
   it("returns null when no repo or url", () => {
@@ -209,7 +238,9 @@ describe("filterPluginsBySearch", () => {
 
   it("matches by name", () => {
     expect(filterPluginsBySearch(plugins, "formatter")).toHaveLength(1);
-    expect(filterPluginsBySearch(plugins, "formatter")[0].name).toBe("code-formatter");
+    expect(filterPluginsBySearch(plugins, "formatter")[0].name).toBe(
+      "code-formatter",
+    );
   });
 
   it("matches by description", () => {
@@ -218,7 +249,9 @@ describe("filterPluginsBySearch", () => {
 
   it("matches by keyword", () => {
     expect(filterPluginsBySearch(plugins, "analytics")).toHaveLength(1);
-    expect(filterPluginsBySearch(plugins, "analytics")[0].name).toBe("data-viewer");
+    expect(filterPluginsBySearch(plugins, "analytics")[0].name).toBe(
+      "data-viewer",
+    );
   });
 
   it("is case insensitive", () => {

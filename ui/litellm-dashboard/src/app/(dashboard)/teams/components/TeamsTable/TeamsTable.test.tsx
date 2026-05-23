@@ -1,15 +1,22 @@
+import type { Team } from "@/components/key_team_helpers/key_list";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { describe, expect, it, vi } from "vitest";
-import { Team } from "@/components/key_team_helpers/key_list";
 import TeamsTable from "./TeamsTable";
 
 vi.mock("@tremor/react", () => ({
-  Button: React.forwardRef<HTMLButtonElement, any>(({ children, ...props }, ref) =>
-    React.createElement("button", { ...props, ref }, children),
+  Button: React.forwardRef<HTMLButtonElement, any>(
+    ({ children, ...props }, ref) =>
+      React.createElement("button", { ...props, ref }, children),
   ),
-  Icon: ({ onClick, ...props }: any) => <button data-testid={props["data-testid"] || "icon-btn"} onClick={onClick} aria-label={props["aria-label"]} />,
+  Icon: ({ onClick, ...props }: any) => (
+    <button
+      data-testid={props["data-testid"] || "icon-btn"}
+      onClick={onClick}
+      aria-label={props["aria-label"]}
+    />
+  ),
   Table: ({ children }: any) => <table>{children}</table>,
   TableHead: ({ children }: any) => <thead>{children}</thead>,
   TableBody: ({ children }: any) => <tbody>{children}</tbody>,
@@ -34,12 +41,17 @@ vi.mock("@/utils/dataUtils", () => ({
 }));
 
 vi.mock("@/app/(dashboard)/teams/components/TeamsTable/ModelsCell", () => ({
-  default: ({ team }: any) => <td data-testid="models-cell">{team.models.join(",")}</td>,
+  default: ({ team }: any) => (
+    <td data-testid="models-cell">{team.models.join(",")}</td>
+  ),
 }));
 
-vi.mock("@/app/(dashboard)/teams/components/TeamsTable/YourRoleCell/YourRoleCell", () => ({
-  default: ({ team }: any) => <td data-testid="role-cell">{team.team_id}</td>,
-}));
+vi.mock(
+  "@/app/(dashboard)/teams/components/TeamsTable/YourRoleCell/YourRoleCell",
+  () => ({
+    default: ({ team }: any) => <td data-testid="role-cell">{team.team_id}</td>,
+  }),
+);
 
 const makeTeam = (overrides: Partial<Team> = {}): Team => ({
   team_id: "team-abc1234",
@@ -66,7 +78,9 @@ const defaultPerTeamInfo = {
   },
 };
 
-const renderTable = (overrides: Partial<Parameters<typeof TeamsTable>[0]> = {}) => {
+const renderTable = (
+  overrides: Partial<Parameters<typeof TeamsTable>[0]> = {},
+) => {
   const defaults = {
     teams: [makeTeam()],
     currentOrg: null,

@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import ToolsCard from "./ToolsCard";
-import { Tool } from "./types";
+import type { Tool } from "./types";
 
 describe("ToolsCard", () => {
   const mockTools: Tool[] = [
@@ -38,9 +38,13 @@ describe("ToolsCard", () => {
     render(<ToolsCard {...defaultProps} tools={mockTools} />);
 
     expect(screen.getByText("Calculator")).toBeInTheDocument();
-    expect(screen.getByText("Performs mathematical calculations")).toBeInTheDocument();
+    expect(
+      screen.getByText("Performs mathematical calculations"),
+    ).toBeInTheDocument();
     expect(screen.getByText("Weather API")).toBeInTheDocument();
-    expect(screen.getByText("Gets current weather information")).toBeInTheDocument();
+    expect(
+      screen.getByText("Gets current weather information"),
+    ).toBeInTheDocument();
   });
 
   it("should call onAddTool when Add button is clicked", () => {
@@ -56,7 +60,13 @@ describe("ToolsCard", () => {
 
   it("should call onEditTool with correct index when Edit button is clicked", () => {
     const mockOnEditTool = vi.fn();
-    render(<ToolsCard {...defaultProps} tools={mockTools} onEditTool={mockOnEditTool} />);
+    render(
+      <ToolsCard
+        {...defaultProps}
+        tools={mockTools}
+        onEditTool={mockOnEditTool}
+      />,
+    );
 
     const editButtons = screen.getAllByText("Edit");
     act(() => {
@@ -69,7 +79,13 @@ describe("ToolsCard", () => {
 
   it("should call onRemoveTool with correct index when remove button is clicked", () => {
     const mockOnRemoveTool = vi.fn();
-    render(<ToolsCard {...defaultProps} tools={mockTools} onRemoveTool={mockOnRemoveTool} />);
+    render(
+      <ToolsCard
+        {...defaultProps}
+        tools={mockTools}
+        onRemoveTool={mockOnRemoveTool}
+      />,
+    );
 
     const removeButtons = screen.getAllByRole("button", { name: "" });
     act(() => {

@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import RouterSettingsForm from "./RouterSettingsForm";
 import type { RouterSettingsFormValue } from "./RouterSettingsForm";
 
@@ -24,7 +24,7 @@ vi.mock("antd", async (importOriginal) => {
         Option: ({ value, children }: any) => (
           <option value={value}>{children}</option>
         ),
-      }
+      },
     ),
   };
 });
@@ -70,7 +70,9 @@ describe("RouterSettingsForm", () => {
       availableRoutingStrategies: ["simple-shuffle"],
     };
     render(<RouterSettingsForm {...props} />);
-    expect(screen.queryByText("Latency-Based Configuration")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Latency-Based Configuration"),
+    ).not.toBeInTheDocument();
   });
 
   it("should render LatencyBasedConfiguration when strategy is latency-based-routing", () => {
@@ -79,7 +81,9 @@ describe("RouterSettingsForm", () => {
       value: {
         ...defaultValue,
         selectedStrategy: "latency-based-routing",
-        routerSettings: { routing_strategy_args: { ttl: 3600, lowest_latency_buffer: 0 } },
+        routerSettings: {
+          routing_strategy_args: { ttl: 3600, lowest_latency_buffer: 0 },
+        },
       },
       availableRoutingStrategies: ["latency-based-routing"],
     };
@@ -97,10 +101,13 @@ describe("RouterSettingsForm", () => {
     };
     render(<RouterSettingsForm {...props} />);
 
-    await user.selectOptions(screen.getByTestId("strategy-select"), "latency-based-routing");
+    await user.selectOptions(
+      screen.getByTestId("strategy-select"),
+      "latency-based-routing",
+    );
 
     expect(onChange).toHaveBeenCalledWith(
-      expect.objectContaining({ selectedStrategy: "latency-based-routing" })
+      expect.objectContaining({ selectedStrategy: "latency-based-routing" }),
     );
   });
 
@@ -112,7 +119,7 @@ describe("RouterSettingsForm", () => {
     await user.click(screen.getByRole("switch"));
 
     expect(onChange).toHaveBeenCalledWith(
-      expect.objectContaining({ enableTagFiltering: true })
+      expect.objectContaining({ enableTagFiltering: true }),
     );
   });
 

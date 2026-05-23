@@ -1,7 +1,13 @@
-import { render, screen, fireEvent, act, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { MCPServerData } from "../../mcp_hub_table_columns";
 import MakeMCPPublicForm from "./MakeMCPPublicForm";
-import { MCPServerData } from "../../mcp_hub_table_columns";
 
 // Mock the networking function
 vi.mock("../../networking", () => ({
@@ -22,18 +28,21 @@ vi.mock("antd", () => ({
         {footer}
       </div>
     ) : null,
-  Form: Object.assign(({ children, form }: any) => <form data-testid="form">{children}</form>, {
-    useForm: () => [
-      {
-        resetFields: vi.fn(),
-        validateFields: vi.fn(),
-        getFieldsValue: vi.fn(),
-        setFieldsValue: vi.fn(),
-      },
-      vi.fn(),
-    ],
-    Item: ({ children }: any) => <div>{children}</div>,
-  }),
+  Form: Object.assign(
+    ({ children, form }: any) => <form data-testid="form">{children}</form>,
+    {
+      useForm: () => [
+        {
+          resetFields: vi.fn(),
+          validateFields: vi.fn(),
+          getFieldsValue: vi.fn(),
+          setFieldsValue: vi.fn(),
+        },
+        vi.fn(),
+      ],
+      Item: ({ children }: any) => <div>{children}</div>,
+    },
+  ),
   Steps: Object.assign(
     ({ children, current, className }: any) => (
       <div data-testid="steps" className={className}>
@@ -45,7 +54,12 @@ vi.mock("antd", () => ({
     },
   ),
   Button: ({ children, onClick, disabled, loading, ...props }: any) => (
-    <button onClick={onClick} disabled={disabled || loading} data-loading={loading} {...props}>
+    <button
+      onClick={onClick}
+      disabled={disabled || loading}
+      data-loading={loading}
+      {...props}
+    >
       {children}
     </button>
   ),
@@ -68,7 +82,9 @@ vi.mock("@tremor/react", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@tremor/react")>();
   return {
     ...actual,
-    Text: ({ children, className }: any) => <span className={className}>{children}</span>,
+    Text: ({ children, className }: any) => (
+      <span className={className}>{children}</span>
+    ),
     Title: ({ children }: any) => <h3>{children}</h3>,
     Badge: ({ children, color, size }: any) => (
       <span data-color={color} data-size={size}>
@@ -144,7 +160,9 @@ describe("MakeMCPPublicForm", () => {
     render(<MakeMCPPublicForm {...mockProps} />);
 
     expect(screen.getByText("Make MCP Servers Public")).toBeInTheDocument();
-    expect(screen.getByText("Select MCP Servers to Make Public")).toBeInTheDocument();
+    expect(
+      screen.getByText("Select MCP Servers to Make Public"),
+    ).toBeInTheDocument();
   });
 
   it("should initialize with correct state", () => {
@@ -152,7 +170,9 @@ describe("MakeMCPPublicForm", () => {
 
     // Check that the component renders with the correct title and content
     expect(screen.getByText("Make MCP Servers Public")).toBeInTheDocument();
-    expect(screen.getByText("Select MCP Servers to Make Public")).toBeInTheDocument();
+    expect(
+      screen.getByText("Select MCP Servers to Make Public"),
+    ).toBeInTheDocument();
 
     // Check that all server checkboxes are present
     const checkboxes = screen.getAllByRole("checkbox");
@@ -167,7 +187,9 @@ describe("MakeMCPPublicForm", () => {
     render(<MakeMCPPublicForm {...mockProps} />);
 
     // Initially on step 1
-    expect(screen.getByText("Select MCP Servers to Make Public")).toBeInTheDocument();
+    expect(
+      screen.getByText("Select MCP Servers to Make Public"),
+    ).toBeInTheDocument();
 
     // Select all servers using the select all checkbox
     const selectAllCheckbox = screen.getByLabelText("Select All (2)");
@@ -186,7 +208,9 @@ describe("MakeMCPPublicForm", () => {
 
     // Should move to step 2
     await waitFor(() => {
-      expect(screen.getByText("Confirm Making MCP Servers Public")).toBeInTheDocument();
+      expect(
+        screen.getByText("Confirm Making MCP Servers Public"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -209,7 +233,9 @@ describe("MakeMCPPublicForm", () => {
 
     // Wait for navigation to complete
     await waitFor(() => {
-      expect(screen.getByText("Confirm Making MCP Servers Public")).toBeInTheDocument();
+      expect(
+        screen.getByText("Confirm Making MCP Servers Public"),
+      ).toBeInTheDocument();
     });
 
     // Submit
@@ -219,7 +245,10 @@ describe("MakeMCPPublicForm", () => {
     });
 
     await waitFor(() => {
-      expect(mockMakeMCPPublicCall).toHaveBeenCalledWith("test-token", ["server-1", "server-2"]);
+      expect(mockMakeMCPPublicCall).toHaveBeenCalledWith("test-token", [
+        "server-1",
+        "server-2",
+      ]);
       expect(mockProps.onSuccess).toHaveBeenCalled();
       expect(mockProps.onClose).toHaveBeenCalled();
     });
@@ -269,7 +298,9 @@ describe("MakeMCPPublicForm", () => {
     });
 
     // Should stay on same step
-    expect(screen.getByText("Select MCP Servers to Make Public")).toBeInTheDocument();
+    expect(
+      screen.getByText("Select MCP Servers to Make Public"),
+    ).toBeInTheDocument();
   });
 
   it("should display empty state when no servers are available", () => {
@@ -315,7 +346,9 @@ describe("MakeMCPPublicForm", () => {
 
     // Verify we're on step 1
     await waitFor(() => {
-      expect(screen.getByText("Confirm Making MCP Servers Public")).toBeInTheDocument();
+      expect(
+        screen.getByText("Confirm Making MCP Servers Public"),
+      ).toBeInTheDocument();
     });
 
     // Click Previous button
@@ -325,7 +358,9 @@ describe("MakeMCPPublicForm", () => {
     });
 
     // Should go back to step 0
-    expect(screen.getByText("Select MCP Servers to Make Public")).toBeInTheDocument();
+    expect(
+      screen.getByText("Select MCP Servers to Make Public"),
+    ).toBeInTheDocument();
   });
 
   it("should handle individual server selection", async () => {
@@ -397,7 +432,9 @@ describe("MakeMCPPublicForm", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText("Confirm Making MCP Servers Public")).toBeInTheDocument();
+      expect(
+        screen.getByText("Confirm Making MCP Servers Public"),
+      ).toBeInTheDocument();
     });
 
     // Submit
@@ -408,7 +445,9 @@ describe("MakeMCPPublicForm", () => {
 
     // Should handle error and show error notification
     await waitFor(() => {
-      expect(mockMakeMCPPublicCall).toHaveBeenCalledWith("test-token", ["server-2"]);
+      expect(mockMakeMCPPublicCall).toHaveBeenCalledWith("test-token", [
+        "server-2",
+      ]);
     });
 
     // Should not call onSuccess or onClose on error
@@ -432,7 +471,9 @@ describe("MakeMCPPublicForm", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText("Confirm Making MCP Servers Public")).toBeInTheDocument();
+      expect(
+        screen.getByText("Confirm Making MCP Servers Public"),
+      ).toBeInTheDocument();
     });
 
     // Submit
@@ -463,7 +504,9 @@ describe("MakeMCPPublicForm", () => {
 
     // Modal should not be rendered
     expect(screen.queryByTestId("modal")).not.toBeInTheDocument();
-    expect(screen.queryByText("Make MCP Servers Public")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Make MCP Servers Public"),
+    ).not.toBeInTheDocument();
   });
 
   it("should preselect already public servers when modal opens", () => {

@@ -3,19 +3,30 @@ import { useCloudZeroExport } from "@/app/(dashboard)/hooks/cloudzero/useCloudZe
 import { useCloudZeroDeleteSettings } from "@/app/(dashboard)/hooks/cloudzero/useCloudZeroSettings";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import DeleteResourceModal from "@/components/common_components/DeleteResourceModal";
-import { Alert, Button, Card, Descriptions, Divider, Popconfirm, Tag } from "antd";
 import MessageManager from "@/components/molecules/message_manager";
+import {
+  Alert,
+  Button,
+  Card,
+  Descriptions,
+  Divider,
+  Popconfirm,
+  Tag,
+} from "antd";
 import { CheckCircle, Edit, Play, Trash2, Upload } from "lucide-react";
 import { useState } from "react";
 import CloudZeroUpdateModal from "./CloudZeroUpdateModal";
-import { CloudZeroSettings } from "./types";
+import type { CloudZeroSettings } from "./types";
 
 interface CloudZeroIntegrationSettingsProps {
   settings: CloudZeroSettings;
   onSettingsUpdated: () => void;
 }
 
-export function CloudZeroIntegrationSettings({ settings, onSettingsUpdated }: CloudZeroIntegrationSettingsProps) {
+export function CloudZeroIntegrationSettings({
+  settings,
+  onSettingsUpdated,
+}: CloudZeroIntegrationSettingsProps) {
   const { accessToken } = useAuthorized();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -40,7 +51,9 @@ export function CloudZeroIntegrationSettings({ settings, onSettingsUpdated }: Cl
     );
   };
 
-  const dryRunResult = dryRunMutation.data ? JSON.stringify(dryRunMutation.data, null, 2) : null;
+  const dryRunResult = dryRunMutation.data
+    ? JSON.stringify(dryRunMutation.data, null, 2)
+    : null;
 
   const handleExport = () => {
     if (!accessToken) return;
@@ -85,7 +98,9 @@ export function CloudZeroIntegrationSettings({ settings, onSettingsUpdated }: Cl
         onSettingsUpdated();
       },
       onError: (error) => {
-        MessageManager.error(error?.message || "Failed to delete CloudZero integration");
+        MessageManager.error(
+          error?.message || "Failed to delete CloudZero integration",
+        );
       },
     });
   };
@@ -100,7 +115,9 @@ export function CloudZeroIntegrationSettings({ settings, onSettingsUpdated }: Cl
         <Card
           title={
             <div className="flex items-center gap-2">
-              <span className="text-lg font-semibold">CloudZero Configuration</span>
+              <span className="text-lg font-semibold">
+                CloudZero Configuration
+              </span>
               <Tag color="success" className="ml-2 capitalize">
                 {settings.status || "Active"}
               </Tag>
@@ -108,7 +125,11 @@ export function CloudZeroIntegrationSettings({ settings, onSettingsUpdated }: Cl
           }
           extra={
             <div className="flex gap-2">
-              <Button icon={<Edit size={16} />} onClick={handleEdit} className="flex items-center gap-2">
+              <Button
+                icon={<Edit size={16} />}
+                onClick={handleEdit}
+                className="flex items-center gap-2"
+              >
                 Edit
               </Button>
               <Button
@@ -136,16 +157,22 @@ export function CloudZeroIntegrationSettings({ settings, onSettingsUpdated }: Cl
           >
             <Descriptions.Item label="API Key (Redacted)">
               <span className="font-mono text-gray-600">
-                {settings.api_key_masked || <span className="text-gray-400 italic">Not configured</span>}
+                {settings.api_key_masked || (
+                  <span className="text-gray-400 italic">Not configured</span>
+                )}
               </span>
             </Descriptions.Item>
             <Descriptions.Item label="Connection ID">
               <span className="font-mono text-gray-600">
-                {settings.connection_id || <span className="text-gray-400 italic">Not configured</span>}
+                {settings.connection_id || (
+                  <span className="text-gray-400 italic">Not configured</span>
+                )}
               </span>
             </Descriptions.Item>
             <Descriptions.Item label="Timezone">
-              {settings.timezone || <span className="text-gray-400 italic">Default (UTC)</span>}
+              {settings.timezone || (
+                <span className="text-gray-400 italic">Default (UTC)</span>
+              )}
             </Descriptions.Item>
           </Descriptions>
 
@@ -187,7 +214,9 @@ export function CloudZeroIntegrationSettings({ settings, onSettingsUpdated }: Cl
                 message="Dry Run Results"
                 description={
                   <div className="mt-2">
-                    <p className="mb-2 text-gray-600">Simulation output for connection: {settings.connection_id}</p>
+                    <p className="mb-2 text-gray-600">
+                      Simulation output for connection: {settings.connection_id}
+                    </p>
                     <pre className="bg-gray-50 p-4 rounded-md border border-gray-200 overflow-x-auto text-xs font-mono text-gray-800">
                       {dryRunResult}
                     </pre>

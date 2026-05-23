@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { CredentialItem } from "../networking";
+import type { CredentialItem } from "../networking";
 import VectorStoreForm from "./VectorStoreForm";
 
 vi.mock("../networking");

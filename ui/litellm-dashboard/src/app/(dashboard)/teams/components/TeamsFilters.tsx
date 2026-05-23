@@ -1,13 +1,16 @@
+import type { Organization } from "@/components/networking";
 import { Select, SelectItem } from "@tremor/react";
 import React from "react";
-import { Organization } from "@/components/networking";
 
 interface TeamsFiltersProps {
   filters: FilterState;
   organizations: Organization[] | null;
   showFilters: boolean;
   onToggleFilters: (toggle: boolean) => void;
-  onChange: <K extends keyof FilterState>(key: K, value: FilterState[K]) => void;
+  onChange: <K extends keyof FilterState>(
+    key: K,
+    value: FilterState[K],
+  ) => void;
   onReset: () => void;
 }
 
@@ -60,7 +63,12 @@ const TeamsFilters = ({
           className={`px-3 py-2 text-sm border rounded-md hover:bg-gray-50 flex items-center gap-2 ${showFilters ? "bg-gray-100" : ""}`}
           onClick={() => onToggleFilters(!showFilters)}
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -69,8 +77,13 @@ const TeamsFilters = ({
             />
           </svg>
           Filters
-          {(filters.team_id || filters.team_alias || filters.organization_id) && (
-            <span data-testid="active-filter-indicator" className="w-2 h-2 rounded-full bg-blue-500"></span>
+          {(filters.team_id ||
+            filters.team_alias ||
+            filters.organization_id) && (
+            <span
+              data-testid="active-filter-indicator"
+              className="w-2 h-2 rounded-full bg-blue-500"
+            ></span>
           )}
         </button>
 
@@ -79,7 +92,12 @@ const TeamsFilters = ({
           className="px-3 py-2 text-sm border rounded-md hover:bg-gray-50 flex items-center gap-2"
           onClick={onReset}
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -126,7 +144,10 @@ const TeamsFilters = ({
               placeholder="Select Organization"
             >
               {organizations?.map((org) => (
-                <SelectItem key={org.organization_id} value={org.organization_id || ""}>
+                <SelectItem
+                  key={org.organization_id}
+                  value={org.organization_id || ""}
+                >
                   {org.organization_alias || org.organization_id}
                 </SelectItem>
               ))}

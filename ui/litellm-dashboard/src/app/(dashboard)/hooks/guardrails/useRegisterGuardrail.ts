@@ -1,11 +1,11 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import {
-  getProxyBaseUrl,
-  getGlobalLitellmHeaderName,
   deriveErrorMessage,
+  getGlobalLitellmHeaderName,
+  getProxyBaseUrl,
   handleError,
 } from "@/components/networking";
-import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createQueryKeys } from "../common/queryKeysFactory";
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -60,15 +60,17 @@ export const useRegisterGuardrail = () => {
   const { accessToken } = useAuthorized();
   const queryClient = useQueryClient();
 
-  return useMutation<RegisterGuardrailResponse, Error, RegisterGuardrailParams>({
-    mutationFn: async (params) => {
-      if (!accessToken) {
-        throw new Error("Access token is required");
-      }
-      return registerGuardrail(accessToken, params);
+  return useMutation<RegisterGuardrailResponse, Error, RegisterGuardrailParams>(
+    {
+      mutationFn: async (params) => {
+        if (!accessToken) {
+          throw new Error("Access token is required");
+        }
+        return registerGuardrail(accessToken, params);
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: guardrailKeys.all });
+      },
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: guardrailKeys.all });
-    },
-  });
+  );
 };

@@ -102,7 +102,9 @@ describe("AddCredentialModal", () => {
 
     await waitFor(() => {
       expect(screen.getByLabelText("OpenAI API Key")).toBeInTheDocument();
-      expect(screen.getByPlaceholderText("https://api.openai.com/v1")).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText("https://api.openai.com/v1"),
+      ).toBeInTheDocument();
     });
   });
 });

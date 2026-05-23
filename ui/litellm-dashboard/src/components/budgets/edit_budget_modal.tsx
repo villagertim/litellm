@@ -1,9 +1,15 @@
-import React, { useEffect } from "react";
-import { TextInput, Accordion, AccordionHeader, AccordionBody } from "@tremor/react";
-import { Button as Button2, Modal, Form, InputNumber, Select } from "antd";
 import { useUpdateBudget } from "@/app/(dashboard)/hooks/budgets/useBudgets";
-import { budgetItem } from "./budget_panel";
+import {
+  Accordion,
+  AccordionBody,
+  AccordionHeader,
+  TextInput,
+} from "@tremor/react";
+import { Button as Button2, Form, InputNumber, Modal, Select } from "antd";
+import type React from "react";
+import { useEffect } from "react";
 import NotificationsManager from "../molecules/notifications_manager";
+import type { budgetItem } from "./budget_panel";
 
 interface EditBudgetModalProps {
   isModalVisible: boolean;
@@ -70,10 +76,18 @@ const EditBudgetModal: React.FC<EditBudgetModalProps> = ({
           >
             <TextInput placeholder="" disabled={true} />
           </Form.Item>
-          <Form.Item label="Max Tokens per minute" name="tpm_limit" help="Default is model limit.">
+          <Form.Item
+            label="Max Tokens per minute"
+            name="tpm_limit"
+            help="Default is model limit."
+          >
             <InputNumber step={1} precision={2} width={200} />
           </Form.Item>
-          <Form.Item label="Max Requests per minute" name="rpm_limit" help="Default is model limit.">
+          <Form.Item
+            label="Max Requests per minute"
+            name="rpm_limit"
+            help="Default is model limit."
+          >
             <InputNumber step={1} precision={2} width={200} />
           </Form.Item>
 
@@ -85,7 +99,11 @@ const EditBudgetModal: React.FC<EditBudgetModalProps> = ({
               <Form.Item label="Max Budget (USD)" name="max_budget">
                 <InputNumber step={0.01} precision={2} width={200} />
               </Form.Item>
-              <Form.Item className="mt-8" label="Reset Budget" name="budget_duration">
+              <Form.Item
+                className="mt-8"
+                label="Reset Budget"
+                name="budget_duration"
+              >
                 <Select defaultValue={null} placeholder="n/a">
                   <Select.Option value="24h">daily</Select.Option>
                   <Select.Option value="7d">weekly</Select.Option>

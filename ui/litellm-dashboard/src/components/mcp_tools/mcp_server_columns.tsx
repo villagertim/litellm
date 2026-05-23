@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { ColumnDef } from "@tanstack/react-table";
-import { MCPServer } from "./types";
-import { Icon } from "@tremor/react";
-import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
-import { getMaskedAndFullUrl } from "./utils";
-import { Tooltip } from "antd";
 import { CheckOutlined } from "@ant-design/icons";
+import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
+import type { ColumnDef } from "@tanstack/react-table";
+import { Icon } from "@tremor/react";
+import { Tooltip } from "antd";
+import { useState } from "react";
+import type { MCPServer } from "./types";
+import { getMaskedAndFullUrl } from "./utils";
 
 const HealthStatusBadge: React.FC<{
   server: MCPServer;
@@ -54,15 +54,25 @@ const HealthStatusBadge: React.FC<{
   const tooltipContent = (
     <div className="max-w-xs">
       <div className="font-semibold mb-1">Health Status: {status}</div>
-      {lastCheck && <div className="text-xs mb-1">Last Check: {new Date(lastCheck).toLocaleString()}</div>}
+      {lastCheck && (
+        <div className="text-xs mb-1">
+          Last Check: {new Date(lastCheck).toLocaleString()}
+        </div>
+      )}
       {error && (
         <div className="text-xs">
           <div className="font-medium text-red-400 mb-1">Error:</div>
           <div className="break-words">{error}</div>
         </div>
       )}
-      {!lastCheck && !error && <div className="text-xs text-gray-400">No health check data available</div>}
-      {isClickable && <div className="text-xs text-gray-400 mt-1">Click to recheck</div>}
+      {!lastCheck && !error && (
+        <div className="text-xs text-gray-400">
+          No health check data available
+        </div>
+      )}
+      {isClickable && (
+        <div className="text-xs text-gray-400 mt-1">Click to recheck</div>
+      )}
     </div>
   );
 
@@ -120,7 +130,9 @@ export const mcpServerColumns = (
               src={logoUrl}
               alt={`${name ?? "MCP"} logo`}
               className="h-5 w-5 rounded object-contain flex-shrink-0"
-              onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = "none";
+              }}
             />
           ) : null}
           <span>{name}</span>
@@ -152,7 +164,8 @@ export const mcpServerColumns = (
     cell: ({ row }) => {
       const transport = row.original.transport || "http";
       const specPath = row.original.spec_path;
-      const displayTransport = specPath && transport !== "stdio" ? "OPENAPI" : transport;
+      const displayTransport =
+        specPath && transport !== "stdio" ? "OPENAPI" : transport;
       const label = displayTransport.toUpperCase();
       return (
         <span className="inline-flex items-center text-xs font-medium px-2 py-0.5 rounded border bg-gray-50 text-gray-700 border-gray-200">
@@ -201,7 +214,9 @@ export const mcpServerColumns = (
                   {groups[0]}
                 </span>
                 {groups.length > 1 && (
-                  <span className="text-xs text-gray-400 font-medium">+{groups.length - 1}</span>
+                  <span className="text-xs text-gray-400 font-medium">
+                    +{groups.length - 1}
+                  </span>
                 )}
               </div>
             </Tooltip>
@@ -236,11 +251,14 @@ export const mcpServerColumns = (
     sortingFn: "datetime",
     cell: ({ row }) => {
       const server = row.original;
-      if (!server.created_at) return <span className="text-xs text-gray-400">—</span>;
+      if (!server.created_at)
+        return <span className="text-xs text-gray-400">—</span>;
       const date = new Date(server.created_at);
       return (
         <Tooltip title={date.toLocaleString()}>
-          <span className="text-xs text-gray-600">{date.toLocaleDateString()}</span>
+          <span className="text-xs text-gray-600">
+            {date.toLocaleDateString()}
+          </span>
         </Tooltip>
       );
     },
@@ -252,11 +270,14 @@ export const mcpServerColumns = (
     sortingFn: "datetime",
     cell: ({ row }) => {
       const server = row.original;
-      if (!server.updated_at) return <span className="text-xs text-gray-400">—</span>;
+      if (!server.updated_at)
+        return <span className="text-xs text-gray-400">—</span>;
       const date = new Date(server.updated_at);
       return (
         <Tooltip title={date.toLocaleString()}>
-          <span className="text-xs text-gray-600">{date.toLocaleDateString()}</span>
+          <span className="text-xs text-gray-600">
+            {date.toLocaleDateString()}
+          </span>
         </Tooltip>
       );
     },

@@ -1,6 +1,15 @@
-import { Alert, Card, Descriptions, Input, Modal, Typography, theme } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
-import React, { useState, useEffect } from "react";
+import {
+  Alert,
+  Card,
+  Descriptions,
+  Input,
+  Modal,
+  Typography,
+  theme,
+} from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
 
 interface DeleteResourceModalProps {
   isOpen: boolean;
@@ -34,7 +43,8 @@ export default function DeleteResourceModal({
 }: DeleteResourceModalProps) {
   const { Title, Text } = Typography;
   const { token } = theme.useToken();
-  const [requiredConfirmationInput, setRequiredConfirmationInput] = useState("");
+  const [requiredConfirmationInput, setRequiredConfirmationInput] =
+    useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -53,7 +63,10 @@ export default function DeleteResourceModal({
       cancelText="Cancel"
       okButtonProps={{
         danger: true,
-        disabled: (!!requiredConfirmation && requiredConfirmationInput !== requiredConfirmation) || confirmLoading,
+        disabled:
+          (!!requiredConfirmation &&
+            requiredConfirmationInput !== requiredConfirmation) ||
+          confirmLoading,
       }}
       cancelButtonProps={{ disabled: confirmLoading }}
     >
@@ -77,7 +90,10 @@ export default function DeleteResourceModal({
           <Descriptions column={1} size="small">
             {resourceInformation &&
               resourceInformation.map(({ label, value, ...textProps }) => (
-                <Descriptions.Item key={label} label={<span className="font-semibold">{label}</span>}>
+                <Descriptions.Item
+                  key={label}
+                  label={<span className="font-semibold">{label}</span>}
+                >
                   <Text {...textProps}>{value ?? "-"}</Text>
                 </Descriptions.Item>
               ))}
@@ -100,7 +116,11 @@ export default function DeleteResourceModal({
               onChange={(e) => setRequiredConfirmationInput(e.target.value)}
               placeholder={requiredConfirmation}
               className="rounded-md"
-              prefix={<ExclamationCircleOutlined style={{ color: token.colorError }} />}
+              prefix={
+                <ExclamationCircleOutlined
+                  style={{ color: token.colorError }}
+                />
+              }
               autoFocus
             />
           </div>

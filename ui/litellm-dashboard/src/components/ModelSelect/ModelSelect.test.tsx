@@ -38,7 +38,10 @@ vi.mock("antd", async (importOriginal) => {
       ...props
     }: any) => {
       // Simulate maxTagCount responsive behavior - if value length > 5, call maxTagPlaceholder
-      const shouldShowPlaceholder = maxTagCount === "responsive" && Array.isArray(value) && value.length > 5;
+      const shouldShowPlaceholder =
+        maxTagCount === "responsive" &&
+        Array.isArray(value) &&
+        value.length > 5;
       const visibleValues = shouldShowPlaceholder ? value.slice(0, 5) : value;
       const omittedValues = shouldShowPlaceholder
         ? value.slice(5).map((v: string) => ({ value: v, label: v }))
@@ -51,8 +54,13 @@ vi.mock("antd", async (importOriginal) => {
             role="listbox"
             value={visibleValues}
             onChange={(e) => {
-              const selectedValues = Array.from(e.target.selectedOptions, (option) => option.value);
-              onChange(mode === "multiple" ? selectedValues : selectedValues[0]);
+              const selectedValues = Array.from(
+                e.target.selectedOptions,
+                (option) => option.value,
+              );
+              onChange(
+                mode === "multiple" ? selectedValues : selectedValues[0],
+              );
             }}
             {...props}
           >
@@ -62,21 +70,35 @@ vi.mock("antd", async (importOriginal) => {
                 label={group.title || group.label?.props?.children}
               >
                 {group.options?.map((option: any) => (
-                  <option key={option.value} value={option.value} disabled={option.disabled}>
-                    {typeof option.label === "string" ? option.label : option.label?.props?.children}
+                  <option
+                    key={option.value}
+                    value={option.value}
+                    disabled={option.disabled}
+                  >
+                    {typeof option.label === "string"
+                      ? option.label
+                      : option.label?.props?.children}
                   </option>
                 ))}
               </optgroup>
             ))}
           </select>
           {shouldShowPlaceholder && maxTagPlaceholder && (
-            <div data-testid="max-tag-placeholder">{maxTagPlaceholder(omittedValues)}</div>
+            <div data-testid="max-tag-placeholder">
+              {maxTagPlaceholder(omittedValues)}
+            </div>
           )}
         </div>
       );
     },
     Skeleton: {
-      Input: ({ active, block }: any) => <div data-testid="skeleton-input" data-active={active} data-block={block} />,
+      Input: ({ active, block }: any) => (
+        <div
+          data-testid="skeleton-input"
+          data-active={active}
+          data-block={block}
+        />
+      ),
     },
     Tooltip: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   };
@@ -113,9 +135,24 @@ const createMockOrganization = (models: string[]): Organization => ({
 describe("ModelSelect", () => {
   const mockProxyModels: ProxyModel[] = [
     { id: "gpt-4", object: "model", created: 1234567890, owned_by: "openai" },
-    { id: "claude-3", object: "model", created: 1234567890, owned_by: "anthropic" },
-    { id: "openai/*", object: "model", created: 1234567890, owned_by: "openai" },
-    { id: "anthropic/*", object: "model", created: 1234567890, owned_by: "anthropic" },
+    {
+      id: "claude-3",
+      object: "model",
+      created: 1234567890,
+      owned_by: "anthropic",
+    },
+    {
+      id: "openai/*",
+      object: "model",
+      created: 1234567890,
+      owned_by: "openai",
+    },
+    {
+      id: "anthropic/*",
+      object: "model",
+      created: 1234567890,
+      owned_by: "anthropic",
+    },
   ];
 
   const mockOnChange = vi.fn();
@@ -142,7 +179,11 @@ describe("ModelSelect", () => {
 
   it("should render with all option groups", async () => {
     renderWithProviders(
-      <ModelSelect onChange={mockOnChange} context="user" options={{ showAllProxyModelsOverride: true }} />,
+      <ModelSelect
+        onChange={mockOnChange}
+        context="user"
+        options={{ showAllProxyModelsOverride: true }}
+      />,
     );
 
     await waitFor(() => {
@@ -157,8 +198,16 @@ describe("ModelSelect", () => {
   it("should show skeleton loader when any data is loading", () => {
     const loadingScenarios = [
       { hook: mockUseAllProxyModels, context: "user" as const },
-      { hook: mockUseTeam, context: "team" as const, props: { teamID: "team-1" } },
-      { hook: mockUseOrganization, context: "organization" as const, props: { organizationID: "org-1" } },
+      {
+        hook: mockUseTeam,
+        context: "team" as const,
+        props: { teamID: "team-1" },
+      },
+      {
+        hook: mockUseOrganization,
+        context: "organization" as const,
+        props: { organizationID: "org-1" },
+      },
       { hook: mockUseCurrentUser, context: "user" as const },
     ];
 
@@ -180,7 +229,11 @@ describe("ModelSelect", () => {
   it("should handle model selection and onChange", async () => {
     const user = userEvent.setup();
     renderWithProviders(
-      <ModelSelect onChange={mockOnChange} context="user" options={{ showAllProxyModelsOverride: true }} />,
+      <ModelSelect
+        onChange={mockOnChange}
+        context="user"
+        options={{ showAllProxyModelsOverride: true }}
+      />,
     );
 
     await waitFor(() => {
@@ -207,7 +260,10 @@ describe("ModelSelect", () => {
         onChange={mockOnChange}
         context="organization"
         organizationID="org-1"
-        options={{ showAllProxyModelsOverride: true, includeSpecialOptions: true }}
+        options={{
+          showAllProxyModelsOverride: true,
+          includeSpecialOptions: true,
+        }}
       />,
     );
 
@@ -233,7 +289,9 @@ describe("ModelSelect", () => {
 
     await waitFor(() => {
       expect(screen.getByRole("option", { name: "gpt-4" })).toBeDisabled();
-      expect(screen.getByRole("option", { name: "All Openai models" })).toBeDisabled();
+      expect(
+        screen.getByRole("option", { name: "All Openai models" }),
+      ).toBeDisabled();
     });
   });
 
@@ -337,7 +395,7 @@ describe("ModelSelect", () => {
         name: "global context",
         context: "global" as const,
         options: {},
-        setup: () => { },
+        setup: () => {},
         expectedVisible: ["gpt-4", "claude-3"],
         expectedHidden: [],
       },
@@ -377,8 +435,11 @@ describe("ModelSelect", () => {
       {
         name: "when showAllProxyModelsOverride is true",
         context: "user" as const,
-        options: { showAllProxyModelsOverride: true, includeSpecialOptions: true },
-        setup: () => { },
+        options: {
+          showAllProxyModelsOverride: true,
+          includeSpecialOptions: true,
+        },
+        setup: () => {},
         shouldShow: true,
       },
       {
@@ -411,7 +472,7 @@ describe("ModelSelect", () => {
         name: "when context is global",
         context: "global" as const,
         options: { includeSpecialOptions: true },
-        setup: () => { },
+        setup: () => {},
         shouldShow: true,
       },
       {
@@ -444,7 +505,9 @@ describe("ModelSelect", () => {
         if (testCase.shouldShow) {
           expect(screen.getByText("All Proxy Models")).toBeInTheDocument();
         } else {
-          expect(screen.queryByText("All Proxy Models")).not.toBeInTheDocument();
+          expect(
+            screen.queryByText("All Proxy Models"),
+          ).not.toBeInTheDocument();
           expect(screen.getByText("No Default Models")).toBeInTheDocument();
         }
       });
@@ -470,7 +533,11 @@ describe("ModelSelect", () => {
     } as any);
 
     renderWithProviders(
-      <ModelSelect onChange={mockOnChange} context="user" options={{ showAllProxyModelsOverride: true }} />,
+      <ModelSelect
+        onChange={mockOnChange}
+        context="user"
+        options={{ showAllProxyModelsOverride: true }}
+      />,
     );
 
     await waitFor(() => {
@@ -505,7 +572,14 @@ describe("ModelSelect", () => {
       isLoading: false,
     } as any);
 
-    renderWithProviders(<ModelSelect onChange={mockOnChange} context="team" teamID="team-1" organizationID="org-1" />);
+    renderWithProviders(
+      <ModelSelect
+        onChange={mockOnChange}
+        context="team"
+        teamID="team-1"
+        organizationID="org-1"
+      />,
+    );
 
     await waitFor(() => {
       expect(screen.getByText("gpt-4")).toBeInTheDocument();
@@ -530,13 +604,17 @@ describe("ModelSelect", () => {
     );
 
     await waitFor(() => {
-      const noDefaultOption = screen.getByRole("option", { name: "No Default Models" });
+      const noDefaultOption = screen.getByRole("option", {
+        name: "No Default Models",
+      });
       expect(noDefaultOption).toBeDisabled();
     });
   });
 
   it("should not render an empty optgroup when includeSpecialOptions is omitted", async () => {
-    renderWithProviders(<ModelSelect onChange={mockOnChange} context="global" />);
+    renderWithProviders(
+      <ModelSelect onChange={mockOnChange} context="global" />,
+    );
 
     await waitFor(() => {
       expect(screen.getByTestId("model-select")).toBeInTheDocument();

@@ -37,7 +37,9 @@ const mockPagesWithAliases = {
 };
 
 const mockEmptyPages = {
-  pages: [{ aliases: [], total_count: 0, current_page: 1, total_pages: 1, size: 50 }],
+  pages: [
+    { aliases: [], total_count: 0, current_page: 1, total_pages: 1, size: 50 },
+  ],
 };
 
 describe("PaginatedKeyAliasSelect", () => {
@@ -65,7 +67,10 @@ describe("PaginatedKeyAliasSelect", () => {
 
   it("should display custom placeholder when provided", () => {
     renderWithProviders(
-      <PaginatedKeyAliasSelect onChange={mockOnChange} placeholder="Choose alias" />,
+      <PaginatedKeyAliasSelect
+        onChange={mockOnChange}
+        placeholder="Choose alias"
+      />,
     );
 
     expect(screen.getByText("Choose alias")).toBeInTheDocument();
@@ -78,8 +83,12 @@ describe("PaginatedKeyAliasSelect", () => {
     await userEvent.click(combobox);
 
     await waitFor(() => {
-      expect(screen.getByRole("option", { name: "alias-1" })).toBeInTheDocument();
-      expect(screen.getByRole("option", { name: "alias-2" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("option", { name: "alias-1" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("option", { name: "alias-2" }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -106,13 +115,22 @@ describe("PaginatedKeyAliasSelect", () => {
 
     renderWithProviders(<PaginatedKeyAliasSelect onChange={mockOnChange} />);
 
-    expect(screen.getByRole("combobox")).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("combobox")).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
   });
 
   it("should pass pageSize to useInfiniteKeyAliases", () => {
-    renderWithProviders(<PaginatedKeyAliasSelect onChange={mockOnChange} pageSize={25} />);
+    renderWithProviders(
+      <PaginatedKeyAliasSelect onChange={mockOnChange} pageSize={25} />,
+    );
 
-    expect(mockUseInfiniteKeyAliases).toHaveBeenCalledWith(25, undefined, undefined);
+    expect(mockUseInfiniteKeyAliases).toHaveBeenCalledWith(
+      25,
+      undefined,
+      undefined,
+    );
   });
 
   it("should pass search to useInfiniteKeyAliases when user types", async () => {
@@ -124,7 +142,11 @@ describe("PaginatedKeyAliasSelect", () => {
     await user.keyboard("my-alias");
 
     await waitFor(() => {
-      expect(mockUseInfiniteKeyAliases).toHaveBeenCalledWith(50, "my-alias", undefined);
+      expect(mockUseInfiniteKeyAliases).toHaveBeenCalledWith(
+        50,
+        "my-alias",
+        undefined,
+      );
     });
   });
 
@@ -141,7 +163,9 @@ describe("PaginatedKeyAliasSelect", () => {
     await userEvent.click(combobox);
 
     await waitFor(() => {
-      expect(screen.getByRole("option", { name: "alias-1" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("option", { name: "alias-1" }),
+      ).toBeInTheDocument();
     });
 
     const scrollableContainer = document.querySelector(
@@ -199,7 +223,9 @@ describe("PaginatedKeyAliasSelect", () => {
     await userEvent.click(combobox);
 
     await waitFor(() => {
-      expect(screen.getByRole("option", { name: "valid-alias" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("option", { name: "valid-alias" }),
+      ).toBeInTheDocument();
       const allOptions = screen.queryAllByRole("option");
       expect(allOptions.length).toBe(1);
     });
@@ -207,14 +233,20 @@ describe("PaginatedKeyAliasSelect", () => {
 
   it("should respect allowClear prop", () => {
     renderWithProviders(
-      <PaginatedKeyAliasSelect value="alias-1" onChange={mockOnChange} allowClear={false} />,
+      <PaginatedKeyAliasSelect
+        value="alias-1"
+        onChange={mockOnChange}
+        allowClear={false}
+      />,
     );
 
     expect(screen.getByRole("combobox")).toBeInTheDocument();
   });
 
   it("should respect disabled prop", () => {
-    renderWithProviders(<PaginatedKeyAliasSelect onChange={mockOnChange} disabled />);
+    renderWithProviders(
+      <PaginatedKeyAliasSelect onChange={mockOnChange} disabled />,
+    );
 
     const combobox = screen.getByRole("combobox");
     expect(combobox.closest(".ant-select")).toHaveClass("ant-select-disabled");
@@ -231,7 +263,9 @@ describe("PaginatedKeyAliasSelect", () => {
     await userEvent.click(screen.getByRole("combobox"));
 
     await waitFor(() => {
-      expect(screen.getByRole("option", { name: "alias-1" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("option", { name: "alias-1" }),
+      ).toBeInTheDocument();
     });
 
     expect(mockFetchNextPage).not.toHaveBeenCalled();

@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
+import type { TopModelData } from "../types";
 import KeyModelUsageView from "./KeyModelUsageView";
-import { TopModelData } from "../types";
 
 describe("KeyModelUsageView", () => {
   const mockTopModels: TopModelData[] = [
@@ -105,14 +105,18 @@ describe("KeyModelUsageView", () => {
   it("should display successful requests with green styling", () => {
     render(<KeyModelUsageView topModels={mockTopModels} />);
     const successfulElements = screen.getAllByText("100");
-    const greenElement = successfulElements.find((el) => el.closest("span")?.classList.contains("text-green-600"));
+    const greenElement = successfulElements.find((el) =>
+      el.closest("span")?.classList.contains("text-green-600"),
+    );
     expect(greenElement).toBeDefined();
   });
 
   it("should display failed requests with red styling", () => {
     render(<KeyModelUsageView topModels={mockTopModels} />);
     const failedElements = screen.getAllByText("5");
-    const redElement = failedElements.find((el) => el.closest("span")?.classList.contains("text-red-600"));
+    const redElement = failedElements.find((el) =>
+      el.closest("span")?.classList.contains("text-red-600"),
+    );
     expect(redElement).toBeDefined();
   });
 
@@ -262,7 +266,9 @@ describe("KeyModelUsageView", () => {
     ];
     render(<KeyModelUsageView topModels={modelsWithMissingFields} />);
     const zeroElements = screen.getAllByText("0");
-    const successfulZero = zeroElements.find((el) => el.closest("span")?.classList.contains("text-green-600"));
+    const successfulZero = zeroElements.find((el) =>
+      el.closest("span")?.classList.contains("text-green-600"),
+    );
     expect(successfulZero).toBeDefined();
   });
 

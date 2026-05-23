@@ -1,7 +1,13 @@
-import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import S3VectorsConfig from "./S3VectorsConfig";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as fetchModels from "../playground/llm_calls/fetch_models";
+import S3VectorsConfig from "./S3VectorsConfig";
 
 // Mock fetchAvailableModels
 vi.mock("../playground/llm_calls/fetch_models", () => ({
@@ -38,10 +44,18 @@ describe("S3VectorsConfig", () => {
     render(<S3VectorsConfig {...defaultProps} />);
 
     expect(
-      screen.getByText(/AWS S3 Vectors allows you to store and query vector embeddings directly in S3/)
+      screen.getByText(
+        /AWS S3 Vectors allows you to store and query vector embeddings directly in S3/,
+      ),
     ).toBeInTheDocument();
-    expect(screen.getByText(/Vector buckets and indexes will be automatically created/)).toBeInTheDocument();
-    expect(screen.getByText(/Vector dimensions are auto-detected/)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /Vector buckets and indexes will be automatically created/,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Vector dimensions are auto-detected/),
+    ).toBeInTheDocument();
   });
 
   it("should fetch embedding models on mount", async () => {
@@ -51,7 +65,9 @@ describe("S3VectorsConfig", () => {
       { model_group: "gpt-4", mode: "chat" },
     ];
 
-    const fetchSpy = vi.spyOn(fetchModels, "fetchAvailableModels").mockResolvedValue(mockModels);
+    const fetchSpy = vi
+      .spyOn(fetchModels, "fetchAvailableModels")
+      .mockResolvedValue(mockModels);
 
     render(<S3VectorsConfig {...defaultProps} />);
 
@@ -87,7 +103,9 @@ describe("S3VectorsConfig", () => {
 
     render(<S3VectorsConfig {...defaultProps} />);
 
-    const bucketInput = screen.getByPlaceholderText("my-vector-bucket (min 3 chars)");
+    const bucketInput = screen.getByPlaceholderText(
+      "my-vector-bucket (min 3 chars)",
+    );
 
     await act(async () => {
       fireEvent.change(bucketInput, { target: { value: "test-bucket" } });
@@ -133,7 +151,9 @@ describe("S3VectorsConfig", () => {
 
     await act(async () => {
       // Simulate selecting a value by firing the change event
-      fireEvent.change(selectElement, { target: { value: "text-embedding-3-small" } });
+      fireEvent.change(selectElement, {
+        target: { value: "text-embedding-3-small" },
+      });
     });
 
     // The component should handle the selection
@@ -148,9 +168,13 @@ describe("S3VectorsConfig", () => {
       aws_region_name: "us-west-2",
     };
 
-    render(<S3VectorsConfig {...defaultProps} providerParams={existingParams} />);
+    render(
+      <S3VectorsConfig {...defaultProps} providerParams={existingParams} />,
+    );
 
-    const indexInput = screen.getByPlaceholderText("my-vector-index (optional, min 3 chars)");
+    const indexInput = screen.getByPlaceholderText(
+      "my-vector-index (optional, min 3 chars)",
+    );
 
     await act(async () => {
       fireEvent.change(indexInput, { target: { value: "my-index" } });
@@ -173,7 +197,9 @@ describe("S3VectorsConfig", () => {
       embedding_model: "text-embedding-3-small",
     };
 
-    render(<S3VectorsConfig {...defaultProps} providerParams={existingParams} />);
+    render(
+      <S3VectorsConfig {...defaultProps} providerParams={existingParams} />,
+    );
 
     expect(screen.getByDisplayValue("my-bucket")).toBeInTheDocument();
     expect(screen.getByDisplayValue("my-index")).toBeInTheDocument();
@@ -181,13 +207,20 @@ describe("S3VectorsConfig", () => {
   });
 
   it("should handle model fetch error gracefully", async () => {
-    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    vi.spyOn(fetchModels, "fetchAvailableModels").mockRejectedValue(new Error("Failed to fetch models"));
+    const consoleErrorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+    vi.spyOn(fetchModels, "fetchAvailableModels").mockRejectedValue(
+      new Error("Failed to fetch models"),
+    );
 
     render(<S3VectorsConfig {...defaultProps} />);
 
     await waitFor(() => {
-      expect(consoleErrorSpy).toHaveBeenCalledWith("Error fetching embedding models:", expect.any(Error));
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "Error fetching embedding models:",
+        expect.any(Error),
+      );
     });
 
     consoleErrorSpy.mockRestore();

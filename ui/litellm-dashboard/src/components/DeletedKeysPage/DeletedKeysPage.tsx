@@ -1,8 +1,8 @@
 "use client";
-import { useState } from "react";
-import { Alert } from "antd";
 import { useDeletedKeys } from "@/app/(dashboard)/hooks/keys/useKeys";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { Alert } from "antd";
+import { useState } from "react";
 import { DeletedKeysTable } from "./DeletedKeysTable/DeletedKeysTable";
 
 export default function DeletedKeysPage() {

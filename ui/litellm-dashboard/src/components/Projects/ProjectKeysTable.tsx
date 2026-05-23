@@ -1,7 +1,7 @@
-import { KeyResponse } from "@/components/key_team_helpers/key_list";
+import type { KeyResponse } from "@/components/key_team_helpers/key_list";
 import { Empty, Table, Tooltip } from "antd";
-import type { ColumnsType } from "antd/es/table";
 import type { SpinProps } from "antd";
+import type { ColumnsType } from "antd/es/table";
 import DefaultProxyAdminTag from "../common_components/DefaultProxyAdminTag";
 
 interface ProjectKeysTableProps {
@@ -33,13 +33,15 @@ const columns: ColumnsType<KeyResponse> = [
     title: "Created",
     dataIndex: "created_at",
     key: "created_at",
-    render: (date: string) => (date ? new Date(date).toLocaleDateString() : "—"),
+    render: (date: string) =>
+      date ? new Date(date).toLocaleDateString() : "—",
   },
   {
     title: "Last Active",
     dataIndex: "last_active",
     key: "last_active",
-    render: (date: string | null) => (date ? new Date(date).toLocaleDateString() : "Never"),
+    render: (date: string | null) =>
+      date ? new Date(date).toLocaleDateString() : "Never",
   },
 ];
 
@@ -52,7 +54,14 @@ export function ProjectKeysTable({ keys, loading }: ProjectKeysTableProps) {
       loading={loading}
       pagination={false}
       size="small"
-      locale={{ emptyText: <Empty description="No keys found" image={Empty.PRESENTED_IMAGE_SIMPLE} /> }}
+      locale={{
+        emptyText: (
+          <Empty
+            description="No keys found"
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+          />
+        ),
+      }}
     />
   );
 }

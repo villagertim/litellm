@@ -1,5 +1,5 @@
-import { updateHashicorpVaultConfig } from "./hashicorpVaultApi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateHashicorpVaultConfig } from "./hashicorpVaultApi";
 import { hashicorpVaultKeys } from "./useHashicorpVaultConfig";
 
 export const useUpdateHashicorpVaultConfig = (accessToken: string | null) => {

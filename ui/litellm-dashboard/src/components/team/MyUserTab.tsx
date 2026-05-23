@@ -34,7 +34,9 @@ export default function MyUserTab({ teamId }: MyUserTabProps) {
   if (isLoading) {
     return (
       <Card>
-        <Typography.Text type="secondary">Loading your membership info…</Typography.Text>
+        <Typography.Text type="secondary">
+          Loading your membership info…
+        </Typography.Text>
       </Card>
     );
   }
@@ -77,9 +79,14 @@ export default function MyUserTab({ teamId }: MyUserTabProps) {
           <Col xs={24} sm={12} md={8}>
             <Typography.Text type="secondary">User</Typography.Text>
             <div style={{ marginTop: 4 }}>
-              <Typography.Text strong>{data.user_email || data.user_id}</Typography.Text>
+              <Typography.Text strong>
+                {data.user_email || data.user_id}
+              </Typography.Text>
             </div>
-            <Typography.Text type="secondary" style={{ fontSize: 12, fontFamily: "monospace" }}>
+            <Typography.Text
+              type="secondary"
+              style={{ fontSize: 12, fontFamily: "monospace" }}
+            >
               {data.user_id}
             </Typography.Text>
           </Col>
@@ -106,12 +113,17 @@ export default function MyUserTab({ teamId }: MyUserTabProps) {
                 ${formatNumber(spend, 4)}
               </Typography.Title>
               <Typography.Text type="secondary">
-                of {maxBudget === null ? "Unlimited" : `$${formatNumber(maxBudget, 4)}`}
+                of{" "}
+                {maxBudget === null
+                  ? "Unlimited"
+                  : `$${formatNumber(maxBudget, 4)}`}
               </Typography.Text>
             </div>
             {budgetReset && (
               <div style={{ marginTop: 4 }}>
-                <Typography.Text type="secondary">Resets {budgetReset}</Typography.Text>
+                <Typography.Text type="secondary">
+                  Resets {budgetReset}
+                </Typography.Text>
               </div>
             )}
           </Card>
@@ -124,9 +136,13 @@ export default function MyUserTab({ teamId }: MyUserTabProps) {
               "Your per-member rate limits within this team.",
             )}
             <div style={{ marginTop: 8 }}>
-              <Typography.Text>TPM: {formatRateLimit(tpmLimit)}</Typography.Text>
+              <Typography.Text>
+                TPM: {formatRateLimit(tpmLimit)}
+              </Typography.Text>
               <br />
-              <Typography.Text>RPM: {formatRateLimit(rpmLimit)}</Typography.Text>
+              <Typography.Text>
+                RPM: {formatRateLimit(rpmLimit)}
+              </Typography.Text>
             </div>
           </Card>
         </Col>

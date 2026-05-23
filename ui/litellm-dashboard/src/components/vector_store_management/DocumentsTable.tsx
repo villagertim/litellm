@@ -1,15 +1,18 @@
-import React from "react";
-import { Table, Badge, Tooltip } from "antd";
 import MessageManager from "@/components/molecules/message_manager";
-import { EyeOutlined, CopyOutlined, DeleteOutlined } from "@ant-design/icons";
-import { DocumentUpload } from "./types";
+import { CopyOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+import { Badge, Table, Tooltip } from "antd";
+import type React from "react";
+import type { DocumentUpload } from "./types";
 
 interface DocumentsTableProps {
   documents: DocumentUpload[];
   onRemove: (uid: string) => void;
 }
 
-const DocumentsTable: React.FC<DocumentsTableProps> = ({ documents, onRemove }) => {
+const DocumentsTable: React.FC<DocumentsTableProps> = ({
+  documents,
+  onRemove,
+}) => {
   const handleCopyId = (uid: string) => {
     navigator.clipboard.writeText(uid);
     MessageManager.success("Document ID copied to clipboard");
@@ -42,7 +45,11 @@ const DocumentsTable: React.FC<DocumentsTableProps> = ({ documents, onRemove }) 
       render: (name: string, record: DocumentUpload) => (
         <div className="flex items-center space-x-2">
           <span className="text-sm">{name}</span>
-          {record.size && <span className="text-xs text-gray-400">({formatFileSize(record.size)})</span>}
+          {record.size && (
+            <span className="text-xs text-gray-400">
+              ({formatFileSize(record.size)})
+            </span>
+          )}
         </div>
       ),
     },
@@ -89,7 +96,8 @@ const DocumentsTable: React.FC<DocumentsTableProps> = ({ documents, onRemove }) 
       rowKey="uid"
       pagination={false}
       locale={{
-        emptyText: "No documents uploaded yet. Upload documents above to get started.",
+        emptyText:
+          "No documents uploaded yet. Upload documents above to get started.",
       }}
       size="small"
     />

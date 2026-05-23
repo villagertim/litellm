@@ -4,32 +4,40 @@
  */
 
 import {
+  useBudgets,
+  useDeleteBudget,
+} from "@/app/(dashboard)/hooks/budgets/useBudgets";
+import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { isProxyAdminRole } from "@/utils/roles";
+import {
   Button,
   Card,
   Tab,
   TabGroup,
+  TabList,
+  TabPanel,
+  TabPanels,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeaderCell,
   TableRow,
-  TabList,
-  TabPanel,
-  TabPanels,
   Text,
 } from "@tremor/react";
-import React, { useState } from "react";
+import type React from "react";
+import { useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import DeleteResourceModal from "../common_components/DeleteResourceModal";
 import TableIconActionButton from "../common_components/IconActionButton/TableIconActionButtons/TableIconActionButton";
 import NotificationsManager from "../molecules/notifications_manager";
-import { useBudgets, useDeleteBudget } from "@/app/(dashboard)/hooks/budgets/useBudgets";
 import BudgetModal from "./budget_modal";
+import {
+  CHAT_COMPLETIONS_CURL_COMMAND,
+  CREATE_END_USER_CURL_COMMAND,
+  OPENAI_SDK_PYTHON_CODE,
+} from "./constants";
 import EditBudgetModal from "./edit_budget_modal";
-import { CREATE_END_USER_CURL_COMMAND, CHAT_COMPLETIONS_CURL_COMMAND, OPENAI_SDK_PYTHON_CODE } from "./constants";
-import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { isProxyAdminRole } from "@/utils/roles";
 
 interface BudgetSettingsPageProps {
   accessToken: string | null;
@@ -96,7 +104,12 @@ const BudgetPanel: React.FC<BudgetSettingsPageProps> = ({ accessToken }) => {
   return (
     <div className="w-full mx-auto flex-auto overflow-y-auto m-8 p-2">
       {canModify && (
-        <Button size="sm" variant="primary" className="mb-2" onClick={() => setIsCreateModelVisible(true)}>
+        <Button
+          size="sm"
+          variant="primary"
+          className="mb-2"
+          onClick={() => setIsCreateModelVisible(true)}
+        >
           + Create Budget
         </Button>
       )}
@@ -134,13 +147,23 @@ const BudgetPanel: React.FC<BudgetSettingsPageProps> = ({ accessToken }) => {
                   <TableBody>
                     {budgetList
                       .slice()
-                      .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+                      .sort(
+                        (a, b) =>
+                          new Date(b.updated_at).getTime() -
+                          new Date(a.updated_at).getTime(),
+                      )
                       .map((value: budgetItem) => (
                         <TableRow key={value.budget_id}>
                           <TableCell>{value.budget_id}</TableCell>
-                          <TableCell>{value.max_budget ? value.max_budget : "n/a"}</TableCell>
-                          <TableCell>{value.tpm_limit ? value.tpm_limit : "n/a"}</TableCell>
-                          <TableCell>{value.rpm_limit ? value.rpm_limit : "n/a"}</TableCell>
+                          <TableCell>
+                            {value.max_budget ? value.max_budget : "n/a"}
+                          </TableCell>
+                          <TableCell>
+                            {value.tpm_limit ? value.tpm_limit : "n/a"}
+                          </TableCell>
+                          <TableCell>
+                            {value.rpm_limit ? value.rpm_limit : "n/a"}
+                          </TableCell>
                           {canModify && (
                             <>
                               <TableIconActionButton
@@ -168,7 +191,11 @@ const BudgetPanel: React.FC<BudgetSettingsPageProps> = ({ accessToken }) => {
                 message="Are you sure you want to delete this budget? This action cannot be undone."
                 resourceInformationTitle="Budget Information"
                 resourceInformation={[
-                  { label: "Budget ID", value: selectedBudget?.budget_id, code: true },
+                  {
+                    label: "Budget ID",
+                    value: selectedBudget?.budget_id,
+                    code: true,
+                  },
                   { label: "Max Budget", value: selectedBudget?.max_budget },
                   { label: "TPM", value: selectedBudget?.tpm_limit },
                   { label: "RPM", value: selectedBudget?.rpm_limit },
@@ -190,13 +217,19 @@ const BudgetPanel: React.FC<BudgetSettingsPageProps> = ({ accessToken }) => {
                 </TabList>
                 <TabPanels>
                   <TabPanel>
-                    <SyntaxHighlighter language="bash">{CREATE_END_USER_CURL_COMMAND}</SyntaxHighlighter>
+                    <SyntaxHighlighter language="bash">
+                      {CREATE_END_USER_CURL_COMMAND}
+                    </SyntaxHighlighter>
                   </TabPanel>
                   <TabPanel>
-                    <SyntaxHighlighter language="bash">{CHAT_COMPLETIONS_CURL_COMMAND}</SyntaxHighlighter>
+                    <SyntaxHighlighter language="bash">
+                      {CHAT_COMPLETIONS_CURL_COMMAND}
+                    </SyntaxHighlighter>
                   </TabPanel>
                   <TabPanel>
-                    <SyntaxHighlighter language="python">{OPENAI_SDK_PYTHON_CODE}</SyntaxHighlighter>
+                    <SyntaxHighlighter language="python">
+                      {OPENAI_SDK_PYTHON_CODE}
+                    </SyntaxHighlighter>
                   </TabPanel>
                 </TabPanels>
               </TabGroup>

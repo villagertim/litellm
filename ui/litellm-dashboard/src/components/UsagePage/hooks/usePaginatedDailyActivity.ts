@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { DailyData } from "../types";
+import type { DailyData } from "../types";
 
 export interface PaginationProgress {
   currentPage: number;
@@ -159,7 +159,11 @@ export function usePaginatedDailyActivity({
 
       try {
         // Inject page=1 as the 4th argument.
-        const argsWithPage = [...currentArgs.slice(0, 3), 1, ...currentArgs.slice(3)];
+        const argsWithPage = [
+          ...currentArgs.slice(0, 3),
+          1,
+          ...currentArgs.slice(3),
+        ];
         const firstPage = await fetchFn(...argsWithPage);
 
         if (isStale()) return;
@@ -190,7 +194,11 @@ export function usePaginatedDailyActivity({
 
           if (isStale()) return;
 
-          const argsForPage = [...currentArgs.slice(0, 3), page, ...currentArgs.slice(3)];
+          const argsForPage = [
+            ...currentArgs.slice(0, 3),
+            page,
+            ...currentArgs.slice(3),
+          ];
           const pageData = await fetchFn(...argsForPage);
 
           if (isStale()) return;

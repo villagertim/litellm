@@ -2,9 +2,9 @@
  * Core tests for Tools section
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+import type { LogEntry } from "../columns";
 import { parseToolsFromLog } from "./utils";
-import { LogEntry } from "../columns";
 
 describe("ToolsSection", () => {
   it("should parse tools from request and match with response tool calls", () => {

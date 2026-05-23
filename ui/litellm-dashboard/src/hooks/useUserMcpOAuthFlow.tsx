@@ -12,7 +12,7 @@
  * the user and then invokes onSuccess so the caller can refresh UI state.
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import NotificationsManager from "@/components/molecules/notifications_manager";
 import {
   buildMcpOAuthAuthorizeUrl,
   exchangeMcpOAuthToken,
@@ -21,12 +21,17 @@ import {
   serverRootPath,
   storeMCPOAuthUserCredential,
 } from "@/components/networking";
-import NotificationsManager from "@/components/molecules/notifications_manager";
 import { extractErrorMessage } from "@/utils/errorUtils";
 import { generateCodeChallenge, generateCodeVerifier } from "@/utils/pkce";
 import { getSecureItem, setSecureItem } from "@/utils/secureStorage";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-export type UserMcpOAuthStatus = "idle" | "authorizing" | "exchanging" | "success" | "error";
+export type UserMcpOAuthStatus =
+  | "idle"
+  | "authorizing"
+  | "exchanging"
+  | "success"
+  | "error";
 
 interface UseUserMcpOAuthFlowOptions {
   accessToken: string;
@@ -210,7 +215,9 @@ export const useUserMcpOAuthFlow = ({
         throw new Error("OAuth state mismatch. Please retry.");
       }
       if (payload.error) {
-        throw new Error((payload.error_description as string) || (payload.error as string));
+        throw new Error(
+          (payload.error_description as string) || (payload.error as string),
+        );
       }
       if (!payload.code) {
         throw new Error("Authorization code missing in callback.");
@@ -247,7 +254,9 @@ export const useUserMcpOAuthFlow = ({
       NotificationsManager.error(msg);
     } finally {
       clearStorage(FLOW_STATE_KEY);
-      setTimeout(() => { processingRef.current = false; }, 1000);
+      setTimeout(() => {
+        processingRef.current = false;
+      }, 1000);
     }
   }, [accessToken, serverId, onSuccess]);
 

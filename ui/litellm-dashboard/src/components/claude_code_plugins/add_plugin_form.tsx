@@ -1,14 +1,15 @@
-import React, { useState } from "react";
-import { Modal, Form, Input, Select } from "antd";
 import MessageManager from "@/components/molecules/message_manager";
 import { Button } from "@tremor/react";
+import { Form, Input, Modal, Select } from "antd";
+import type React from "react";
+import { useState } from "react";
 import { registerClaudeCodePlugin } from "../networking";
 import {
-  validatePluginName,
-  isValidSemanticVersion,
   isValidEmail,
+  isValidSemanticVersion,
   isValidUrl,
   parseKeywords,
+  validatePluginName,
 } from "./helpers";
 
 const { TextArea } = Input;
@@ -47,7 +48,10 @@ interface ParsePreview {
 
 function parseGitHubUrl(raw: string): ParsePreview | null {
   // Strip protocol and trailing slashes/spaces
-  let s = raw.trim().replace(/^https?:\/\//, "").replace(/\/+$/, "");
+  const s = raw
+    .trim()
+    .replace(/^https?:\/\//, "")
+    .replace(/\/+$/, "");
 
   if (!s.startsWith("github.com/")) return null;
 
@@ -71,10 +75,7 @@ function parseGitHubUrl(raw: string): ParsePreview | null {
   }
 
   // github.com/org/repo/tree/branch/folder or /blob/branch/folder/FILE.md
-  if (
-    parts.length >= 5 &&
-    (parts[2] === "tree" || parts[2] === "blob")
-  ) {
+  if (parts.length >= 5 && (parts[2] === "tree" || parts[2] === "blob")) {
     // parts[3] = branch, parts[4..] = path segments
     const pathParts = parts.slice(4);
     // If last segment looks like a file (has extension), drop it
@@ -142,13 +143,15 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({
 
     if (!validatePluginName(values.name)) {
       MessageManager.error(
-        "Skill name must be kebab-case (lowercase letters, numbers, and hyphens only)"
+        "Skill name must be kebab-case (lowercase letters, numbers, and hyphens only)",
       );
       return;
     }
 
     if (values.version && !isValidSemanticVersion(values.version)) {
-      MessageManager.error("Version must be in semantic versioning format (e.g., 1.0.0)");
+      MessageManager.error(
+        "Version must be in semantic versioning format (e.g., 1.0.0)",
+      );
       return;
     }
 
@@ -170,11 +173,14 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({
       };
 
       if (values.version) pluginData.version = values.version.trim();
-      if (values.description) pluginData.description = values.description.trim();
+      if (values.description)
+        pluginData.description = values.description.trim();
       if (values.authorName || values.authorEmail) {
         pluginData.author = {};
-        if (values.authorName) pluginData.author.name = values.authorName.trim();
-        if (values.authorEmail) pluginData.author.email = values.authorEmail.trim();
+        if (values.authorName)
+          pluginData.author.name = values.authorName.trim();
+        if (values.authorEmail)
+          pluginData.author.email = values.authorEmail.trim();
       }
       if (values.homepage) pluginData.homepage = values.homepage.trim();
       if (values.category) pluginData.category = values.category;
@@ -246,7 +252,8 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({
             { required: true, message: "Please enter skill name" },
             {
               pattern: /^[a-z0-9-]+$/,
-              message: "Name must be kebab-case (lowercase, numbers, hyphens only)",
+              message:
+                "Name must be kebab-case (lowercase, numbers, hyphens only)",
             },
           ]}
           tooltip="Unique identifier in kebab-case format (e.g., my-skill)"
@@ -333,7 +340,10 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({
           name="authorName"
           tooltip="Name of the skill author or organization"
         >
-          <Input placeholder="Your Name or Organization" className="rounded-lg" />
+          <Input
+            placeholder="Your Name or Organization"
+            className="rounded-lg"
+          />
         </Form.Item>
 
         {/* Author Email */}
@@ -343,13 +353,21 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({
           rules={[{ type: "email", message: "Please enter a valid email" }]}
           tooltip="Contact email for the skill author"
         >
-          <Input type="email" placeholder="author@example.com" className="rounded-lg" />
+          <Input
+            type="email"
+            placeholder="author@example.com"
+            className="rounded-lg"
+          />
         </Form.Item>
 
         {/* Submit Buttons */}
         <Form.Item className="mb-0 mt-6">
           <div className="flex justify-end gap-2">
-            <Button variant="secondary" onClick={handleCancel} disabled={isSubmitting}>
+            <Button
+              variant="secondary"
+              onClick={handleCancel}
+              disabled={isSubmitting}
+            >
               Cancel
             </Button>
             <Button type="submit" loading={isSubmitting}>

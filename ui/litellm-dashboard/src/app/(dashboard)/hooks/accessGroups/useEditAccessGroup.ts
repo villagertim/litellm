@@ -1,12 +1,12 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import {
-  getProxyBaseUrl,
-  getGlobalLitellmHeaderName,
   deriveErrorMessage,
+  getGlobalLitellmHeaderName,
+  getProxyBaseUrl,
   handleError,
 } from "@/components/networking";
-import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { AccessGroupResponse, accessGroupKeys } from "./useAccessGroups";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { type AccessGroupResponse, accessGroupKeys } from "./useAccessGroups";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 

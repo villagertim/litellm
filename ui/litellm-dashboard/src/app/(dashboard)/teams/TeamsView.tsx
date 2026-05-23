@@ -1,24 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { organizationKeys } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
-import { teamDeleteCall, Organization } from "@/components/networking";
-import { fetchTeams } from "@/components/common_components/fetch_teams";
-import { Form } from "antd";
-import TeamInfoView from "@/components/team/TeamInfo";
 import TeamSSOSettings from "@/components/TeamSSOSettings";
-import { isAdminRole } from "@/utils/roles";
-import { Card, Button, Col, Text, Grid, TabPanel } from "@tremor/react";
-import AvailableTeamsPanel from "@/components/team/available_teams";
+import { fetchTeams } from "@/components/common_components/fetch_teams";
 import type { KeyResponse, Team } from "@/components/key_team_helpers/key_list";
+import { type Organization, teamDeleteCall } from "@/components/networking";
+import TeamInfoView from "@/components/team/TeamInfo";
+import AvailableTeamsPanel from "@/components/team/available_teams";
+import { isAdminRole } from "@/utils/roles";
+import { useQueryClient } from "@tanstack/react-query";
+import { Button, Card, Col, Grid, TabPanel, Text } from "@tremor/react";
+import { Form } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
 
-import { Member, v2TeamListCall } from "@/components/networking";
-import { updateExistingKeys } from "@/utils/dataUtils";
-import TeamsHeaderTabs from "@/app/(dashboard)/teams/components/TeamsHeaderTabs";
 import TeamsFilters from "@/app/(dashboard)/teams/components/TeamsFilters";
-import useFetchTeams from "@/app/(dashboard)/teams/hooks/useFetchTeams";
+import TeamsHeaderTabs from "@/app/(dashboard)/teams/components/TeamsHeaderTabs";
 import TeamsTable from "@/app/(dashboard)/teams/components/TeamsTable/TeamsTable";
-import DeleteTeamModal from "@/app/(dashboard)/teams/components/modals/DeleteTeamModal";
 import CreateTeamModal from "@/app/(dashboard)/teams/components/modals/CreateTeamModal";
+import DeleteTeamModal from "@/app/(dashboard)/teams/components/modals/DeleteTeamModal";
+import useFetchTeams from "@/app/(dashboard)/teams/hooks/useFetchTeams";
+import { type Member, v2TeamListCall } from "@/components/networking";
+import { updateExistingKeys } from "@/utils/dataUtils";
 
 interface TeamProps {
   teams: Team[] | null;
@@ -75,15 +76,23 @@ const TeamsView: React.FC<TeamProps> = ({
 
   const [isTeamModalVisible, setIsTeamModalVisible] = useState(false);
   const [isAddMemberModalVisible, setIsAddMemberModalVisible] = useState(false);
-  const [isEditMemberModalVisible, setIsEditMemberModalVisible] = useState(false);
+  const [isEditMemberModalVisible, setIsEditMemberModalVisible] =
+    useState(false);
   const [userModels, setUserModels] = useState<string[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [teamToDelete, setTeamToDelete] = useState<string | null>(null);
-  const [perTeamInfo, setPerTeamInfo] = useState<Record<string, PerTeamInfo>>({});
+  const [perTeamInfo, setPerTeamInfo] = useState<Record<string, PerTeamInfo>>(
+    {},
+  );
 
   const [loggingSettings, setLoggingSettings] = useState<any[]>([]);
-  const [modelAliases, setModelAliases] = useState<{ [key: string]: string }>({});
-  const { lastRefreshed, onRefreshClick: handleRefreshClick } = useFetchTeams({ currentOrg, setTeams });
+  const [modelAliases, setModelAliases] = useState<{ [key: string]: string }>(
+    {},
+  );
+  const { lastRefreshed, onRefreshClick: handleRefreshClick } = useFetchTeams({
+    currentOrg,
+    setTeams,
+  });
 
   useEffect(() => {
     const fetchTeamInfo = () => {
@@ -165,7 +174,7 @@ const TeamsView: React.FC<TeamProps> = ({
       return false;
     }
     for (let i = 0; i < team.members_with_roles.length; i++) {
-      let member = team.members_with_roles[i];
+      const member = team.members_with_roles[i];
       if (member.user_id == userID && member.role == "admin") {
         return true;
       }
@@ -250,7 +259,10 @@ const TeamsView: React.FC<TeamProps> = ({
       <Grid numItems={1} className="gap-2 p-8 w-full mt-2">
         <Col numColSpan={1} className="flex flex-col gap-2">
           {(userRole == "Admin" || userRole == "Org Admin") && (
-            <Button className="w-fit" onClick={() => setIsTeamModalVisible(true)}>
+            <Button
+              className="w-fit"
+              onClick={() => setIsTeamModalVisible(true)}
+            >
               + Create New Team
             </Button>
           )}
@@ -270,7 +282,13 @@ const TeamsView: React.FC<TeamProps> = ({
                   });
                   // Minimal fix: refresh the full team list after an update
                   if (accessToken) {
-                    fetchTeams(accessToken, userID, userRole, currentOrg, setTeams);
+                    fetchTeams(
+                      accessToken,
+                      userID,
+                      userRole,
+                      currentOrg,
+                      setTeams,
+                    );
                   }
                   return updated;
                 });
@@ -280,25 +298,43 @@ const TeamsView: React.FC<TeamProps> = ({
                 setEditTeam(false);
               }}
               accessToken={accessToken}
-              is_team_admin={is_team_admin(teams?.find((team) => team.team_id === selectedTeamId))}
+              is_team_admin={is_team_admin(
+                teams?.find((team) => team.team_id === selectedTeamId),
+              )}
               is_proxy_admin={userRole == "Admin"}
               is_org_admin={(() => {
                 const team = teams?.find((t) => t.team_id === selectedTeamId);
-                if (!team?.organization_id || !organizations || !userID) return false;
-                const org = organizations.find((o) => o.organization_id === team.organization_id);
-                return org?.members?.some((m: any) => m.user_id === userID && m.user_role === "org_admin") ?? false;
+                if (!team?.organization_id || !organizations || !userID)
+                  return false;
+                const org = organizations.find(
+                  (o) => o.organization_id === team.organization_id,
+                );
+                return (
+                  org?.members?.some(
+                    (m: any) =>
+                      m.user_id === userID && m.user_role === "org_admin",
+                  ) ?? false
+                );
               })()}
               userModels={userModels}
               editTeam={editTeam}
               premiumUser={premiumUser}
             />
           ) : (
-            <TeamsHeaderTabs lastRefreshed={lastRefreshed} onRefresh={handleRefreshClick} userRole={userRole}>
+            <TeamsHeaderTabs
+              lastRefreshed={lastRefreshed}
+              onRefresh={handleRefreshClick}
+              userRole={userRole}
+            >
               <TabPanel>
                 <Text>
-                  Click on &ldquo;Team ID&rdquo; to view team details <b>and</b> manage team members.
+                  Click on &ldquo;Team ID&rdquo; to view team details <b>and</b>{" "}
+                  manage team members.
                 </Text>
-                <Grid numItems={1} className="gap-2 pt-2 pb-2 h-[75vh] w-full mt-2">
+                <Grid
+                  numItems={1}
+                  className="gap-2 pt-2 pb-2 h-[75vh] w-full mt-2"
+                >
                   <Col numColSpan={1}>
                     <Card className="w-full mx-auto flex-auto overflow-hidden overflow-y-auto max-h-[50vh]">
                       <div className="border-b px-6 py-4">
@@ -336,11 +372,18 @@ const TeamsView: React.FC<TeamProps> = ({
                 </Grid>
               </TabPanel>
               <TabPanel>
-                <AvailableTeamsPanel accessToken={accessToken} userID={userID} />
+                <AvailableTeamsPanel
+                  accessToken={accessToken}
+                  userID={userID}
+                />
               </TabPanel>
               {isAdminRole(userRole || "") && (
                 <TabPanel>
-                  <TeamSSOSettings accessToken={accessToken} userID={userID || ""} userRole={userRole || ""} />
+                  <TeamSSOSettings
+                    accessToken={accessToken}
+                    userID={userID || ""}
+                    userRole={userRole || ""}
+                  />
                 </TabPanel>
               )}
             </TeamsHeaderTabs>

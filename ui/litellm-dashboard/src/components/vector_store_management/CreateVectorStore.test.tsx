@@ -1,7 +1,13 @@
-import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import CreateVectorStore from "./CreateVectorStore";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as networking from "../networking";
+import CreateVectorStore from "./CreateVectorStore";
 
 // Mock the networking module
 vi.mock("../networking", () => ({
@@ -32,7 +38,7 @@ vi.mock("../vector_store_providers", () => ({
   },
   vectorStoreProviderLogoMap: {
     "Amazon Bedrock": "https://example.com/bedrock.png",
-    "OpenAI": "https://example.com/openai.png",
+    OpenAI: "https://example.com/openai.png",
     "Azure OpenAI": "https://example.com/azure.png",
     "AWS S3 Vectors": "https://example.com/aws.png",
   },
@@ -77,16 +83,24 @@ describe("CreateVectorStore", () => {
   it("should render the component successfully", () => {
     render(<CreateVectorStore accessToken="test-token" />);
 
-    expect(screen.getAllByText("Create Vector Store").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Create Vector Store").length).toBeGreaterThan(
+      0,
+    );
     expect(screen.getByText("Step 1: Upload Documents")).toBeInTheDocument();
-    expect(screen.getByText("Step 2: Configure Vector Store")).toBeInTheDocument();
+    expect(
+      screen.getByText("Step 2: Configure Vector Store"),
+    ).toBeInTheDocument();
   });
 
   it("should display upload area with correct text", () => {
     render(<CreateVectorStore accessToken="test-token" />);
 
-    expect(screen.getByText("Click or drag files to this area to upload")).toBeInTheDocument();
-    expect(screen.getByText(/Support for single or bulk upload/)).toBeInTheDocument();
+    expect(
+      screen.getByText("Click or drag files to this area to upload"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Support for single or bulk upload/),
+    ).toBeInTheDocument();
   });
 
   it("should have provider selection dropdown", () => {
@@ -98,7 +112,9 @@ describe("CreateVectorStore", () => {
   it("should have create button disabled initially when no documents", () => {
     render(<CreateVectorStore accessToken="test-token" />);
 
-    const createButton = screen.getByRole("button", { name: /Create Vector Store/i });
+    const createButton = screen.getByRole("button", {
+      name: /Create Vector Store/i,
+    });
     expect(createButton).toBeDisabled();
   });
 
@@ -106,10 +122,14 @@ describe("CreateVectorStore", () => {
     render(<CreateVectorStore accessToken="test-token" />);
 
     // Create a mock file
-    const file = new File(["test content"], "test.pdf", { type: "application/pdf" });
+    const file = new File(["test content"], "test.pdf", {
+      type: "application/pdf",
+    });
 
     // Find the upload input (it's hidden but accessible)
-    const uploadInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const uploadInput = document.querySelector(
+      'input[type="file"]',
+    ) as HTMLInputElement;
 
     await act(async () => {
       if (uploadInput) {
@@ -132,11 +152,17 @@ describe("CreateVectorStore", () => {
     });
 
     const onSuccess = vi.fn();
-    render(<CreateVectorStore accessToken="test-token" onSuccess={onSuccess} />);
+    render(
+      <CreateVectorStore accessToken="test-token" onSuccess={onSuccess} />,
+    );
 
     // Create a mock file
-    const file = new File(["test content"], "test.pdf", { type: "application/pdf" });
-    const uploadInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const file = new File(["test content"], "test.pdf", {
+      type: "application/pdf",
+    });
+    const uploadInput = document.querySelector(
+      'input[type="file"]',
+    ) as HTMLInputElement;
 
     await act(async () => {
       if (uploadInput) {
@@ -150,7 +176,9 @@ describe("CreateVectorStore", () => {
     });
 
     // Click create button
-    const createButton = screen.getByRole("button", { name: /Create Vector Store/i });
+    const createButton = screen.getByRole("button", {
+      name: /Create Vector Store/i,
+    });
 
     await act(async () => {
       fireEvent.click(createButton);
@@ -164,7 +192,7 @@ describe("CreateVectorStore", () => {
         undefined,
         undefined,
         undefined,
-        {}
+        {},
       );
     });
   });
@@ -181,8 +209,12 @@ describe("CreateVectorStore", () => {
     render(<CreateVectorStore accessToken="test-token" />);
 
     // Create and upload a mock file
-    const file = new File(["test content"], "test.pdf", { type: "application/pdf" });
-    const uploadInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const file = new File(["test content"], "test.pdf", {
+      type: "application/pdf",
+    });
+    const uploadInput = document.querySelector(
+      'input[type="file"]',
+    ) as HTMLInputElement;
 
     await act(async () => {
       if (uploadInput) {
@@ -195,14 +227,18 @@ describe("CreateVectorStore", () => {
     });
 
     // Click create button
-    const createButton = screen.getByRole("button", { name: /Create Vector Store/i });
+    const createButton = screen.getByRole("button", {
+      name: /Create Vector Store/i,
+    });
 
     await act(async () => {
       fireEvent.click(createButton);
     });
 
     await waitFor(() => {
-      expect(screen.getByText("Vector Store Created Successfully")).toBeInTheDocument();
+      expect(
+        screen.getByText("Vector Store Created Successfully"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -236,8 +272,12 @@ describe("CreateVectorStore", () => {
     render(<CreateVectorStore accessToken="test-token" />);
 
     // Upload a file first
-    const file = new File(["test content"], "test.pdf", { type: "application/pdf" });
-    const uploadInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const file = new File(["test content"], "test.pdf", {
+      type: "application/pdf",
+    });
+    const uploadInput = document.querySelector(
+      'input[type="file"]',
+    ) as HTMLInputElement;
 
     await act(async () => {
       if (uploadInput) {
@@ -264,7 +304,9 @@ describe("CreateVectorStore", () => {
     });
 
     // Try to create without filling required fields
-    const createButton = screen.getByRole("button", { name: /Create Vector Store/i });
+    const createButton = screen.getByRole("button", {
+      name: /Create Vector Store/i,
+    });
 
     await act(async () => {
       fireEvent.click(createButton);

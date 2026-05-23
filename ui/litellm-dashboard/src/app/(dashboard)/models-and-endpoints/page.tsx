@@ -2,8 +2,8 @@
 
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import useTeams from "@/app/(dashboard)/hooks/useTeams";
-import { useState } from "react";
 import ModelsAndEndpointsView from "@/app/(dashboard)/models-and-endpoints/ModelsAndEndpointsView";
+import { useState } from "react";
 
 const ModelsAndEndpointsPage = () => {
   const { token, premiumUser } = useAuthorized();

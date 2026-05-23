@@ -1,11 +1,13 @@
-import { Team } from "@/components/key_team_helpers/key_list";
+import type { Team } from "@/components/key_team_helpers/key_list";
 
 /**
  * Creates a map from team_id to team_alias for efficient lookups.
  * @param teams - Array of Team objects
  * @returns Record mapping team_id to team_alias
  */
-export const createTeamAliasMap = (teams: Team[] | null | undefined): Record<string, string> => {
+export const createTeamAliasMap = (
+  teams: Team[] | null | undefined,
+): Record<string, string> => {
   if (!teams) return {};
   return teams.reduce(
     (acc, team) => {
@@ -22,7 +24,10 @@ export const createTeamAliasMap = (teams: Team[] | null | undefined): Record<str
  * @param teams - Array of Team objects
  * @returns The team alias if found, null otherwise
  */
-export const resolveTeamAliasFromTeamID = (teamID: string, teams: Team[]): string | null => {
+export const resolveTeamAliasFromTeamID = (
+  teamID: string,
+  teams: Team[],
+): string | null => {
   const team = teams.find((team) => team.team_id === teamID);
   return team ? team.team_alias : null;
 };

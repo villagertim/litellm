@@ -1,6 +1,6 @@
 "use client";
-import React, { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import React, { Suspense } from "react";
 import { OnboardingForm } from "./OnboardingForm";
 
 function OnboardingContent() {
@@ -14,7 +14,9 @@ export default function Onboarding() {
   return (
     <Suspense
       fallback={
-        <div className="flex items-center justify-center min-h-screen">Loading...</div>
+        <div className="flex items-center justify-center min-h-screen">
+          Loading...
+        </div>
       }
     >
       <OnboardingContent />

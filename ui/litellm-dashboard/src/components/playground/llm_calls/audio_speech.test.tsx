@@ -1,6 +1,6 @@
+import OpenAI from "openai";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { makeOpenAIAudioSpeechRequest } from "./audio_speech";
-import OpenAI from "openai";
 
 vi.mock("openai");
 
@@ -39,7 +39,14 @@ describe("audio_speech", () => {
   });
 
   it("should make a request to the audio speech API with basic parameters", async () => {
-    await makeOpenAIAudioSpeechRequest("Hello, world!", "alloy", mockUpdateUI, "tts-1", "sk-1234567890", []);
+    await makeOpenAIAudioSpeechRequest(
+      "Hello, world!",
+      "alloy",
+      mockUpdateUI,
+      "tts-1",
+      "sk-1234567890",
+      [],
+    );
 
     expect(mockCreate).toHaveBeenCalledWith(
       {
@@ -78,7 +85,10 @@ describe("audio_speech", () => {
       },
       { signal },
     );
-    expect(mockUpdateUI).toHaveBeenCalledWith("blob:mock-audio-url", "tts-1-hd");
+    expect(mockUpdateUI).toHaveBeenCalledWith(
+      "blob:mock-audio-url",
+      "tts-1-hd",
+    );
   });
 
   it("should handle errors gracefully", async () => {
@@ -86,7 +96,14 @@ describe("audio_speech", () => {
     mockCreate.mockRejectedValue(mockError);
 
     await expect(
-      makeOpenAIAudioSpeechRequest("Hello, world!", "alloy", mockUpdateUI, "tts-1", "sk-1234567890", []),
+      makeOpenAIAudioSpeechRequest(
+        "Hello, world!",
+        "alloy",
+        mockUpdateUI,
+        "tts-1",
+        "sk-1234567890",
+        [],
+      ),
     ).rejects.toThrow("API Error");
 
     expect(mockUpdateUI).not.toHaveBeenCalled();

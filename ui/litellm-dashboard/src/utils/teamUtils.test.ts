@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest";
-import { resolveTeamAliasFromTeamID, createTeamAliasMap } from "./teamUtils";
 import type { Team } from "@/components/key_team_helpers/key_list";
+import { describe, expect, it } from "vitest";
+import { createTeamAliasMap, resolveTeamAliasFromTeamID } from "./teamUtils";
 
 describe("resolveTeamAliasFromTeamID", () => {
   it("should return team alias when team is found", () => {

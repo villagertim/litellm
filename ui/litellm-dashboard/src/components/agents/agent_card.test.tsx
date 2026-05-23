@@ -1,7 +1,7 @@
-import React from "react";
-import { describe, it, expect, vi } from "vitest";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import React from "react";
+import { describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../tests/test-utils";
 import AgentCard from "./agent_card";
 import type { Agent } from "./types";
@@ -29,7 +29,9 @@ describe("AgentCard", () => {
     renderWithProviders(<AgentCard {...defaultProps} />);
 
     expect(screen.getByText("Test Agent")).toBeInTheDocument();
-    expect(screen.getByText("A test agent for unit testing")).toBeInTheDocument();
+    expect(
+      screen.getByText("A test agent for unit testing"),
+    ).toBeInTheDocument();
   });
 
   it("should show 'No description' when agent has no description", () => {
@@ -63,7 +65,9 @@ describe("AgentCard", () => {
   it("should call onAgentClick when card is clicked", async () => {
     const user = userEvent.setup();
     const onAgentClick = vi.fn();
-    renderWithProviders(<AgentCard {...defaultProps} onAgentClick={onAgentClick} />);
+    renderWithProviders(
+      <AgentCard {...defaultProps} onAgentClick={onAgentClick} />,
+    );
 
     await user.click(screen.getByText("Test Agent"));
 
@@ -73,14 +77,24 @@ describe("AgentCard", () => {
   it("should show delete button only for admins", () => {
     const onDeleteClick = vi.fn();
     const { unmount } = renderWithProviders(
-      <AgentCard {...defaultProps} isAdmin={false} onDeleteClick={onDeleteClick} />
+      <AgentCard
+        {...defaultProps}
+        isAdmin={false}
+        onDeleteClick={onDeleteClick}
+      />,
     );
-    expect(screen.queryByRole("button", { name: /delete/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /delete/i }),
+    ).not.toBeInTheDocument();
 
     unmount();
 
     renderWithProviders(
-      <AgentCard {...defaultProps} isAdmin={true} onDeleteClick={onDeleteClick} />
+      <AgentCard
+        {...defaultProps}
+        isAdmin={true}
+        onDeleteClick={onDeleteClick}
+      />,
     );
     expect(screen.getByRole("button", { name: /delete/i })).toBeInTheDocument();
   });
@@ -89,7 +103,11 @@ describe("AgentCard", () => {
     const user = userEvent.setup();
     const onDeleteClick = vi.fn();
     renderWithProviders(
-      <AgentCard {...defaultProps} isAdmin={true} onDeleteClick={onDeleteClick} />
+      <AgentCard
+        {...defaultProps}
+        isAdmin={true}
+        onDeleteClick={onDeleteClick}
+      />,
     );
 
     await user.click(screen.getByRole("button", { name: /delete/i }));

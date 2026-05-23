@@ -1,6 +1,9 @@
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { UserInfoV2Response, userGetInfoV2 } from "@/components/networking";
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import {
+  type UserInfoV2Response,
+  userGetInfoV2,
+} from "@/components/networking";
+import { type UseQueryResult, useQuery } from "@tanstack/react-query";
 import { createQueryKeys } from "../common/queryKeysFactory";
 
 const userKeys = createQueryKeys("users");

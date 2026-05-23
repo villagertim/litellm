@@ -1,16 +1,19 @@
-import React from "react";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../tests/test-utils";
 import TeamSSOSettings from "./TeamSSOSettings";
-import * as networking from "./networking";
 import NotificationsManager from "./molecules/notifications_manager";
+import * as networking from "./networking";
 
 vi.mock("./networking");
 
 vi.mock("./common_components/budget_duration_dropdown", () => {
-  const BudgetDurationDropdown = ({ value, onChange }: { value: string | null; onChange: (value: string) => void }) => (
+  const BudgetDurationDropdown = ({
+    value,
+    onChange,
+  }: { value: string | null; onChange: (value: string) => void }) => (
     <select
       data-testid="budget-duration-dropdown"
       value={value || ""}
@@ -27,7 +30,11 @@ vi.mock("./common_components/budget_duration_dropdown", () => {
   return {
     default: BudgetDurationDropdown,
     getBudgetDurationLabel: vi.fn((value: string) => {
-      const map: Record<string, string> = { "24h": "daily", "7d": "weekly", "30d": "monthly" };
+      const map: Record<string, string> = {
+        "24h": "daily",
+        "7d": "weekly",
+        "30d": "monthly",
+      };
       return map[value] || value;
     }),
   };
@@ -38,13 +45,19 @@ vi.mock("./key_team_helpers/fetch_available_models_team_key", () => ({
 }));
 
 vi.mock("./ModelSelect/ModelSelect", () => {
-  const ModelSelect = ({ value, onChange }: { value: string[]; onChange: (value: string[]) => void }) => (
+  const ModelSelect = ({
+    value,
+    onChange,
+  }: { value: string[]; onChange: (value: string[]) => void }) => (
     <select
       data-testid="model-select"
       multiple
       value={value || []}
       onChange={(e) => {
-        const selectedValues = Array.from(e.target.selectedOptions, (option) => option.value);
+        const selectedValues = Array.from(
+          e.target.selectedOptions,
+          (option) => option.value,
+        );
         onChange(selectedValues);
       }}
       aria-label="Models"
@@ -75,15 +88,24 @@ vi.mock("antd", async (importOriginal) => {
     className?: string;
   }) => {
     const isMultiple = mode === "multiple";
-    const selectValue = isMultiple ? (Array.isArray(value) ? value : []) : value || "";
+    const selectValue = isMultiple
+      ? Array.isArray(value)
+        ? value
+        : []
+      : value || "";
     return React.createElement(
       "select",
       {
         multiple: isMultiple,
         value: selectValue,
         onChange: (e: React.ChangeEvent<HTMLSelectElement>) => {
-          const selectedValues = Array.from(e.target.selectedOptions, (option) => option.value);
-          onChange(isMultiple ? selectedValues : selectedValues[0] || undefined);
+          const selectedValues = Array.from(
+            e.target.selectedOptions,
+            (option) => option.value,
+          );
+          onChange(
+            isMultiple ? selectedValues : selectedValues[0] || undefined,
+          );
         },
         className,
         "aria-label": "Select",
@@ -94,7 +116,10 @@ vi.mock("antd", async (importOriginal) => {
   };
   SelectComponent.displayName = "Select";
 
-  const SelectOption = ({ value: optionValue, children: optionChildren }: { value: string; children: React.ReactNode }) =>
+  const SelectOption = ({
+    value: optionValue,
+    children: optionChildren,
+  }: { value: string; children: React.ReactNode }) =>
     React.createElement("option", { value: optionValue }, optionChildren);
   SelectOption.displayName = "SelectOption";
   SelectComponent.Option = SelectOption;
@@ -139,7 +164,9 @@ vi.mock("antd", async (importOriginal) => {
 });
 
 const mockGetDefaultTeamSettings = vi.mocked(networking.getDefaultTeamSettings);
-const mockUpdateDefaultTeamSettings = vi.mocked(networking.updateDefaultTeamSettings);
+const mockUpdateDefaultTeamSettings = vi.mocked(
+  networking.updateDefaultTeamSettings,
+);
 const mockNotificationsManager = vi.mocked(NotificationsManager);
 
 describe("TeamSSOSettings", () => {
@@ -181,14 +208,24 @@ describe("TeamSSOSettings", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("No team settings available or you do not have permission to view them."),
+        screen.getByText(
+          "No team settings available or you do not have permission to view them.",
+        ),
       ).toBeInTheDocument();
     });
-    expect(mockNotificationsManager.fromBackend).toHaveBeenCalledWith("Failed to fetch team settings");
+    expect(mockNotificationsManager.fromBackend).toHaveBeenCalledWith(
+      "Failed to fetch team settings",
+    );
   });
 
   it("should not fetch settings when access token is null", async () => {
-    renderWithProviders(<TeamSSOSettings accessToken={null} userID="test-user" userRole="admin" />);
+    renderWithProviders(
+      <TeamSSOSettings
+        accessToken={null}
+        userID="test-user"
+        userRole="admin"
+      />,
+    );
 
     await waitFor(() => {
       expect(mockGetDefaultTeamSettings).not.toHaveBeenCalled();
@@ -204,7 +241,11 @@ describe("TeamSSOSettings", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Default Team Settings")).toBeInTheDocument();
-      expect(screen.getByText("These settings will be applied by default when creating new teams.")).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "These settings will be applied by default when creating new teams.",
+        ),
+      ).toBeInTheDocument();
     });
   });
 
@@ -234,8 +275,14 @@ describe("TeamSSOSettings", () => {
     });
 
     // Descriptions
-    expect(screen.getByText("Maximum budget (in USD) for new automatically created teams.")).toBeInTheDocument();
-    expect(screen.getByText("How frequently the team's budget resets.")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Maximum budget (in USD) for new automatically created teams.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("How frequently the team's budget resets."),
+    ).toBeInTheDocument();
   });
 
   it("should display formatted values in view mode", async () => {
@@ -305,14 +352,22 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /Edit Settings/i }),
+      ).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /Edit Settings/i }));
+    await userEvent.click(
+      screen.getByRole("button", { name: /Edit Settings/i }),
+    );
 
     expect(screen.getByRole("button", { name: /Cancel/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Save Changes/i })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Edit Settings/i })).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Save Changes/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /Edit Settings/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("should cancel edit mode and reset values", async () => {
@@ -321,14 +376,22 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /Edit Settings/i }),
+      ).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /Edit Settings/i }));
+    await userEvent.click(
+      screen.getByRole("button", { name: /Edit Settings/i }),
+    );
     await userEvent.click(screen.getByRole("button", { name: /Cancel/i }));
 
-    expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Cancel/i })).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Edit Settings/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /Cancel/i }),
+    ).not.toBeInTheDocument();
   });
 
   // --- Edit Mode Fields ---
@@ -339,13 +402,19 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /Edit Settings/i }),
+      ).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /Edit Settings/i }));
+    await userEvent.click(
+      screen.getByRole("button", { name: /Edit Settings/i }),
+    );
 
     await waitFor(() => {
-      expect(screen.getByTestId("budget-duration-dropdown")).toBeInTheDocument();
+      expect(
+        screen.getByTestId("budget-duration-dropdown"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -355,10 +424,14 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /Edit Settings/i }),
+      ).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /Edit Settings/i }));
+    await userEvent.click(
+      screen.getByRole("button", { name: /Edit Settings/i }),
+    );
 
     await waitFor(() => {
       expect(screen.getByTestId("model-select")).toBeInTheDocument();
@@ -371,10 +444,14 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /Edit Settings/i }),
+      ).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /Edit Settings/i }));
+    await userEvent.click(
+      screen.getByRole("button", { name: /Edit Settings/i }),
+    );
 
     await waitFor(() => {
       const numberInputs = screen.getAllByLabelText("number input");
@@ -389,10 +466,14 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /Edit Settings/i }),
+      ).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /Edit Settings/i }));
+    await userEvent.click(
+      screen.getByRole("button", { name: /Edit Settings/i }),
+    );
 
     await waitFor(() => {
       const listboxes = screen.getAllByRole("listbox");
@@ -411,21 +492,34 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /Edit Settings/i }),
+      ).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /Edit Settings/i }));
-    await userEvent.click(screen.getByRole("button", { name: /Save Changes/i }));
+    await userEvent.click(
+      screen.getByRole("button", { name: /Edit Settings/i }),
+    );
+    await userEvent.click(
+      screen.getByRole("button", { name: /Save Changes/i }),
+    );
 
     await waitFor(() => {
-      expect(mockUpdateDefaultTeamSettings).toHaveBeenCalledWith("test-token", expect.any(Object));
+      expect(mockUpdateDefaultTeamSettings).toHaveBeenCalledWith(
+        "test-token",
+        expect.any(Object),
+      );
     });
 
-    expect(mockNotificationsManager.success).toHaveBeenCalledWith("Default team settings updated successfully");
+    expect(mockNotificationsManager.success).toHaveBeenCalledWith(
+      "Default team settings updated successfully",
+    );
 
     // Should exit edit mode after save
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /Edit Settings/i }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -436,31 +530,51 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /Edit Settings/i }),
+      ).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /Edit Settings/i }));
-    await userEvent.click(screen.getByRole("button", { name: /Save Changes/i }));
+    await userEvent.click(
+      screen.getByRole("button", { name: /Edit Settings/i }),
+    );
+    await userEvent.click(
+      screen.getByRole("button", { name: /Save Changes/i }),
+    );
 
     await waitFor(() => {
-      expect(mockNotificationsManager.fromBackend).toHaveBeenCalledWith("Failed to update team settings");
+      expect(mockNotificationsManager.fromBackend).toHaveBeenCalledWith(
+        "Failed to update team settings",
+      );
     });
   });
 
   it("should disable cancel button while saving", async () => {
     mockGetDefaultTeamSettings.mockResolvedValue(mockSettingsResponse);
     mockUpdateDefaultTeamSettings.mockImplementation(
-      () => new Promise((resolve) => setTimeout(() => resolve({ settings: mockSettingsResponse.values }), 100)),
+      () =>
+        new Promise((resolve) =>
+          setTimeout(
+            () => resolve({ settings: mockSettingsResponse.values }),
+            100,
+          ),
+        ),
     );
 
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /Edit Settings/i }),
+      ).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /Edit Settings/i }));
-    await userEvent.click(screen.getByRole("button", { name: /Save Changes/i }));
+    await userEvent.click(
+      screen.getByRole("button", { name: /Edit Settings/i }),
+    );
+    await userEvent.click(
+      screen.getByRole("button", { name: /Save Changes/i }),
+    );
 
     expect(screen.getByRole("button", { name: /Cancel/i })).toBeDisabled();
   });

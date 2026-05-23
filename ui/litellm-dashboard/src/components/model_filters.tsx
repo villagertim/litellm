@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
 import { Card, Text } from "@tremor/react";
+import type React from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 interface ModelGroupInfo {
   model_group: string;
@@ -76,15 +77,20 @@ const ModelFilters: React.FC<ModelFiltersProps> = ({
   const filteredData = useMemo(() => {
     return (
       modelHubData?.filter((model) => {
-        const matchesSearch = model.model_group.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesProvider = selectedProvider === "" || model.providers.includes(selectedProvider);
+        const matchesSearch = model.model_group
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+        const matchesProvider =
+          selectedProvider === "" || model.providers.includes(selectedProvider);
         const matchesMode = selectedMode === "" || model.mode === selectedMode;
 
         // Check if model has the selected feature
         const matchesFeature =
           selectedFeature === "" ||
           Object.entries(model)
-            .filter(([key, value]) => key.startsWith("supports_") && value === true)
+            .filter(
+              ([key, value]) => key.startsWith("supports_") && value === true,
+            )
             .some(([key]) => {
               const featureName = key
                 .replace(/^supports_/, "")
@@ -94,17 +100,29 @@ const ModelFilters: React.FC<ModelFiltersProps> = ({
               return featureName === selectedFeature;
             });
 
-        return matchesSearch && matchesProvider && matchesMode && matchesFeature;
+        return (
+          matchesSearch && matchesProvider && matchesMode && matchesFeature
+        );
       }) || []
     );
-  }, [modelHubData, searchTerm, selectedProvider, selectedMode, selectedFeature]);
+  }, [
+    modelHubData,
+    searchTerm,
+    selectedProvider,
+    selectedMode,
+    selectedFeature,
+  ]);
 
   // Update parent component when filtered data changes
   useEffect(() => {
     // Only call the callback if the filtered data actually changed
     const hasChanged =
       filteredData.length !== previousFilteredDataRef.current.length ||
-      filteredData.some((model, index) => model.model_group !== previousFilteredDataRef.current[index]?.model_group);
+      filteredData.some(
+        (model, index) =>
+          model.model_group !==
+          previousFilteredDataRef.current[index]?.model_group,
+      );
 
     if (hasChanged) {
       previousFilteredDataRef.current = filteredData;
@@ -153,7 +171,11 @@ const ModelFilters: React.FC<ModelFiltersProps> = ({
           </option>
           {modelHubData &&
             getUniqueProviders(modelHubData).map((provider) => (
-              <option key={provider} value={provider} className="text-sm text-gray-800">
+              <option
+                key={provider}
+                value={provider}
+                className="text-sm text-gray-800"
+              >
                 {provider}
               </option>
             ))}
@@ -189,7 +211,11 @@ const ModelFilters: React.FC<ModelFiltersProps> = ({
           </option>
           {modelHubData &&
             getUniqueFeatures(modelHubData).map((feature) => (
-              <option key={feature} value={feature} className="text-sm text-gray-800">
+              <option
+                key={feature}
+                value={feature}
+                className="text-sm text-gray-800"
+              >
                 {feature}
               </option>
             ))}

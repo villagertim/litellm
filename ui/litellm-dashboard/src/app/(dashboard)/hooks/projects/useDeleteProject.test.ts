@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { ReactNode } from "react";
+import { renderHook, waitFor } from "@testing-library/react";
+import React, { type ReactNode } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useDeleteProject } from "./useDeleteProject";
 import { projectKeys } from "./useProjects";
 
@@ -27,11 +27,17 @@ describe("useDeleteProject", () => {
 
   beforeEach(() => {
     queryClient = new QueryClient({
-      defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
     });
     vi.clearAllMocks();
     global.fetch = vi.fn();
-    mockUseAuthorized.mockReturnValue({ accessToken: "test-token", userRole: "Admin" });
+    mockUseAuthorized.mockReturnValue({
+      accessToken: "test-token",
+      userRole: "Admin",
+    });
   });
 
   it("should render", () => {
@@ -42,7 +48,10 @@ describe("useDeleteProject", () => {
   });
 
   it("should send DELETE to /project/delete with the given project IDs", async () => {
-    (global.fetch as any).mockResolvedValue({ ok: true, json: async () => ({}) });
+    (global.fetch as any).mockResolvedValue({
+      ok: true,
+      json: async () => ({}),
+    });
     const { result } = renderHook(() => useDeleteProject(), {
       wrapper: makeWrapper(queryClient),
     });
@@ -50,11 +59,16 @@ describe("useDeleteProject", () => {
     const [url, init] = (global.fetch as any).mock.calls[0];
     expect(url).toContain("/project/delete");
     expect(init.method).toBe("DELETE");
-    expect(JSON.parse(init.body)).toEqual({ project_ids: ["proj-1", "proj-2"] });
+    expect(JSON.parse(init.body)).toEqual({
+      project_ids: ["proj-1", "proj-2"],
+    });
   });
 
   it("should invalidate project queries on success", async () => {
-    (global.fetch as any).mockResolvedValue({ ok: true, json: async () => ({}) });
+    (global.fetch as any).mockResolvedValue({
+      ok: true,
+      json: async () => ({}),
+    });
     const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
     const { result } = renderHook(() => useDeleteProject(), {
       wrapper: makeWrapper(queryClient),
@@ -81,7 +95,7 @@ describe("useDeleteProject", () => {
       wrapper: makeWrapper(queryClient),
     });
     await expect(result.current.mutateAsync(["proj-1"])).rejects.toThrow(
-      "Access token is required"
+      "Access token is required",
     );
     expect(global.fetch).not.toHaveBeenCalled();
   });

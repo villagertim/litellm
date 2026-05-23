@@ -115,7 +115,9 @@ describe("provider_info_helpers", () => {
     });
 
     it("should return sagemaker placeholder for SageMaker provider", () => {
-      expect(getPlaceholder(Providers.SageMaker)).toBe("sagemaker/jumpstart-dft-meta-textgeneration-llama-2-7b");
+      expect(getPlaceholder(Providers.SageMaker)).toBe(
+        "sagemaker/jumpstart-dft-meta-textgeneration-llama-2-7b",
+      );
     });
 
     it("should return gemini-pro placeholder for Google_AI_Studio provider", () => {
@@ -123,7 +125,9 @@ describe("provider_info_helpers", () => {
     });
 
     it("should return azure_ai placeholder for Azure_AI_Studio provider", () => {
-      expect(getPlaceholder(Providers.Azure_AI_Studio)).toBe("azure_ai/command-r-plus");
+      expect(getPlaceholder(Providers.Azure_AI_Studio)).toBe(
+        "azure_ai/command-r-plus",
+      );
     });
 
     it("should return my-deployment placeholder for Azure provider", () => {
@@ -147,15 +151,21 @@ describe("provider_info_helpers", () => {
     });
 
     it("should return volcengine placeholder for VolcEngine provider", () => {
-      expect(getPlaceholder(Providers.VolcEngine)).toBe("volcengine/<any-model-on-volcengine>");
+      expect(getPlaceholder(Providers.VolcEngine)).toBe(
+        "volcengine/<any-model-on-volcengine>",
+      );
     });
 
     it("should return deepinfra placeholder for DeepInfra provider", () => {
-      expect(getPlaceholder(Providers.DeepInfra)).toBe("deepinfra/<any-model-on-deepinfra>");
+      expect(getPlaceholder(Providers.DeepInfra)).toBe(
+        "deepinfra/<any-model-on-deepinfra>",
+      );
     });
 
     it("should return fal_ai placeholder for FalAI provider", () => {
-      expect(getPlaceholder(Providers.FalAI)).toBe("fal_ai/fal-ai/flux-pro/v1.1-ultra");
+      expect(getPlaceholder(Providers.FalAI)).toBe(
+        "fal_ai/fal-ai/flux-pro/v1.1-ultra",
+      );
     });
 
     it("should return runwayml placeholder for RunwayML provider", () => {
@@ -163,7 +173,9 @@ describe("provider_info_helpers", () => {
     });
 
     it("should return watsonx placeholder for Watsonx provider", () => {
-      expect(getPlaceholder(Providers.WATSONX)).toBe("watsonx/ibm/granite-3-3-8b-instruct");
+      expect(getPlaceholder(Providers.WATSONX)).toBe(
+        "watsonx/ibm/granite-3-3-8b-instruct",
+      );
     });
 
     it("should return zai/glm-4.5 placeholder for Z.AI provider", () => {
@@ -193,7 +205,10 @@ describe("provider_info_helpers", () => {
     });
 
     it("should return empty array when modelMap is not an object type", () => {
-      const result = getProviderModels(Providers.OpenAI, "not-an-object" as any);
+      const result = getProviderModels(
+        Providers.OpenAI,
+        "not-an-object" as any,
+      );
       expect(result).toEqual([]);
     });
 
@@ -284,8 +299,12 @@ describe("provider_info_helpers", () => {
     it("should log provider key and mapped provider when called", () => {
       const modelMap = { "gpt-3.5-turbo": { litellm_provider: "openai" } };
       getProviderModels(Providers.OpenAI, modelMap);
-      expect(consoleSpy).toHaveBeenCalledWith(`Provider key: ${Providers.OpenAI}`);
-      expect(consoleSpy).toHaveBeenCalledWith(`Provider mapped to: ${provider_map[Providers.OpenAI]}`);
+      expect(consoleSpy).toHaveBeenCalledWith(
+        `Provider key: ${Providers.OpenAI}`,
+      );
+      expect(consoleSpy).toHaveBeenCalledWith(
+        `Provider mapped to: ${provider_map[Providers.OpenAI]}`,
+      );
     });
 
     it("should return empty array for provider with no matching models", () => {

@@ -7,7 +7,10 @@ interface OrganizationFiltersProps {
   filters: FilterState;
   showFilters: boolean;
   onToggleFilters: (toggle: boolean) => void;
-  onChange: <K extends keyof FilterState>(key: K, value: FilterState[K]) => void;
+  onChange: <K extends keyof FilterState>(
+    key: K,
+    value: FilterState[K],
+  ) => void;
   onReset: () => void;
 }
 

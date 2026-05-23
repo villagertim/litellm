@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { formatLabel, formItemValidateJSON, truncateString } from "./textUtils";
+import { describe, expect, it } from "vitest";
+import { formItemValidateJSON, formatLabel, truncateString } from "./textUtils";
 
 describe("formatLabel", () => {
   it("should format label", () => {
@@ -29,11 +29,15 @@ describe("truncateString", () => {
 describe("formItemValidateJSON", () => {
   it("should resolve for a valid JSON", async () => {
     const validObj = { a: 1, b: "x", c: true, d: [1, 2], e: { f: "y" } };
-    await expect(formItemValidateJSON({}, JSON.stringify(validObj))).resolves.toBeUndefined();
+    await expect(
+      formItemValidateJSON({}, JSON.stringify(validObj)),
+    ).resolves.toBeUndefined();
   });
 
   it("should reject with an error message for invalid JSON", async () => {
-    await expect(formItemValidateJSON({}, "invalid JSON")).rejects.toBe("Please enter valid JSON");
+    await expect(formItemValidateJSON({}, "invalid JSON")).rejects.toBe(
+      "Please enter valid JSON",
+    );
   });
 
   it("should resolve when value is empty string", async () => {
@@ -41,10 +45,14 @@ describe("formItemValidateJSON", () => {
   });
 
   it("should resolve when value is null", async () => {
-    await expect(formItemValidateJSON({}, null as any)).resolves.toBeUndefined();
+    await expect(
+      formItemValidateJSON({}, null as any),
+    ).resolves.toBeUndefined();
   });
 
   it("should resolve when value is undefined", async () => {
-    await expect(formItemValidateJSON({}, undefined as any)).resolves.toBeUndefined();
+    await expect(
+      formItemValidateJSON({}, undefined as any),
+    ).resolves.toBeUndefined();
   });
 });

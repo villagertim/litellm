@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
 import { Select } from "antd";
-import { Policy } from "./types";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { getPoliciesList } from "../networking";
+import type { Policy } from "./types";
 
 /** Prefix for policy version IDs in request body; must match backend POLICY_VERSION_ID_PREFIX. */
 export const POLICY_VERSION_ID_PREFIX = "policy_";
@@ -12,7 +13,9 @@ export function policyVersionRef(policyId: string): string {
 }
 
 /** Build select options from policies (filter non-draft, label with name/version/status). */
-export function getPolicyOptionEntries(policies: Policy[]): { value: string; label: string }[] {
+export function getPolicyOptionEntries(
+  policies: Policy[],
+): { value: string; label: string }[] {
   return policies
     .filter((policy) => (policy.version_status ?? "draft") !== "draft")
     .map((policy) => {

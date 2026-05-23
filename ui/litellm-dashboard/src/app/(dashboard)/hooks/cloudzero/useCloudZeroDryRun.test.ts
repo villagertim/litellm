@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { ReactNode } from "react";
+import { renderHook, waitFor } from "@testing-library/react";
+import React, { type ReactNode } from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useCloudZeroDryRun } from "./useCloudZeroDryRun";
 
 const {
@@ -61,7 +61,9 @@ describe("useCloudZeroDryRun", () => {
     React.createElement(QueryClientProvider, { client: queryClient }, children);
 
   it("should render", () => {
-    const { result } = renderHook(() => useCloudZeroDryRun(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroDryRun(mockAccessToken), {
+      wrapper,
+    });
 
     expect(result.current).toBeDefined();
   });
@@ -73,7 +75,9 @@ describe("useCloudZeroDryRun", () => {
       json: async () => mockResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroDryRun(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroDryRun(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({ limit: 20 });
 
@@ -82,16 +86,19 @@ describe("useCloudZeroDryRun", () => {
     });
 
     expect(result.current.data).toEqual(mockResponse);
-    expect(fetchSpy).toHaveBeenCalledWith(`${mockProxyBaseUrl}/cloudzero/dry-run`, {
-      method: "POST",
-      headers: {
-        [mockHeaderName]: `Bearer ${mockAccessToken}`,
-        "Content-Type": "application/json",
+    expect(fetchSpy).toHaveBeenCalledWith(
+      `${mockProxyBaseUrl}/cloudzero/dry-run`,
+      {
+        method: "POST",
+        headers: {
+          [mockHeaderName]: `Bearer ${mockAccessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          limit: 20,
+        }),
       },
-      body: JSON.stringify({
-        limit: 20,
-      }),
-    });
+    );
   });
 
   it("should use default limit of 10 when limit is not provided", async () => {
@@ -101,7 +108,9 @@ describe("useCloudZeroDryRun", () => {
       json: async () => mockResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroDryRun(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroDryRun(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({});
 
@@ -121,7 +130,9 @@ describe("useCloudZeroDryRun", () => {
       json: async () => errorResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroDryRun(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroDryRun(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({ limit: 5 });
 
@@ -139,7 +150,9 @@ describe("useCloudZeroDryRun", () => {
       json: async () => errorResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroDryRun(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroDryRun(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({ limit: 5 });
 
@@ -157,7 +170,9 @@ describe("useCloudZeroDryRun", () => {
       json: async () => errorResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroDryRun(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroDryRun(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({ limit: 5 });
 
@@ -176,7 +191,9 @@ describe("useCloudZeroDryRun", () => {
       },
     });
 
-    const { result } = renderHook(() => useCloudZeroDryRun(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroDryRun(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({ limit: 5 });
 
@@ -191,7 +208,9 @@ describe("useCloudZeroDryRun", () => {
     const networkError = new Error("Network request failed");
     (fetchSpy as any).mockRejectedValue(networkError);
 
-    const { result } = renderHook(() => useCloudZeroDryRun(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroDryRun(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({ limit: 5 });
 
@@ -206,7 +225,10 @@ describe("useCloudZeroDryRun", () => {
     ["empty string", ""],
     ["null", null],
   ])("should throw error when accessToken is %s", async (_, invalidToken) => {
-    const { result } = renderHook(() => useCloudZeroDryRun(invalidToken as any), { wrapper });
+    const { result } = renderHook(
+      () => useCloudZeroDryRun(invalidToken as any),
+      { wrapper },
+    );
 
     result.current.mutate({ limit: 5 });
 
@@ -226,7 +248,9 @@ describe("useCloudZeroDryRun", () => {
       json: async () => mockResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroDryRun(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroDryRun(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({ limit: 5 });
 
@@ -234,6 +258,9 @@ describe("useCloudZeroDryRun", () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(fetchSpy).toHaveBeenCalledWith("/cloudzero/dry-run", expect.any(Object));
+    expect(fetchSpy).toHaveBeenCalledWith(
+      "/cloudzero/dry-run",
+      expect.any(Object),
+    );
   });
 });

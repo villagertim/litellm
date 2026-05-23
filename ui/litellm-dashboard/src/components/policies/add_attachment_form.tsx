@@ -1,12 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { Modal, Form, Select, Radio, Divider, Typography } from "antd";
-import { Button } from "@tremor/react";
-import { Policy } from "./types";
-import { teamListCall, keyListCall, modelAvailableCall, estimateAttachmentImpactCall } from "../networking";
-import NotificationsManager from "../molecules/notifications_manager";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { Button } from "@tremor/react";
+import { Divider, Form, Modal, Radio, Select, Typography } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
+import NotificationsManager from "../molecules/notifications_manager";
+import {
+  estimateAttachmentImpactCall,
+  keyListCall,
+  modelAvailableCall,
+  teamListCall,
+} from "../networking";
 import { buildAttachmentData } from "./build_attachment_data";
 import ImpactPreviewAlert from "./impact_preview_alert";
+import type { Policy } from "./types";
 
 const { Text } = Typography;
 
@@ -54,7 +60,9 @@ const AddAttachmentForm: React.FC<AddAttachmentFormProps> = ({
     setIsLoadingTeams(true);
     try {
       const teamsResponse = await teamListCall(accessToken, null, userId);
-      const teamsArray = Array.isArray(teamsResponse) ? teamsResponse : (teamsResponse?.data || []);
+      const teamsArray = Array.isArray(teamsResponse)
+        ? teamsResponse
+        : teamsResponse?.data || [];
       const teamAliases = teamsArray
         .map((t: any) => t.team_alias)
         .filter(Boolean);
@@ -68,11 +76,18 @@ const AddAttachmentForm: React.FC<AddAttachmentFormProps> = ({
     // Load keys — keyListCall returns {keys: [...], total_count, ...}
     setIsLoadingKeys(true);
     try {
-      const keysResponse = await keyListCall(accessToken, null, null, null, null, null, 1, 100);
+      const keysResponse = await keyListCall(
+        accessToken,
+        null,
+        null,
+        null,
+        null,
+        null,
+        1,
+        100,
+      );
       const keysArray = keysResponse?.keys || keysResponse?.data || [];
-      const keyAliases = keysArray
-        .map((k: any) => k.key_alias)
-        .filter(Boolean);
+      const keyAliases = keysArray.map((k: any) => k.key_alias).filter(Boolean);
       setAvailableKeys(keyAliases);
     } catch (error) {
       console.error("Failed to load keys:", error);
@@ -83,8 +98,14 @@ const AddAttachmentForm: React.FC<AddAttachmentFormProps> = ({
     // Load models
     setIsLoadingModels(true);
     try {
-      const modelsResponse = await modelAvailableCall(accessToken, userId || "", userRole || "");
-      const modelsArray = modelsResponse?.data || (Array.isArray(modelsResponse) ? modelsResponse : []);
+      const modelsResponse = await modelAvailableCall(
+        accessToken,
+        userId || "",
+        userRole || "",
+      );
+      const modelsArray =
+        modelsResponse?.data ||
+        (Array.isArray(modelsResponse) ? modelsResponse : []);
       const modelIds = modelsArray
         .map((m: any) => m.id || m.model_name)
         .filter(Boolean);
@@ -119,7 +140,7 @@ const AddAttachmentForm: React.FC<AddAttachmentFormProps> = ({
           ...form.getFieldsValue(true),
           policy_name: firstPolicy,
         },
-        scopeType
+        scopeType,
       );
       const result = await estimateAttachmentImpactCall(accessToken, data);
       setImpactResult(result);
@@ -154,30 +175,34 @@ const AddAttachmentForm: React.FC<AddAttachmentFormProps> = ({
               ...values,
               policy_name: policyName,
             },
-            scopeType
+            scopeType,
           );
           return createAttachment(accessToken, data);
-        })
+        }),
       );
 
-      const successCount = results.filter((r) => r.status === "fulfilled").length;
-      const failed = results.filter((r) => r.status === "rejected") as PromiseRejectedResult[];
+      const successCount = results.filter(
+        (r) => r.status === "fulfilled",
+      ).length;
+      const failed = results.filter(
+        (r) => r.status === "rejected",
+      ) as PromiseRejectedResult[];
 
       if (successCount > 0 && failed.length === 0) {
         NotificationsManager.success(
           successCount === 1
             ? "Attachment created successfully"
-            : `${successCount} attachments created successfully`
+            : `${successCount} attachments created successfully`,
         );
       } else if (successCount > 0 && failed.length > 0) {
         NotificationsManager.fromBackend(
-          `${successCount} attachments created, ${failed.length} failed`
+          `${successCount} attachments created, ${failed.length} failed`,
         );
       } else {
         throw new Error(
           failed[0]?.reason instanceof Error
             ? failed[0].reason.message
-            : "Failed to create attachments"
+            : "Failed to create attachments",
         );
       }
 
@@ -187,7 +212,8 @@ const AddAttachmentForm: React.FC<AddAttachmentFormProps> = ({
     } catch (error) {
       console.error("Failed to create attachment:", error);
       NotificationsManager.fromBackend(
-        "Failed to create attachment: " + (error instanceof Error ? error.message : String(error))
+        "Failed to create attachment: " +
+          (error instanceof Error ? error.message : String(error)),
       );
     } finally {
       setIsSubmitting(false);
@@ -217,7 +243,9 @@ const AddAttachmentForm: React.FC<AddAttachmentFormProps> = ({
         <Form.Item
           name="policy_names"
           label="Policies"
-          rules={[{ required: true, message: "Please select at least one policy" }]}
+          rules={[
+            { required: true, message: "Please select at least one policy" },
+          ]}
         >
           <Select
             mode="multiple"
@@ -240,7 +268,9 @@ const AddAttachmentForm: React.FC<AddAttachmentFormProps> = ({
             value={scopeType}
             onChange={(e) => setScopeType(e.target.value)}
           >
-            <Radio value="specific">Specific (teams, keys, models, or tags)</Radio>
+            <Radio value="specific">
+              Specific (teams, keys, models, or tags)
+            </Radio>
             <Radio value="global">Global (applies to all requests)</Radio>
           </Radio.Group>
         </Form.Item>
@@ -254,7 +284,11 @@ const AddAttachmentForm: React.FC<AddAttachmentFormProps> = ({
             >
               <Select
                 mode="tags"
-                placeholder={isLoadingTeams ? "Loading teams..." : "Select or enter team aliases"}
+                placeholder={
+                  isLoadingTeams
+                    ? "Loading teams..."
+                    : "Select or enter team aliases"
+                }
                 loading={isLoadingTeams}
                 options={availableTeams.map((team) => ({
                   label: team,
@@ -263,7 +297,9 @@ const AddAttachmentForm: React.FC<AddAttachmentFormProps> = ({
                 tokenSeparators={[","]}
                 showSearch
                 filterOption={(input, option) =>
-                  (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                  (option?.label ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
                 }
                 style={{ width: "100%" }}
               />
@@ -276,7 +312,11 @@ const AddAttachmentForm: React.FC<AddAttachmentFormProps> = ({
             >
               <Select
                 mode="tags"
-                placeholder={isLoadingKeys ? "Loading keys..." : "Select or enter key aliases"}
+                placeholder={
+                  isLoadingKeys
+                    ? "Loading keys..."
+                    : "Select or enter key aliases"
+                }
                 loading={isLoadingKeys}
                 options={availableKeys.map((key) => ({
                   label: key,
@@ -285,7 +325,9 @@ const AddAttachmentForm: React.FC<AddAttachmentFormProps> = ({
                 tokenSeparators={[","]}
                 showSearch
                 filterOption={(input, option) =>
-                  (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                  (option?.label ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
                 }
                 style={{ width: "100%" }}
               />
@@ -298,7 +340,11 @@ const AddAttachmentForm: React.FC<AddAttachmentFormProps> = ({
             >
               <Select
                 mode="tags"
-                placeholder={isLoadingModels ? "Loading models..." : "Select or enter model names (e.g., gpt-4, bedrock/*)"}
+                placeholder={
+                  isLoadingModels
+                    ? "Loading models..."
+                    : "Select or enter model names (e.g., gpt-4, bedrock/*)"
+                }
                 loading={isLoadingModels}
                 options={availableModels.map((model) => ({
                   label: model,
@@ -307,7 +353,9 @@ const AddAttachmentForm: React.FC<AddAttachmentFormProps> = ({
                 tokenSeparators={[","]}
                 showSearch
                 filterOption={(input, option) =>
-                  (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                  (option?.label ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
                 }
                 style={{ width: "100%" }}
               />
@@ -319,7 +367,10 @@ const AddAttachmentForm: React.FC<AddAttachmentFormProps> = ({
               tooltip="Match against tags set in key or team metadata. Use exact values (e.g., healthcare) or wildcard patterns (e.g., health-*) where * matches any suffix."
               extra={
                 <Text type="secondary" style={{ fontSize: 12 }}>
-                  Matches tags from key/team <code>metadata.tags</code> or tags passed dynamically in the request body. Use <code>*</code> as a suffix wildcard (e.g., <code>prod-*</code> matches <code>prod-us</code>, <code>prod-eu</code>).
+                  Matches tags from key/team <code>metadata.tags</code> or tags
+                  passed dynamically in the request body. Use <code>*</code> as
+                  a suffix wildcard (e.g., <code>prod-*</code> matches{" "}
+                  <code>prod-us</code>, <code>prod-eu</code>).
                 </Text>
               }
             >
@@ -343,7 +394,11 @@ const AddAttachmentForm: React.FC<AddAttachmentFormProps> = ({
             Cancel
           </Button>
           {scopeType === "specific" && (
-            <Button variant="secondary" onClick={handlePreviewImpact} loading={isEstimating}>
+            <Button
+              variant="secondary"
+              onClick={handlePreviewImpact}
+              loading={isEstimating}
+            >
               Estimate Impact
             </Button>
           )}

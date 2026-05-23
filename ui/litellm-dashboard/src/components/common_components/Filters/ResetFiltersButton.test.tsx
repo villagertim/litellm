@@ -7,7 +7,9 @@ describe("ResetFiltersButton", () => {
   it("should render", () => {
     const onClick = vi.fn();
     render(<ResetFiltersButton onClick={onClick} />);
-    expect(screen.getByRole("button", { name: /reset filters/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /reset filters/i }),
+    ).toBeInTheDocument();
   });
 
   it("should call onClick when clicked", async () => {
@@ -24,6 +26,8 @@ describe("ResetFiltersButton", () => {
   it("should render custom label when provided", () => {
     const onClick = vi.fn();
     render(<ResetFiltersButton onClick={onClick} label="Clear All" />);
-    expect(screen.getByRole("button", { name: /clear all/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /clear all/i }),
+    ).toBeInTheDocument();
   });
 });

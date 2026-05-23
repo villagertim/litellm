@@ -1,17 +1,17 @@
+import { CloseOutlined, DownOutlined, UpOutlined } from "@ant-design/icons";
 import { Button, Space, Tag, Tooltip, Typography } from "antd";
-import { CloseOutlined, UpOutlined, DownOutlined } from "@ant-design/icons";
 import moment from "moment";
-import { LogEntry } from "../columns";
 import { getProviderLogoAndName } from "../../provider_info_helpers";
+import type { LogEntry } from "../columns";
 import {
-  DRAWER_HEADER_PADDING,
-  COLOR_BORDER,
   COLOR_BACKGROUND,
-  SPACING_MEDIUM,
-  SPACING_LARGE,
+  COLOR_BORDER,
+  DRAWER_HEADER_PADDING,
+  FONT_FAMILY_MONO,
   FONT_SIZE_HEADER,
   FONT_SIZE_MEDIUM,
-  FONT_FAMILY_MONO,
+  SPACING_LARGE,
+  SPACING_MEDIUM,
   SPACING_SMALL,
 } from "./constants";
 
@@ -55,16 +55,36 @@ export function DrawerHeader({
       }}
     >
       {/* Row 0: Model + Provider with Logo */}
-      <ModelProviderSection model={log.model} providerLogo={providerInfo?.logo} providerName={providerInfo?.displayName} />
+      <ModelProviderSection
+        model={log.model}
+        providerLogo={providerInfo?.logo}
+        providerName={providerInfo?.displayName}
+      />
 
       {/* Row 1: Request ID + Actions */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: SPACING_MEDIUM }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: SPACING_MEDIUM,
+        }}
+      >
         <RequestIdSection requestId={log.request_id} />
-        <NavigationSection onPrevious={onPrevious} onNext={onNext} onClose={onClose} />
+        <NavigationSection
+          onPrevious={onPrevious}
+          onNext={onNext}
+          onClose={onClose}
+        />
       </div>
 
       {/* Row 2: Status + Env + Timestamp */}
-      <StatusBar log={log} statusLabel={statusLabel} statusColor={statusColor} environment={environment} />
+      <StatusBar
+        log={log}
+        statusLabel={statusLabel}
+        statusColor={statusColor}
+        environment={environment}
+      />
     </div>
   );
 }
@@ -117,7 +137,10 @@ function RequestIdSection({ requestId }: { requestId: string }) {
       <Tooltip title={requestId}>
         <Text
           strong
-          copyable={{ text: requestId, tooltips: ["Copy Request ID", "Copied!"] }}
+          copyable={{
+            text: requestId,
+            tooltips: ["Copy Request ID", "Copied!"],
+          }}
           style={{
             fontSize: FONT_SIZE_HEADER,
             fontFamily: FONT_FAMILY_MONO,
@@ -158,7 +181,10 @@ function NavigationSection({
   };
 
   return (
-    <Space size={SPACING_SMALL} split={<div style={{ width: 1, height: 20, background: COLOR_BORDER }} />}>
+    <Space
+      size={SPACING_SMALL}
+      split={<div style={{ width: 1, height: 20, background: COLOR_BORDER }} />}
+    >
       <Button type="text" size="small" onClick={onPrevious}>
         <UpOutlined />
         <span style={keyboardShortcutStyle}>K</span>

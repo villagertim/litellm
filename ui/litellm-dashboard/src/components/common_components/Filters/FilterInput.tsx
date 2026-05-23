@@ -1,8 +1,9 @@
 import { cx } from "@/lib/cva.config";
 import { Input } from "antd";
 import debounce from "lodash/debounce";
-import { LucideIcon } from "lucide-react";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import type { LucideIcon } from "lucide-react";
+import type React from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface FilterInputProps {
   placeholder?: string;
@@ -15,14 +16,23 @@ interface FilterInputProps {
 
 const DEBOUNCE_DELAY = 300;
 
-export const FilterInput: React.FC<FilterInputProps> = ({ placeholder, value, onChange, icon: Icon, className }) => {
+export const FilterInput: React.FC<FilterInputProps> = ({
+  placeholder,
+  value,
+  onChange,
+  icon: Icon,
+  className,
+}) => {
   const [localValue, setLocalValue] = useState(value);
 
   useEffect(() => {
     setLocalValue(value);
   }, [value]);
 
-  const debouncedOnChange = useMemo(() => debounce((val: string) => onChange(val), DEBOUNCE_DELAY), [onChange]);
+  const debouncedOnChange = useMemo(
+    () => debounce((val: string) => onChange(val), DEBOUNCE_DELAY),
+    [onChange],
+  );
 
   useEffect(() => {
     return () => {

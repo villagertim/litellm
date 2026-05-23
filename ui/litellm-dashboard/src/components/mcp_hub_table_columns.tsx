@@ -1,7 +1,7 @@
-import { ColumnDef } from "@tanstack/react-table";
-import { Button, Badge, Text } from "@tremor/react";
-import { Tooltip, Tag } from "antd";
 import { CopyOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import type { ColumnDef } from "@tanstack/react-table";
+import { Badge, Button, Text } from "@tremor/react";
+import { Tag, Tooltip } from "antd";
 
 export interface MCPServerData {
   server_id: string;
@@ -34,7 +34,7 @@ export interface MCPServerData {
 export const mcpHubColumns = (
   showModal: (server: MCPServerData) => void,
   copyToClipboard: (text: string) => void,
-  publicPage: boolean = false,
+  publicPage = false,
 ): ColumnDef<MCPServerData>[] => {
   const allColumns: ColumnDef<MCPServerData>[] = [
     {
@@ -58,7 +58,9 @@ export const mcpHubColumns = (
             </div>
             {/* Show description on mobile */}
             <div className="md:hidden">
-              <Text className="text-xs text-gray-600">{server.description || "-"}</Text>
+              <Text className="text-xs text-gray-600">
+                {server.description || "-"}
+              </Text>
             </div>
           </div>
         );
@@ -180,7 +182,9 @@ export const mcpHubColumns = (
         return (
           <div className="space-y-1">
             <Text className="text-xs font-medium">
-              {tools.length > 0 ? `${tools.length} tool${tools.length !== 1 ? "s" : ""}` : "All tools"}
+              {tools.length > 0
+                ? `${tools.length} tool${tools.length !== 1 ? "s" : ""}`
+                : "All tools"}
             </Text>
             {tools.length > 0 && (
               <div className="flex flex-wrap gap-1">
@@ -190,7 +194,9 @@ export const mcpHubColumns = (
                   </Tag>
                 ))}
                 {tools.length > 2 && (
-                  <Text className="text-xs text-gray-500">+{tools.length - 2}</Text>
+                  <Text className="text-xs text-gray-500">
+                    +{tools.length - 2}
+                  </Text>
                 )}
               </div>
             )}
@@ -209,11 +215,7 @@ export const mcpHubColumns = (
       cell: ({ row }) => {
         const server = row.original;
 
-        return (
-          <Text className="text-xs">
-            {server.created_by || "-"}
-          </Text>
-        );
+        return <Text className="text-xs">{server.created_by || "-"}</Text>;
       },
       meta: {
         className: "hidden xl:table-cell",
@@ -253,7 +255,12 @@ export const mcpHubColumns = (
         const server = row.original;
 
         return (
-          <Button size="xs" variant="secondary" onClick={() => showModal(server)} icon={InfoCircleOutlined}>
+          <Button
+            size="xs"
+            variant="secondary"
+            onClick={() => showModal(server)}
+            icon={InfoCircleOutlined}
+          >
             <span className="hidden lg:inline">Details</span>
             <span className="lg:hidden">Info</span>
           </Button>
@@ -264,4 +271,3 @@ export const mcpHubColumns = (
 
   return allColumns;
 };
-

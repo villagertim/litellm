@@ -1,10 +1,10 @@
 import { Alert, Divider, Typography } from "antd";
 import React, { useEffect, useState } from "react";
+import type { CompetitorIntentConfig } from "./CompetitorIntentConfiguration";
 import ContentFilterConfiguration from "./ContentFilterConfiguration";
 import ContentFilterDisplay from "./ContentFilterDisplay";
-import type { CompetitorIntentConfig } from "./CompetitorIntentConfiguration";
 
-const { Text } = Typography
+const { Text } = Typography;
 
 interface Pattern {
   id: string;
@@ -61,7 +61,7 @@ interface ContentFilterManagerProps {
     blockedWords: BlockedWord[],
     categories: SelectedContentCategory[],
     competitorIntentEnabled?: boolean,
-    competitorIntentConfig?: CompetitorIntentConfig | null
+    competitorIntentConfig?: CompetitorIntentConfig | null,
   ) => void;
   onUnsavedChanges?: (hasChanges: boolean) => void;
 }
@@ -76,26 +76,37 @@ const ContentFilterManager: React.FC<ContentFilterManagerProps> = ({
 }) => {
   const [selectedPatterns, setSelectedPatterns] = useState<Pattern[]>([]);
   const [blockedWords, setBlockedWords] = useState<BlockedWord[]>([]);
-  const [selectedContentCategories, setSelectedContentCategories] = useState<SelectedContentCategory[]>([]);
+  const [selectedContentCategories, setSelectedContentCategories] = useState<
+    SelectedContentCategory[]
+  >([]);
   const [originalPatterns, setOriginalPatterns] = useState<Pattern[]>([]);
-  const [originalBlockedWords, setOriginalBlockedWords] = useState<BlockedWord[]>([]);
-  const [originalContentCategories, setOriginalContentCategories] = useState<SelectedContentCategory[]>([]);
+  const [originalBlockedWords, setOriginalBlockedWords] = useState<
+    BlockedWord[]
+  >([]);
+  const [originalContentCategories, setOriginalContentCategories] = useState<
+    SelectedContentCategory[]
+  >([]);
   const [competitorIntentEnabled, setCompetitorIntentEnabled] = useState(false);
-  const [competitorIntentConfig, setCompetitorIntentConfig] = useState<CompetitorIntentConfig | null>(null);
-  const [originalCompetitorIntentEnabled, setOriginalCompetitorIntentEnabled] = useState(false);
-  const [originalCompetitorIntentConfig, setOriginalCompetitorIntentConfig] = useState<CompetitorIntentConfig | null>(null);
+  const [competitorIntentConfig, setCompetitorIntentConfig] =
+    useState<CompetitorIntentConfig | null>(null);
+  const [originalCompetitorIntentEnabled, setOriginalCompetitorIntentEnabled] =
+    useState(false);
+  const [originalCompetitorIntentConfig, setOriginalCompetitorIntentConfig] =
+    useState<CompetitorIntentConfig | null>(null);
 
   // Load data from guardrail on mount or when guardrailData changes
   useEffect(() => {
     if (guardrailData?.litellm_params?.patterns) {
-      const patterns = guardrailData.litellm_params.patterns.map((p: any, index: number) => ({
-        id: `pattern-${index}`,
-        type: p.pattern_type === "prebuilt" ? "prebuilt" : "custom",
-        name: p.pattern_name || p.name,
-        display_name: p.display_name,
-        pattern: p.pattern,
-        action: p.action || "BLOCK",
-      }));
+      const patterns = guardrailData.litellm_params.patterns.map(
+        (p: any, index: number) => ({
+          id: `pattern-${index}`,
+          type: p.pattern_type === "prebuilt" ? "prebuilt" : "custom",
+          name: p.pattern_name || p.name,
+          display_name: p.display_name,
+          pattern: p.pattern,
+          action: p.action || "BLOCK",
+        }),
+      );
       setSelectedPatterns(patterns);
       setOriginalPatterns(patterns);
     } else {
@@ -104,12 +115,14 @@ const ContentFilterManager: React.FC<ContentFilterManagerProps> = ({
     }
 
     if (guardrailData?.litellm_params?.blocked_words) {
-      const words = guardrailData.litellm_params.blocked_words.map((w: any, index: number) => ({
-        id: `word-${index}`,
-        keyword: w.keyword,
-        action: w.action || "BLOCK",
-        description: w.description,
-      }));
+      const words = guardrailData.litellm_params.blocked_words.map(
+        (w: any, index: number) => ({
+          id: `word-${index}`,
+          keyword: w.keyword,
+          action: w.action || "BLOCK",
+          description: w.description,
+        }),
+      );
       setBlockedWords(words);
       setOriginalBlockedWords(words);
     } else {
@@ -118,21 +131,29 @@ const ContentFilterManager: React.FC<ContentFilterManagerProps> = ({
     }
 
     if (guardrailData?.litellm_params?.categories?.length > 0) {
-      const contentCategoriesMap = guardrailSettings?.content_filter_settings?.content_categories
+      const contentCategoriesMap = guardrailSettings?.content_filter_settings
+        ?.content_categories
         ? Object.fromEntries(
-          guardrailSettings.content_filter_settings.content_categories.map((c) => [c.name, c])
-        )
+            guardrailSettings.content_filter_settings.content_categories.map(
+              (c) => [c.name, c],
+            ),
+          )
         : {};
-      const categories = guardrailData.litellm_params.categories.map((c: any, index: number) => {
-        const meta = contentCategoriesMap[c.category];
-        return {
-          id: `category-${index}`,
-          category: c.category,
-          display_name: meta?.display_name ?? c.category,
-          action: (c.action || "BLOCK") as "BLOCK" | "MASK",
-          severity_threshold: (c.severity_threshold || "medium") as "high" | "medium" | "low",
-        };
-      });
+      const categories = guardrailData.litellm_params.categories.map(
+        (c: any, index: number) => {
+          const meta = contentCategoriesMap[c.category];
+          return {
+            id: `category-${index}`,
+            category: c.category,
+            display_name: meta?.display_name ?? c.category,
+            action: (c.action || "BLOCK") as "BLOCK" | "MASK",
+            severity_threshold: (c.severity_threshold || "medium") as
+              | "high"
+              | "medium"
+              | "low",
+          };
+        },
+      );
       setSelectedContentCategories(categories);
       setOriginalContentCategories(categories);
     } else {
@@ -142,16 +163,28 @@ const ContentFilterManager: React.FC<ContentFilterManagerProps> = ({
 
     const cic = guardrailData?.litellm_params?.competitor_intent_config;
     if (cic && typeof cic === "object") {
-      const enabled = !!(cic.brand_self && Array.isArray(cic.brand_self) && cic.brand_self.length > 0);
+      const enabled = !!(
+        cic.brand_self &&
+        Array.isArray(cic.brand_self) &&
+        cic.brand_self.length > 0
+      );
       const config: CompetitorIntentConfig = {
         competitor_intent_type: cic.competitor_intent_type ?? "airline",
         brand_self: Array.isArray(cic.brand_self) ? cic.brand_self : [],
         locations: Array.isArray(cic.locations) ? cic.locations : [],
         competitors: Array.isArray(cic.competitors) ? cic.competitors : [],
-        policy: cic.policy ?? { competitor_comparison: "refuse", possible_competitor_comparison: "reframe" },
-        threshold_high: typeof cic.threshold_high === "number" ? cic.threshold_high : 0.7,
-        threshold_medium: typeof cic.threshold_medium === "number" ? cic.threshold_medium : 0.45,
-        threshold_low: typeof cic.threshold_low === "number" ? cic.threshold_low : 0.3,
+        policy: cic.policy ?? {
+          competitor_comparison: "refuse",
+          possible_competitor_comparison: "reframe",
+        },
+        threshold_high:
+          typeof cic.threshold_high === "number" ? cic.threshold_high : 0.7,
+        threshold_medium:
+          typeof cic.threshold_medium === "number"
+            ? cic.threshold_medium
+            : 0.45,
+        threshold_low:
+          typeof cic.threshold_low === "number" ? cic.threshold_low : 0.3,
       };
       setCompetitorIntentEnabled(enabled);
       setCompetitorIntentConfig(config);
@@ -163,7 +196,10 @@ const ContentFilterManager: React.FC<ContentFilterManagerProps> = ({
       setOriginalCompetitorIntentEnabled(false);
       setOriginalCompetitorIntentConfig(null);
     }
-  }, [guardrailData, guardrailSettings?.content_filter_settings?.content_categories]);
+  }, [
+    guardrailData,
+    guardrailSettings?.content_filter_settings?.content_categories,
+  ]);
 
   // Notify parent component when data changes
   useEffect(() => {
@@ -173,7 +209,7 @@ const ContentFilterManager: React.FC<ContentFilterManagerProps> = ({
         blockedWords,
         selectedContentCategories,
         competitorIntentEnabled,
-        competitorIntentConfig
+        competitorIntentConfig,
       );
     }
   }, [
@@ -187,13 +223,23 @@ const ContentFilterManager: React.FC<ContentFilterManagerProps> = ({
 
   // Detect unsaved changes
   const hasUnsavedChanges = React.useMemo(() => {
-    const hasPatternChanges = JSON.stringify(selectedPatterns) !== JSON.stringify(originalPatterns);
-    const hasWordChanges = JSON.stringify(blockedWords) !== JSON.stringify(originalBlockedWords);
-    const hasCategoryChanges = JSON.stringify(selectedContentCategories) !== JSON.stringify(originalContentCategories);
+    const hasPatternChanges =
+      JSON.stringify(selectedPatterns) !== JSON.stringify(originalPatterns);
+    const hasWordChanges =
+      JSON.stringify(blockedWords) !== JSON.stringify(originalBlockedWords);
+    const hasCategoryChanges =
+      JSON.stringify(selectedContentCategories) !==
+      JSON.stringify(originalContentCategories);
     const hasCompetitorIntentChanges =
       competitorIntentEnabled !== originalCompetitorIntentEnabled ||
-      JSON.stringify(competitorIntentConfig) !== JSON.stringify(originalCompetitorIntentConfig);
-    return hasPatternChanges || hasWordChanges || hasCategoryChanges || hasCompetitorIntentChanges;
+      JSON.stringify(competitorIntentConfig) !==
+        JSON.stringify(originalCompetitorIntentConfig);
+    return (
+      hasPatternChanges ||
+      hasWordChanges ||
+      hasCategoryChanges ||
+      hasCompetitorIntentChanges
+    );
   }, [
     selectedPatterns,
     blockedWords,
@@ -241,8 +287,8 @@ const ContentFilterManager: React.FC<ContentFilterManagerProps> = ({
           className="mb-4"
           message={
             <Text>
-              You have unsaved changes to patterns or keywords. Remember to click &quot;Save Changes&quot; at the
-              bottom.
+              You have unsaved changes to patterns or keywords. Remember to
+              click &quot;Save Changes&quot; at the bottom.
             </Text>
           }
         />
@@ -250,35 +296,64 @@ const ContentFilterManager: React.FC<ContentFilterManagerProps> = ({
       <div className="mb-6">
         {guardrailSettings && guardrailSettings.content_filter_settings && (
           <ContentFilterConfiguration
-            prebuiltPatterns={guardrailSettings.content_filter_settings.prebuilt_patterns || []}
-            categories={guardrailSettings.content_filter_settings.pattern_categories || []}
+            prebuiltPatterns={
+              guardrailSettings.content_filter_settings.prebuilt_patterns || []
+            }
+            categories={
+              guardrailSettings.content_filter_settings.pattern_categories || []
+            }
             selectedPatterns={selectedPatterns}
             blockedWords={blockedWords}
-            onPatternAdd={(pattern) => setSelectedPatterns([...selectedPatterns, pattern])}
-            onPatternRemove={(id) => setSelectedPatterns(selectedPatterns.filter((p) => p.id !== id))}
-            onPatternActionChange={(id, action) =>
-              setSelectedPatterns(selectedPatterns.map((p) => (p.id === id ? { ...p, action } : p)))
+            onPatternAdd={(pattern) =>
+              setSelectedPatterns([...selectedPatterns, pattern])
             }
-            onBlockedWordAdd={(word) => setBlockedWords([...blockedWords, word])}
-            onBlockedWordRemove={(id) => setBlockedWords(blockedWords.filter((w) => w.id !== id))}
+            onPatternRemove={(id) =>
+              setSelectedPatterns(selectedPatterns.filter((p) => p.id !== id))
+            }
+            onPatternActionChange={(id, action) =>
+              setSelectedPatterns(
+                selectedPatterns.map((p) =>
+                  p.id === id ? { ...p, action } : p,
+                ),
+              )
+            }
+            onBlockedWordAdd={(word) =>
+              setBlockedWords([...blockedWords, word])
+            }
+            onBlockedWordRemove={(id) =>
+              setBlockedWords(blockedWords.filter((w) => w.id !== id))
+            }
             onBlockedWordUpdate={(id, field, value) =>
-              setBlockedWords(blockedWords.map((w) => (w.id === id ? { ...w, [field]: value } : w)))
+              setBlockedWords(
+                blockedWords.map((w) =>
+                  w.id === id ? { ...w, [field]: value } : w,
+                ),
+              )
             }
             onFileUpload={(content: string) => {
               console.log("File uploaded:", content);
             }}
             accessToken={accessToken}
-            contentCategories={guardrailSettings.content_filter_settings.content_categories || []}
+            contentCategories={
+              guardrailSettings.content_filter_settings.content_categories || []
+            }
             selectedContentCategories={selectedContentCategories}
             onContentCategoryAdd={(category) =>
-              setSelectedContentCategories([...selectedContentCategories, category])
+              setSelectedContentCategories([
+                ...selectedContentCategories,
+                category,
+              ])
             }
             onContentCategoryRemove={(id) =>
-              setSelectedContentCategories(selectedContentCategories.filter((c) => c.id !== id))
+              setSelectedContentCategories(
+                selectedContentCategories.filter((c) => c.id !== id),
+              )
             }
             onContentCategoryUpdate={(id, field, value) =>
               setSelectedContentCategories(
-                selectedContentCategories.map((c) => (c.id === id ? { ...c, [field]: value } : c))
+                selectedContentCategories.map((c) =>
+                  c.id === id ? { ...c, [field]: value } : c,
+                ),
               )
             }
             competitorIntentEnabled={competitorIntentEnabled}
@@ -302,7 +377,7 @@ export const formatContentFilterDataForAPI = (
   blockedWords: BlockedWord[],
   categories?: SelectedContentCategory[],
   competitorIntentEnabled?: boolean,
-  competitorIntentConfig?: CompetitorIntentConfig | null
+  competitorIntentConfig?: CompetitorIntentConfig | null,
 ) => {
   const result: {
     patterns: any[];
@@ -331,7 +406,11 @@ export const formatContentFilterDataForAPI = (
       severity_threshold: c.severity_threshold || "medium",
     }));
   }
-  if (competitorIntentEnabled && competitorIntentConfig && competitorIntentConfig.brand_self.length > 0) {
+  if (
+    competitorIntentEnabled &&
+    competitorIntentConfig &&
+    competitorIntentConfig.brand_self.length > 0
+  ) {
     result.competitor_intent_config = {
       competitor_intent_type: competitorIntentConfig.competitor_intent_type,
       brand_self: competitorIntentConfig.brand_self,

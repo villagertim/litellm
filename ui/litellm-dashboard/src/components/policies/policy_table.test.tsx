@@ -1,28 +1,43 @@
-import React from "react";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderWithProviders } from "../../../tests/test-utils";
+import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "../../../tests/test-utils";
 import PolicyTable from "./policy_table";
-import { Policy } from "./types";
+import type { Policy } from "./types";
 
 vi.mock("@heroicons/react/outline", () => ({
-  TrashIcon: function TrashIcon() { return null; },
-  PencilIcon: function PencilIcon() { return null; },
-  SwitchVerticalIcon: function SwitchVerticalIcon() { return null; },
-  ChevronUpIcon: function ChevronUpIcon() { return null; },
-  ChevronDownIcon: function ChevronDownIcon() { return null; },
+  TrashIcon: function TrashIcon() {
+    return null;
+  },
+  PencilIcon: function PencilIcon() {
+    return null;
+  },
+  SwitchVerticalIcon: function SwitchVerticalIcon() {
+    return null;
+  },
+  ChevronUpIcon: function ChevronUpIcon() {
+    return null;
+  },
+  ChevronDownIcon: function ChevronDownIcon() {
+    return null;
+  },
 }));
 
 vi.mock("@tremor/react", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@tremor/react")>();
   return {
     ...actual,
-    Button: React.forwardRef<HTMLButtonElement, any>(({ children, ...props }, ref) =>
-      React.createElement("button", { ...props, ref }, children)
+    Button: React.forwardRef<HTMLButtonElement, any>(
+      ({ children, ...props }, ref) =>
+        React.createElement("button", { ...props, ref }, children),
     ),
     Icon: ({ icon: IconComp, onClick, className }: any) =>
-      React.createElement("button", { type: "button", onClick, className }, IconComp?.displayName ?? IconComp?.name ?? "icon"),
+      React.createElement(
+        "button",
+        { type: "button", onClick, className },
+        IconComp?.displayName ?? IconComp?.name ?? "icon",
+      ),
     Tooltip: ({ children }: { children?: React.ReactNode }) =>
       React.createElement(React.Fragment, null, children),
     Badge: ({ children }: { children?: React.ReactNode }) =>
@@ -78,13 +93,20 @@ describe("PolicyTable", () => {
       makePolicy({ policy_name: "beta-policy", policy_id: "id-2" }),
     ];
     renderWithProviders(<PolicyTable {...defaultProps} policies={policies} />);
-    expect(screen.getByRole("button", { name: "alpha-policy" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "beta-policy" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "alpha-policy" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "beta-policy" }),
+    ).toBeInTheDocument();
   });
 
   it("should call onViewClick with the policy_id when the policy name button is clicked", async () => {
     const user = userEvent.setup();
-    const policy = makePolicy({ policy_name: "my-policy", policy_id: "view-id-1" });
+    const policy = makePolicy({
+      policy_name: "my-policy",
+      policy_id: "view-id-1",
+    });
     renderWithProviders(<PolicyTable {...defaultProps} policies={[policy]} />);
     await user.click(screen.getByRole("button", { name: "my-policy" }));
     expect(defaultProps.onViewClick).toHaveBeenCalledWith("view-id-1");
@@ -92,15 +114,24 @@ describe("PolicyTable", () => {
 
   it("should call onDeleteClick with policy_id and policy_name when the delete icon is clicked", async () => {
     const user = userEvent.setup();
-    const policy = makePolicy({ policy_name: "del-policy", policy_id: "del-id-1" });
+    const policy = makePolicy({
+      policy_name: "del-policy",
+      policy_id: "del-id-1",
+    });
     renderWithProviders(<PolicyTable {...defaultProps} policies={[policy]} />);
     await user.click(screen.getByRole("button", { name: /TrashIcon/i }));
-    expect(defaultProps.onDeleteClick).toHaveBeenCalledWith("del-id-1", "del-policy");
+    expect(defaultProps.onDeleteClick).toHaveBeenCalledWith(
+      "del-id-1",
+      "del-policy",
+    );
   });
 
   it("should call onEditClick with the policy when the edit icon is clicked", async () => {
     const user = userEvent.setup();
-    const policy = makePolicy({ policy_name: "edit-policy", policy_id: "edit-id-1" });
+    const policy = makePolicy({
+      policy_name: "edit-policy",
+      policy_id: "edit-id-1",
+    });
     renderWithProviders(<PolicyTable {...defaultProps} policies={[policy]} />);
     await user.click(screen.getByRole("button", { name: /PencilIcon/i }));
     expect(defaultProps.onEditClick).toHaveBeenCalledWith(policy);
@@ -108,15 +139,31 @@ describe("PolicyTable", () => {
 
   it("should not show admin action icons for non-admins", () => {
     const policy = makePolicy();
-    renderWithProviders(<PolicyTable {...defaultProps} policies={[policy]} isAdmin={false} />);
-    expect(screen.queryByRole("button", { name: /TrashIcon/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /PencilIcon/i })).not.toBeInTheDocument();
+    renderWithProviders(
+      <PolicyTable {...defaultProps} policies={[policy]} isAdmin={false} />,
+    );
+    expect(
+      screen.queryByRole("button", { name: /TrashIcon/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /PencilIcon/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("should show a version badge when multiple versions of the same policy name exist", () => {
     const policies = [
-      makePolicy({ policy_name: "versioned", policy_id: "v1", version_status: "published", version_number: 1 }),
-      makePolicy({ policy_name: "versioned", policy_id: "v2", version_status: "production", version_number: 2 }),
+      makePolicy({
+        policy_name: "versioned",
+        policy_id: "v1",
+        version_status: "published",
+        version_number: 1,
+      }),
+      makePolicy({
+        policy_name: "versioned",
+        policy_id: "v2",
+        version_status: "production",
+        version_number: 2,
+      }),
     ];
     renderWithProviders(<PolicyTable {...defaultProps} policies={policies} />);
     expect(screen.getByText(/2 version/i)).toBeInTheDocument();
@@ -124,8 +171,16 @@ describe("PolicyTable", () => {
 
   it("should group policies with the same name into a single row", () => {
     const policies = [
-      makePolicy({ policy_name: "shared", policy_id: "s1", version_status: "published" }),
-      makePolicy({ policy_name: "shared", policy_id: "s2", version_status: "production" }),
+      makePolicy({
+        policy_name: "shared",
+        policy_id: "s1",
+        version_status: "published",
+      }),
+      makePolicy({
+        policy_name: "shared",
+        policy_id: "s2",
+        version_status: "production",
+      }),
     ];
     renderWithProviders(<PolicyTable {...defaultProps} policies={policies} />);
     expect(screen.getAllByRole("button", { name: "shared" })).toHaveLength(1);
@@ -140,8 +195,16 @@ describe("PolicyTable", () => {
   it("should prefer the production version as the primary policy when grouping", async () => {
     const user = userEvent.setup();
     const policies = [
-      makePolicy({ policy_name: "grouped", policy_id: "published-id", version_status: "published" }),
-      makePolicy({ policy_name: "grouped", policy_id: "prod-id", version_status: "production" }),
+      makePolicy({
+        policy_name: "grouped",
+        policy_id: "published-id",
+        version_status: "published",
+      }),
+      makePolicy({
+        policy_name: "grouped",
+        policy_id: "prod-id",
+        version_status: "production",
+      }),
     ];
     renderWithProviders(<PolicyTable {...defaultProps} policies={policies} />);
     await user.click(screen.getByRole("button", { name: "grouped" }));

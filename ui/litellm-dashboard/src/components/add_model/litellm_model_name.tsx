@@ -1,7 +1,7 @@
-import React from "react";
-import { Form, Select as AntSelect } from "antd";
-import { TextInput, Text } from "@tremor/react";
-import { Row, Col } from "antd";
+import { Text, TextInput } from "@tremor/react";
+import { Select as AntSelect, Form } from "antd";
+import { Col, Row } from "antd";
+import type React from "react";
 import { Providers } from "../provider_info_helpers";
 
 interface LiteLLMModelNameFieldProps {
@@ -53,7 +53,9 @@ const LiteLLMModelNameField: React.FC<LiteLLMModelNameFieldProps> = ({
     }
   };
 
-  const handleAzureDeploymentNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAzureDeploymentNameChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const deploymentName = e.target.value;
 
     // Create mapping with Azure-specific format
@@ -74,13 +76,18 @@ const LiteLLMModelNameField: React.FC<LiteLLMModelNameFieldProps> = ({
   };
 
   // Handle custom model name changes
-  const handleCustomModelNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCustomModelNameChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const customName = e.target.value;
 
     // Immediately update the model mappings
     const currentMappings = form.getFieldValue("model_mappings") || [];
     const updatedMappings = currentMappings.map((mapping: any) => {
-      if (mapping.public_name === "custom" || mapping.litellm_model === "custom") {
+      if (
+        mapping.public_name === "custom" ||
+        mapping.litellm_model === "custom"
+      ) {
         if (selectedProvider === Providers.Azure) {
           return {
             public_name: customName,
@@ -121,7 +128,11 @@ const LiteLLMModelNameField: React.FC<LiteLLMModelNameFieldProps> = ({
             <>
               <TextInput
                 placeholder={getPlaceholder(selectedProvider)}
-                onChange={selectedProvider === Providers.Azure ? handleAzureDeploymentNameChange : undefined}
+                onChange={
+                  selectedProvider === Providers.Azure
+                    ? handleAzureDeploymentNameChange
+                    : undefined
+                }
               />
             </>
           ) : providerModels.length > 0 ? (
@@ -133,7 +144,11 @@ const LiteLLMModelNameField: React.FC<LiteLLMModelNameFieldProps> = ({
               placeholder="Select models"
               onChange={handleModelChange}
               optionFilterProp="children"
-              filterOption={(input, option) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase())}
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
               options={[
                 {
                   label: "Custom Model Name (Enter below)",
@@ -156,20 +171,34 @@ const LiteLLMModelNameField: React.FC<LiteLLMModelNameFieldProps> = ({
         </Form.Item>
 
         {/* Custom Model Name field */}
-        <Form.Item noStyle shouldUpdate={(prevValues, currentValues) => prevValues.model !== currentValues.model}>
+        <Form.Item
+          noStyle
+          shouldUpdate={(prevValues, currentValues) =>
+            prevValues.model !== currentValues.model
+          }
+        >
           {({ getFieldValue }) => {
             const selectedModels = getFieldValue("model") || [];
-            const modelArray = Array.isArray(selectedModels) ? selectedModels : [selectedModels];
+            const modelArray = Array.isArray(selectedModels)
+              ? selectedModels
+              : [selectedModels];
             return (
               modelArray.includes("custom") && (
                 <Form.Item
                   name="custom_model_name"
-                  rules={[{ required: true, message: "Please enter a custom model name." }]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please enter a custom model name.",
+                    },
+                  ]}
                   className="mt-2"
                 >
                   <TextInput
                     placeholder={
-                      selectedProvider === Providers.Azure ? "Enter Azure deployment name" : "Enter custom model name"
+                      selectedProvider === Providers.Azure
+                        ? "Enter Azure deployment name"
+                        : "Enter custom model name"
                     }
                     onChange={handleCustomModelNameChange}
                   />

@@ -1,5 +1,5 @@
+import { Button, Form, Input, Select, Typography } from "antd";
 import React from "react";
-import { Form, Select, Typography, Input, Button } from "antd";
 import NumericalInput from "../shared/numerical_input";
 
 const { Title } = Typography;
@@ -29,9 +29,18 @@ interface DictFieldProps {
   value: any | null;
 }
 
-const DictField: React.FC<DictFieldProps> = ({ field, fieldKey, fullFieldKey, value }) => {
-  const [selectedEntries, setSelectedEntries] = React.useState<Array<{ key: string; id: string }>>([]);
-  const [availableKeys, setAvailableKeys] = React.useState<string[]>(field.dict_key_options || []);
+const DictField: React.FC<DictFieldProps> = ({
+  field,
+  fieldKey,
+  fullFieldKey,
+  value,
+}) => {
+  const [selectedEntries, setSelectedEntries] = React.useState<
+    Array<{ key: string; id: string }>
+  >([]);
+  const [availableKeys, setAvailableKeys] = React.useState<string[]>(
+    field.dict_key_options || [],
+  );
 
   // Initialize selectedEntries and availableKeys based on existing value
   React.useEffect(() => {
@@ -43,7 +52,9 @@ const DictField: React.FC<DictFieldProps> = ({ field, fieldKey, fullFieldKey, va
       }));
       setSelectedEntries(entries);
 
-      const remainingKeys = (field.dict_key_options || []).filter((key) => !existingKeys.includes(key));
+      const remainingKeys = (field.dict_key_options || []).filter(
+        (key) => !existingKeys.includes(key),
+      );
       setAvailableKeys(remainingKeys);
     }
   }, [value, field.dict_key_options]);
@@ -69,17 +80,29 @@ const DictField: React.FC<DictFieldProps> = ({ field, fieldKey, fullFieldKey, va
     <div className="space-y-3">
       {/* Existing entries */}
       {selectedEntries.map((entry) => (
-        <div key={entry.id} className="flex items-center space-x-3 p-3 border rounded-lg">
+        <div
+          key={entry.id}
+          className="flex items-center space-x-3 p-3 border rounded-lg"
+        >
           <div className="w-24 font-medium text-sm">{entry.key}</div>
           <div className="flex-1">
             <Form.Item
-              name={Array.isArray(fullFieldKey) ? [...fullFieldKey, entry.key] : [fullFieldKey, entry.key]}
+              name={
+                Array.isArray(fullFieldKey)
+                  ? [...fullFieldKey, entry.key]
+                  : [fullFieldKey, entry.key]
+              }
               style={{ marginBottom: 0 }}
-              initialValue={value && typeof value === "object" ? value[entry.key] : undefined}
+              initialValue={
+                value && typeof value === "object"
+                  ? value[entry.key]
+                  : undefined
+              }
               normalize={
                 field.dict_value_type === "number"
                   ? (value) => {
-                      if (value === null || value === undefined || value === "") return undefined;
+                      if (value === null || value === undefined || value === "")
+                        return undefined;
                       const num = Number(value);
                       return isNaN(num) ? value : num;
                     }
@@ -87,7 +110,11 @@ const DictField: React.FC<DictFieldProps> = ({ field, fieldKey, fullFieldKey, va
               }
             >
               {field.dict_value_type === "number" ? (
-                <NumericalInput step={1} width={200} placeholder={`Enter ${entry.key} value`} />
+                <NumericalInput
+                  step={1}
+                  width={200}
+                  placeholder={`Enter ${entry.key} value`}
+                />
               ) : field.dict_value_type === "boolean" ? (
                 <Select placeholder={`Select ${entry.key} value`}>
                   <Select.Option value={true}>True</Select.Option>
@@ -124,7 +151,9 @@ const DictField: React.FC<DictFieldProps> = ({ field, fieldKey, fullFieldKey, va
               </Select.Option>
             ))}
           </Select>
-          <span className="text-sm text-gray-500">Select a category to add threshold configuration</span>
+          <span className="text-sm text-gray-500">
+            Select a category to add threshold configuration
+          </span>
         </div>
       )}
     </div>
@@ -143,31 +172,51 @@ const GuardrailOptionalParams: React.FC<GuardrailOptionalParamsProps> = ({
     // Handle dict fields separately since they manage their own Form.Items
     if (field.type === "dict" && field.dict_key_options) {
       return (
-        <div key={fullFieldKey} className="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
-          <div className="mb-4 font-medium text-gray-900 text-base">{fieldKey}</div>
+        <div
+          key={fullFieldKey}
+          className="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200"
+        >
+          <div className="mb-4 font-medium text-gray-900 text-base">
+            {fieldKey}
+          </div>
           <p className="text-sm text-gray-600 mb-4">{field.description}</p>
-          <DictField field={field} fieldKey={fieldKey} fullFieldKey={[parentFieldKey, fieldKey]} value={value} />
+          <DictField
+            field={field}
+            fieldKey={fieldKey}
+            fullFieldKey={[parentFieldKey, fieldKey]}
+            value={value}
+          />
         </div>
       );
     }
 
     return (
-      <div key={fullFieldKey} className="mb-8 p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
+      <div
+        key={fullFieldKey}
+        className="mb-8 p-6 bg-white rounded-lg border border-gray-200 shadow-sm"
+      >
         <Form.Item
           name={[parentFieldKey, fieldKey]}
           label={
             <div className="mb-2">
-              <div className="font-medium text-gray-900 text-base">{fieldKey}</div>
+              <div className="font-medium text-gray-900 text-base">
+                {fieldKey}
+              </div>
               <p className="text-sm text-gray-600 mt-1">{field.description}</p>
             </div>
           }
-          rules={field.required ? [{ required: true, message: `${fieldKey} is required` }] : undefined}
+          rules={
+            field.required
+              ? [{ required: true, message: `${fieldKey} is required` }]
+              : undefined
+          }
           className="mb-0"
           initialValue={value !== undefined ? value : field.default_value}
           normalize={
             field.type === "number"
               ? (value) => {
-                  if (value === null || value === undefined || value === "") return undefined;
+                  if (value === null || value === undefined || value === "")
+                    return undefined;
                   const num = Number(value);
                   return isNaN(num) ? value : num;
                 }
@@ -196,8 +245,14 @@ const GuardrailOptionalParams: React.FC<GuardrailOptionalParamsProps> = ({
               <Select.Option value={false}>False</Select.Option>
             </Select>
           ) : field.type === "number" ? (
-            <NumericalInput step={1} width={400} placeholder={field.description} />
-          ) : fieldKey.includes("password") || fieldKey.includes("secret") || fieldKey.includes("key") ? (
+            <NumericalInput
+              step={1}
+              width={400}
+              placeholder={field.description}
+            />
+          ) : fieldKey.includes("password") ||
+            fieldKey.includes("secret") ||
+            fieldKey.includes("key") ? (
             <Input.Password placeholder={field.description} />
           ) : (
             <Input placeholder={field.description} />
@@ -207,7 +262,10 @@ const GuardrailOptionalParams: React.FC<GuardrailOptionalParamsProps> = ({
     );
   };
 
-  if (!optionalParams.fields || Object.keys(optionalParams.fields).length === 0) {
+  if (
+    !optionalParams.fields ||
+    Object.keys(optionalParams.fields).length === 0
+  ) {
     return null;
   }
 
@@ -218,12 +276,15 @@ const GuardrailOptionalParams: React.FC<GuardrailOptionalParamsProps> = ({
           Optional Parameters
         </Title>
         <p className="text-gray-600 text-sm">
-          {optionalParams.description || "Configure additional settings for this guardrail provider"}
+          {optionalParams.description ||
+            "Configure additional settings for this guardrail provider"}
         </p>
       </div>
 
       <div className="space-y-8">
-        {Object.entries(optionalParams.fields).map(([fieldKey, field]) => renderField(fieldKey, field))}
+        {Object.entries(optionalParams.fields).map(([fieldKey, field]) =>
+          renderField(fieldKey, field),
+        )}
       </div>
     </div>
   );

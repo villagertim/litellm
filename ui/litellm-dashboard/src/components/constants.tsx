@@ -1,5 +1,5 @@
 // useBaseUrl.ts
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export const useBaseUrl = () => {
   const [baseUrl, setBaseUrl] = useState("http://localhost:4000");

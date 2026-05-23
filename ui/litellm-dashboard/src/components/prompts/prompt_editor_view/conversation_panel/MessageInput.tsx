@@ -1,7 +1,7 @@
-import React from "react";
 import { ArrowUpOutlined } from "@ant-design/icons";
 import { Button as TremorButton } from "@tremor/react";
 import { Input } from "antd";
+import type React from "react";
 
 const { TextArea } = Input;
 
@@ -68,4 +68,3 @@ const MessageInput: React.FC<MessageInputProps> = ({
 };
 
 export default MessageInput;
-

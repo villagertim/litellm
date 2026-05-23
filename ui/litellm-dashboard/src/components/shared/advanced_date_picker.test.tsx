@@ -1,5 +1,5 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, beforeAll } from "vitest";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import AdvancedDatePicker from "./advanced_date_picker";
 
 // Polyfill requestIdleCallback for test environment
@@ -30,31 +30,54 @@ describe("AdvancedDatePicker", () => {
 
   const openDropdown = (container: HTMLElement) => {
     // Find the clickable div that contains the clock icon
-    const trigger = container.querySelector('[role="img"][aria-label="clock-circle"]')?.closest("div.cursor-pointer");
+    const trigger = container
+      .querySelector('[role="img"][aria-label="clock-circle"]')
+      ?.closest("div.cursor-pointer");
     if (trigger) {
       fireEvent.click(trigger);
     }
   };
 
   it("should render with default label", () => {
-    render(<AdvancedDatePicker value={defaultValue} onValueChange={mockOnValueChange} />);
+    render(
+      <AdvancedDatePicker
+        value={defaultValue}
+        onValueChange={mockOnValueChange}
+      />,
+    );
     expect(screen.getByText("Select Time Range")).toBeInTheDocument();
   });
 
   it("should render with custom label", () => {
-    render(<AdvancedDatePicker value={defaultValue} onValueChange={mockOnValueChange} label="Custom Label" />);
+    render(
+      <AdvancedDatePicker
+        value={defaultValue}
+        onValueChange={mockOnValueChange}
+        label="Custom Label"
+      />,
+    );
     expect(screen.getByText("Custom Label")).toBeInTheDocument();
   });
 
   it("should display formatted date range", () => {
-    render(<AdvancedDatePicker value={defaultValue} onValueChange={mockOnValueChange} />);
+    render(
+      <AdvancedDatePicker
+        value={defaultValue}
+        onValueChange={mockOnValueChange}
+      />,
+    );
     // The component displays date range in the format "D MMM, HH:mm - D MMM, HH:mm"
     // Just check that the clock icon is present
     expect(screen.getByLabelText("clock-circle")).toBeInTheDocument();
   });
 
   it("should open dropdown when clicked", () => {
-    const { container } = render(<AdvancedDatePicker value={defaultValue} onValueChange={mockOnValueChange} />);
+    const { container } = render(
+      <AdvancedDatePicker
+        value={defaultValue}
+        onValueChange={mockOnValueChange}
+      />,
+    );
 
     openDropdown(container);
 
@@ -65,7 +88,12 @@ describe("AdvancedDatePicker", () => {
   });
 
   it("should display relative time options", () => {
-    const { container } = render(<AdvancedDatePicker value={defaultValue} onValueChange={mockOnValueChange} />);
+    const { container } = render(
+      <AdvancedDatePicker
+        value={defaultValue}
+        onValueChange={mockOnValueChange}
+      />,
+    );
 
     openDropdown(container);
 
@@ -77,7 +105,12 @@ describe("AdvancedDatePicker", () => {
   });
 
   it("should show date inputs in dropdown", () => {
-    const { container } = render(<AdvancedDatePicker value={defaultValue} onValueChange={mockOnValueChange} />);
+    const { container } = render(
+      <AdvancedDatePicker
+        value={defaultValue}
+        onValueChange={mockOnValueChange}
+      />,
+    );
 
     openDropdown(container);
 
@@ -89,18 +122,30 @@ describe("AdvancedDatePicker", () => {
   });
 
   it("should update date inputs when changed", () => {
-    const { container } = render(<AdvancedDatePicker value={defaultValue} onValueChange={mockOnValueChange} />);
+    const { container } = render(
+      <AdvancedDatePicker
+        value={defaultValue}
+        onValueChange={mockOnValueChange}
+      />,
+    );
 
     openDropdown(container);
 
-    const startDateInput = screen.getByDisplayValue("2025-01-01") as HTMLInputElement;
+    const startDateInput = screen.getByDisplayValue(
+      "2025-01-01",
+    ) as HTMLInputElement;
     fireEvent.change(startDateInput, { target: { value: "2025-02-01" } });
 
     expect(startDateInput.value).toBe("2025-02-01");
   });
 
   it("should show Apply and Cancel buttons", () => {
-    const { container } = render(<AdvancedDatePicker value={defaultValue} onValueChange={mockOnValueChange} />);
+    const { container } = render(
+      <AdvancedDatePicker
+        value={defaultValue}
+        onValueChange={mockOnValueChange}
+      />,
+    );
 
     openDropdown(container);
 
@@ -109,7 +154,12 @@ describe("AdvancedDatePicker", () => {
   });
 
   it("should close dropdown when Cancel is clicked", () => {
-    const { container } = render(<AdvancedDatePicker value={defaultValue} onValueChange={mockOnValueChange} />);
+    const { container } = render(
+      <AdvancedDatePicker
+        value={defaultValue}
+        onValueChange={mockOnValueChange}
+      />,
+    );
 
     openDropdown(container);
 
@@ -121,7 +171,12 @@ describe("AdvancedDatePicker", () => {
   });
 
   it("should call onValueChange when Apply is clicked", async () => {
-    const { container } = render(<AdvancedDatePicker value={defaultValue} onValueChange={mockOnValueChange} />);
+    const { container } = render(
+      <AdvancedDatePicker
+        value={defaultValue}
+        onValueChange={mockOnValueChange}
+      />,
+    );
 
     openDropdown(container);
 
@@ -134,7 +189,12 @@ describe("AdvancedDatePicker", () => {
   });
 
   it("should select relative time option", () => {
-    const { container } = render(<AdvancedDatePicker value={defaultValue} onValueChange={mockOnValueChange} />);
+    const { container } = render(
+      <AdvancedDatePicker
+        value={defaultValue}
+        onValueChange={mockOnValueChange}
+      />,
+    );
 
     openDropdown(container);
 
@@ -146,7 +206,12 @@ describe("AdvancedDatePicker", () => {
   });
 
   it("should show validation error for invalid date range", async () => {
-    const { container } = render(<AdvancedDatePicker value={defaultValue} onValueChange={mockOnValueChange} />);
+    const { container } = render(
+      <AdvancedDatePicker
+        value={defaultValue}
+        onValueChange={mockOnValueChange}
+      />,
+    );
 
     openDropdown(container);
 
@@ -158,12 +223,19 @@ describe("AdvancedDatePicker", () => {
     fireEvent.change(endDateInput, { target: { value: "2025-01-01" } });
 
     await waitFor(() => {
-      expect(screen.getByText("End date cannot be before start date")).toBeInTheDocument();
+      expect(
+        screen.getByText("End date cannot be before start date"),
+      ).toBeInTheDocument();
     });
   });
 
   it("should disable Apply button when validation fails", async () => {
-    const { container } = render(<AdvancedDatePicker value={defaultValue} onValueChange={mockOnValueChange} />);
+    const { container } = render(
+      <AdvancedDatePicker
+        value={defaultValue}
+        onValueChange={mockOnValueChange}
+      />,
+    );
 
     openDropdown(container);
 

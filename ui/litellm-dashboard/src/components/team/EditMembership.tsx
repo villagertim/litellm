@@ -1,6 +1,7 @@
 import { Text, TextInput } from "@tremor/react";
 import { Button as AntButton, Form, Modal, Select } from "antd";
-import React, { useEffect, useState } from "react";
+import type React from "react";
+import { useEffect, useState } from "react";
 import NumericalInput from "../shared/numerical_input";
 
 interface BaseMember {
@@ -78,7 +79,14 @@ const MemberModal = <T extends BaseMember>({
         });
       }
     }
-  }, [visible, initialData, mode, form, config.defaultRole, config.roleOptions]);
+  }, [
+    visible,
+    initialData,
+    mode,
+    form,
+    config.defaultRole,
+    config.roleOptions,
+  ]);
 
   const handleSubmit = async (values: any) => {
     try {
@@ -88,7 +96,12 @@ const MemberModal = <T extends BaseMember>({
         if (typeof value === "string") {
           const trimmedValue = value.trim();
           // For empty strings on optional numeric fields, set to null
-          if (trimmedValue === "" && (key === "max_budget_in_team" || key === "tpm_limit" || key === "rpm_limit")) {
+          if (
+            trimmedValue === "" &&
+            (key === "max_budget_in_team" ||
+              key === "tpm_limit" ||
+              key === "rpm_limit")
+          ) {
             return { ...acc, [key]: null };
           }
           return { ...acc, [key]: trimmedValue };
@@ -111,7 +124,10 @@ const MemberModal = <T extends BaseMember>({
 
   // Helper function to get role label from value
   const getRoleLabel = (value: string) => {
-    return config.roleOptions.find((option) => option.value === value)?.label || value;
+    return (
+      config.roleOptions.find((option) => option.value === value)?.label ||
+      value
+    );
   };
 
   const renderField = (field: {
@@ -168,7 +184,13 @@ const MemberModal = <T extends BaseMember>({
       footer={null}
       onCancel={onCancel}
     >
-      <Form form={form} onFinish={handleSubmit} labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} labelAlign="left">
+      <Form
+        form={form}
+        onFinish={handleSubmit}
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 16 }}
+        labelAlign="left"
+      >
         {config.showEmail && (
           <Form.Item
             label="Email"
@@ -197,7 +219,9 @@ const MemberModal = <T extends BaseMember>({
             <div className="flex items-center gap-2">
               <span>Role</span>
               {mode === "edit" && initialData && (
-                <span className="text-gray-500 text-sm">(Current: {getRoleLabel(initialData.role)})</span>
+                <span className="text-gray-500 text-sm">
+                  (Current: {getRoleLabel(initialData.role)})
+                </span>
               )}
             </div>
           }
@@ -209,9 +233,13 @@ const MemberModal = <T extends BaseMember>({
             {mode === "edit" && initialData
               ? [
                   // Current role first
-                  ...config.roleOptions.filter((option) => option.value === initialData.role),
+                  ...config.roleOptions.filter(
+                    (option) => option.value === initialData.role,
+                  ),
                   // Then all other roles
-                  ...config.roleOptions.filter((option) => option.value !== initialData.role),
+                  ...config.roleOptions.filter(
+                    (option) => option.value !== initialData.role,
+                  ),
                 ].map((option) => (
                   <Select.Option key={option.value} value={option.value}>
                     {option.label}
@@ -226,13 +254,23 @@ const MemberModal = <T extends BaseMember>({
         </Form.Item>
 
         {config.additionalFields?.map((field) => (
-          <Form.Item key={field.name} label={field.label} name={field.name} className="mb-4" rules={field.rules}>
+          <Form.Item
+            key={field.name}
+            label={field.label}
+            name={field.name}
+            className="mb-4"
+            rules={field.rules}
+          >
             {renderField(field)}
           </Form.Item>
         ))}
 
         <div className="text-right mt-6">
-          <AntButton onClick={onCancel} className="mr-2" disabled={isSubmitting}>
+          <AntButton
+            onClick={onCancel}
+            className="mr-2"
+            disabled={isSubmitting}
+          >
             Cancel
           </AntButton>
           <AntButton type="default" htmlType="submit" loading={isSubmitting}>

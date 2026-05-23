@@ -1,14 +1,19 @@
+import {
+  type DeletedTeam,
+  useDeletedTeams,
+} from "@/app/(dashboard)/hooks/teams/useTeams";
 import { screen } from "@testing-library/react";
-import { vi, it, expect, beforeEach, MockedFunction } from "vitest";
+import { type MockedFunction, beforeEach, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../tests/test-utils";
 import DeletedTeamsPage from "./DeletedTeamsPage";
-import { useDeletedTeams, DeletedTeam } from "@/app/(dashboard)/hooks/teams/useTeams";
 
 vi.mock("@/app/(dashboard)/hooks/teams/useTeams", () => ({
   useDeletedTeams: vi.fn(),
 }));
 
-const mockUseDeletedTeams = useDeletedTeams as MockedFunction<typeof useDeletedTeams>;
+const mockUseDeletedTeams = useDeletedTeams as MockedFunction<
+  typeof useDeletedTeams
+>;
 
 const mockDeletedTeam: DeletedTeam = {
   team_id: "team-1",

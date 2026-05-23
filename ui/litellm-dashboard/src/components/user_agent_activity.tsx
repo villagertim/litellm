@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from "react";
 import {
-  Card,
-  Title,
-  Text,
-  Grid,
   BarChart,
+  Card,
+  Grid,
   Metric,
   Subtitle,
   Tab,
@@ -12,11 +9,21 @@ import {
   TabList,
   TabPanel,
   TabPanels,
+  Text,
+  Title,
 } from "@tremor/react";
+import type { DateRangePickerValue } from "@tremor/react";
 import { Select, Tooltip } from "antd";
-import { userAgentSummaryCall, tagDauCall, tagWauCall, tagMauCall, tagDistinctCall } from "./networking";
+import type React from "react";
+import { useEffect, useState } from "react";
+import {
+  tagDauCall,
+  tagDistinctCall,
+  tagMauCall,
+  tagWauCall,
+  userAgentSummaryCall,
+} from "./networking";
 import PerUserUsage from "./per_user_usage";
-import { DateRangePickerValue } from "@tremor/react";
 import { ChartLoader } from "./shared/chart_loader";
 
 // New interfaces for the updated API response
@@ -61,15 +68,28 @@ interface UserAgentActivityProps {
   onDateChange?: (value: DateRangePickerValue) => void; // Optional - not used anymore
 }
 
-const UserAgentActivity: React.FC<UserAgentActivityProps> = ({ accessToken, userRole, dateValue, onDateChange }) => {
+const UserAgentActivity: React.FC<UserAgentActivityProps> = ({
+  accessToken,
+  userRole,
+  dateValue,
+  onDateChange,
+}) => {
   // Maximum number of categories to show in charts to prevent color palette overflow
   const MAX_CATEGORIES = 10;
 
   // Separate state for each endpoint
-  const [dauData, setDauData] = useState<ActiveUsersAnalyticsResponse>({ results: [] });
-  const [wauData, setWauData] = useState<ActiveUsersAnalyticsResponse>({ results: [] });
-  const [mauData, setMauData] = useState<ActiveUsersAnalyticsResponse>({ results: [] });
-  const [summaryData, setSummaryData] = useState<TagSummaryResponse>({ results: [] });
+  const [dauData, setDauData] = useState<ActiveUsersAnalyticsResponse>({
+    results: [],
+  });
+  const [wauData, setWauData] = useState<ActiveUsersAnalyticsResponse>({
+    results: [],
+  });
+  const [mauData, setMauData] = useState<ActiveUsersAnalyticsResponse>({
+    results: [],
+  });
+  const [summaryData, setSummaryData] = useState<TagSummaryResponse>({
+    results: [],
+  });
 
   const [userAgentFilter, setUserAgentFilter] = useState<string>("");
 
@@ -93,7 +113,9 @@ const UserAgentActivity: React.FC<UserAgentActivityProps> = ({ accessToken, user
     setTagsLoading(true);
     try {
       const data = await tagDistinctCall(accessToken);
-      setAvailableTags(data.results.map((item: DistinctTagResponse) => item.tag));
+      setAvailableTags(
+        data.results.map((item: DistinctTagResponse) => item.tag),
+      );
     } catch (error) {
       console.error("Failed to fetch available tags:", error);
     } finally {
@@ -239,9 +261,18 @@ const UserAgentActivity: React.FC<UserAgentActivityProps> = ({ accessToken, user
       .map(([tag]) => tag);
   };
 
-  const allDauTags = getAllTagsForData(dauData.results).slice(0, MAX_CATEGORIES);
-  const allWauTags = getAllTagsForData(wauData.results).slice(0, MAX_CATEGORIES);
-  const allMauTags = getAllTagsForData(mauData.results).slice(0, MAX_CATEGORIES);
+  const allDauTags = getAllTagsForData(dauData.results).slice(
+    0,
+    MAX_CATEGORIES,
+  );
+  const allWauTags = getAllTagsForData(wauData.results).slice(
+    0,
+    MAX_CATEGORIES,
+  );
+  const allMauTags = getAllTagsForData(mauData.results).slice(
+    0,
+    MAX_CATEGORIES,
+  );
 
   // Prepare daily chart data (DAU) - always show last 7 days
   const generateDailyChartData = () => {
@@ -352,7 +383,10 @@ const UserAgentActivity: React.FC<UserAgentActivityProps> = ({ accessToken, user
   const monthlyChartData = generateMonthlyChartData();
 
   // Format numbers with K, M abbreviations
-  const formatAbbreviatedNumber = (value: number, decimalPlaces: number = 0): string => {
+  const formatAbbreviatedNumber = (
+    value: number,
+    decimalPlaces = 0,
+  ): string => {
     if (value >= 100000000) {
       return (value / 1000000).toFixed(decimalPlaces) + "M";
     } else if (value >= 10000000) {
@@ -381,7 +415,9 @@ const UserAgentActivity: React.FC<UserAgentActivityProps> = ({ accessToken, user
 
             {/* User Agent Filter */}
             <div className="w-96">
-              <Text className="text-sm font-medium block mb-2">Filter by User Agents</Text>
+              <Text className="text-sm font-medium block mb-2">
+                Filter by User Agents
+              </Text>
               <Select
                 mode="multiple"
                 placeholder="All User Agents"
@@ -397,9 +433,17 @@ const UserAgentActivity: React.FC<UserAgentActivityProps> = ({ accessToken, user
               >
                 {availableTags.map((tag) => {
                   const userAgent = extractUserAgent(tag);
-                  const displayName = userAgent.length > 50 ? `${userAgent.substring(0, 50)}...` : userAgent;
+                  const displayName =
+                    userAgent.length > 50
+                      ? `${userAgent.substring(0, 50)}...`
+                      : userAgent;
                   return (
-                    <Select.Option key={tag} value={tag} label={displayName} title={userAgent}>
+                    <Select.Option
+                      key={tag}
+                      value={tag}
+                      label={displayName}
+                      title={userAgent}
+                    >
                       {displayName}
                     </Select.Option>
                   );
@@ -425,32 +469,50 @@ const UserAgentActivity: React.FC<UserAgentActivityProps> = ({ accessToken, user
                     </Tooltip>
                     <div className="mt-4 space-y-3">
                       <div>
-                        <Text className="text-sm text-gray-600">Success Requests</Text>
-                        <Metric className="text-lg">{formatAbbreviatedNumber(tag.successful_requests)}</Metric>
+                        <Text className="text-sm text-gray-600">
+                          Success Requests
+                        </Text>
+                        <Metric className="text-lg">
+                          {formatAbbreviatedNumber(tag.successful_requests)}
+                        </Metric>
                       </div>
                       <div>
-                        <Text className="text-sm text-gray-600">Total Tokens</Text>
-                        <Metric className="text-lg">{formatAbbreviatedNumber(tag.total_tokens)}</Metric>
+                        <Text className="text-sm text-gray-600">
+                          Total Tokens
+                        </Text>
+                        <Metric className="text-lg">
+                          {formatAbbreviatedNumber(tag.total_tokens)}
+                        </Metric>
                       </div>
                       <div>
-                        <Text className="text-sm text-gray-600">Total Cost</Text>
-                        <Metric className="text-lg">${formatAbbreviatedNumber(tag.total_spend, 4)}</Metric>
+                        <Text className="text-sm text-gray-600">
+                          Total Cost
+                        </Text>
+                        <Metric className="text-lg">
+                          ${formatAbbreviatedNumber(tag.total_spend, 4)}
+                        </Metric>
                       </div>
                     </div>
                   </Card>
                 );
               })}
               {/* Fill remaining slots if less than 4 agents */}
-              {Array.from({ length: Math.max(0, 4 - (summaryData.results || []).length) }).map((_, index) => (
+              {Array.from({
+                length: Math.max(0, 4 - (summaryData.results || []).length),
+              }).map((_, index) => (
                 <Card key={`empty-${index}`}>
                   <Title>No Data</Title>
                   <div className="mt-4 space-y-3">
                     <div>
-                      <Text className="text-sm text-gray-600">Success Requests</Text>
+                      <Text className="text-sm text-gray-600">
+                        Success Requests
+                      </Text>
                       <Metric className="text-lg">-</Metric>
                     </div>
                     <div>
-                      <Text className="text-sm text-gray-600">Total Tokens</Text>
+                      <Text className="text-sm text-gray-600">
+                        Total Tokens
+                      </Text>
                       <Metric className="text-lg">-</Metric>
                     </div>
                     <div>
@@ -491,7 +553,9 @@ const UserAgentActivity: React.FC<UserAgentActivityProps> = ({ accessToken, user
                 <TabPanels>
                   <TabPanel>
                     <div className="mb-4">
-                      <Title className="text-lg">Daily Active Users - Last 7 Days</Title>
+                      <Title className="text-lg">
+                        Daily Active Users - Last 7 Days
+                      </Title>
                     </div>
                     {dauLoading ? (
                       <ChartLoader isDateChanging={false} />
@@ -500,7 +564,9 @@ const UserAgentActivity: React.FC<UserAgentActivityProps> = ({ accessToken, user
                         data={dailyChartData}
                         index="date"
                         categories={allDauTags.map(extractUserAgent)}
-                        valueFormatter={(value: number) => formatAbbreviatedNumber(value)}
+                        valueFormatter={(value: number) =>
+                          formatAbbreviatedNumber(value)
+                        }
                         yAxisWidth={60}
                         showLegend={true}
                         stack={true}
@@ -510,7 +576,9 @@ const UserAgentActivity: React.FC<UserAgentActivityProps> = ({ accessToken, user
 
                   <TabPanel>
                     <div className="mb-4">
-                      <Title className="text-lg">Weekly Active Users - Last 7 Weeks</Title>
+                      <Title className="text-lg">
+                        Weekly Active Users - Last 7 Weeks
+                      </Title>
                     </div>
                     {wauLoading ? (
                       <ChartLoader isDateChanging={false} />
@@ -519,7 +587,9 @@ const UserAgentActivity: React.FC<UserAgentActivityProps> = ({ accessToken, user
                         data={weeklyChartData}
                         index="week"
                         categories={allWauTags.map(extractUserAgent)}
-                        valueFormatter={(value: number) => formatAbbreviatedNumber(value)}
+                        valueFormatter={(value: number) =>
+                          formatAbbreviatedNumber(value)
+                        }
                         yAxisWidth={60}
                         showLegend={true}
                         stack={true}
@@ -529,7 +599,9 @@ const UserAgentActivity: React.FC<UserAgentActivityProps> = ({ accessToken, user
 
                   <TabPanel>
                     <div className="mb-4">
-                      <Title className="text-lg">Monthly Active Users - Last 7 Months</Title>
+                      <Title className="text-lg">
+                        Monthly Active Users - Last 7 Months
+                      </Title>
                     </div>
                     {mauLoading ? (
                       <ChartLoader isDateChanging={false} />
@@ -538,7 +610,9 @@ const UserAgentActivity: React.FC<UserAgentActivityProps> = ({ accessToken, user
                         data={monthlyChartData}
                         index="month"
                         categories={allMauTags.map(extractUserAgent)}
-                        valueFormatter={(value: number) => formatAbbreviatedNumber(value)}
+                        valueFormatter={(value: number) =>
+                          formatAbbreviatedNumber(value)
+                        }
                         yAxisWidth={60}
                         showLegend={true}
                         stack={true}

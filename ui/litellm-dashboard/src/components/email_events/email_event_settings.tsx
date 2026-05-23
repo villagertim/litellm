@@ -1,10 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { Card, Text, Button } from "@tremor/react";
-import { Typography, Divider, Spin, Checkbox } from "antd";
+import { Button, Card, Text } from "@tremor/react";
+import { Checkbox, Divider, Spin, Typography } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
+import type { EmailEvent } from "../../types";
 import NotificationsManager from "../molecules/notifications_manager";
-import { getEmailEventSettings, updateEmailEventSettings, resetEmailEventSettings } from "../networking";
-import { EmailEvent } from "../../types";
-import { EmailEventSetting } from "./types";
+import {
+  getEmailEventSettings,
+  resetEmailEventSettings,
+  updateEmailEventSettings,
+} from "../networking";
+import type { EmailEventSetting } from "./types";
 
 const { Title } = Typography;
 
@@ -12,7 +17,9 @@ interface EmailEventSettingsProps {
   accessToken: string | null;
 }
 
-const EmailEventSettings: React.FC<EmailEventSettingsProps> = ({ accessToken }) => {
+const EmailEventSettings: React.FC<EmailEventSettingsProps> = ({
+  accessToken,
+}) => {
   const [loading, setLoading] = useState(true);
   const [eventSettings, setEventSettings] = useState<EmailEventSetting[]>([]);
 
@@ -102,11 +109,15 @@ const EmailEventSettings: React.FC<EmailEventSettingsProps> = ({ accessToken }) 
             <div key={setting.event} className="flex items-center">
               <Checkbox
                 checked={setting.enabled}
-                onChange={(e) => handleCheckboxChange(setting.event, e.target.checked)}
+                onChange={(e) =>
+                  handleCheckboxChange(setting.event, e.target.checked)
+                }
               />
               <div className="ml-3">
                 <Text>{setting.event}</Text>
-                <div className="text-sm text-gray-500 block">{getEventDescription(setting.event)}</div>
+                <div className="text-sm text-gray-500 block">
+                  {getEventDescription(setting.event)}
+                </div>
               </div>
             </div>
           ))}
@@ -117,7 +128,11 @@ const EmailEventSettings: React.FC<EmailEventSettingsProps> = ({ accessToken }) 
         <Button onClick={handleSaveSettings} disabled={loading}>
           Save Changes
         </Button>
-        <Button onClick={handleResetSettings} variant="secondary" disabled={loading}>
+        <Button
+          onClick={handleResetSettings}
+          variant="secondary"
+          disabled={loading}
+        >
           Reset to Defaults
         </Button>
       </div>

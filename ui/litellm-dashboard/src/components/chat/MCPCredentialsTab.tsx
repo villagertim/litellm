@@ -7,15 +7,24 @@
  * Lives in the Chat sidebar's "Credentials" tab.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
-import { Spin } from "antd";
 import MessageManager from "@/components/molecules/message_manager";
 import { DeleteOutlined, LinkOutlined } from "@ant-design/icons";
-import { Badge, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "@tremor/react";
 import {
+  Badge,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+} from "@tremor/react";
+import { Spin } from "antd";
+import type React from "react";
+import { useCallback, useEffect, useState } from "react";
+import {
+  type MCPUserCredentialListItem,
   deleteMCPOAuthUserCredential,
   listMCPUserCredentials,
-  MCPUserCredentialListItem,
 } from "../networking";
 
 interface Props {
@@ -58,7 +67,9 @@ function expiryLabel(isoString: string | null | undefined): string {
 }
 
 const MCPCredentialsTab: React.FC<Props> = ({ accessToken }) => {
-  const [credentials, setCredentials] = useState<MCPUserCredentialListItem[]>([]);
+  const [credentials, setCredentials] = useState<MCPUserCredentialListItem[]>(
+    [],
+  );
   const [loading, setLoading] = useState(true);
   const [revoking, setRevoking] = useState<Set<string>>(new Set());
 
@@ -70,7 +81,9 @@ const MCPCredentialsTab: React.FC<Props> = ({ accessToken }) => {
       .finally(() => setLoading(false));
   }, [accessToken]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const handleRevoke = async (serverId: string) => {
     setRevoking((prev) => new Set(prev).add(serverId));
@@ -80,7 +93,11 @@ const MCPCredentialsTab: React.FC<Props> = ({ accessToken }) => {
     } catch {
       MessageManager.error("Failed to revoke connection. Please try again.");
     } finally {
-      setRevoking((prev) => { const n = new Set(prev); n.delete(serverId); return n; });
+      setRevoking((prev) => {
+        const n = new Set(prev);
+        n.delete(serverId);
+        return n;
+      });
     }
   };
 
@@ -91,7 +108,9 @@ const MCPCredentialsTab: React.FC<Props> = ({ accessToken }) => {
     <div className="w-full">
       {/* Header */}
       <div className="mb-4">
-        <h2 className="text-base font-semibold text-gray-900 mb-0.5">App Credentials</h2>
+        <h2 className="text-base font-semibold text-gray-900 mb-0.5">
+          App Credentials
+        </h2>
         <p className="text-sm text-gray-500 m-0">
           Your stored OAuth connections — used automatically in chat.
         </p>
@@ -106,7 +125,8 @@ const MCPCredentialsTab: React.FC<Props> = ({ accessToken }) => {
           <LinkOutlined className="text-2xl mb-3 block text-gray-300" />
           No connections yet.
           <br />
-          Go to <strong>Apps</strong> and click <strong>Connect</strong> to authorize an MCP server.
+          Go to <strong>Apps</strong> and click <strong>Connect</strong> to
+          authorize an MCP server.
         </div>
       ) : (
         <div className="rounded-lg border border-gray-200 overflow-hidden">
@@ -136,12 +156,19 @@ const MCPCredentialsTab: React.FC<Props> = ({ accessToken }) => {
                 const isExpired = exp === "Expired";
 
                 return (
-                  <TableRow key={cred.server_id} className="h-10 hover:bg-gray-50">
+                  <TableRow
+                    key={cred.server_id}
+                    className="h-10 hover:bg-gray-50"
+                  >
                     <TableCell className="py-2 px-4">
-                      <span className="text-sm font-medium text-gray-900">{name}</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        {name}
+                      </span>
                     </TableCell>
                     <TableCell className="py-2 px-4">
-                      <span className="text-sm text-gray-500">{connected || "—"}</span>
+                      <span className="text-sm text-gray-500">
+                        {connected || "—"}
+                      </span>
                     </TableCell>
                     <TableCell className="py-2 px-4">
                       <Badge color={isExpired ? "red" : "green"} size="xs">
@@ -156,7 +183,11 @@ const MCPCredentialsTab: React.FC<Props> = ({ accessToken }) => {
                         className={`inline-flex items-center justify-center rounded-md border border-gray-200 px-2 py-1 text-gray-400 hover:text-red-500 hover:border-red-200 transition-colors ${isRevoking ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                         style={{ background: "none" }}
                       >
-                        {isRevoking ? <Spin size="small" /> : <DeleteOutlined className="text-sm" />}
+                        {isRevoking ? (
+                          <Spin size="small" />
+                        ) : (
+                          <DeleteOutlined className="text-sm" />
+                        )}
                       </button>
                     </TableCell>
                   </TableRow>

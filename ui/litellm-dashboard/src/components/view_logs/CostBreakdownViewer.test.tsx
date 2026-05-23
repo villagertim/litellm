@@ -1,8 +1,8 @@
-import React from "react";
-import { describe, it, expect } from "vitest";
 import userEvent from "@testing-library/user-event";
+import React from "react";
+import { describe, expect, it } from "vitest";
 import { renderWithProviders, screen } from "../../../tests/test-utils";
-import { CostBreakdownViewer, CostBreakdown } from "./CostBreakdownViewer";
+import { type CostBreakdown, CostBreakdownViewer } from "./CostBreakdownViewer";
 
 async function expandCostBreakdown() {
   const user = userEvent.setup();
@@ -12,7 +12,7 @@ async function expandCostBreakdown() {
 describe("CostBreakdownViewer", () => {
   it("renders nothing when costBreakdown is null", () => {
     const { container } = renderWithProviders(
-      <CostBreakdownViewer costBreakdown={null} totalSpend={0} />
+      <CostBreakdownViewer costBreakdown={null} totalSpend={0} />,
     );
 
     expect(container).toBeEmptyDOMElement();
@@ -20,7 +20,7 @@ describe("CostBreakdownViewer", () => {
 
   it("renders nothing when costBreakdown is undefined", () => {
     const { container } = renderWithProviders(
-      <CostBreakdownViewer costBreakdown={undefined} totalSpend={0} />
+      <CostBreakdownViewer costBreakdown={undefined} totalSpend={0} />,
     );
 
     expect(container).toBeEmptyDOMElement();
@@ -38,7 +38,7 @@ describe("CostBreakdownViewer", () => {
         totalSpend={0.003}
         promptTokens={100}
         completionTokens={200}
-      />
+      />,
     );
 
     expect(screen.getByText("Cost Breakdown")).toBeInTheDocument();
@@ -58,7 +58,7 @@ describe("CostBreakdownViewer", () => {
         totalSpend={0.003}
         promptTokens={500}
         completionTokens={200}
-      />
+      />,
     );
 
     await expandCostBreakdown();
@@ -85,11 +85,13 @@ describe("CostBreakdownViewer", () => {
         totalSpend={0.00312}
         promptTokens={100}
         completionTokens={200}
-      />
+      />,
     );
 
     await expandCostBreakdown();
-    expect(screen.getByText("Azure Model Router Flat Cost:")).toBeInTheDocument();
+    expect(
+      screen.getByText("Azure Model Router Flat Cost:"),
+    ).toBeInTheDocument();
     expect(screen.getByText("Routing Fee:")).toBeInTheDocument();
   });
 
@@ -110,11 +112,13 @@ describe("CostBreakdownViewer", () => {
         totalSpend={0.00312}
         promptTokens={100}
         completionTokens={200}
-      />
+      />,
     );
 
     await expandCostBreakdown();
-    expect(screen.getByText("Azure Model Router Flat Cost:")).toBeInTheDocument();
+    expect(
+      screen.getByText("Azure Model Router Flat Cost:"),
+    ).toBeInTheDocument();
     expect(screen.queryByText("Zero Cost:")).not.toBeInTheDocument();
     expect(screen.queryByText("Null Cost:")).not.toBeInTheDocument();
   });
@@ -130,7 +134,7 @@ describe("CostBreakdownViewer", () => {
           },
         }}
         totalSpend={0.00012}
-      />
+      />,
     );
 
     expect(screen.getByText("Cost Breakdown")).toBeInTheDocument();
@@ -144,12 +148,12 @@ describe("CostBreakdownViewer", () => {
       <CostBreakdownViewer
         costBreakdown={{
           additional_costs: {
-            "Zero": 0,
-            "Null": null as unknown as number,
+            Zero: 0,
+            Null: null as unknown as number,
           },
         }}
         totalSpend={0}
-      />
+      />,
     );
 
     expect(container).toBeEmptyDOMElement();
@@ -170,12 +174,16 @@ describe("CostBreakdownViewer", () => {
         totalSpend={0.00312}
         promptTokens={100}
         completionTokens={200}
-      />
+      />,
     );
 
-    expect(screen.queryByText("Azure Model Router Flat Cost:")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Azure Model Router Flat Cost:"),
+    ).not.toBeInTheDocument();
     await expandCostBreakdown();
-    expect(screen.getByText("Azure Model Router Flat Cost:")).toBeInTheDocument();
+    expect(
+      screen.getByText("Azure Model Router Flat Cost:"),
+    ).toBeInTheDocument();
   });
 
   it("shows '(Cached)' in the header when cacheHit is true", () => {
@@ -190,7 +198,7 @@ describe("CostBreakdownViewer", () => {
         costBreakdown={breakdown}
         totalSpend={0}
         cacheHit="true"
-      />
+      />,
     );
 
     expect(screen.getByText(/\(Cached\)/)).toBeInTheDocument();
@@ -205,7 +213,7 @@ describe("CostBreakdownViewer", () => {
     };
 
     renderWithProviders(
-      <CostBreakdownViewer costBreakdown={breakdown} totalSpend={0.027} />
+      <CostBreakdownViewer costBreakdown={breakdown} totalSpend={0.027} />,
     );
 
     await expandCostBreakdown();
@@ -222,7 +230,7 @@ describe("CostBreakdownViewer", () => {
     };
 
     renderWithProviders(
-      <CostBreakdownViewer costBreakdown={breakdown} totalSpend={0.035} />
+      <CostBreakdownViewer costBreakdown={breakdown} totalSpend={0.035} />,
     );
 
     await expandCostBreakdown();

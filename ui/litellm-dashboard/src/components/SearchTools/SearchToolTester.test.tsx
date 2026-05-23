@@ -1,9 +1,9 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { SearchToolTester } from "./SearchToolTester";
-import * as networking from "../networking";
 import NotificationsManager from "../molecules/notifications_manager";
+import * as networking from "../networking";
+import { SearchToolTester } from "./SearchToolTester";
 
 vi.mock("../networking", () => ({
   searchToolQueryCall: vi.fn(),
@@ -31,7 +31,8 @@ const mockSearchResults = {
     {
       title: "Test Result 2",
       url: "https://example.com/result2",
-      snippet: "This is a longer snippet that exceeds two hundred characters and should be truncated when displayed in the results. It contains more detailed information about the search result that would normally be shown in a search engine result page.",
+      snippet:
+        "This is a longer snippet that exceeds two hundred characters and should be truncated when displayed in the results. It contains more detailed information about the search result that would normally be shown in a search engine result page.",
     },
   ],
 };
@@ -44,7 +45,9 @@ const defaultProps = {
 describe("SearchToolTester", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(networking.searchToolQueryCall).mockResolvedValue(mockSearchResults);
+    vi.mocked(networking.searchToolQueryCall).mockResolvedValue(
+      mockSearchResults,
+    );
     vi.spyOn(Date, "now").mockReturnValue(1000000000000);
   });
 
@@ -56,12 +59,16 @@ describe("SearchToolTester", () => {
   it("should display empty state when no search has been performed", () => {
     render(<SearchToolTester {...defaultProps} />);
     expect(screen.getByText("Test your search tool")).toBeInTheDocument();
-    expect(screen.getByText("Enter a query above to see search results")).toBeInTheDocument();
+    expect(
+      screen.getByText("Enter a query above to see search results"),
+    ).toBeInTheDocument();
   });
 
   it("should display search input with placeholder", () => {
     render(<SearchToolTester {...defaultProps} />);
-    expect(screen.getByPlaceholderText("Enter your search query...")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Enter your search query..."),
+    ).toBeInTheDocument();
   });
 
   it("should display search button", () => {
@@ -91,7 +98,11 @@ describe("SearchToolTester", () => {
     await user.type(input, "test query");
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);
-    expect(networking.searchToolQueryCall).toHaveBeenCalledWith("test-token", "test-search-tool", "test query");
+    expect(networking.searchToolQueryCall).toHaveBeenCalledWith(
+      "test-token",
+      "test-search-tool",
+      "test query",
+    );
   });
 
   it("should call searchToolQueryCall when Enter is pressed in input", async () => {
@@ -99,7 +110,11 @@ describe("SearchToolTester", () => {
     render(<SearchToolTester {...defaultProps} />);
     const input = screen.getByPlaceholderText("Enter your search query...");
     await user.type(input, "test query{Enter}");
-    expect(networking.searchToolQueryCall).toHaveBeenCalledWith("test-token", "test-search-tool", "test query");
+    expect(networking.searchToolQueryCall).toHaveBeenCalledWith(
+      "test-token",
+      "test-search-tool",
+      "test query",
+    );
   });
 
   it("should not call searchToolQueryCall when Shift+Enter is pressed", async () => {
@@ -113,7 +128,10 @@ describe("SearchToolTester", () => {
 
   it("should display loading state while searching", async () => {
     vi.mocked(networking.searchToolQueryCall).mockImplementation(
-      () => new Promise((resolve) => setTimeout(() => resolve(mockSearchResults), 100)),
+      () =>
+        new Promise((resolve) =>
+          setTimeout(() => resolve(mockSearchResults), 100),
+        ),
     );
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
@@ -191,7 +209,9 @@ describe("SearchToolTester", () => {
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);
     await waitFor(() => {
-      expect(screen.getByText("https://example.com/result1")).toBeInTheDocument();
+      expect(
+        screen.getByText("https://example.com/result1"),
+      ).toBeInTheDocument();
     });
     expect(screen.getByText("https://example.com/result2")).toBeInTheDocument();
   });
@@ -204,7 +224,9 @@ describe("SearchToolTester", () => {
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);
     await waitFor(() => {
-      expect(screen.getByText("This is a short snippet for the first result.")).toBeInTheDocument();
+      expect(
+        screen.getByText("This is a short snippet for the first result."),
+      ).toBeInTheDocument();
     });
   });
 
@@ -253,7 +275,9 @@ describe("SearchToolTester", () => {
   });
 
   it("should display no results message when search returns empty results", async () => {
-    vi.mocked(networking.searchToolQueryCall).mockResolvedValue({ results: [] });
+    vi.mocked(networking.searchToolQueryCall).mockResolvedValue({
+      results: [],
+    });
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
     const input = screen.getByPlaceholderText("Enter your search query...");
@@ -263,11 +287,15 @@ describe("SearchToolTester", () => {
     await waitFor(() => {
       expect(screen.getByText("No results found")).toBeInTheDocument();
     });
-    expect(screen.getByText("Try a different search query")).toBeInTheDocument();
+    expect(
+      screen.getByText("Try a different search query"),
+    ).toBeInTheDocument();
   });
 
   it("should display no results message when search returns null results", async () => {
-    vi.mocked(networking.searchToolQueryCall).mockResolvedValue({ results: null });
+    vi.mocked(networking.searchToolQueryCall).mockResolvedValue({
+      results: null,
+    });
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
     const input = screen.getByPlaceholderText("Enter your search query...");
@@ -282,7 +310,7 @@ describe("SearchToolTester", () => {
   it("should handle search errors and show notification", async () => {
     const error = new Error("Search failed");
     vi.mocked(networking.searchToolQueryCall).mockRejectedValue(error);
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => { });
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
     const input = screen.getByPlaceholderText("Enter your search query...");
@@ -290,7 +318,9 @@ describe("SearchToolTester", () => {
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);
     await waitFor(() => {
-      expect(NotificationsManager.fromBackend).toHaveBeenCalledWith("Failed to query search tool");
+      expect(NotificationsManager.fromBackend).toHaveBeenCalledWith(
+        "Failed to query search tool",
+      );
     });
     consoleSpy.mockRestore();
   });
@@ -332,7 +362,9 @@ describe("SearchToolTester", () => {
       expect(screen.getByText("second query")).toBeInTheDocument();
     });
     const historyItems = screen.getAllByText("first query");
-    const historyItem = historyItems.find((item) => item.closest('[class*="cursor-pointer"]'));
+    const historyItem = historyItems.find((item) =>
+      item.closest('[class*="cursor-pointer"]'),
+    );
     if (historyItem) {
       await user.click(historyItem);
       expect(input).toHaveValue("first query");
@@ -357,7 +389,9 @@ describe("SearchToolTester", () => {
     });
     const clearButton = screen.getByRole("button", { name: /clear all/i });
     await user.click(clearButton);
-    expect(NotificationsManager.success).toHaveBeenCalledWith("Search history cleared");
+    expect(NotificationsManager.success).toHaveBeenCalledWith(
+      "Search history cleared",
+    );
     expect(screen.queryByText("Previous Searches")).not.toBeInTheDocument();
   });
 
@@ -376,7 +410,9 @@ describe("SearchToolTester", () => {
     }
     const historySection = screen.queryByText("Previous Searches");
     if (historySection) {
-      const historyItems = historySection.parentElement?.querySelectorAll('[class*="cursor-pointer"]');
+      const historyItems = historySection.parentElement?.querySelectorAll(
+        '[class*="cursor-pointer"]',
+      );
       expect(historyItems?.length).toBeLessThanOrEqual(5);
     }
   });
@@ -396,7 +432,10 @@ describe("SearchToolTester", () => {
 
   it("should disable input and button while loading", async () => {
     vi.mocked(networking.searchToolQueryCall).mockImplementation(
-      () => new Promise((resolve) => setTimeout(() => resolve(mockSearchResults), 100)),
+      () =>
+        new Promise((resolve) =>
+          setTimeout(() => resolve(mockSearchResults), 100),
+        ),
     );
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);

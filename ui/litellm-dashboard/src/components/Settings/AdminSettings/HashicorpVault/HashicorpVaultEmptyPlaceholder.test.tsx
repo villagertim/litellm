@@ -1,13 +1,17 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import HashicorpVaultEmptyPlaceholder from "./HashicorpVaultEmptyPlaceholder";
 
 describe("HashicorpVaultEmptyPlaceholder", () => {
   it("should render the empty state message and configure button", () => {
     render(<HashicorpVaultEmptyPlaceholder onAdd={vi.fn()} />);
-    expect(screen.getByText("No Vault Configuration Found")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /configure vault/i })).toBeInTheDocument();
+    expect(
+      screen.getByText("No Vault Configuration Found"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /configure vault/i }),
+    ).toBeInTheDocument();
   });
 
   it("should call onAdd when the configure button is clicked", async () => {
@@ -23,7 +27,9 @@ describe("HashicorpVaultEmptyPlaceholder", () => {
   it("should display the description text about Vault purpose", () => {
     render(<HashicorpVaultEmptyPlaceholder onAdd={vi.fn()} />);
     expect(
-      screen.getByText(/Configure Hashicorp Vault to securely manage provider API keys/),
+      screen.getByText(
+        /Configure Hashicorp Vault to securely manage provider API keys/,
+      ),
     ).toBeInTheDocument();
   });
 });

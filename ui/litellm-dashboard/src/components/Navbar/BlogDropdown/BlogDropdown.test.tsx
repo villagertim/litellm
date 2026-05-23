@@ -1,12 +1,26 @@
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { renderWithProviders, screen, waitFor } from "../../../../tests/test-utils";
+import {
+  renderWithProviders,
+  screen,
+  waitFor,
+} from "../../../../tests/test-utils";
 import { BlogDropdown } from "./BlogDropdown";
 
 let mockDisableBlogPosts = false;
 let mockRefetch = vi.fn();
 let mockUseBlogPostsResult: {
-  data: { posts: { title: string; date: string; description: string; url: string }[] } | null | undefined;
+  data:
+    | {
+        posts: {
+          title: string;
+          date: string;
+          description: string;
+          url: string;
+        }[];
+      }
+    | null
+    | undefined;
   isLoading: boolean;
   isError: boolean;
   refetch: () => void;
@@ -26,12 +40,42 @@ vi.mock("@/app/(dashboard)/hooks/blogPosts/useBlogPosts", () => ({
 }));
 
 const MOCK_POSTS = [
-  { title: "Post One", date: "2026-02-01", description: "Description one", url: "https://example.com/1" },
-  { title: "Post Two", date: "2026-02-02", description: "Description two", url: "https://example.com/2" },
-  { title: "Post Three", date: "2026-02-03", description: "Description three", url: "https://example.com/3" },
-  { title: "Post Four", date: "2026-02-04", description: "Description four", url: "https://example.com/4" },
-  { title: "Post Five", date: "2026-02-05", description: "Description five", url: "https://example.com/5" },
-  { title: "Post Six", date: "2026-02-06", description: "Description six", url: "https://example.com/6" },
+  {
+    title: "Post One",
+    date: "2026-02-01",
+    description: "Description one",
+    url: "https://example.com/1",
+  },
+  {
+    title: "Post Two",
+    date: "2026-02-02",
+    description: "Description two",
+    url: "https://example.com/2",
+  },
+  {
+    title: "Post Three",
+    date: "2026-02-03",
+    description: "Description three",
+    url: "https://example.com/3",
+  },
+  {
+    title: "Post Four",
+    date: "2026-02-04",
+    description: "Description four",
+    url: "https://example.com/4",
+  },
+  {
+    title: "Post Five",
+    date: "2026-02-05",
+    description: "Description five",
+    url: "https://example.com/5",
+  },
+  {
+    title: "Post Six",
+    date: "2026-02-06",
+    description: "Description six",
+    url: "https://example.com/6",
+  },
 ];
 
 async function openDropdown() {
@@ -74,7 +118,9 @@ describe("BlogDropdown", () => {
         await openDropdown();
 
         await waitFor(() => {
-          expect(document.querySelector(".anticon-loading")).toBeInTheDocument();
+          expect(
+            document.querySelector(".anticon-loading"),
+          ).toBeInTheDocument();
         });
       });
     });
@@ -100,7 +146,9 @@ describe("BlogDropdown", () => {
         await openDropdown();
 
         await waitFor(() => {
-          expect(screen.getByRole("button", { name: /retry/i })).toBeInTheDocument();
+          expect(
+            screen.getByRole("button", { name: /retry/i }),
+          ).toBeInTheDocument();
         });
       });
 
@@ -111,7 +159,9 @@ describe("BlogDropdown", () => {
         await user.hover(screen.getByRole("button", { name: /blog/i }));
 
         await waitFor(() => {
-          expect(screen.getByRole("button", { name: /retry/i })).toBeInTheDocument();
+          expect(
+            screen.getByRole("button", { name: /retry/i }),
+          ).toBeInTheDocument();
         });
 
         await user.click(screen.getByRole("button", { name: /retry/i }));
@@ -133,7 +183,10 @@ describe("BlogDropdown", () => {
       });
 
       it("should show 'No posts available' when posts array is empty", async () => {
-        mockUseBlogPostsResult = { ...mockUseBlogPostsResult, data: { posts: [] } };
+        mockUseBlogPostsResult = {
+          ...mockUseBlogPostsResult,
+          data: { posts: [] },
+        };
         renderWithProviders(<BlogDropdown />);
 
         await openDropdown();
@@ -146,7 +199,10 @@ describe("BlogDropdown", () => {
 
     describe("with posts", () => {
       beforeEach(() => {
-        mockUseBlogPostsResult = { ...mockUseBlogPostsResult, data: { posts: MOCK_POSTS.slice(0, 3) } };
+        mockUseBlogPostsResult = {
+          ...mockUseBlogPostsResult,
+          data: { posts: MOCK_POSTS.slice(0, 3) },
+        };
       });
 
       it("should render post titles", async () => {
@@ -187,7 +243,16 @@ describe("BlogDropdown", () => {
       it("should render formatted post dates", async () => {
         mockUseBlogPostsResult = {
           ...mockUseBlogPostsResult,
-          data: { posts: [{ title: "Date Post", date: "2026-02-15", description: "Desc", url: "https://example.com" }] },
+          data: {
+            posts: [
+              {
+                title: "Date Post",
+                date: "2026-02-15",
+                description: "Desc",
+                url: "https://example.com",
+              },
+            ],
+          },
         };
         renderWithProviders(<BlogDropdown />);
 
@@ -204,8 +269,13 @@ describe("BlogDropdown", () => {
         await openDropdown();
 
         await waitFor(() => {
-          const viewAllLink = screen.getByRole("link", { name: /view all posts/i });
-          expect(viewAllLink).toHaveAttribute("href", "https://docs.litellm.ai/blog");
+          const viewAllLink = screen.getByRole("link", {
+            name: /view all posts/i,
+          });
+          expect(viewAllLink).toHaveAttribute(
+            "href",
+            "https://docs.litellm.ai/blog",
+          );
           expect(viewAllLink).toHaveAttribute("target", "_blank");
           expect(viewAllLink).toHaveAttribute("rel", "noopener noreferrer");
         });
@@ -214,7 +284,10 @@ describe("BlogDropdown", () => {
 
     describe("post limit", () => {
       it("should render at most 5 posts when more than 5 are provided", async () => {
-        mockUseBlogPostsResult = { ...mockUseBlogPostsResult, data: { posts: MOCK_POSTS } };
+        mockUseBlogPostsResult = {
+          ...mockUseBlogPostsResult,
+          data: { posts: MOCK_POSTS },
+        };
         renderWithProviders(<BlogDropdown />);
 
         await openDropdown();

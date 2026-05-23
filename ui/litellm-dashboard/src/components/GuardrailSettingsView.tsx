@@ -1,6 +1,6 @@
-import React from "react";
-import { Tag } from "antd";
 import { GlobalOutlined } from "@ant-design/icons";
+import { Tag } from "antd";
+import React from "react";
 
 interface GuardrailSettingsViewProps {
   globalGuardrailNames: Set<string>;
@@ -28,7 +28,9 @@ export function GuardrailSettingsView({
   );
 
   const isEmpty =
-    !killSwitchOn && globalsRunning.length === 0 && nonGlobalOptIns.length === 0;
+    !killSwitchOn &&
+    globalsRunning.length === 0 &&
+    nonGlobalOptIns.length === 0;
 
   const content = isEmpty ? (
     <span className="block text-gray-500">No guardrails configured</span>
@@ -36,7 +38,10 @@ export function GuardrailSettingsView({
     <div className="flex flex-col gap-4">
       <div>
         <span className="block text-sm font-medium text-gray-700 mb-2">
-          <GlobalOutlined style={{ marginInlineEnd: 4 }} aria-label="Global guardrail" />
+          <GlobalOutlined
+            style={{ marginInlineEnd: 4 }}
+            aria-label="Global guardrail"
+          />
           Global
         </span>
         {killSwitchOn ? (
@@ -54,7 +59,9 @@ export function GuardrailSettingsView({
         )}
       </div>
       <div>
-        <span className="block text-sm font-medium text-gray-700 mb-2">Team-specific</span>
+        <span className="block text-sm font-medium text-gray-700 mb-2">
+          Team-specific
+        </span>
         {nonGlobalOptIns.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {nonGlobalOptIns.map((name) => (
@@ -72,10 +79,14 @@ export function GuardrailSettingsView({
 
   if (variant === "card") {
     return (
-      <div className={`bg-white border border-gray-200 rounded-lg p-6 ${className}`}>
+      <div
+        className={`bg-white border border-gray-200 rounded-lg p-6 ${className}`}
+      >
         <div className="flex items-center gap-2 mb-6">
           <div>
-            <span className="block font-semibold text-gray-900">Guardrails Settings</span>
+            <span className="block font-semibold text-gray-900">
+              Guardrails Settings
+            </span>
             <span className="block text-xs text-gray-500">
               Global and team-specific guardrails applied to this team
             </span>
@@ -88,7 +99,9 @@ export function GuardrailSettingsView({
 
   return (
     <div className={`${className}`}>
-      <span className="block font-medium text-gray-900 mb-3">Guardrails Settings</span>
+      <span className="block font-medium text-gray-900 mb-3">
+        Guardrails Settings
+      </span>
       {content}
     </div>
   );

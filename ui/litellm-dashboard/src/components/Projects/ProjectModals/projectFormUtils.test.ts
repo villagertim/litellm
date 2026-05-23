@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+import type { ProjectFormValues } from "./ProjectBaseForm";
 import { buildProjectApiParams } from "./projectFormUtils";
-import { ProjectFormValues } from "./ProjectBaseForm";
 
 const baseValues: ProjectFormValues = {
   project_alias: "My Project",
@@ -23,7 +23,10 @@ describe("buildProjectApiParams", () => {
   });
 
   it("should pass through description when provided", () => {
-    const result = buildProjectApiParams({ ...baseValues, description: "A description" });
+    const result = buildProjectApiParams({
+      ...baseValues,
+      description: "A description",
+    });
     expect(result.description).toBe("A description");
   });
 

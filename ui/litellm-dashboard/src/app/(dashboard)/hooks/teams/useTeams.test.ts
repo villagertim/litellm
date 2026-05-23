@@ -1,11 +1,17 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { ReactNode } from "react";
-import { useTeams, useTeam, useDeletedTeams, DeletedTeam, teamListCall } from "./useTeams";
 import { fetchTeams } from "@/app/(dashboard)/networking";
-import { teamInfoCall } from "@/components/networking";
 import type { Team } from "@/components/key_team_helpers/key_list";
+import { teamInfoCall } from "@/components/networking";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { renderHook, waitFor } from "@testing-library/react";
+import React, { type ReactNode } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  type DeletedTeam,
+  teamListCall,
+  useDeletedTeams,
+  useTeam,
+  useTeams,
+} from "./useTeams";
 
 vi.mock("@/app/(dashboard)/networking", () => ({
   fetchTeams: vi.fn(),
@@ -112,7 +118,12 @@ describe("useTeams", () => {
 
     expect(result.current.data).toEqual(mockTeams);
     expect(result.current.error).toBeNull();
-    expect(fetchTeams).toHaveBeenCalledWith("test-access-token", "test-user-id", "Admin", null);
+    expect(fetchTeams).toHaveBeenCalledWith(
+      "test-access-token",
+      "test-user-id",
+      "Admin",
+      null,
+    );
     expect(fetchTeams).toHaveBeenCalledTimes(1);
   });
 
@@ -136,7 +147,12 @@ describe("useTeams", () => {
 
     expect(result.current.error).toEqual(testError);
     expect(result.current.data).toBeUndefined();
-    expect(fetchTeams).toHaveBeenCalledWith("test-access-token", "test-user-id", "Admin", null);
+    expect(fetchTeams).toHaveBeenCalledWith(
+      "test-access-token",
+      "test-user-id",
+      "Admin",
+      null,
+    );
     expect(fetchTeams).toHaveBeenCalledTimes(1);
   });
 
@@ -200,7 +216,12 @@ describe("useTeams", () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(fetchTeams).toHaveBeenCalledWith("test-access-token", "test-user-id", "Admin", null);
+    expect(fetchTeams).toHaveBeenCalledWith(
+      "test-access-token",
+      "test-user-id",
+      "Admin",
+      null,
+    );
     expect(fetchTeams).toHaveBeenCalledTimes(1);
   });
 
@@ -217,7 +238,12 @@ describe("useTeams", () => {
     });
 
     expect(result.current.data).toEqual([]);
-    expect(fetchTeams).toHaveBeenCalledWith("test-access-token", "test-user-id", "Admin", null);
+    expect(fetchTeams).toHaveBeenCalledWith(
+      "test-access-token",
+      "test-user-id",
+      "Admin",
+      null,
+    );
   });
 
   it("should handle network timeout error", async () => {
@@ -260,7 +286,12 @@ describe("useTeams", () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(fetchTeams).toHaveBeenCalledWith("test-access-token", "custom-user-id", "member", null);
+    expect(fetchTeams).toHaveBeenCalledWith(
+      "test-access-token",
+      "custom-user-id",
+      "member",
+      null,
+    );
   });
 
   it("should handle null userId", async () => {
@@ -286,7 +317,12 @@ describe("useTeams", () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(fetchTeams).toHaveBeenCalledWith("test-access-token", null, "Admin", null);
+    expect(fetchTeams).toHaveBeenCalledWith(
+      "test-access-token",
+      null,
+      "Admin",
+      null,
+    );
   });
 });
 
@@ -414,7 +450,9 @@ describe("useTeam", () => {
   it("should return undefined initialData when teamId is not in cache", () => {
     queryClient.setQueryData(["teams", "list", { params: {} }], mockTeams);
 
-    const { result } = renderHook(() => useTeam("non-existent-team"), { wrapper });
+    const { result } = renderHook(() => useTeam("non-existent-team"), {
+      wrapper,
+    });
 
     expect(result.current.data).toBeUndefined();
   });
@@ -423,7 +461,7 @@ describe("useTeam", () => {
     // This tests the defensive error path in queryFn (lines 111-112)
     // The enabled check prevents queryFn from running, but we can test the defensive code
     // by manually constructing and calling the queryFn logic
-    
+
     // Set up mocks
     mockUseAuthorized.mockReturnValue({
       accessToken: null, // Missing accessToken
@@ -438,24 +476,24 @@ describe("useTeam", () => {
 
     // Import useQueryClient to get access to query client
     const { useQueryClient } = await import("@tanstack/react-query");
-    
+
     // Manually test the queryFn logic by calling it directly
     // This simulates what would happen if enabled check was bypassed
     const testQueryFn = async () => {
       const { accessToken } = mockUseAuthorized();
       const teamId = "team-1";
-      
+
       // This is the defensive check from lines 111-112
       if (!accessToken || !teamId) {
         throw new Error("Missing auth or teamId");
       }
-      
+
       return teamInfoCall(accessToken, teamId);
     };
 
     // Test that the error is thrown
     await expect(testQueryFn()).rejects.toThrow("Missing auth or teamId");
-    
+
     // Also test with missing teamId
     mockUseAuthorized.mockReturnValue({
       accessToken: "test-access-token",
@@ -471,15 +509,17 @@ describe("useTeam", () => {
     const testQueryFnMissingTeamId = async () => {
       const { accessToken } = mockUseAuthorized();
       const teamId = undefined; // Missing teamId
-      
+
       if (!accessToken || !teamId) {
         throw new Error("Missing auth or teamId");
       }
-      
+
       return teamInfoCall(accessToken, teamId);
     };
 
-    await expect(testQueryFnMissingTeamId()).rejects.toThrow("Missing auth or teamId");
+    await expect(testQueryFnMissingTeamId()).rejects.toThrow(
+      "Missing auth or teamId",
+    );
   });
 });
 
@@ -584,7 +624,9 @@ describe("teamListCall", () => {
     await teamListCall("test-access-token", 1, 10, {});
 
     const callUrl = (global.fetch as any).mock.calls[0][0];
-    expect(callUrl).toBe("https://api.example.com/v2/team/list?page=1&page_size=10");
+    expect(callUrl).toBe(
+      "https://api.example.com/v2/team/list?page=1&page_size=10",
+    );
   });
 
   it("should handle error response", async () => {
@@ -594,14 +636,18 @@ describe("teamListCall", () => {
       json: async () => errorData,
     });
 
-    await expect(teamListCall("test-access-token", 1, 10, {})).rejects.toThrow("Failed to fetch teams");
+    await expect(teamListCall("test-access-token", 1, 10, {})).rejects.toThrow(
+      "Failed to fetch teams",
+    );
   });
 
   it("should handle network errors", async () => {
     const networkError = new Error("Network error");
     (global.fetch as any).mockRejectedValue(networkError);
 
-    await expect(teamListCall("test-access-token", 1, 10, {})).rejects.toThrow("Network error");
+    await expect(teamListCall("test-access-token", 1, 10, {})).rejects.toThrow(
+      "Network error",
+    );
   });
 
   it("should handle error when response.json() fails", async () => {
@@ -612,7 +658,9 @@ describe("teamListCall", () => {
       },
     });
 
-    await expect(teamListCall("test-access-token", 1, 10, {})).rejects.toThrow();
+    await expect(
+      teamListCall("test-access-token", 1, 10, {}),
+    ).rejects.toThrow();
   });
 });
 
@@ -666,7 +714,9 @@ describe("useDeletedTeams", () => {
       json: async () => ({ teams: mockDeletedTeams }),
     });
 
-    const { result } = renderHook(() => useDeletedTeams(1, 10, {}), { wrapper });
+    const { result } = renderHook(() => useDeletedTeams(1, 10, {}), {
+      wrapper,
+    });
 
     expect(result.current).toBeDefined();
   });
@@ -677,7 +727,9 @@ describe("useDeletedTeams", () => {
       json: async () => ({ teams: mockDeletedTeams }),
     });
 
-    const { result } = renderHook(() => useDeletedTeams(1, 10, {}), { wrapper });
+    const { result } = renderHook(() => useDeletedTeams(1, 10, {}), {
+      wrapper,
+    });
 
     expect(result.current.isLoading).toBe(true);
     expect(result.current.data).toBeUndefined();
@@ -697,7 +749,9 @@ describe("useDeletedTeams", () => {
       json: async () => ({ error: "Failed to fetch deleted teams" }),
     });
 
-    const { result } = renderHook(() => useDeletedTeams(1, 10, {}), { wrapper });
+    const { result } = renderHook(() => useDeletedTeams(1, 10, {}), {
+      wrapper,
+    });
 
     expect(result.current.isLoading).toBe(true);
 
@@ -722,7 +776,9 @@ describe("useDeletedTeams", () => {
       showSSOBanner: false,
     });
 
-    const { result } = renderHook(() => useDeletedTeams(1, 10, {}), { wrapper });
+    const { result } = renderHook(() => useDeletedTeams(1, 10, {}), {
+      wrapper,
+    });
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toBeUndefined();
@@ -784,7 +840,9 @@ describe("useDeletedTeams", () => {
       json: async () => mockDeletedTeams, // Direct array, not wrapped in { teams: ... }
     });
 
-    const { result } = renderHook(() => useDeletedTeams(1, 10, {}), { wrapper });
+    const { result } = renderHook(() => useDeletedTeams(1, 10, {}), {
+      wrapper,
+    });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);

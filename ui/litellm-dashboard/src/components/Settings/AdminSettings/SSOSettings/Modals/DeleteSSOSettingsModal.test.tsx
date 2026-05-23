@@ -46,7 +46,11 @@ describe("DeleteSSOSettingsModal", () => {
 
     render(
       <QueryClientProvider client={queryClient}>
-        <DeleteSSOSettingsModal isVisible={true} onCancel={onCancel} onSuccess={onSuccess} />
+        <DeleteSSOSettingsModal
+          isVisible={true}
+          onCancel={onCancel}
+          onSuccess={onSuccess}
+        />
       </QueryClientProvider>,
     );
 

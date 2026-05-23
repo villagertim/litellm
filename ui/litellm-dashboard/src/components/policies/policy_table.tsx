@@ -1,16 +1,33 @@
-import React, { useMemo, useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, Icon, Button, Badge } from "@tremor/react";
-import { TrashIcon, PencilIcon, SwitchVerticalIcon, ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/outline";
-import { Tooltip, Tag } from "antd";
 import {
-  ColumnDef,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  PencilIcon,
+  SwitchVerticalIcon,
+  TrashIcon,
+} from "@heroicons/react/outline";
+import {
+  type ColumnDef,
+  type SortingState,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { Policy } from "./types";
+import {
+  Badge,
+  Button,
+  Icon,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+} from "@tremor/react";
+import { Tag, Tooltip } from "antd";
+import type React from "react";
+import { useMemo, useState } from "react";
+import type { Policy } from "./types";
 
 /** One row per policy name; primaryPolicy is used for display and for Edit (FlowBuilder loads all versions) */
 interface PolicyRow {
@@ -31,9 +48,15 @@ function groupPoliciesByName(policies: Policy[]): PolicyRow[] {
     // Prefer production, then highest version_number
     const primary =
       versions.find((v) => v.version_status === "production") ??
-      [...versions].sort((a, b) => (b.version_number ?? 0) - (a.version_number ?? 0))[0] ??
+      [...versions].sort(
+        (a, b) => (b.version_number ?? 0) - (a.version_number ?? 0),
+      )[0] ??
       versions[0];
-    rows.push({ policy_name: policyName, primaryPolicy: primary, versionCount: versions.length });
+    rows.push({
+      policy_name: policyName,
+      primaryPolicy: primary,
+      versionCount: versions.length,
+    });
   }
   return rows.sort((a, b) => a.policy_name.localeCompare(b.policy_name));
 }
@@ -55,7 +78,9 @@ const PolicyTable: React.FC<PolicyTableProps> = ({
   onViewClick,
   isAdmin = false,
 }) => {
-  const [sorting, setSorting] = useState<SortingState>([{ id: "policy_name", desc: false }]);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "policy_name", desc: false },
+  ]);
 
   const rows = useMemo(() => groupPoliciesByName(policies), [policies]);
 
@@ -73,12 +98,17 @@ const PolicyTable: React.FC<PolicyTableProps> = ({
         const { primaryPolicy, versionCount } = row.original;
         return (
           <div className="flex items-center gap-2">
-            <Tooltip title={`${primaryPolicy.policy_name || "-"}${versionCount > 1 ? ` (${versionCount} versions)` : ""}`}>
+            <Tooltip
+              title={`${primaryPolicy.policy_name || "-"}${versionCount > 1 ? ` (${versionCount} versions)` : ""}`}
+            >
               <Button
                 size="xs"
                 variant="light"
                 className="font-medium text-blue-500 bg-blue-50 hover:bg-blue-100 text-xs font-normal px-2 py-0.5 text-left"
-                onClick={() => primaryPolicy.policy_id && onViewClick(primaryPolicy.policy_id)}
+                onClick={() =>
+                  primaryPolicy.policy_id &&
+                  onViewClick(primaryPolicy.policy_id)
+                }
               >
                 {primaryPolicy.policy_name || "-"}
               </Button>
@@ -147,7 +177,8 @@ const PolicyTable: React.FC<PolicyTableProps> = ({
     },
     {
       header: "Guardrails (Remove)",
-      accessorFn: (row) => (row.primaryPolicy.guardrails_remove ?? []).join(", "),
+      accessorFn: (row) =>
+        (row.primaryPolicy.guardrails_remove ?? []).join(", "),
       cell: ({ row }) => {
         const policy = row.original.primaryPolicy;
         const guardrails = policy.guardrails_remove || [];
@@ -183,7 +214,13 @@ const PolicyTable: React.FC<PolicyTableProps> = ({
           return <span className="text-xs text-gray-400">-</span>;
         }
         return (
-          <Tooltip title={typeof modelCondition === "string" ? modelCondition : JSON.stringify(modelCondition)}>
+          <Tooltip
+            title={
+              typeof modelCondition === "string"
+                ? modelCondition
+                : JSON.stringify(modelCondition)
+            }
+          >
             <code className="text-xs bg-gray-100 px-1 py-0.5 rounded">
               {typeof modelCondition === "string"
                 ? modelCondition.length > 20
@@ -232,7 +269,10 @@ const PolicyTable: React.FC<PolicyTableProps> = ({
                     size="sm"
                     onClick={() =>
                       policy.policy_id &&
-                      onDeleteClick(policy.policy_id, policy.policy_name || "Unnamed Policy")
+                      onDeleteClick(
+                        policy.policy_id,
+                        policy.policy_name || "Unnamed Policy",
+                      )
                     }
                     className="cursor-pointer hover:text-red-500"
                   />
@@ -268,20 +308,31 @@ const PolicyTable: React.FC<PolicyTableProps> = ({
                   <TableHeaderCell
                     key={header.id}
                     className={`py-1 h-8 ${
-                      header.id === "actions" ? "sticky right-0 bg-white shadow-[-4px_0_8px_-6px_rgba(0,0,0,0.1)]" : ""
+                      header.id === "actions"
+                        ? "sticky right-0 bg-white shadow-[-4px_0_8px_-6px_rgba(0,0,0,0.1)]"
+                        : ""
                     }`}
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center">
-                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                       </div>
                       {header.id !== "actions" && (
                         <div className="w-4">
                           {header.column.getIsSorted() ? (
                             {
-                              asc: <ChevronUpIcon className="h-4 w-4 text-blue-500" />,
-                              desc: <ChevronDownIcon className="h-4 w-4 text-blue-500" />,
+                              asc: (
+                                <ChevronUpIcon className="h-4 w-4 text-blue-500" />
+                              ),
+                              desc: (
+                                <ChevronDownIcon className="h-4 w-4 text-blue-500" />
+                              ),
                             }[header.column.getIsSorted() as string]
                           ) : (
                             <SwitchVerticalIcon className="h-4 w-4 text-gray-400" />
@@ -315,7 +366,10 @@ const PolicyTable: React.FC<PolicyTableProps> = ({
                           : ""
                       }`}
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>

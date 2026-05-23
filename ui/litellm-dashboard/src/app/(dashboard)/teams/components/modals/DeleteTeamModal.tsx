@@ -1,6 +1,6 @@
+import type { Team } from "@/components/key_team_helpers/key_list";
 import { AlertTriangleIcon, XIcon } from "lucide-react";
 import React, { useState } from "react";
-import { Team } from "@/components/key_team_helpers/key_list";
 
 interface DeleteTeamModalProps {
   teams: Team[] | null;
@@ -9,7 +9,12 @@ interface DeleteTeamModalProps {
   onConfirm: () => void;
 }
 
-const DeleteTeamModal = ({ teams, teamToDelete, onCancel, onConfirm }: DeleteTeamModalProps) => {
+const DeleteTeamModal = ({
+  teams,
+  teamToDelete,
+  onCancel,
+  onConfirm,
+}: DeleteTeamModalProps) => {
   const [deleteConfirmInput, setDeleteConfirmInput] = useState("");
 
   const team = teams?.find((t) => t.team_id === teamToDelete);
@@ -42,10 +47,12 @@ const DeleteTeamModal = ({ teams, teamToDelete, onCancel, onConfirm }: DeleteTea
                 </div>
                 <div>
                   <p className="text-base font-medium text-red-600">
-                    Warning: This team has {keyCount} associated key{keyCount > 1 ? "s" : ""}.
+                    Warning: This team has {keyCount} associated key
+                    {keyCount > 1 ? "s" : ""}.
                   </p>
                   <p className="text-base text-red-600 mt-2">
-                    Deleting the team will also delete all associated keys. This action is irreversible.
+                    Deleting the team will also delete all associated keys. This
+                    action is irreversible.
                   </p>
                 </div>
               </div>

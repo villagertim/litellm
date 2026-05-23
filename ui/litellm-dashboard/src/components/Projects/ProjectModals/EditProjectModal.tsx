@@ -1,13 +1,13 @@
-import { useEffect } from "react";
-import { Modal, Form, Button, Typography } from "antd";
-import { SaveOutlined } from "@ant-design/icons";
-import MessageManager from "@/components/molecules/message_manager";
-import { ProjectResponse } from "@/app/(dashboard)/hooks/projects/useProjects";
+import type { ProjectResponse } from "@/app/(dashboard)/hooks/projects/useProjects";
 import {
+  type ProjectUpdateParams,
   useUpdateProject,
-  ProjectUpdateParams,
 } from "@/app/(dashboard)/hooks/projects/useUpdateProject";
-import { ProjectBaseForm, ProjectFormValues } from "./ProjectBaseForm";
+import MessageManager from "@/components/molecules/message_manager";
+import { SaveOutlined } from "@ant-design/icons";
+import { Button, Form, Modal, Typography } from "antd";
+import { useEffect } from "react";
+import { ProjectBaseForm, type ProjectFormValues } from "./ProjectBaseForm";
 import { buildProjectApiParams } from "./projectFormUtils";
 
 interface EditProjectModalProps {
@@ -31,11 +31,17 @@ export function EditProjectModal({
     if (isOpen && project) {
       // Model limits are stored inside metadata by the backend
       const metadataObj = (project.metadata ?? {}) as Record<string, unknown>;
-      const rpmLimits = (metadataObj.model_rpm_limit ?? {}) as Record<string, number>;
-      const tpmLimits = (metadataObj.model_tpm_limit ?? {}) as Record<string, number>;
-      const guardrails = (Array.isArray(metadataObj.guardrails)
-        ? metadataObj.guardrails
-        : []) as string[];
+      const rpmLimits = (metadataObj.model_rpm_limit ?? {}) as Record<
+        string,
+        number
+      >;
+      const tpmLimits = (metadataObj.model_tpm_limit ?? {}) as Record<
+        string,
+        number
+      >;
+      const guardrails = (
+        Array.isArray(metadataObj.guardrails) ? metadataObj.guardrails : []
+      ) as string[];
 
       const modelLimits: ProjectFormValues["modelLimits"] = [];
       const allLimitModels = new Set([
@@ -51,7 +57,11 @@ export function EditProjectModal({
       }
 
       // Filter out internal keys from user-facing metadata
-      const internalKeys = new Set(["model_rpm_limit", "model_tpm_limit", "guardrails"]);
+      const internalKeys = new Set([
+        "model_rpm_limit",
+        "model_tpm_limit",
+        "guardrails",
+      ]);
       const metadata: ProjectFormValues["metadata"] = [];
       for (const [key, value] of Object.entries(metadataObj)) {
         if (!internalKeys.has(key)) {

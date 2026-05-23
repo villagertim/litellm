@@ -2,55 +2,56 @@ import {
   BarChart,
   BarList,
   Card,
-  Title,
+  Subtitle,
   Table,
+  TableBody,
+  TableCell,
   TableHead,
   TableHeaderCell,
   TableRow,
-  TableCell,
-  TableBody,
-  Subtitle,
+  Title,
 } from "@tremor/react";
 
-import React, { useState, useEffect } from "react";
+import type React from "react";
+import { useEffect, useState } from "react";
 
-import ViewUserSpend from "./view_user_spend";
-import { ProxySettings } from "./user_dashboard";
-import UsageDatePicker from "./shared/usage_date_picker";
 import {
-  Grid,
-  Col,
-  Text,
-  TabPanel,
-  TabPanels,
-  TabGroup,
-  TabList,
-  Tab,
-  Select,
-  SelectItem,
-  DateRangePickerValue,
-  DonutChart,
   AreaChart,
   Button,
+  Col,
+  type DateRangePickerValue,
+  DonutChart,
+  Grid,
   MultiSelect,
   MultiSelectItem,
+  Select,
+  SelectItem,
+  Tab,
+  TabGroup,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Text,
 } from "@tremor/react";
+import UsageDatePicker from "./shared/usage_date_picker";
+import type { ProxySettings } from "./user_dashboard";
+import ViewUserSpend from "./view_user_spend";
 
+import { formatNumberWithCommas } from "@/utils/dataUtils";
+import TopKeyView from "./UsagePage/components/EntityUsage/TopKeyView";
 import {
-  adminSpendLogsCall,
-  adminTopKeysCall,
-  adminTopModelsCall,
-  adminTopEndUsersCall,
-  teamSpendLogsCall,
-  tagsSpendLogsCall,
-  allTagNamesCall,
-  adminspendByProvider,
   adminGlobalActivity,
   adminGlobalActivityPerModel,
+  adminSpendLogsCall,
+  adminTopEndUsersCall,
+  adminTopKeysCall,
+  adminTopModelsCall,
+  adminspendByProvider,
+  allTagNamesCall,
   getProxyUISettings,
+  tagsSpendLogsCall,
+  teamSpendLogsCall,
 } from "./networking";
-import TopKeyView from "./UsagePage/components/EntityUsage/TopKeyView";
-import { formatNumberWithCommas } from "@/utils/dataUtils";
 console.log("process.env.NODE_ENV", process.env.NODE_ENV);
 
 interface UsagePageProps {
@@ -81,7 +82,9 @@ const customTooltip = (props: CustomTooltipTypeBar) => {
   const value = payload[0].payload;
   const date = value["startTime"];
   const model_values = value["models"];
-  const entries: [string, number][] = Object.entries(model_values).map(([key, value]) => [key, value as number]);
+  const entries: [string, number][] = Object.entries(model_values).map(
+    ([key, value]) => [key, value as number],
+  );
 
   entries.sort((a, b) => b[1] - a[1]);
   const topEntries = entries.slice(0, 5);
@@ -112,7 +115,12 @@ function getTopKeys(data: Array<{ [key: string]: unknown }>): any[] {
 
   data.forEach((dict) => {
     Object.entries(dict).forEach(([key, value]) => {
-      if (key !== "spend" && key !== "startTime" && key !== "models" && key !== "users") {
+      if (
+        key !== "spend" &&
+        key !== "startTime" &&
+        key !== "models" &&
+        key !== "users"
+      ) {
         spendKeys.push({ key, spend: value });
       }
     });
@@ -132,7 +140,14 @@ const isAdminOrAdminViewer = (role: string | null): boolean => {
   return role === "Admin" || role === "Admin Viewer";
 };
 
-const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, userID, keys, premiumUser }) => {
+const UsagePage: React.FC<UsagePageProps> = ({
+  accessToken,
+  token,
+  userRole,
+  userID,
+  keys,
+  premiumUser,
+}) => {
   const currentDate = new Date();
   const [keySpendData, setKeySpendData] = useState<any[]>([]);
   const [topKeys, setTopKeys] = useState<any[]>([]);
@@ -144,22 +159,36 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
   const [uniqueTeamIds, setUniqueTeamIds] = useState<any[]>([]);
   const [totalSpendPerTeam, setTotalSpendPerTeam] = useState<any[]>([]);
   const [spendByProvider, setSpendByProvider] = useState<any[]>([]);
-  const [globalActivity, setGlobalActivity] = useState<GlobalActivityData>({} as GlobalActivityData);
-  const [globalActivityPerModel, setGlobalActivityPerModel] = useState<any[]>([]);
+  const [globalActivity, setGlobalActivity] = useState<GlobalActivityData>(
+    {} as GlobalActivityData,
+  );
+  const [globalActivityPerModel, setGlobalActivityPerModel] = useState<any[]>(
+    [],
+  );
   const [selectedKeyID, setSelectedKeyID] = useState<string | null>("");
   const [selectedTags, setSelectedTags] = useState<string[]>(["all-tags"]);
   const [dateValue, setDateValue] = useState<DateRangePickerValue>({
     from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
     to: new Date(),
   });
-  const [proxySettings, setProxySettings] = useState<ProxySettings | null>(null);
+  const [proxySettings, setProxySettings] = useState<ProxySettings | null>(
+    null,
+  );
   const [totalMonthlySpend, setTotalMonthlySpend] = useState<number>(0);
 
-  const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-  const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+  const firstDay = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    1,
+  );
+  const lastDay = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth() + 1,
+    0,
+  );
 
-  let startTime = formatDate(firstDay);
-  let endTime = formatDate(lastDay);
+  const startTime = formatDate(firstDay);
+  const endTime = formatDate(lastDay);
 
   console.log("keys in usage", keys);
   console.log("premium user in usage", premiumUser);
@@ -177,7 +206,8 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
   const fetchProxySettings = async () => {
     if (accessToken) {
       try {
-        const proxy_settings: ProxySettings = await getProxyUISettings(accessToken);
+        const proxy_settings: ProxySettings =
+          await getProxyUISettings(accessToken);
         console.log("usage tab: proxy_settings", proxy_settings);
         return proxy_settings;
       } catch (error) {
@@ -201,7 +231,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
 
     console.log("uiSelectedKey", uiSelectedKey);
 
-    let newTopUserData = await adminTopEndUsersCall(
+    const newTopUserData = await adminTopEndUsersCall(
       accessToken,
       uiSelectedKey,
       startTime.toISOString(),
@@ -211,19 +241,23 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
     setTopUsers(newTopUserData);
   };
 
-  const updateTagSpendData = async (startTime: Date | undefined, endTime: Date | undefined) => {
+  const updateTagSpendData = async (
+    startTime: Date | undefined,
+    endTime: Date | undefined,
+  ) => {
     if (!startTime || !endTime || !accessToken) {
       return;
     }
 
     // we refetch because the state variable can be None when the user refreshes the page
-    const proxy_settings: ProxySettings | undefined = await fetchProxySettings();
+    const proxy_settings: ProxySettings | undefined =
+      await fetchProxySettings();
 
     if (proxy_settings?.DISABLE_EXPENSIVE_DB_QUERIES) {
       return; // Don't run expensive DB queries - return out when SpendLogs has more than 1M rows
     }
 
-    let top_tags = await tagsSpendLogsCall(
+    const top_tags = await tagsSpendLogsCall(
       accessToken,
       startTime.toISOString(),
       endTime.toISOString(),
@@ -235,8 +269,8 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
 
   function formatDate(date: Date) {
     const year = date.getFullYear();
-    let month = date.getMonth() + 1; // JS month index starts from 0
-    let day = date.getDate();
+    const month = date.getMonth() + 1; // JS month index starts from 0
+    const day = date.getDate();
 
     // Pad with 0 if month or day is less than 10
     const monthStr = month < 10 ? "0" + month : month;
@@ -248,7 +282,8 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
   console.log(`Start date is ${startTime}`);
   console.log(`End date is ${endTime}`);
 
-  const valueFormatter = (number: number) => `$ ${formatNumberWithCommas(number, 2)}`;
+  const valueFormatter = (number: number) =>
+    `$ ${formatNumberWithCommas(number, 2)}`;
 
   const fetchAndSetData = async (
     fetchFunction: () => Promise<any>,
@@ -265,7 +300,12 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
   };
 
   // Update the fillMissingDates function to handle different date formats
-  const fillMissingDates = (data: any[], startDate: Date, endDate: Date, categories: string[]) => {
+  const fillMissingDates = (
+    data: any[],
+    startDate: Date,
+    endDate: Date,
+    categories: string[],
+  ) => {
     const filledData = [];
     const currentDate = new Date(startDate);
 
@@ -279,7 +319,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
         const [month, day] = dateStr.split(" ");
         const year = new Date().getFullYear();
         const monthIndex = new Date(`${month} 01 2024`).getMonth();
-        const fullDate = new Date(year, monthIndex, parseInt(day));
+        const fullDate = new Date(year, monthIndex, Number.parseInt(day));
         return fullDate.toISOString().split("T")[0];
       }
     };
@@ -347,7 +387,9 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
       const filledData = fillMissingDates(data, firstDay, lastDay, []);
 
       // Calculate total spend for the month and round to 2 decimal places
-      const monthlyTotal = Number(filledData.reduce((sum, day) => sum + (day.spend || 0), 0).toFixed(2));
+      const monthlyTotal = Number(
+        filledData.reduce((sum, day) => sum + (day.spend || 0), 0).toFixed(2),
+      );
       setTotalMonthlySpend(monthlyTotal);
 
       setKeySpendData(filledData);
@@ -411,7 +453,12 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
         const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
         // Fill in missing dates with zero values for all teams
-        const filledData = fillMissingDates(teamSpend.daily_spend, firstDay, lastDay, teamSpend.teams);
+        const filledData = fillMissingDates(
+          teamSpend.daily_spend,
+          firstDay,
+          lastDay,
+          teamSpend.teams,
+        );
 
         setTeamSpendData(filledData);
         setUniqueTeamIds(teamSpend.teams);
@@ -440,7 +487,13 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
   const fetchTopTags = () => {
     if (!accessToken) return;
     fetchAndSetData(
-      () => tagsSpendLogsCall(accessToken, dateValue.from?.toISOString(), dateValue.to?.toISOString(), undefined),
+      () =>
+        tagsSpendLogsCall(
+          accessToken,
+          dateValue.from?.toISOString(),
+          dateValue.to?.toISOString(),
+          undefined,
+        ),
       (data) => setTopTagsData(data.spend_per_tag),
       "Error fetching top tags",
     );
@@ -467,10 +520,12 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
       const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
       // Fill in missing dates for daily_data
-      const filledDailyData = fillMissingDates(data.daily_data || [], firstDay, lastDay, [
-        "api_requests",
-        "total_tokens",
-      ]);
+      const filledDailyData = fillMissingDates(
+        data.daily_data || [],
+        firstDay,
+        lastDay,
+        ["api_requests", "total_tokens"],
+      );
 
       setGlobalActivity({
         ...data,
@@ -485,7 +540,11 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
   const fetchGlobalActivityPerModel = async () => {
     if (!accessToken) return;
     try {
-      const data = await adminGlobalActivityPerModel(accessToken, startTime, endTime);
+      const data = await adminGlobalActivityPerModel(
+        accessToken,
+        startTime,
+        endTime,
+      );
 
       // Get the date range from the current month
       const now = new Date();
@@ -495,7 +554,12 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
       // Fill in missing dates for each model's daily data
       const filledModelData = data.map((modelData: any) => ({
         ...modelData,
-        daily_data: fillMissingDates(modelData.daily_data || [], firstDay, lastDay, ["api_requests", "total_tokens"]),
+        daily_data: fillMissingDates(
+          modelData.daily_data || [],
+          firstDay,
+          lastDay,
+          ["api_requests", "total_tokens"],
+        ),
       }));
 
       setGlobalActivityPerModel(filledModelData);
@@ -507,7 +571,8 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
   useEffect(() => {
     const initlizeUsageData = async () => {
       if (accessToken && token && userRole && userID) {
-        const proxy_settings: ProxySettings | undefined = await fetchProxySettings();
+        const proxy_settings: ProxySettings | undefined =
+          await fetchProxySettings();
         if (proxy_settings) {
           setProxySettings(proxy_settings); // saved in state so it can be used when rendering UI
           if (proxy_settings?.DISABLE_EXPENSIVE_DB_QUERIES) {
@@ -544,10 +609,15 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
           <Text className="mt-4">
             SpendLogs in DB has {proxySettings.NUM_SPEND_LOGS_ROWS} rows.
             <br></br>
-            Please follow our guide to view usage when SpendLogs has more than 1M rows.
+            Please follow our guide to view usage when SpendLogs has more than
+            1M rows.
           </Text>
           <Button className="mt-4">
-            <a href="https://docs.litellm.ai/docs/proxy/spending_monitoring" target="_blank">
+            <a
+              href="https://docs.litellm.ai/docs/proxy/spending_monitoring"
+              target="_blank"
+              rel="noreferrer"
+            >
               View Usage Guide
             </a>
           </Button>
@@ -586,10 +656,22 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
                   <Grid numItems={2} className="gap-2 h-[100vh] w-full">
                     <Col numColSpan={2}>
                       <Text className="text-tremor-default text-tremor-content dark:text-dark-tremor-content mb-2 mt-2 text-lg">
-                        Project Spend {new Date().toLocaleString("default", { month: "long" })} 1 -{" "}
-                        {new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()}
+                        Project Spend{" "}
+                        {new Date().toLocaleString("default", {
+                          month: "long",
+                        })}{" "}
+                        1 -{" "}
+                        {new Date(
+                          new Date().getFullYear(),
+                          new Date().getMonth() + 1,
+                          0,
+                        ).getDate()}
                       </Text>
-                      <ViewUserSpend userSpend={totalMonthlySpend} selectedTeam={null} userMaxBudget={null} />
+                      <ViewUserSpend
+                        userSpend={totalMonthlySpend}
+                        selectedTeam={null}
+                        userMaxBudget={null}
+                      />
                     </Col>
                     <Col numColSpan={2}>
                       <Card>
@@ -609,7 +691,12 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
                     <Col numColSpan={1}>
                       <Card className="h-full">
                         <Title>Top Virtual Keys</Title>
-                        <TopKeyView topKeys={topKeys} teams={null} topKeysLimit={5} setTopKeysLimit={() => {}} />
+                        <TopKeyView
+                          topKeys={topKeys}
+                          teams={null}
+                          topKeysLimit={5}
+                          setTopKeysLimit={() => {}}
+                        />
                       </Card>
                     </Col>
                     <Col numColSpan={1}>
@@ -625,7 +712,9 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
                           layout="vertical"
                           showXAxis={false}
                           showLegend={false}
-                          valueFormatter={(value) => `$${formatNumberWithCommas(value, 2)}`}
+                          valueFormatter={(value) =>
+                            `$${formatNumberWithCommas(value, 2)}`
+                          }
                         />
                       </Card>
                     </Col>
@@ -643,7 +732,9 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
                                 index="provider"
                                 category="spend"
                                 colors={["cyan"]}
-                                valueFormatter={(value) => `$${formatNumberWithCommas(value, 2)}`}
+                                valueFormatter={(value) =>
+                                  `$${formatNumberWithCommas(value, 2)}`
+                                }
                               />
                             </Col>
                             <Col numColSpan={1}>
@@ -659,9 +750,14 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
                                     <TableRow key={provider.provider}>
                                       <TableCell>{provider.provider}</TableCell>
                                       <TableCell>
-                                        {parseFloat(provider.spend.toFixed(2)) < 0.00001
+                                        {Number.parseFloat(
+                                          provider.spend.toFixed(2),
+                                        ) < 0.00001
                                           ? "less than 0.00"
-                                          : formatNumberWithCommas(provider.spend, 2)}
+                                          : formatNumberWithCommas(
+                                              provider.spend,
+                                              2,
+                                            )}
                                       </TableCell>
                                     </TableRow>
                                   ))}
@@ -680,8 +776,17 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
                       <Title>All Up</Title>
                       <Grid numItems={2}>
                         <Col>
-                          <Subtitle style={{ fontSize: "15px", fontWeight: "normal", color: "#535452" }}>
-                            API Requests {valueFormatterNumbers(globalActivity.sum_api_requests)}
+                          <Subtitle
+                            style={{
+                              fontSize: "15px",
+                              fontWeight: "normal",
+                              color: "#535452",
+                            }}
+                          >
+                            API Requests{" "}
+                            {valueFormatterNumbers(
+                              globalActivity.sum_api_requests,
+                            )}
                           </Subtitle>
                           <AreaChart
                             className="h-40"
@@ -694,8 +799,17 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
                           />
                         </Col>
                         <Col>
-                          <Subtitle style={{ fontSize: "15px", fontWeight: "normal", color: "#535452" }}>
-                            Tokens {valueFormatterNumbers(globalActivity.sum_total_tokens)}
+                          <Subtitle
+                            style={{
+                              fontSize: "15px",
+                              fontWeight: "normal",
+                              color: "#535452",
+                            }}
+                          >
+                            Tokens{" "}
+                            {valueFormatterNumbers(
+                              globalActivity.sum_total_tokens,
+                            )}
                           </Subtitle>
                           <BarChart
                             className="h-40"
@@ -716,8 +830,17 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
                           <Title>{globalActivity.model}</Title>
                           <Grid numItems={2}>
                             <Col>
-                              <Subtitle style={{ fontSize: "15px", fontWeight: "normal", color: "#535452" }}>
-                                API Requests {valueFormatterNumbers(globalActivity.sum_api_requests)}
+                              <Subtitle
+                                style={{
+                                  fontSize: "15px",
+                                  fontWeight: "normal",
+                                  color: "#535452",
+                                }}
+                              >
+                                API Requests{" "}
+                                {valueFormatterNumbers(
+                                  globalActivity.sum_api_requests,
+                                )}
                               </Subtitle>
                               <AreaChart
                                 className="h-40"
@@ -730,8 +853,17 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
                               />
                             </Col>
                             <Col>
-                              <Subtitle style={{ fontSize: "15px", fontWeight: "normal", color: "#535452" }}>
-                                Tokens {valueFormatterNumbers(globalActivity.sum_total_tokens)}
+                              <Subtitle
+                                style={{
+                                  fontSize: "15px",
+                                  fontWeight: "normal",
+                                  color: "#535452",
+                                }}
+                              >
+                                Tokens{" "}
+                                {valueFormatterNumbers(
+                                  globalActivity.sum_total_tokens,
+                                )}
                               </Subtitle>
                               <BarChart
                                 className="h-40"
@@ -777,8 +909,14 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
           </TabPanel>
           <TabPanel>
             <p className="mb-2 text-gray-500 italic text-[12px]">
-              Customers of your LLM API calls. Tracked when a `user` param is passed in your LLM calls{" "}
-              <a className="text-blue-500" href="https://docs.litellm.ai/docs/proxy/users" target="_blank">
+              Customers of your LLM API calls. Tracked when a `user` param is
+              passed in your LLM calls{" "}
+              <a
+                className="text-blue-500"
+                href="https://docs.litellm.ai/docs/proxy/users"
+                target="_blank"
+                rel="noreferrer"
+              >
                 docs here
               </a>
             </p>
@@ -805,13 +943,21 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
                     All Keys
                   </SelectItem>
                   {keys?.map((key: any, index: number) => {
-                    if (key && key["key_alias"] !== null && key["key_alias"].length > 0) {
+                    if (
+                      key &&
+                      key["key_alias"] !== null &&
+                      key["key_alias"].length > 0
+                    ) {
                       return (
                         <SelectItem
                           key={index}
                           value={String(index)}
                           onClick={() => {
-                            updateEndUserData(dateValue.from, dateValue.to, key["token"]);
+                            updateEndUserData(
+                              dateValue.from,
+                              dateValue.to,
+                              key["token"],
+                            );
                           }}
                         >
                           {key["key_alias"]}
@@ -838,7 +984,9 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
                   {topUsers?.map((user: any, index: number) => (
                     <TableRow key={index}>
                       <TableCell>{user.end_user}</TableCell>
-                      <TableCell>{formatNumberWithCommas(user.total_spend, 2)}</TableCell>
+                      <TableCell>
+                        {formatNumberWithCommas(user.total_spend, 2)}
+                      </TableCell>
                       <TableCell>{user.total_count}</TableCell>
                     </TableRow>
                   ))}
@@ -862,7 +1010,12 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
               <Col>
                 {premiumUser ? (
                   <div>
-                    <MultiSelect value={selectedTags} onValueChange={(value) => setSelectedTags(value as string[])}>
+                    <MultiSelect
+                      value={selectedTags}
+                      onValueChange={(value) =>
+                        setSelectedTags(value as string[])
+                      }
+                    >
                       <MultiSelectItem
                         key={"all-tags"}
                         value={"all-tags"}
@@ -884,7 +1037,12 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
                   </div>
                 ) : (
                   <div>
-                    <MultiSelect value={selectedTags} onValueChange={(value) => setSelectedTags(value as string[])}>
+                    <MultiSelect
+                      value={selectedTags}
+                      onValueChange={(value) =>
+                        setSelectedTags(value as string[])
+                      }
+                    >
                       <MultiSelectItem
                         key={"all-tags"}
                         value={"all-tags"}
@@ -922,6 +1080,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
                       className="text-blue-500"
                       href="https://docs.litellm.ai/docs/proxy/cost_tracking"
                       target="_blank"
+                      rel="noreferrer"
                     >
                       here
                     </a>

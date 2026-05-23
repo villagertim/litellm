@@ -1,7 +1,7 @@
 "use client";
 
-import SpendLogsTable from "@/components/view_logs";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import SpendLogsTable from "@/components/view_logs";
 
 const LogsPage = () => {
   const { accessToken, token, userRole, userId, premiumUser } = useAuthorized();

@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 import LatencyBasedConfiguration from "./LatencyBasedConfiguration";
 
 describe("LatencyBasedConfiguration", () => {
@@ -26,20 +26,22 @@ describe("LatencyBasedConfiguration", () => {
     const args = { ttl: 3600, lowest_latency_buffer: 0 };
     render(<LatencyBasedConfiguration routingStrategyArgs={args} />);
     expect(screen.getByRole("textbox", { name: /ttl/i })).toBeInTheDocument();
-    expect(screen.getByRole("textbox", { name: /lowest latency buffer/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("textbox", { name: /lowest latency buffer/i }),
+    ).toBeInTheDocument();
   });
 
   it("should display the TTL parameter explanation", () => {
     render(<LatencyBasedConfiguration routingStrategyArgs={null as any} />);
     expect(
-      screen.getByText(/sliding window to look back over/i)
+      screen.getByText(/sliding window to look back over/i),
     ).toBeInTheDocument();
   });
 
   it("should display the lowest_latency_buffer parameter explanation", () => {
     render(<LatencyBasedConfiguration routingStrategyArgs={null as any} />);
     expect(
-      screen.getByText(/shuffle between deployments within this %/i)
+      screen.getByText(/shuffle between deployments within this %/i),
     ).toBeInTheDocument();
   });
 
@@ -47,8 +49,10 @@ describe("LatencyBasedConfiguration", () => {
     const args = { ttl: { nested: true } };
     render(<LatencyBasedConfiguration routingStrategyArgs={args} />);
     // HTML input type=text strips newlines, so check that the key/value appears
-    const input = screen.getByRole("textbox", { name: /ttl/i }) as HTMLInputElement;
+    const input = screen.getByRole("textbox", {
+      name: /ttl/i,
+    }) as HTMLInputElement;
     expect(input.value).toContain('"nested"');
-    expect(input.value).toContain('true');
+    expect(input.value).toContain("true");
   });
 });

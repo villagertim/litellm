@@ -1,9 +1,9 @@
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders, screen, waitFor } from "../../tests/test-utils";
 import BulkEditUserModal from "./BulkEditUsers";
-import { userBulkUpdateUserCall, teamBulkMemberAddCall } from "./networking";
 import NotificationsManager from "./molecules/notifications_manager";
+import { teamBulkMemberAddCall, userBulkUpdateUserCall } from "./networking";
 
 vi.mock("./networking", () => ({
   userBulkUpdateUserCall: vi.fn(),
@@ -11,9 +11,14 @@ vi.mock("./networking", () => ({
 }));
 
 vi.mock("./user_edit_view", () => ({
-  UserEditView: ({ onSubmit, onCancel }: { onSubmit: (values: any) => void; onCancel: () => void }) => (
+  UserEditView: ({
+    onSubmit,
+    onCancel,
+  }: { onSubmit: (values: any) => void; onCancel: () => void }) => (
     <div data-testid="user-edit-view">
-      <button onClick={() => onSubmit({ user_role: "admin", max_budget: 100 })}>Submit</button>
+      <button onClick={() => onSubmit({ user_role: "admin", max_budget: 100 })}>
+        Submit
+      </button>
       <button onClick={onCancel}>Cancel</button>
     </div>
   ),
@@ -26,8 +31,18 @@ const defaultProps = {
   open: true,
   onCancel: vi.fn(),
   selectedUsers: [
-    { user_id: "user1", user_email: "user1@example.com", user_role: "user", max_budget: 50 },
-    { user_id: "user2", user_email: "user2@example.com", user_role: "admin", max_budget: null },
+    {
+      user_id: "user1",
+      user_email: "user1@example.com",
+      user_role: "user",
+      max_budget: 50,
+    },
+    {
+      user_id: "user2",
+      user_email: "user2@example.com",
+      user_role: "admin",
+      max_budget: null,
+    },
   ],
   possibleUIRoles: {
     admin: { ui_label: "Admin", description: "Administrator role" },
@@ -62,7 +77,11 @@ describe("BulkEditUserModal", () => {
   it("should render without crashing", () => {
     renderWithProviders(<BulkEditUserModal {...defaultProps} />);
 
-    expect(screen.getByText(`Bulk Edit ${defaultProps.selectedUsers.length} User(s)`)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        `Bulk Edit ${defaultProps.selectedUsers.length} User(s)`,
+      ),
+    ).toBeInTheDocument();
   });
 
   it("should display modal title with correct user count", () => {
@@ -98,7 +117,9 @@ describe("BulkEditUserModal", () => {
   it("should call onCancel when cancel button is clicked", async () => {
     const user = userEvent.setup();
     const onCancel = vi.fn();
-    renderWithProviders(<BulkEditUserModal {...defaultProps} onCancel={onCancel} />);
+    renderWithProviders(
+      <BulkEditUserModal {...defaultProps} onCancel={onCancel} />,
+    );
 
     const cancelButton = screen.getByRole("button", { name: "Cancel" });
     await user.click(cancelButton);
@@ -106,24 +127,35 @@ describe("BulkEditUserModal", () => {
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 
-
   it("should show update all users checkbox when allowAllUsers is true", () => {
-    renderWithProviders(<BulkEditUserModal {...defaultProps} allowAllUsers={true} />);
+    renderWithProviders(
+      <BulkEditUserModal {...defaultProps} allowAllUsers={true} />,
+    );
 
-    expect(screen.getByRole("checkbox", { name: /update all users/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("checkbox", { name: /update all users/i }),
+    ).toBeInTheDocument();
   });
 
   it("should not show update all users checkbox when allowAllUsers is false", () => {
-    renderWithProviders(<BulkEditUserModal {...defaultProps} allowAllUsers={false} />);
+    renderWithProviders(
+      <BulkEditUserModal {...defaultProps} allowAllUsers={false} />,
+    );
 
-    expect(screen.queryByRole("checkbox", { name: /update all users/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("checkbox", { name: /update all users/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("should toggle update all users mode", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<BulkEditUserModal {...defaultProps} allowAllUsers={true} />);
+    renderWithProviders(
+      <BulkEditUserModal {...defaultProps} allowAllUsers={true} />,
+    );
 
-    const checkbox = screen.getByRole("checkbox", { name: /update all users/i });
+    const checkbox = screen.getByRole("checkbox", {
+      name: /update all users/i,
+    });
     expect(checkbox).not.toBeChecked();
 
     await user.click(checkbox);
@@ -134,21 +166,31 @@ describe("BulkEditUserModal", () => {
 
   it("should show warning message when update all users is enabled", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<BulkEditUserModal {...defaultProps} allowAllUsers={true} />);
+    renderWithProviders(
+      <BulkEditUserModal {...defaultProps} allowAllUsers={true} />,
+    );
 
-    const checkbox = screen.getByRole("checkbox", { name: /update all users/i });
+    const checkbox = screen.getByRole("checkbox", {
+      name: /update all users/i,
+    });
     await user.click(checkbox);
 
-    expect(screen.getByText(/this will apply changes to all users/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/this will apply changes to all users/i),
+    ).toBeInTheDocument();
   });
 
   it("should hide selected users table when update all users is enabled", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<BulkEditUserModal {...defaultProps} allowAllUsers={true} />);
+    renderWithProviders(
+      <BulkEditUserModal {...defaultProps} allowAllUsers={true} />,
+    );
 
     expect(screen.getByText("Selected Users (2):")).toBeInTheDocument();
 
-    const checkbox = screen.getByRole("checkbox", { name: /update all users/i });
+    const checkbox = screen.getByRole("checkbox", {
+      name: /update all users/i,
+    });
     await user.click(checkbox);
 
     expect(screen.queryByText("Selected Users (2):")).not.toBeInTheDocument();
@@ -158,18 +200,24 @@ describe("BulkEditUserModal", () => {
     renderWithProviders(<BulkEditUserModal {...defaultProps} />);
 
     expect(screen.getByText("Team Management")).toBeInTheDocument();
-    expect(screen.getByRole("checkbox", { name: /add selected users to teams/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("checkbox", { name: /add selected users to teams/i }),
+    ).toBeInTheDocument();
   });
 
   it("should show team budget input when add to teams is checked", async () => {
     const user = userEvent.setup();
     renderWithProviders(<BulkEditUserModal {...defaultProps} />);
 
-    const addToTeamsCheckbox = screen.getByRole("checkbox", { name: /add selected users to teams/i });
+    const addToTeamsCheckbox = screen.getByRole("checkbox", {
+      name: /add selected users to teams/i,
+    });
     await user.click(addToTeamsCheckbox);
 
     expect(screen.getByText("Team Budget (Optional):")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Max budget per user in team")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Max budget per user in team"),
+    ).toBeInTheDocument();
   });
 
   it("should render UserEditView component", () => {
@@ -180,13 +228,17 @@ describe("BulkEditUserModal", () => {
 
   it("should show error when access token is missing", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<BulkEditUserModal {...defaultProps} accessToken={null} />);
+    renderWithProviders(
+      <BulkEditUserModal {...defaultProps} accessToken={null} />,
+    );
 
     const submitButton = screen.getByRole("button", { name: "Submit" });
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(NotificationsManager.fromBackend).toHaveBeenCalledWith("Access token not found");
+      expect(NotificationsManager.fromBackend).toHaveBeenCalledWith(
+        "Access token not found",
+      );
     });
   });
 
@@ -208,9 +260,13 @@ describe("BulkEditUserModal", () => {
 
   it("should call userBulkUpdateUserCall with allUsers flag when update all users is enabled", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<BulkEditUserModal {...defaultProps} allowAllUsers={true} />);
+    renderWithProviders(
+      <BulkEditUserModal {...defaultProps} allowAllUsers={true} />,
+    );
 
-    const updateAllCheckbox = screen.getByRole("checkbox", { name: /update all users/i });
+    const updateAllCheckbox = screen.getByRole("checkbox", {
+      name: /update all users/i,
+    });
     await user.click(updateAllCheckbox);
 
     const submitButton = screen.getByRole("button", { name: "Submit" });
@@ -225,7 +281,6 @@ describe("BulkEditUserModal", () => {
       );
     });
   });
-
 
   it("should show success message after successful user update", async () => {
     const user = userEvent.setup();
@@ -242,7 +297,9 @@ describe("BulkEditUserModal", () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(NotificationsManager.success).toHaveBeenCalledWith("Updated 2 user(s)");
+      expect(NotificationsManager.success).toHaveBeenCalledWith(
+        "Updated 2 user(s)",
+      );
     });
   });
 
@@ -255,23 +312,30 @@ describe("BulkEditUserModal", () => {
       failed_updates: 0,
     });
 
-    renderWithProviders(<BulkEditUserModal {...defaultProps} allowAllUsers={true} />);
+    renderWithProviders(
+      <BulkEditUserModal {...defaultProps} allowAllUsers={true} />,
+    );
 
-    const updateAllCheckbox = screen.getByRole("checkbox", { name: /update all users/i });
+    const updateAllCheckbox = screen.getByRole("checkbox", {
+      name: /update all users/i,
+    });
     await user.click(updateAllCheckbox);
 
     const submitButton = screen.getByRole("button", { name: "Submit" });
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(NotificationsManager.success).toHaveBeenCalledWith("Updated all users (100 total)");
+      expect(NotificationsManager.success).toHaveBeenCalledWith(
+        "Updated all users (100 total)",
+      );
     });
   });
 
-
   it("should show error message when bulk update fails", async () => {
     const user = userEvent.setup();
-    mockUserBulkUpdateUserCall.mockRejectedValueOnce(new Error("Update failed"));
+    mockUserBulkUpdateUserCall.mockRejectedValueOnce(
+      new Error("Update failed"),
+    );
 
     renderWithProviders(<BulkEditUserModal {...defaultProps} />);
 
@@ -279,7 +343,9 @@ describe("BulkEditUserModal", () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(NotificationsManager.fromBackend).toHaveBeenCalledWith("Failed to perform bulk operations");
+      expect(NotificationsManager.fromBackend).toHaveBeenCalledWith(
+        "Failed to perform bulk operations",
+      );
     });
   });
 
@@ -288,7 +354,13 @@ describe("BulkEditUserModal", () => {
     const onSuccess = vi.fn();
     const onCancel = vi.fn();
 
-    renderWithProviders(<BulkEditUserModal {...defaultProps} onSuccess={onSuccess} onCancel={onCancel} />);
+    renderWithProviders(
+      <BulkEditUserModal
+        {...defaultProps}
+        onSuccess={onSuccess}
+        onCancel={onCancel}
+      />,
+    );
 
     const submitButton = screen.getByRole("button", { name: "Submit" });
     await user.click(submitButton);
@@ -303,18 +375,34 @@ describe("BulkEditUserModal", () => {
     const longUserId = "a".repeat(30);
     const propsWithLongId = {
       ...defaultProps,
-      selectedUsers: [{ user_id: longUserId, user_email: "test@example.com", user_role: "user", max_budget: null }],
+      selectedUsers: [
+        {
+          user_id: longUserId,
+          user_email: "test@example.com",
+          user_role: "user",
+          max_budget: null,
+        },
+      ],
     };
 
     renderWithProviders(<BulkEditUserModal {...propsWithLongId} />);
 
-    expect(screen.getByText(new RegExp(`${longUserId.slice(0, 20)}...`))).toBeInTheDocument();
+    expect(
+      screen.getByText(new RegExp(`${longUserId.slice(0, 20)}...`)),
+    ).toBeInTheDocument();
   });
 
   it("should display no email text when user email is missing", () => {
     const propsWithoutEmail = {
       ...defaultProps,
-      selectedUsers: [{ user_id: "user1", user_email: null, user_role: "user", max_budget: null }],
+      selectedUsers: [
+        {
+          user_id: "user1",
+          user_email: null,
+          user_role: "user",
+          max_budget: null,
+        },
+      ],
     };
 
     renderWithProviders(<BulkEditUserModal {...propsWithoutEmail} />);

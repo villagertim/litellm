@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { renderHook, act } from "@testing-library/react";
-import { useMultiCostEstimate } from "./use_multi_cost_estimate";
-import type { ModelEntry } from "./types";
+import { act, renderHook } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { CostEstimateResponse } from "../types";
+import type { ModelEntry } from "./types";
+import { useMultiCostEstimate } from "./use_multi_cost_estimate";
 
 vi.mock("@/components/networking", () => ({
   getProxyBaseUrl: vi.fn(() => ""),
@@ -19,7 +19,9 @@ function makeEntry(overrides: Partial<ModelEntry> = {}): ModelEntry {
   };
 }
 
-function makeApiResponse(overrides: Partial<CostEstimateResponse> = {}): CostEstimateResponse {
+function makeApiResponse(
+  overrides: Partial<CostEstimateResponse> = {},
+): CostEstimateResponse {
   return {
     model: "gpt-4",
     input_tokens: 1000,
@@ -180,7 +182,9 @@ describe("useMultiCostEstimate", () => {
     });
 
     it("should set 'Network error' when fetch throws", async () => {
-      vi.spyOn(global, "fetch").mockRejectedValue(new Error("connection refused"));
+      vi.spyOn(global, "fetch").mockRejectedValue(
+        new Error("connection refused"),
+      );
 
       const { result } = renderHook(() => useMultiCostEstimate("token123"));
       const entry = makeEntry();
@@ -212,7 +216,9 @@ describe("useMultiCostEstimate", () => {
       });
 
       // Confirm result was stored
-      expect(result.current.getMultiModelResult([entry]).entries[0].result).not.toBeNull();
+      expect(
+        result.current.getMultiModelResult([entry]).entries[0].result,
+      ).not.toBeNull();
 
       act(() => {
         result.current.removeEntry(entry.id);
@@ -272,13 +278,20 @@ describe("useMultiCostEstimate", () => {
       let callIndex = 0;
       const responses = [
         makeApiResponse({ cost_per_request: 0.05, margin_cost_per_request: 0 }),
-        makeApiResponse({ model: "claude-3", cost_per_request: 0.10, margin_cost_per_request: 0 }),
+        makeApiResponse({
+          model: "claude-3",
+          cost_per_request: 0.1,
+          margin_cost_per_request: 0,
+        }),
       ];
 
-      vi.spyOn(global, "fetch").mockImplementation(async () => ({
-        ok: true,
-        json: async () => responses[callIndex++],
-      } as Response));
+      vi.spyOn(global, "fetch").mockImplementation(
+        async () =>
+          ({
+            ok: true,
+            json: async () => responses[callIndex++],
+          }) as Response,
+      );
 
       const { result } = renderHook(() => useMultiCostEstimate("token123"));
 
@@ -298,14 +311,28 @@ describe("useMultiCostEstimate", () => {
 
       let callIndex = 0;
       const responses = [
-        makeApiResponse({ daily_cost: 5.0, daily_margin_cost: 0, monthly_cost: null, monthly_margin_cost: null }),
-        makeApiResponse({ model: "claude-3", daily_cost: 10.0, daily_margin_cost: 0, monthly_cost: null, monthly_margin_cost: null }),
+        makeApiResponse({
+          daily_cost: 5.0,
+          daily_margin_cost: 0,
+          monthly_cost: null,
+          monthly_margin_cost: null,
+        }),
+        makeApiResponse({
+          model: "claude-3",
+          daily_cost: 10.0,
+          daily_margin_cost: 0,
+          monthly_cost: null,
+          monthly_margin_cost: null,
+        }),
       ];
 
-      vi.spyOn(global, "fetch").mockImplementation(async () => ({
-        ok: true,
-        json: async () => responses[callIndex++],
-      } as Response));
+      vi.spyOn(global, "fetch").mockImplementation(
+        async () =>
+          ({
+            ok: true,
+            json: async () => responses[callIndex++],
+          }) as Response,
+      );
 
       const { result } = renderHook(() => useMultiCostEstimate("token123"));
 

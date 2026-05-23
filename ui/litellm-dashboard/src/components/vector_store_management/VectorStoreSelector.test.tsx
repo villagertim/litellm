@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { VectorStore } from "./types";
 import VectorStoreSelector from "./VectorStoreSelector";
+import type { VectorStore } from "./types";
 
 // Mock dependencies
 const mockVectorStoreListCall = vi.fn();
@@ -124,7 +124,9 @@ const waitForDataFetch = async () => {
 const getSelectElement = () => screen.getByTestId("vector-store-select");
 
 const getOptionElements = () =>
-  screen.getAllByTestId(/^vector-store-select/).filter((el) => el.hasAttribute("data-option-value"));
+  screen
+    .getAllByTestId(/^vector-store-select/)
+    .filter((el) => el.hasAttribute("data-option-value"));
 
 describe("VectorStoreSelector", () => {
   beforeEach(() => {
@@ -143,7 +145,10 @@ describe("VectorStoreSelector", () => {
     it("should render with default placeholder", () => {
       renderComponent();
       const select = getSelectElement();
-      expect(select).toHaveAttribute("data-placeholder", "Select vector stores");
+      expect(select).toHaveAttribute(
+        "data-placeholder",
+        "Select vector stores",
+      );
     });
 
     it("should render with custom placeholder", () => {
@@ -204,18 +209,29 @@ describe("VectorStoreSelector", () => {
     });
 
     it("should not fetch vector stores when accessToken is falsy", () => {
-      const { rerender } = render(<VectorStoreSelector {...defaultProps} accessToken="" />);
+      const { rerender } = render(
+        <VectorStoreSelector {...defaultProps} accessToken="" />,
+      );
       expect(mockVectorStoreListCall).not.toHaveBeenCalled();
 
-      rerender(<VectorStoreSelector {...defaultProps} accessToken={null as any} />);
+      rerender(
+        <VectorStoreSelector {...defaultProps} accessToken={null as any} />,
+      );
       expect(mockVectorStoreListCall).not.toHaveBeenCalled();
 
-      rerender(<VectorStoreSelector {...defaultProps} accessToken={undefined as any} />);
+      rerender(
+        <VectorStoreSelector
+          {...defaultProps}
+          accessToken={undefined as any}
+        />,
+      );
       expect(mockVectorStoreListCall).not.toHaveBeenCalled();
     });
 
     it("should fetch vector stores again when accessToken changes", async () => {
-      const { rerender } = render(<VectorStoreSelector {...defaultProps} accessToken="token-1" />);
+      const { rerender } = render(
+        <VectorStoreSelector {...defaultProps} accessToken="token-1" />,
+      );
       await waitFor(() => {
         expect(mockVectorStoreListCall).toHaveBeenCalledWith("token-1");
       });
@@ -252,7 +268,9 @@ describe("VectorStoreSelector", () => {
     });
 
     it("should clear loading state after failed fetch", async () => {
-      const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
       mockVectorStoreListCall.mockRejectedValueOnce(new Error("Network error"));
 
       renderComponent();
@@ -290,7 +308,10 @@ describe("VectorStoreSelector", () => {
       const option3 = screen.getByText("store-3 (store-3)");
       expect(option3).toBeInTheDocument();
       // When vector_store_name is missing, title uses vector_store_description if available, otherwise vector_store_id
-      expect(option3).toHaveAttribute("data-option-title", "Store without name");
+      expect(option3).toHaveAttribute(
+        "data-option-title",
+        "Store without name",
+      );
     });
 
     it("should use vector_store_description as title when available", async () => {
@@ -421,30 +442,42 @@ describe("VectorStoreSelector", () => {
 
   describe("Error handling", () => {
     it("should handle fetch errors gracefully", async () => {
-      const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
       const error = new Error("Network error");
       mockVectorStoreListCall.mockRejectedValueOnce(error);
 
       renderComponent();
       await waitForDataFetch();
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith("Error fetching vector stores:", error);
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "Error fetching vector stores:",
+        error,
+      );
       consoleErrorSpy.mockRestore();
     });
 
     it("should not crash when fetch throws non-Error", async () => {
-      const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
       mockVectorStoreListCall.mockRejectedValueOnce("String error");
 
       renderComponent();
       await waitForDataFetch();
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith("Error fetching vector stores:", "String error");
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "Error fetching vector stores:",
+        "String error",
+      );
       consoleErrorSpy.mockRestore();
     });
 
     it("should continue to work after error", async () => {
-      const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
       mockVectorStoreListCall.mockRejectedValueOnce(new Error("Network error"));
 
       renderComponent();
@@ -473,7 +506,9 @@ describe("VectorStoreSelector", () => {
       renderComponent();
       await waitForDataFetch();
 
-      expect(screen.getByText("minimal-store (minimal-store)")).toBeInTheDocument();
+      expect(
+        screen.getByText("minimal-store (minimal-store)"),
+      ).toBeInTheDocument();
       const option = screen.getByText("minimal-store (minimal-store)");
       expect(option).toHaveAttribute("data-option-title", "minimal-store");
     });
@@ -516,7 +551,9 @@ describe("VectorStoreSelector", () => {
       renderComponent();
       await waitForDataFetch();
 
-      expect(screen.getByText(/Store & Co\. <Test> "Quotes"/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Store & Co\. <Test> "Quotes"/),
+      ).toBeInTheDocument();
     });
   });
 });

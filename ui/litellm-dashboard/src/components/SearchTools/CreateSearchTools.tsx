@@ -8,7 +8,7 @@ import React, { useState } from "react";
 import NotificationsManager from "../molecules/notifications_manager";
 import { createSearchTool, fetchAvailableSearchProviders } from "../networking";
 import SearchConnectionTest from "./SearchConnectionTest";
-import { AvailableSearchProvider, SearchTool } from "./types";
+import type { AvailableSearchProvider, SearchTool } from "./types";
 
 const { TextArea } = Input;
 
@@ -26,7 +26,10 @@ interface SearchProviderLabelProps {
   displayName: string;
 }
 
-const SearchProviderLabel: React.FC<SearchProviderLabelProps> = ({ providerName, displayName }) => (
+const SearchProviderLabel: React.FC<SearchProviderLabelProps> = ({
+  providerName,
+  displayName,
+}) => (
   <div style={{ display: "flex", alignItems: "center" }}>
     <Image
       src={getSearchProviderLogo(providerName)}
@@ -68,10 +71,7 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
   const [connectionTestId, setConnectionTestId] = useState<string>("");
 
   // Fetch available search providers
-  const {
-    data: providersResponse,
-    isLoading: isLoadingProviders,
-  } = useQuery({
+  const { data: providersResponse, isLoading: isLoadingProviders } = useQuery({
     queryKey: ["searchProviders"],
     queryFn: () => {
       if (!accessToken) throw new Error("Access Token required");
@@ -92,13 +92,17 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
           search_provider: formValues.search_provider,
           api_key: formValues.api_key,
           api_base: formValues.api_base,
-          timeout: formValues.timeout ? parseFloat(formValues.timeout) : undefined,
-          max_retries: formValues.max_retries ? parseInt(formValues.max_retries) : undefined,
+          timeout: formValues.timeout
+            ? Number.parseFloat(formValues.timeout)
+            : undefined,
+          max_retries: formValues.max_retries
+            ? Number.parseInt(formValues.max_retries)
+            : undefined,
         },
         search_tool_info: formValues.description
           ? {
-            description: formValues.description,
-          }
+              description: formValues.description,
+            }
           : undefined,
       };
 
@@ -137,7 +141,9 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
       // Show the modal with the fresh test
       setIsTestModalVisible(true);
     } catch (error) {
-      NotificationsManager.error("Please fill in Search Provider and API Key before testing");
+      NotificationsManager.error(
+        "Please fill in Search Provider and API Key before testing",
+      );
     }
   };
 
@@ -157,7 +163,9 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
       title={
         <div className="flex items-center space-x-3 pb-4 border-b border-gray-100">
           <span className="text-2xl">🔍</span>
-          <h2 className="text-xl font-semibold text-gray-900">Add New Search Tool</h2>
+          <h2 className="text-xl font-semibold text-gray-900">
+            Add New Search Tool
+          </h2>
         </div>
       }
       open={isModalVisible}
@@ -193,7 +201,8 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
                 { required: true, message: "Please enter a search tool name" },
                 {
                   pattern: /^[a-zA-Z0-9_-]+$/,
-                  message: "Name can only contain letters, numbers, hyphens, and underscores",
+                  message:
+                    "Name can only contain letters, numbers, hyphens, and underscores",
                 },
               ]}
             >
@@ -213,7 +222,9 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
                 </span>
               }
               name="search_provider"
-              rules={[{ required: true, message: "Please select a search provider" }]}
+              rules={[
+                { required: true, message: "Please select a search provider" },
+              ]}
             >
               <Select
                 placeholder="Select a search provider"
@@ -264,7 +275,11 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
             </Form.Item>
 
             <Form.Item
-              label={<span className="text-sm font-medium text-gray-700">Description (Optional)</span>}
+              label={
+                <span className="text-sm font-medium text-gray-700">
+                  Description (Optional)
+                </span>
+              }
               name="description"
             >
               <TextArea
@@ -277,12 +292,18 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
 
           <div className="flex justify-between items-center pt-6 border-t border-gray-100">
             <Tooltip title="Get help on our github">
-              <Typography.Link href="https://github.com/BerriAI/litellm/issues" target="_blank">
+              <Typography.Link
+                href="https://github.com/BerriAI/litellm/issues"
+                target="_blank"
+              >
                 Need Help?
               </Typography.Link>
             </Tooltip>
             <div className="space-x-2">
-              <Button onClick={handleTestConnection} loading={isTestingConnection}>
+              <Button
+                onClick={handleTestConnection}
+                loading={isTestingConnection}
+              >
                 Test Connection
               </Button>
               <Button loading={isLoading} type="submit">
@@ -333,4 +354,3 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
 };
 
 export default CreateSearchTool;
-

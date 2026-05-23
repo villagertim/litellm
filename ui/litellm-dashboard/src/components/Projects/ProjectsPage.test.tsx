@@ -1,8 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { ProjectResponse } from "@/app/(dashboard)/hooks/projects/useProjects";
 import userEvent from "@testing-library/user-event";
-import { renderWithProviders, screen, waitFor } from "../../../tests/test-utils";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  renderWithProviders,
+  screen,
+  waitFor,
+} from "../../../tests/test-utils";
 import { ProjectsPage } from "./ProjectsPage";
-import { ProjectResponse } from "@/app/(dashboard)/hooks/projects/useProjects";
 
 const mockUseProjects = vi.fn();
 vi.mock("@/app/(dashboard)/hooks/projects/useProjects", () => ({
@@ -78,13 +82,17 @@ describe("ProjectsPage", () => {
   it("should render the Projects heading", () => {
     mockUseProjects.mockReturnValue({ data: [], isLoading: false });
     renderWithProviders(<ProjectsPage />);
-    expect(screen.getByRole("heading", { name: /projects/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /projects/i }),
+    ).toBeInTheDocument();
   });
 
   it("should show a 'Create Project' button", () => {
     mockUseProjects.mockReturnValue({ data: [], isLoading: false });
     renderWithProviders(<ProjectsPage />);
-    expect(screen.getByRole("button", { name: /create project/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /create project/i }),
+    ).toBeInTheDocument();
   });
 
   it("should render the projects table", () => {
@@ -103,13 +111,19 @@ describe("ProjectsPage", () => {
   });
 
   it("should display 'Active' tag for non-blocked projects", () => {
-    mockUseProjects.mockReturnValue({ data: [mockProjects[0]], isLoading: false });
+    mockUseProjects.mockReturnValue({
+      data: [mockProjects[0]],
+      isLoading: false,
+    });
     renderWithProviders(<ProjectsPage />);
     expect(screen.getByText("Active")).toBeInTheDocument();
   });
 
   it("should display 'Blocked' tag for blocked projects", () => {
-    mockUseProjects.mockReturnValue({ data: [mockProjects[1]], isLoading: false });
+    mockUseProjects.mockReturnValue({
+      data: [mockProjects[1]],
+      isLoading: false,
+    });
     renderWithProviders(<ProjectsPage />);
     expect(screen.getByText("Blocked")).toBeInTheDocument();
   });
@@ -134,10 +148,7 @@ describe("ProjectsPage", () => {
     const user = userEvent.setup();
     mockUseProjects.mockReturnValue({ data: mockProjects, isLoading: false });
     renderWithProviders(<ProjectsPage />);
-    await user.type(
-      screen.getByPlaceholderText(/search projects/i),
-      "Alpha"
-    );
+    await user.type(screen.getByPlaceholderText(/search projects/i), "Alpha");
     await waitFor(() => {
       expect(screen.getByText("Alpha Project")).toBeInTheDocument();
       expect(screen.queryByText("Beta Project")).not.toBeInTheDocument();
@@ -155,7 +166,10 @@ describe("ProjectsPage", () => {
       data: [{ team_id: "team-1", team_alias: "Engineering", models: [] }],
       isLoading: false,
     });
-    mockUseProjects.mockReturnValue({ data: [mockProjects[0]], isLoading: false });
+    mockUseProjects.mockReturnValue({
+      data: [mockProjects[0]],
+      isLoading: false,
+    });
     renderWithProviders(<ProjectsPage />);
     expect(screen.getByText("Engineering")).toBeInTheDocument();
   });

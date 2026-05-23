@@ -1,6 +1,10 @@
 // fetch_agents.tsx
 
-import { getProxyBaseUrl, getGlobalLitellmHeaderName, modelInfoCall } from "../../networking";
+import {
+  getGlobalLitellmHeaderName,
+  getProxyBaseUrl,
+  modelInfoCall,
+} from "../../networking";
 
 export interface Agent {
   agent_id: string;
@@ -88,7 +92,13 @@ export const fetchAvailableAgentModels = async (
 ): Promise<AgentModel[]> => {
   try {
     const size = 200;
-    const response = await modelInfoCall(accessToken, userID, userRole, 1, size);
+    const response = await modelInfoCall(
+      accessToken,
+      userID,
+      userRole,
+      1,
+      size,
+    );
     const data = response?.data ?? [];
     const list = Array.isArray(data) ? data : [];
 
@@ -104,7 +114,9 @@ export const fetchAvailableAgentModels = async (
           ...m.litellm_params,
           model: m.litellm_params.model,
           litellm_system_prompt: m.litellm_params?.litellm_system_prompt,
-          tools: Array.isArray(m.litellm_params?.tools) ? m.litellm_params.tools : undefined,
+          tools: Array.isArray(m.litellm_params?.tools)
+            ? m.litellm_params.tools
+            : undefined,
         },
         model_info: m.model_info ?? null,
       }));

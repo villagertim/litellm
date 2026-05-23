@@ -1,24 +1,39 @@
-import React, { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, Icon, Button } from "@tremor/react";
-import { TrashIcon, SwitchVerticalIcon, ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/outline";
-import { Tooltip } from "antd";
-import { Badge } from "@tremor/react";
 import {
-  ColumnDef,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  SwitchVerticalIcon,
+  TrashIcon,
+} from "@heroicons/react/outline";
+import {
+  type ColumnDef,
+  type SortingState,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+import {
+  Button,
+  Icon,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+} from "@tremor/react";
+import { Badge } from "@tremor/react";
+import { Tooltip } from "antd";
+import type React from "react";
+import { useState } from "react";
+import EditGuardrailForm from "./edit_guardrail_form";
 import {
   getGuardrailLogoAndName,
   guardrail_provider_map,
   skipSystemMessageToChoice,
   skipToolMessageToChoice,
 } from "./guardrail_info_helpers";
-import EditGuardrailForm from "./edit_guardrail_form";
-import { Guardrail, GuardrailDefinitionLocation } from "./types";
+import { type Guardrail, GuardrailDefinitionLocation } from "./types";
 
 interface GuardrailTableProps {
   guardrailsList: Guardrail[];
@@ -39,9 +54,13 @@ const GuardrailTable: React.FC<GuardrailTableProps> = ({
   isAdmin = false,
   onGuardrailClick,
 }) => {
-  const [sorting, setSorting] = useState<SortingState>([{ id: "created_at", desc: true }]);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "created_at", desc: true },
+  ]);
   const [editModalVisible, setEditModalVisible] = useState(false);
-  const [selectedGuardrail, setSelectedGuardrail] = useState<Guardrail | null>(null);
+  const [selectedGuardrail, setSelectedGuardrail] = useState<Guardrail | null>(
+    null,
+  );
 
   // Format date helper function
   const formatDate = (dateString?: string) => {
@@ -85,7 +104,9 @@ const GuardrailTable: React.FC<GuardrailTableProps> = ({
         const guardrail = row.original;
         return (
           <Tooltip title={guardrail.guardrail_name}>
-            <span className="text-xs font-medium">{guardrail.guardrail_name || "-"}</span>
+            <span className="text-xs font-medium">
+              {guardrail.guardrail_name || "-"}
+            </span>
           </Tooltip>
         );
       },
@@ -95,7 +116,9 @@ const GuardrailTable: React.FC<GuardrailTableProps> = ({
       accessorKey: "litellm_params.guardrail",
       cell: ({ row }) => {
         const guardrail = row.original;
-        const { logo, displayName } = getGuardrailLogoAndName(guardrail.litellm_params.guardrail);
+        const { logo, displayName } = getGuardrailLogoAndName(
+          guardrail.litellm_params.guardrail,
+        );
         return (
           <div className="flex items-center space-x-2">
             {logo && (
@@ -133,7 +156,9 @@ const GuardrailTable: React.FC<GuardrailTableProps> = ({
             className="text-xs font-normal"
             size="xs"
           >
-            {guardrail.litellm_params?.default_on ? "Default On" : "Default Off"}
+            {guardrail.litellm_params?.default_on
+              ? "Default On"
+              : "Default Off"}
           </Badge>
         );
       },
@@ -167,7 +192,9 @@ const GuardrailTable: React.FC<GuardrailTableProps> = ({
       header: "Actions",
       cell: ({ row }) => {
         const guardrail = row.original;
-        const isConfigGuardrail = guardrail.guardrail_definition_location === GuardrailDefinitionLocation.CONFIG;
+        const isConfigGuardrail =
+          guardrail.guardrail_definition_location ===
+          GuardrailDefinitionLocation.CONFIG;
         return (
           <div className="flex space-x-2">
             {isConfigGuardrail ? (
@@ -188,7 +215,10 @@ const GuardrailTable: React.FC<GuardrailTableProps> = ({
                   size="sm"
                   onClick={() =>
                     guardrail.guardrail_id &&
-                    onDeleteClick(guardrail.guardrail_id, guardrail.guardrail_name || "Unnamed Guardrail")
+                    onDeleteClick(
+                      guardrail.guardrail_id,
+                      guardrail.guardrail_name || "Unnamed Guardrail",
+                    )
                   }
                   className="cursor-pointer hover:text-red-500"
                 />
@@ -223,20 +253,31 @@ const GuardrailTable: React.FC<GuardrailTableProps> = ({
                   <TableHeaderCell
                     key={header.id}
                     className={`py-1 h-8 ${
-                      header.id === "actions" ? "sticky right-0 bg-white shadow-[-4px_0_8px_-6px_rgba(0,0,0,0.1)]" : ""
+                      header.id === "actions"
+                        ? "sticky right-0 bg-white shadow-[-4px_0_8px_-6px_rgba(0,0,0,0.1)]"
+                        : ""
                     }`}
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center">
-                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                       </div>
                       {header.id !== "actions" && (
                         <div className="w-4">
                           {header.column.getIsSorted() ? (
                             {
-                              asc: <ChevronUpIcon className="h-4 w-4 text-blue-500" />,
-                              desc: <ChevronDownIcon className="h-4 w-4 text-blue-500" />,
+                              asc: (
+                                <ChevronUpIcon className="h-4 w-4 text-blue-500" />
+                              ),
+                              desc: (
+                                <ChevronDownIcon className="h-4 w-4 text-blue-500" />
+                              ),
                             }[header.column.getIsSorted() as string]
                           ) : (
                             <SwitchVerticalIcon className="h-4 w-4 text-gray-400" />
@@ -270,7 +311,10 @@ const GuardrailTable: React.FC<GuardrailTableProps> = ({
                           : ""
                       }`}
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -301,13 +345,17 @@ const GuardrailTable: React.FC<GuardrailTableProps> = ({
             guardrail_name: selectedGuardrail.guardrail_name || "",
             provider:
               Object.keys(guardrail_provider_map).find(
-                (key) => guardrail_provider_map[key] === selectedGuardrail?.litellm_params.guardrail,
+                (key) =>
+                  guardrail_provider_map[key] ===
+                  selectedGuardrail?.litellm_params.guardrail,
               ) || "",
             mode: selectedGuardrail.litellm_params.mode,
             default_on: selectedGuardrail.litellm_params.default_on,
-            pii_entities_config: selectedGuardrail.litellm_params.pii_entities_config,
+            pii_entities_config:
+              selectedGuardrail.litellm_params.pii_entities_config,
             skip_system_message_choice: skipSystemMessageToChoice(
-              selectedGuardrail.litellm_params?.skip_system_message_in_guardrail,
+              selectedGuardrail.litellm_params
+                ?.skip_system_message_in_guardrail,
             ),
             skip_tool_message_choice: skipToolMessageToChoice(
               selectedGuardrail.litellm_params?.skip_tool_message_in_guardrail,

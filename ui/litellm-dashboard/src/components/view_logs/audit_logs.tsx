@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { Table, Tag, Input, Select, Button, Pagination, Spin } from "antd";
-import { ReloadOutlined, LoadingOutlined } from "@ant-design/icons";
+import { LoadingOutlined, ReloadOutlined } from "@ant-design/icons";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { Button, Input, Pagination, Select, Spin, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import moment from "moment";
-import { uiAuditLogsCall } from "../networking";
-import { AuditLogEntry } from "./columns";
-import { AuditLogDrawer } from "./AuditLogDrawer/AuditLogDrawer";
+import { useState } from "react";
 import DefaultProxyAdminTag from "../common_components/DefaultProxyAdminTag";
+import { uiAuditLogsCall } from "../networking";
+import { AuditLogDrawer } from "./AuditLogDrawer/AuditLogDrawer";
+import type { AuditLogEntry } from "./columns";
 
 const { Search } = Input;
 
@@ -76,7 +76,13 @@ export default function AuditLogs({
     ],
     queryFn: async () => {
       if (!accessToken || !token || !userRole || !userID) {
-        return { audit_logs: [], total: 0, page: 1, page_size: PAGE_SIZE, total_pages: 0 };
+        return {
+          audit_logs: [],
+          total: 0,
+          page: 1,
+          page_size: PAGE_SIZE,
+          total_pages: 0,
+        };
       }
       return uiAuditLogsCall({
         accessToken,
@@ -139,9 +145,7 @@ export default function AuditLogs({
       title: "Object ID",
       dataIndex: "object_id",
       key: "object_id",
-      render: (val: string) => (
-        <span className="font-mono text-xs">{val}</span>
-      ),
+      render: (val: string) => <span className="font-mono text-xs">{val}</span>,
     },
     {
       title: "Changed By",
@@ -167,11 +171,19 @@ export default function AuditLogs({
   if (!premiumUser) {
     return (
       <div style={{ textAlign: "center", marginTop: "20px" }}>
-        <h1 style={{ display: "block", marginBottom: "10px" }}>✨ Enterprise Feature.</h1>
+        <h1 style={{ display: "block", marginBottom: "10px" }}>
+          ✨ Enterprise Feature.
+        </h1>
         <p style={{ display: "block", marginBottom: "10px" }}>
           This is a LiteLLM Enterprise feature, and requires a valid key to use.
         </p>
-        <p style={{ display: "block", marginBottom: "20px", fontStyle: "italic" }}>
+        <p
+          style={{
+            display: "block",
+            marginBottom: "20px",
+            fontStyle: "italic",
+          }}
+        >
           Here&apos;s a preview of what Audit Logs offer:
         </p>
         <img
@@ -210,29 +222,61 @@ export default function AuditLogs({
               placeholder="Object ID"
               allowClear
               style={{ width: 200 }}
-              onSearch={(val) => { setObjectId(val); resetPage(); }}
-              onChange={(e) => { if (!e.target.value) { setObjectId(""); resetPage(); } }}
+              onSearch={(val) => {
+                setObjectId(val);
+                resetPage();
+              }}
+              onChange={(e) => {
+                if (!e.target.value) {
+                  setObjectId("");
+                  resetPage();
+                }
+              }}
             />
             <Search
               placeholder="Changed By"
               allowClear
               style={{ width: 180 }}
-              onSearch={(val) => { setChangedBy(val); resetPage(); }}
-              onChange={(e) => { if (!e.target.value) { setChangedBy(""); resetPage(); } }}
+              onSearch={(val) => {
+                setChangedBy(val);
+                resetPage();
+              }}
+              onChange={(e) => {
+                if (!e.target.value) {
+                  setChangedBy("");
+                  resetPage();
+                }
+              }}
             />
             <Search
               placeholder="Team ID"
               allowClear
               style={{ width: 180 }}
-              onSearch={(val) => { setTeamId(val); resetPage(); }}
-              onChange={(e) => { if (!e.target.value) { setTeamId(""); resetPage(); } }}
+              onSearch={(val) => {
+                setTeamId(val);
+                resetPage();
+              }}
+              onChange={(e) => {
+                if (!e.target.value) {
+                  setTeamId("");
+                  resetPage();
+                }
+              }}
             />
             <Search
               placeholder="Key Hash"
               allowClear
               style={{ width: 180 }}
-              onSearch={(val) => { setKeyHash(val); resetPage(); }}
-              onChange={(e) => { if (!e.target.value) { setKeyHash(""); resetPage(); } }}
+              onSearch={(val) => {
+                setKeyHash(val);
+                resetPage();
+              }}
+              onChange={(e) => {
+                if (!e.target.value) {
+                  setKeyHash("");
+                  resetPage();
+                }
+              }}
             />
             <Select
               placeholder="All Actions"
@@ -244,7 +288,10 @@ export default function AuditLogs({
                 { label: "Deleted", value: "deleted" },
                 { label: "Rotated", value: "rotated" },
               ]}
-              onChange={(val) => { setAction(val); resetPage(); }}
+              onChange={(val) => {
+                setAction(val);
+                resetPage();
+              }}
             />
             <Select
               placeholder="All Tables"
@@ -257,7 +304,10 @@ export default function AuditLogs({
                 { label: "Organizations", value: "LiteLLM_OrganizationTable" },
                 { label: "Models", value: "LiteLLM_ProxyModelTable" },
               ]}
-              onChange={(val) => { setTableName(val); resetPage(); }}
+              onChange={(val) => {
+                setTableName(val);
+                resetPage();
+              }}
             />
 
             {/* Pagination + refresh pushed to the right */}
@@ -287,7 +337,9 @@ export default function AuditLogs({
           rowKey="id"
           loading={{
             spinning: query.isLoading,
-            indicator: <Spin indicator={<LoadingOutlined spin />} size="small" />,
+            indicator: (
+              <Spin indicator={<LoadingOutlined spin />} size="small" />
+            ),
           }}
           size="small"
           pagination={false}

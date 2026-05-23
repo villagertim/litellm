@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { fetchProxySettings } from "./proxyUtils";
 import { getProxyUISettings } from "@/components/networking";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { fetchProxySettings } from "./proxyUtils";
 
 vi.mock("@/components/networking", () => ({
   getProxyUISettings: vi.fn(),
@@ -54,7 +54,10 @@ describe("fetchProxySettings", () => {
     expect(result).toBeNull();
     expect(getProxyUISettings).toHaveBeenCalledOnce();
     expect(getProxyUISettings).toHaveBeenCalledWith(accessToken);
-    expect(consoleSpy).toHaveBeenCalledWith("Error fetching proxy settings:", mockError);
+    expect(consoleSpy).toHaveBeenCalledWith(
+      "Error fetching proxy settings:",
+      mockError,
+    );
 
     consoleSpy.mockRestore();
   });
@@ -71,7 +74,10 @@ describe("fetchProxySettings", () => {
     expect(result).toBeNull();
     expect(getProxyUISettings).toHaveBeenCalledOnce();
     expect(getProxyUISettings).toHaveBeenCalledWith(accessToken);
-    expect(consoleSpy).toHaveBeenCalledWith("Error fetching proxy settings:", mockError);
+    expect(consoleSpy).toHaveBeenCalledWith(
+      "Error fetching proxy settings:",
+      mockError,
+    );
 
     consoleSpy.mockRestore();
   });

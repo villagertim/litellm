@@ -1,9 +1,19 @@
 import { act, fireEvent } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { renderWithProviders, screen, waitFor } from "../../../tests/test-utils";
+import {
+  renderWithProviders,
+  screen,
+  waitFor,
+} from "../../../tests/test-utils";
 import CreateKey from "./create_key_button";
 
-const { formMock, setFieldsValueMock, radioGroupValueRef, formStateRef, mockKeyCreateCall } = vi.hoisted(() => {
+const {
+  formMock,
+  setFieldsValueMock,
+  radioGroupValueRef,
+  formStateRef,
+  mockKeyCreateCall,
+} = vi.hoisted(() => {
   const formStateRef = { current: {} as Record<string, any> };
   const mockKeyCreateCall = vi.fn().mockResolvedValue({
     key: "test-api-key",
@@ -60,7 +70,8 @@ vi.mock("react-copy-to-clipboard", () => ({
 
 vi.mock("@tremor/react", () => {
   const React = require("react");
-  const Stub = ({ children }: { children?: any }) => React.createElement("div", null, children);
+  const Stub = ({ children }: { children?: any }) =>
+    React.createElement("div", null, children);
   const Button = ({ children, ...props }: { children?: any }) =>
     React.createElement("button", props, children);
   const TextInput = (props: any) => React.createElement("input", props);
@@ -91,7 +102,11 @@ vi.mock("antd", () => {
     return event;
   };
 
-  const Form = ({ children, onFinish, ...props }: { children?: any; onFinish?: (values: Record<string, any>) => void }) =>
+  const Form = ({
+    children,
+    onFinish,
+    ...props
+  }: { children?: any; onFinish?: (values: Record<string, any>) => void }) =>
     React.createElement(
       "form",
       {
@@ -119,7 +134,16 @@ vi.mock("antd", () => {
 
   Form.useForm = () => [formMock];
 
-  const Select = ({ children, onChange, options, ...props }: { children?: any; onChange?: (value: string) => void; options?: Array<{ value: string; label: string }> }) =>
+  const Select = ({
+    children,
+    onChange,
+    options,
+    ...props
+  }: {
+    children?: any;
+    onChange?: (value: string) => void;
+    options?: Array<{ value: string; label: string }>;
+  }) =>
     React.createElement(
       "select",
       {
@@ -127,14 +151,21 @@ vi.mock("antd", () => {
         onChange: (event: any) => onChange?.(event.target.value),
       },
       children,
-      options?.map((opt: any) => React.createElement("option", { key: opt.value, value: opt.value }, opt.label)),
+      options?.map((opt: any) =>
+        React.createElement(
+          "option",
+          { key: opt.value, value: opt.value },
+          opt.label,
+        ),
+      ),
     );
 
   Select.Option = ({ children, ...props }: { children?: any }) =>
     React.createElement("option", props, children);
 
   const Input = (props: any) => React.createElement("input", props);
-  Input.Password = (props: any) => React.createElement("input", { ...props, type: "password" });
+  Input.Password = (props: any) =>
+    React.createElement("input", { ...props, type: "password" });
   Input.TextArea = (props: any) => React.createElement("textarea", props);
 
   const Modal = ({ children, open }: { children?: any; open?: boolean }) =>
@@ -148,12 +179,23 @@ vi.mock("antd", () => {
     return React.createElement("div", null, children);
   };
 
-  const Switch = (props: any) => React.createElement("input", { ...props, type: "checkbox" });
-  const Tag = ({ children }: { children?: any }) => React.createElement("span", null, children);
-  const Tooltip = ({ children }: { children?: any }) => React.createElement(React.Fragment, null, children);
+  const Switch = (props: any) =>
+    React.createElement("input", { ...props, type: "checkbox" });
+  const Tag = ({ children }: { children?: any }) =>
+    React.createElement("span", null, children);
+  const Tooltip = ({ children }: { children?: any }) =>
+    React.createElement(React.Fragment, null, children);
 
-  const Button = ({ children, htmlType, ...props }: { children?: any; htmlType?: string }) =>
-    React.createElement("button", { ...props, type: htmlType ?? props.type }, children);
+  const Button = ({
+    children,
+    htmlType,
+    ...props
+  }: { children?: any; htmlType?: string }) =>
+    React.createElement(
+      "button",
+      { ...props, type: htmlType ?? props.type },
+      children,
+    );
 
   const Typography = ({ children, ...props }: { children?: any }) =>
     React.createElement("div", props, children);
@@ -216,21 +258,45 @@ vi.mock("../molecules/notifications_manager", () => ({
 }));
 
 vi.mock("../agent_management/AgentSelector", () => ({ default: () => null }));
-vi.mock("../common_components/budget_duration_dropdown", () => ({ default: () => null }));
-vi.mock("../common_components/check_openapi_schema", () => ({ default: () => null }));
-vi.mock("../common_components/KeyLifecycleSettings", () => ({ default: () => null }));
-vi.mock("../common_components/ModelAliasManager", () => ({ default: () => null }));
-vi.mock("../common_components/PassThroughRoutesSelector", () => ({ default: () => null }));
-vi.mock("../common_components/PremiumLoggingSettings", () => ({ default: () => null }));
-vi.mock("../common_components/RateLimitTypeFormItem", () => ({ default: () => null }));
-vi.mock("../common_components/RouterSettingsAccordion", () => ({ default: () => null }));
+vi.mock("../common_components/budget_duration_dropdown", () => ({
+  default: () => null,
+}));
+vi.mock("../common_components/check_openapi_schema", () => ({
+  default: () => null,
+}));
+vi.mock("../common_components/KeyLifecycleSettings", () => ({
+  default: () => null,
+}));
+vi.mock("../common_components/ModelAliasManager", () => ({
+  default: () => null,
+}));
+vi.mock("../common_components/PassThroughRoutesSelector", () => ({
+  default: () => null,
+}));
+vi.mock("../common_components/PremiumLoggingSettings", () => ({
+  default: () => null,
+}));
+vi.mock("../common_components/RateLimitTypeFormItem", () => ({
+  default: () => null,
+}));
+vi.mock("../common_components/RouterSettingsAccordion", () => ({
+  default: () => null,
+}));
 vi.mock("@/app/(dashboard)/hooks/teams/useTeams", () => ({
   useInfiniteTeams: () => ({
     data: {
-      pages: [{ teams: [
-        { team_id: "team-1", team_alias: "Team One" },
-        { team_id: "team-2", team_alias: "Team Two" },
-      ], total: 2, page: 1, page_size: 50, total_pages: 1 }],
+      pages: [
+        {
+          teams: [
+            { team_id: "team-1", team_alias: "Team One" },
+            { team_id: "team-2", team_alias: "Team Two" },
+          ],
+          total: 2,
+          page: 1,
+          page_size: 50,
+          total_pages: 1,
+        },
+      ],
     },
     fetchNextPage: vi.fn(),
     hasNextPage: false,
@@ -239,7 +305,10 @@ vi.mock("@/app/(dashboard)/hooks/teams/useTeams", () => ({
   }),
 }));
 vi.mock("../common_components/team_dropdown", () => ({
-  default: ({ onChange, disabled }: { onChange?: (v: string) => void; disabled?: boolean }) => (
+  default: ({
+    onChange,
+    disabled,
+  }: { onChange?: (v: string) => void; disabled?: boolean }) => (
     <select
       data-testid="team-dropdown"
       disabled={disabled}
@@ -252,10 +321,16 @@ vi.mock("../common_components/team_dropdown", () => ({
   ),
 }));
 vi.mock("../CreateUserButton", () => ({ CreateUserButton: () => null }));
-vi.mock("../mcp_server_management/MCPServerSelector", () => ({ default: () => null }));
-vi.mock("../mcp_server_management/MCPToolPermissions", () => ({ default: () => null }));
+vi.mock("../mcp_server_management/MCPServerSelector", () => ({
+  default: () => null,
+}));
+vi.mock("../mcp_server_management/MCPToolPermissions", () => ({
+  default: () => null,
+}));
 vi.mock("../shared/numerical_input", () => ({ default: () => null }));
-vi.mock("../vector_store_management/VectorStoreSelector", () => ({ default: () => null }));
+vi.mock("../vector_store_management/VectorStoreSelector", () => ({
+  default: () => null,
+}));
 vi.mock("../key_team_helpers/fetch_available_models_team_key", () => ({
   getModelDisplayName: (model: string) => model,
 }));
@@ -263,8 +338,20 @@ vi.mock("../key_team_helpers/fetch_available_models_team_key", () => ({
 vi.mock("@/app/(dashboard)/hooks/tags/useTags", () => ({
   useTags: vi.fn().mockReturnValue({
     data: [
-      { name: "production", description: "Prod tag", models: [], created_at: "2026-01-01", updated_at: "2026-01-01" },
-      { name: "staging", description: "Staging tag", models: [], created_at: "2026-01-01", updated_at: "2026-01-01" },
+      {
+        name: "production",
+        description: "Prod tag",
+        models: [],
+        created_at: "2026-01-01",
+        updated_at: "2026-01-01",
+      },
+      {
+        name: "staging",
+        description: "Staging tag",
+        models: [],
+        created_at: "2026-01-01",
+        updated_at: "2026-01-01",
+      },
     ],
     isLoading: false,
   }),
@@ -285,7 +372,15 @@ vi.mock("@/app/(dashboard)/hooks/organizations/useOrganizations", () => ({
 }));
 
 vi.mock("../common_components/OrganizationDropdown", () => ({
-  default: ({ value, onChange, disabled }: { value?: string; onChange?: (v: string) => void; disabled?: boolean }) => (
+  default: ({
+    value,
+    onChange,
+    disabled,
+  }: {
+    value?: string;
+    onChange?: (v: string) => void;
+    disabled?: boolean;
+  }) => (
     <select
       data-testid="org-dropdown"
       disabled={disabled}
@@ -300,7 +395,10 @@ vi.mock("../common_components/OrganizationDropdown", () => ({
 }));
 
 vi.mock("../common_components/ProjectDropdown", () => ({
-  default: ({ value, onChange }: { value?: string; onChange?: (v: string) => void }) => (
+  default: ({
+    value,
+    onChange,
+  }: { value?: string; onChange?: (v: string) => void }) => (
     <input
       data-testid="project-dropdown"
       value={value || ""}
@@ -310,11 +408,20 @@ vi.mock("../common_components/ProjectDropdown", () => ({
 }));
 
 vi.mock("../common_components/AccessGroupSelector", () => ({
-  default: ({ value = [], onChange }: { value?: string[]; onChange?: (v: string[]) => void }) => (
+  default: ({
+    value = [],
+    onChange,
+  }: { value?: string[]; onChange?: (v: string[]) => void }) => (
     <input
       data-testid="access-group-selector"
       value={Array.isArray(value) ? value.join(",") : ""}
-      onChange={(event) => onChange?.(event.target.value ? event.target.value.split(",").map((v) => v.trim()) : [])}
+      onChange={(event) =>
+        onChange?.(
+          event.target.value
+            ? event.target.value.split(",").map((v) => v.trim())
+            : [],
+        )
+      }
     />
   ),
 }));
@@ -329,7 +436,11 @@ describe("CreateKey", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    if (typeof window !== "undefined" && window.localStorage && typeof window.localStorage.clear === "function") {
+    if (
+      typeof window !== "undefined" &&
+      window.localStorage &&
+      typeof window.localStorage.clear === "function"
+    ) {
       window.localStorage.clear();
     }
     authorizedState = { ...defaultAuthorizedState };
@@ -343,7 +454,9 @@ describe("CreateKey", () => {
 
   it("should render the CreateKey component", () => {
     renderWithProviders(<CreateKey {...defaultProps} />);
-    expect(screen.getByRole("button", { name: /create new key/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /create new key/i }),
+    ).toBeInTheDocument();
   });
 
   it("should display 'AI APIs' label for the llm_api key type option", async () => {
@@ -371,7 +484,9 @@ describe("CreateKey", () => {
     });
 
     act(() => {
-      fireEvent.change(screen.getByTestId("access-group-selector"), { target: { value: "ag-1,ag-2" } });
+      fireEvent.change(screen.getByTestId("access-group-selector"), {
+        target: { value: "ag-1,ag-2" },
+      });
       formMock.setFieldValue("key_alias", "Test Key");
     });
 
@@ -429,10 +544,14 @@ describe("CreateKey", () => {
     );
 
     await waitFor(() => {
-      expect(setFieldsValueMock).toHaveBeenCalledWith({ key_alias: "example-key" });
+      expect(setFieldsValueMock).toHaveBeenCalledWith({
+        key_alias: "example-key",
+      });
     });
 
-    expect(setFieldsValueMock).not.toHaveBeenCalledWith({ team_id: "team-404" });
+    expect(setFieldsValueMock).not.toHaveBeenCalledWith({
+      team_id: "team-404",
+    });
   });
 
   it('should fall back to "you" when owned_by is another_user for non-admin', async () => {
@@ -447,7 +566,9 @@ describe("CreateKey", () => {
     );
 
     await waitFor(() => {
-      expect(setFieldsValueMock).toHaveBeenCalledWith({ key_alias: "example-key" });
+      expect(setFieldsValueMock).toHaveBeenCalledWith({
+        key_alias: "example-key",
+      });
     });
 
     expect(radioGroupValueRef.current).toBe("you");
@@ -477,7 +598,9 @@ describe("CreateKey", () => {
     );
 
     await waitFor(() => {
-      expect(setFieldsValueMock).toHaveBeenCalledWith({ key_type: "management" });
+      expect(setFieldsValueMock).toHaveBeenCalledWith({
+        key_type: "management",
+      });
     });
   });
 
@@ -486,7 +609,9 @@ describe("CreateKey", () => {
       renderWithProviders(<CreateKey {...defaultProps} />);
 
       act(() => {
-        fireEvent.click(screen.getByRole("button", { name: /create new key/i }));
+        fireEvent.click(
+          screen.getByRole("button", { name: /create new key/i }),
+        );
       });
 
       await waitFor(() => {
@@ -495,12 +620,17 @@ describe("CreateKey", () => {
     });
 
     it("should disable the organization dropdown for non-admin users", async () => {
-      authorizedState = { ...defaultAuthorizedState, userRole: "Internal User" };
+      authorizedState = {
+        ...defaultAuthorizedState,
+        userRole: "Internal User",
+      };
 
       renderWithProviders(<CreateKey {...defaultProps} />);
 
       act(() => {
-        fireEvent.click(screen.getByRole("button", { name: /create new key/i }));
+        fireEvent.click(
+          screen.getByRole("button", { name: /create new key/i }),
+        );
       });
 
       await waitFor(() => {
@@ -514,7 +644,9 @@ describe("CreateKey", () => {
       renderWithProviders(<CreateKey {...defaultProps} />);
 
       act(() => {
-        fireEvent.click(screen.getByRole("button", { name: /create new key/i }));
+        fireEvent.click(
+          screen.getByRole("button", { name: /create new key/i }),
+        );
       });
 
       await waitFor(() => {
@@ -524,13 +656,22 @@ describe("CreateKey", () => {
 
     it("should render team dropdown alongside organization dropdown", async () => {
       const teamsWithOrg = [
-        { team_id: "team-1", team_alias: "Team Alpha", organization_id: "org-1", models: [] },
+        {
+          team_id: "team-1",
+          team_alias: "Team Alpha",
+          organization_id: "org-1",
+          models: [],
+        },
       ];
 
-      renderWithProviders(<CreateKey {...defaultProps} teams={teamsWithOrg as any} />);
+      renderWithProviders(
+        <CreateKey {...defaultProps} teams={teamsWithOrg as any} />,
+      );
 
       act(() => {
-        fireEvent.click(screen.getByRole("button", { name: /create new key/i }));
+        fireEvent.click(
+          screen.getByRole("button", { name: /create new key/i }),
+        );
       });
 
       await waitFor(() => {
@@ -543,7 +684,9 @@ describe("CreateKey", () => {
       renderWithProviders(<CreateKey {...defaultProps} />);
 
       act(() => {
-        fireEvent.click(screen.getByRole("button", { name: /create new key/i }));
+        fireEvent.click(
+          screen.getByRole("button", { name: /create new key/i }),
+        );
       });
 
       await waitFor(() => {
@@ -551,7 +694,9 @@ describe("CreateKey", () => {
       });
 
       act(() => {
-        fireEvent.change(screen.getByTestId("org-dropdown"), { target: { value: "org-1" } });
+        fireEvent.change(screen.getByTestId("org-dropdown"), {
+          target: { value: "org-1" },
+        });
       });
 
       expect(formStateRef.current["organization_id"]).toBe("org-1");
@@ -563,7 +708,9 @@ describe("CreateKey", () => {
       renderWithProviders(<CreateKey {...defaultProps} />);
 
       act(() => {
-        fireEvent.click(screen.getByRole("button", { name: /create new key/i }));
+        fireEvent.click(
+          screen.getByRole("button", { name: /create new key/i }),
+        );
       });
 
       await waitFor(() => {

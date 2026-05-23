@@ -1,7 +1,7 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
-  filterSensitiveMetadata,
   extractLoggingSettings,
+  filterSensitiveMetadata,
   formatMetadataForDisplay,
   stripTagsFromMetadata,
 } from "./key_info_utils";

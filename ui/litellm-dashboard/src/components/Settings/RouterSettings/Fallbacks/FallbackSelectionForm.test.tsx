@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { FallbackSelectionForm } from "./FallbackSelectionForm";
 import type { FallbackGroup } from "./FallbackGroupConfig";
+import { FallbackSelectionForm } from "./FallbackSelectionForm";
 
 const mockOnGroupsChange = vi.fn();
 const AVAILABLE_MODELS = ["gpt-4", "gpt-3.5-turbo", "claude-3-opus"];
@@ -32,7 +32,9 @@ describe("FallbackSelectionForm", () => {
         availableModels={AVAILABLE_MODELS}
       />,
     );
-    expect(screen.getByText(/no fallback groups configured/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/no fallback groups configured/i),
+    ).toBeInTheDocument();
   });
 
   it("should show Create First Group button when no groups exist", () => {
@@ -43,7 +45,9 @@ describe("FallbackSelectionForm", () => {
         availableModels={AVAILABLE_MODELS}
       />,
     );
-    expect(screen.getByRole("button", { name: /create first group/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /create first group/i }),
+    ).toBeInTheDocument();
   });
 
   it("should call onGroupsChange when Create First Group is clicked", async () => {
@@ -56,7 +60,9 @@ describe("FallbackSelectionForm", () => {
       />,
     );
 
-    await user.click(screen.getByRole("button", { name: /create first group/i }));
+    await user.click(
+      screen.getByRole("button", { name: /create first group/i }),
+    );
 
     expect(mockOnGroupsChange).toHaveBeenCalledTimes(1);
     const [newGroups] = mockOnGroupsChange.mock.calls[0];
@@ -138,7 +144,9 @@ describe("FallbackSelectionForm", () => {
         maxGroups={5}
       />,
     );
-    expect(screen.queryByRole("button", { name: /add tab/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /add tab/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("should show add tab button when below maxGroups with custom maxGroups", () => {
@@ -153,7 +161,9 @@ describe("FallbackSelectionForm", () => {
         maxGroups={3}
       />,
     );
-    expect(screen.getByRole("button", { name: /add tab/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /add tab/i }),
+    ).toBeInTheDocument();
   });
 
   it("should call onGroupsChange when a group is removed", async () => {
@@ -227,7 +237,9 @@ describe("FallbackSelectionForm", () => {
       />,
     );
 
-    expect(screen.queryByRole("button", { name: /add tab/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /add tab/i }),
+    ).not.toBeInTheDocument();
     expect(mockOnGroupsChange).not.toHaveBeenCalled();
   });
 });

@@ -1,7 +1,7 @@
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { createQueryKeys } from "../common/queryKeysFactory";
-import { getGuardrailsList } from "@/components/networking";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { getGuardrailsList } from "@/components/networking";
+import { type UseQueryResult, useQuery } from "@tanstack/react-query";
+import { createQueryKeys } from "../common/queryKeysFactory";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 

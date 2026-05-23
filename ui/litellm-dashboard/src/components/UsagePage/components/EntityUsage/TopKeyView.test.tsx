@@ -2,7 +2,7 @@ import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { KeyResponse } from "../../../key_team_helpers/key_list";
+import type { KeyResponse } from "../../../key_team_helpers/key_list";
 import * as transformKeyInfo from "../../../key_team_helpers/transform_key_info";
 import * as networking from "../../../networking";
 import TopKeyView from "./TopKeyView";
@@ -64,17 +64,23 @@ describe("TopKeyView", () => {
 
   it("should render", () => {
     render(<TopKeyView {...baseProps} />);
-    expect(screen.getByRole("button", { name: "Table View" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Table View" }),
+    ).toBeInTheDocument();
   });
 
   it("should display table view button", () => {
     render(<TopKeyView {...baseProps} />);
-    expect(screen.getByRole("button", { name: "Table View" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Table View" }),
+    ).toBeInTheDocument();
   });
 
   it("should display chart view button", () => {
     render(<TopKeyView {...baseProps} />);
-    expect(screen.getByRole("button", { name: "Chart View" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Chart View" }),
+    ).toBeInTheDocument();
   });
 
   it("should display base table column headers", () => {
@@ -358,7 +364,9 @@ describe("TopKeyView", () => {
 
   it("should open modal when key ID is clicked", async () => {
     const mockKeyInfo = { key: "info" };
-    const mockTransformedData = { transformed: "data" } as unknown as KeyResponse;
+    const mockTransformedData = {
+      transformed: "data",
+    } as unknown as KeyResponse;
     mockKeyInfoV1Call.mockResolvedValue(mockKeyInfo);
     mockTransformKeyInfo.mockReturnValue(mockTransformedData);
 
@@ -392,7 +400,9 @@ describe("TopKeyView", () => {
 
   it("should close modal when close button is clicked", async () => {
     const mockKeyInfo = { key: "info" };
-    const mockTransformedData = { transformed: "data" } as unknown as KeyResponse;
+    const mockTransformedData = {
+      transformed: "data",
+    } as unknown as KeyResponse;
     mockKeyInfoV1Call.mockResolvedValue(mockKeyInfo);
     mockTransformKeyInfo.mockReturnValue(mockTransformedData);
 
@@ -429,7 +439,9 @@ describe("TopKeyView", () => {
 
   it("should close modal when escape key is pressed", async () => {
     const mockKeyInfo = { key: "info" };
-    const mockTransformedData = { transformed: "data" } as unknown as KeyResponse;
+    const mockTransformedData = {
+      transformed: "data",
+    } as unknown as KeyResponse;
     mockKeyInfoV1Call.mockResolvedValue(mockKeyInfo);
     mockTransformKeyInfo.mockReturnValue(mockTransformedData);
 
@@ -465,7 +477,9 @@ describe("TopKeyView", () => {
 
   it("should close modal when clicking outside modal", async () => {
     const mockKeyInfo = { key: "info" };
-    const mockTransformedData = { transformed: "data" } as unknown as KeyResponse;
+    const mockTransformedData = {
+      transformed: "data",
+    } as unknown as KeyResponse;
     mockKeyInfoV1Call.mockResolvedValue(mockKeyInfo);
     mockTransformKeyInfo.mockReturnValue(mockTransformedData);
 
@@ -535,7 +549,9 @@ describe("TopKeyView", () => {
   });
 
   it("should handle error when fetching key info", async () => {
-    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const consoleErrorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
     mockKeyInfoV1Call.mockRejectedValue(new Error("Network error"));
 
     const user = userEvent.setup();
@@ -614,7 +630,9 @@ describe("TopKeyView", () => {
         ]}
       />,
     );
-    expect(screen.getByText("This is a very long key alias")).toBeInTheDocument();
+    expect(
+      screen.getByText("This is a very long key alias"),
+    ).toBeInTheDocument();
   });
 
   it("should handle keys with no alias", () => {

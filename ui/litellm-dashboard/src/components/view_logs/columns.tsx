@@ -3,11 +3,18 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Badge, Button } from "@tremor/react";
 import { Tooltip } from "antd";
 import React, { useState } from "react";
-import { getProviderLogoAndName } from "../provider_info_helpers";
 import { TableHeaderSortDropdown } from "../common_components/TableHeaderSortDropdown/TableHeaderSortDropdown";
-import { TimeCell } from "./time_cell";
+import { getProviderLogoAndName } from "../provider_info_helpers";
+import {
+  AgentBadge,
+  AgentIcon,
+  LlmBadge,
+  McpBadge,
+  SparkleIcon,
+  WrenchIcon,
+} from "./TypeBadges";
 import { AGENT_CALL_TYPES, MCP_CALL_TYPES } from "./constants";
-import { AgentBadge, AgentIcon, LlmBadge, McpBadge, SparkleIcon, WrenchIcon } from "./TypeBadges";
+import { TimeCell } from "./time_cell";
 
 /** API sort field mapping for /spend/logs/ui endpoint */
 export const LOGS_SORT_FIELD_MAP = {
@@ -105,7 +112,9 @@ const SortableHeader = ({
   </div>
 );
 
-export const createColumns = (sortProps?: LogsSortProps): ColumnDef<LogEntry>[] => [
+export const createColumns = (
+  sortProps?: LogsSortProps,
+): ColumnDef<LogEntry>[] => [
   {
     header: sortProps
       ? () => (
@@ -129,9 +138,12 @@ export const createColumns = (sortProps?: LogsSortProps): ColumnDef<LogEntry>[] 
       const sessionCount = row.session_total_count || 1;
       const isMcp = MCP_CALL_TYPES.includes(row.call_type);
       const isAgent = AGENT_CALL_TYPES.includes(row.call_type);
-      const sessionLlmCount = row.session_llm_count ?? (isMcp || isAgent ? 0 : sessionCount);
-      const sessionAgentCount = row.session_agent_count ?? (isAgent ? sessionCount : 0);
-      const sessionMcpCount = row.session_mcp_count ?? (isMcp ? sessionCount : 0);
+      const sessionLlmCount =
+        row.session_llm_count ?? (isMcp || isAgent ? 0 : sessionCount);
+      const sessionAgentCount =
+        row.session_agent_count ?? (isAgent ? sessionCount : 0);
+      const sessionMcpCount =
+        row.session_mcp_count ?? (isMcp ? sessionCount : 0);
 
       if (isMcp) return <McpBadge />;
       if (isAgent && sessionCount <= 1) return <AgentBadge />;
@@ -163,9 +175,7 @@ export const createColumns = (sortProps?: LogsSortProps): ColumnDef<LogEntry>[] 
         sessionMcpCount > 0 && `${sessionMcpCount} MCP`,
       ].filter(Boolean);
       return (
-        <Tooltip title={tooltipParts.join(" • ")}>
-          {sessionTypeBadge}
-        </Tooltip>
+        <Tooltip title={tooltipParts.join(" • ")}>{sessionTypeBadge}</Tooltip>
       );
     },
   },
@@ -179,7 +189,9 @@ export const createColumns = (sortProps?: LogsSortProps): ColumnDef<LogEntry>[] 
       return (
         <span
           className={`px-2 py-1 rounded-md text-xs font-medium inline-block text-center w-16 ${
-            isSuccess ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+            isSuccess
+              ? "bg-green-100 text-green-800"
+              : "bg-red-100 text-red-800"
           }`}
         >
           {isSuccess ? "Success" : "Failure"}
@@ -213,7 +225,9 @@ export const createColumns = (sortProps?: LogsSortProps): ColumnDef<LogEntry>[] 
     accessorKey: "request_id",
     cell: (info: any) => (
       <Tooltip title={String(info.getValue() || "")}>
-        <span className="font-mono text-xs max-w-[15ch] truncate block">{String(info.getValue() || "")}</span>
+        <span className="font-mono text-xs max-w-[15ch] truncate block">
+          {String(info.getValue() || "")}
+        </span>
       </Tooltip>
     ),
   },
@@ -292,7 +306,9 @@ export const createColumns = (sortProps?: LogsSortProps): ColumnDef<LogEntry>[] 
       if (!completionStartTime) return <span>-</span>;
       // For non-streaming, completionStartTime == endTime so TTFT is not meaningful
       if (completionStartTime === row.endTime) return <span>-</span>;
-      const ttftMs = new Date(completionStartTime).getTime() - new Date(row.startTime).getTime();
+      const ttftMs =
+        new Date(completionStartTime).getTime() -
+        new Date(row.startTime).getTime();
       if (ttftMs <= 0) return <span>-</span>;
       const ttftSeconds = (ttftMs / 1000).toFixed(2);
       return (
@@ -307,7 +323,9 @@ export const createColumns = (sortProps?: LogsSortProps): ColumnDef<LogEntry>[] 
     accessorKey: "metadata.user_api_key_team_alias",
     cell: (info: any) => (
       <Tooltip title={String(info.getValue() || "-")}>
-        <span className="max-w-[15ch] truncate block">{String(info.getValue() || "-")}</span>
+        <span className="max-w-[15ch] truncate block">
+          {String(info.getValue() || "-")}
+        </span>
       </Tooltip>
     ),
   },
@@ -335,7 +353,9 @@ export const createColumns = (sortProps?: LogsSortProps): ColumnDef<LogEntry>[] 
     accessorKey: "metadata.user_api_key_alias",
     cell: (info: any) => (
       <Tooltip title={String(info.getValue() || "-")}>
-        <span className="max-w-[15ch] truncate block">{String(info.getValue() || "-")}</span>
+        <span className="max-w-[15ch] truncate block">
+          {String(info.getValue() || "-")}
+        </span>
       </Tooltip>
     ),
   },
@@ -395,7 +415,8 @@ export const createColumns = (sortProps?: LogsSortProps): ColumnDef<LogEntry>[] 
         <span className="text-sm">
           {String(row.total_tokens || "0")}
           <span className="text-gray-400 text-xs ml-1">
-            ({String(row.prompt_tokens || "0")}+{String(row.completion_tokens || "0")})
+            ({String(row.prompt_tokens || "0")}+
+            {String(row.completion_tokens || "0")})
           </span>
         </span>
       );
@@ -406,7 +427,9 @@ export const createColumns = (sortProps?: LogsSortProps): ColumnDef<LogEntry>[] 
     accessorKey: "user",
     cell: (info: any) => (
       <Tooltip title={String(info.getValue() || "-")}>
-        <span className="max-w-[15ch] truncate block">{String(info.getValue() || "-")}</span>
+        <span className="max-w-[15ch] truncate block">
+          {String(info.getValue() || "-")}
+        </span>
       </Tooltip>
     ),
   },
@@ -415,7 +438,9 @@ export const createColumns = (sortProps?: LogsSortProps): ColumnDef<LogEntry>[] 
     accessorKey: "end_user",
     cell: (info: any) => (
       <Tooltip title={String(info.getValue() || "-")}>
-        <span className="max-w-[15ch] truncate block">{String(info.getValue() || "-")}</span>
+        <span className="max-w-[15ch] truncate block">
+          {String(info.getValue() || "-")}
+        </span>
       </Tooltip>
     ),
   },
@@ -471,9 +496,18 @@ const formatMessage = (message: any): string => {
 };
 
 // Add this new component for displaying request/response with copy buttons
-export const RequestResponsePanel = ({ request, response }: { request: any; response: any }) => {
-  const requestStr = typeof request === "object" ? JSON.stringify(request, null, 2) : String(request || "{}");
-  const responseStr = typeof response === "object" ? JSON.stringify(response, null, 2) : String(response || "{}");
+export const RequestResponsePanel = ({
+  request,
+  response,
+}: { request: any; response: any }) => {
+  const requestStr =
+    typeof request === "object"
+      ? JSON.stringify(request, null, 2)
+      : String(request || "{}");
+  const responseStr =
+    typeof response === "object"
+      ? JSON.stringify(response, null, 2)
+      : String(response || "{}");
 
   const copyToClipboard = async (text: string) => {
     try {
@@ -509,7 +543,9 @@ export const RequestResponsePanel = ({ request, response }: { request: any; resp
             </svg>
           </button>
         </div>
-        <pre className="p-4 overflow-auto text-xs font-mono h-64 whitespace-pre-wrap break-words">{requestStr}</pre>
+        <pre className="p-4 overflow-auto text-xs font-mono h-64 whitespace-pre-wrap break-words">
+          {requestStr}
+        </pre>
       </div>
 
       <div className="rounded-lg border border-gray-200 bg-gray-50">
@@ -536,7 +572,9 @@ export const RequestResponsePanel = ({ request, response }: { request: any; resp
             </svg>
           </button>
         </div>
-        <pre className="p-4 overflow-auto text-xs font-mono h-64 whitespace-pre-wrap break-words">{responseStr}</pre>
+        <pre className="p-4 overflow-auto text-xs font-mono h-64 whitespace-pre-wrap break-words">
+          {responseStr}
+        </pre>
       </div>
     </div>
   );
@@ -553,11 +591,17 @@ const CollapsibleJsonCell = ({ jsonData }: { jsonData: any }) => {
 
   return (
     <div>
-      <button onClick={() => setIsExpanded(!isExpanded)} className="text-blue-500 hover:text-blue-700 text-xs">
-        {isExpanded ? "Hide JSON" : "Show JSON"} ({Object.keys(jsonData).length} fields)
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="text-blue-500 hover:text-blue-700 text-xs"
+      >
+        {isExpanded ? "Hide JSON" : "Show JSON"} ({Object.keys(jsonData).length}{" "}
+        fields)
       </button>
       {isExpanded && (
-        <pre className="mt-2 p-2 bg-gray-50 border rounded text-xs overflow-auto max-h-60">{jsonString}</pre>
+        <pre className="mt-2 p-2 bg-gray-50 border rounded text-xs overflow-auto max-h-60">
+          {jsonString}
+        </pre>
       )}
     </div>
   );
@@ -589,7 +633,9 @@ export const auditLogColumns: ColumnDef<AuditLogEntry>[] = [
     header: () => null,
     cell: ({ row }) => {
       const ExpanderCell = () => {
-        const [localExpanded, setLocalExpanded] = React.useState(row.getIsExpanded());
+        const [localExpanded, setLocalExpanded] = React.useState(
+          row.getIsExpanded(),
+        );
 
         const toggleHandler = React.useCallback(() => {
           setLocalExpanded((prev) => !prev);
@@ -610,7 +656,12 @@ export const auditLogColumns: ColumnDef<AuditLogEntry>[] = [
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </button>
         ) : (
@@ -702,7 +753,10 @@ export const auditLogColumns: ColumnDef<AuditLogEntry>[] = [
 
         return (
           <Tooltip title={copied ? "Copied!" : String(objectId)}>
-            <span className="max-w-[20ch] truncate block cursor-pointer hover:text-blue-600" onClick={handleCopy}>
+            <span
+              className="max-w-[20ch] truncate block cursor-pointer hover:text-blue-600"
+              onClick={handleCopy}
+            >
               {String(objectId)}
             </span>
           </Tooltip>

@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { getMethodForEndpoint, getPermissionInfo, PERMISSION_DESCRIPTIONS } from "./permission_definitions";
+import {
+  PERMISSION_DESCRIPTIONS,
+  getMethodForEndpoint,
+  getPermissionInfo,
+} from "./permission_definitions";
 
 describe("permission_definitions", () => {
   describe("getMethodForEndpoint", () => {
@@ -49,14 +53,18 @@ describe("permission_definitions", () => {
       const result = getPermissionInfo("/key/service-account/generate");
       expect(result.method).toBe("POST");
       expect(result.endpoint).toBe("/key/service-account/generate");
-      expect(result.description).toBe(PERMISSION_DESCRIPTIONS["/key/service-account/generate"]);
+      expect(result.description).toBe(
+        PERMISSION_DESCRIPTIONS["/key/service-account/generate"],
+      );
     });
 
     it("should return correct info for team daily activity permission", () => {
       const result = getPermissionInfo("/team/daily/activity");
       expect(result.method).toBe("GET");
       expect(result.endpoint).toBe("/team/daily/activity");
-      expect(result.description).toBe(PERMISSION_DESCRIPTIONS["/team/daily/activity"]);
+      expect(result.description).toBe(
+        PERMISSION_DESCRIPTIONS["/team/daily/activity"],
+      );
       expect(result.route).toBe("/team/daily/activity");
     });
 
@@ -72,7 +80,9 @@ describe("permission_definitions", () => {
   describe("PERMISSION_DESCRIPTIONS", () => {
     it("should include team daily activity permission", () => {
       expect(PERMISSION_DESCRIPTIONS["/team/daily/activity"]).toBeDefined();
-      expect(PERMISSION_DESCRIPTIONS["/team/daily/activity"]).toContain("team usage");
+      expect(PERMISSION_DESCRIPTIONS["/team/daily/activity"]).toContain(
+        "team usage",
+      );
     });
 
     it("should include spend logs permission", () => {

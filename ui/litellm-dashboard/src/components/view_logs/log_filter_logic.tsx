@@ -1,12 +1,12 @@
-import moment from "moment";
-import { useCallback, useEffect, useState, useRef, useMemo } from "react";
-import { uiSpendLogsCall } from "../networking";
-import { Team } from "../key_team_helpers/key_list";
 import { useQuery } from "@tanstack/react-query";
-import { fetchAllTeams } from "../../components/key_team_helpers/filter_helpers";
 import { debounce } from "lodash";
+import moment from "moment";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { PaginatedResponse } from ".";
+import { fetchAllTeams } from "../../components/key_team_helpers/filter_helpers";
 import { defaultPageSize } from "../constants";
-import { PaginatedResponse } from ".";
+import type { Team } from "../key_team_helpers/key_list";
+import { uiSpendLogsCall } from "../networking";
 import type { LogsSortField } from "./columns";
 
 /** Spend log `model` column (LLM public model name or `search_tool_name` for /search). */
@@ -73,7 +73,8 @@ export function useLogFilterLogic({
   );
 
   const [filters, setFilters] = useState<LogFilterState>(defaultFilters);
-  const [backendFilteredLogs, setBackendFilteredLogs] = useState<PaginatedResponse | null>(null);
+  const [backendFilteredLogs, setBackendFilteredLogs] =
+    useState<PaginatedResponse | null>(null);
   const lastSearchTimestamp = useRef(0);
 
   // Refs that always hold the latest filters and hasBackendFilters values.
@@ -91,7 +92,9 @@ export function useLogFilterLogic({
       const currentTimestamp = Date.now();
       lastSearchTimestamp.current = currentTimestamp;
 
-      const formattedStartTime = moment(startTime).utc().format("YYYY-MM-DD HH:mm:ss");
+      const formattedStartTime = moment(startTime)
+        .utc()
+        .format("YYYY-MM-DD HH:mm:ss");
       const formattedEndTime = isCustomDate
         ? moment(endTime).utc().format("YYYY-MM-DD HH:mm:ss")
         : moment().utc().format("YYYY-MM-DD HH:mm:ss");
@@ -111,7 +114,8 @@ export function useLogFilterLogic({
             end_user: filters[FILTER_KEYS.END_USER] || undefined,
             status_filter: filters[FILTER_KEYS.STATUS] || undefined,
             model_id: filters[FILTER_KEYS.MODEL] || undefined,
-            model: filters[FILTER_KEYS.PUBLIC_MODEL_OR_SEARCH_TOOL] || undefined,
+            model:
+              filters[FILTER_KEYS.PUBLIC_MODEL_OR_SEARCH_TOOL] || undefined,
             key_alias: filters[FILTER_KEYS.KEY_ALIAS] || undefined,
             error_code: filters[FILTER_KEYS.ERROR_CODE] || undefined,
             error_message: filters[FILTER_KEYS.ERROR_MESSAGE] || undefined,
@@ -137,11 +141,23 @@ export function useLogFilterLogic({
         });
       }
     },
-    [accessToken, startTime, endTime, isCustomDate, pageSize, sortBy, sortOrder],
+    [
+      accessToken,
+      startTime,
+      endTime,
+      isCustomDate,
+      pageSize,
+      sortBy,
+      sortOrder,
+    ],
   );
 
   const debouncedSearch = useMemo(
-    () => debounce((filters: LogFilterState, page: number) => performSearch(filters, page), 300),
+    () =>
+      debounce(
+        (filters: LogFilterState, page: number) => performSearch(filters, page),
+        300,
+      ),
     [performSearch],
   );
 
@@ -208,7 +224,9 @@ export function useLogFilterLogic({
     let filteredData = [...logs.data];
 
     if (filters[FILTER_KEYS.TEAM_ID]) {
-      filteredData = filteredData.filter((log) => log.team_id === filters[FILTER_KEYS.TEAM_ID]);
+      filteredData = filteredData.filter(
+        (log) => log.team_id === filters[FILTER_KEYS.TEAM_ID],
+      );
     }
 
     if (filters[FILTER_KEYS.STATUS]) {
@@ -221,7 +239,9 @@ export function useLogFilterLogic({
     }
 
     if (filters[FILTER_KEYS.MODEL]) {
-      filteredData = filteredData.filter((log) => log.model_id === filters[FILTER_KEYS.MODEL]);
+      filteredData = filteredData.filter(
+        (log) => log.model_id === filters[FILTER_KEYS.MODEL],
+      );
     }
 
     if (filters[FILTER_KEYS.PUBLIC_MODEL_OR_SEARCH_TOOL]) {
@@ -230,18 +250,24 @@ export function useLogFilterLogic({
     }
 
     if (filters[FILTER_KEYS.KEY_HASH]) {
-      filteredData = filteredData.filter((log) => log.api_key === filters[FILTER_KEYS.KEY_HASH]);
+      filteredData = filteredData.filter(
+        (log) => log.api_key === filters[FILTER_KEYS.KEY_HASH],
+      );
     }
 
     if (filters[FILTER_KEYS.END_USER]) {
-      filteredData = filteredData.filter((log) => log.end_user === filters[FILTER_KEYS.END_USER]);
+      filteredData = filteredData.filter(
+        (log) => log.end_user === filters[FILTER_KEYS.END_USER],
+      );
     }
 
     if (filters[FILTER_KEYS.ERROR_CODE]) {
       filteredData = filteredData.filter((log) => {
         const metadata = log.metadata || {};
         const errorInfo = metadata.error_information;
-        return errorInfo && errorInfo.error_code === filters[FILTER_KEYS.ERROR_CODE];
+        return (
+          errorInfo && errorInfo.error_code === filters[FILTER_KEYS.ERROR_CODE]
+        );
       });
     }
 
@@ -294,7 +320,9 @@ export function useLogFilterLogic({
       const updatedFilters = { ...prev, ...newFilters };
 
       // Ensure all keys in LogFilterState are present, defaulting to '' if not in newFilters
-      for (const key of Object.keys(defaultFilters) as Array<keyof LogFilterState>) {
+      for (const key of Object.keys(defaultFilters) as Array<
+        keyof LogFilterState
+      >) {
         if (!(key in updatedFilters)) {
           updatedFilters[key] = defaultFilters[key];
         }
@@ -336,7 +364,14 @@ export function useLogFilterLogic({
         performSearch(filters, page);
       }
     },
-    [hasBackendFilters, accessToken, filters, currentPage, performSearch, debouncedSearch],
+    [
+      hasBackendFilters,
+      accessToken,
+      filters,
+      currentPage,
+      performSearch,
+      debouncedSearch,
+    ],
   );
 
   return {

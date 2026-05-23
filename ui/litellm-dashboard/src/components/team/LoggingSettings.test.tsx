@@ -1,7 +1,11 @@
-import React from "react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { renderWithProviders, screen, fireEvent } from "../../../tests/test-utils";
+import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  fireEvent,
+  renderWithProviders,
+  screen,
+} from "../../../tests/test-utils";
 import LoggingSettings from "./LoggingSettings";
 
 describe("LoggingSettings", () => {
@@ -22,10 +26,14 @@ describe("LoggingSettings", () => {
       },
     ];
 
-    renderWithProviders(<LoggingSettings value={initialValue} onChange={mockOnChange} />);
+    renderWithProviders(
+      <LoggingSettings value={initialValue} onChange={mockOnChange} />,
+    );
 
     // Find the numerical input for langsmith_sampling_rate
-    const numericalInput = screen.getByPlaceholderText("os.environ/LANGSMITH_SAMPLING_RATE");
+    const numericalInput = screen.getByPlaceholderText(
+      "os.environ/LANGSMITH_SAMPLING_RATE",
+    );
     expect(numericalInput).toBeInTheDocument();
 
     // Use fireEvent.change to directly set the value (more reliable for number inputs)
@@ -35,7 +43,8 @@ describe("LoggingSettings", () => {
     expect(mockOnChange).toHaveBeenCalled();
 
     // Get the last call to onChange
-    const lastCall = mockOnChange.mock.calls[mockOnChange.mock.calls.length - 1];
+    const lastCall =
+      mockOnChange.mock.calls[mockOnChange.mock.calls.length - 1];
     const updatedConfig = lastCall[0];
 
     // Verify the structure and that the value is stored as a string (as expected by the component)
@@ -52,16 +61,22 @@ describe("LoggingSettings", () => {
       },
     ];
 
-    renderWithProviders(<LoggingSettings value={initialValue} onChange={vi.fn()} />);
+    renderWithProviders(
+      <LoggingSettings value={initialValue} onChange={vi.fn()} />,
+    );
 
     // Check for the "Number" badge
     expect(screen.getByText("Number")).toBeInTheDocument();
 
     // Check for the validation hint
-    expect(screen.getByText("Value must be between 0 and 1")).toBeInTheDocument();
+    expect(
+      screen.getByText("Value must be between 0 and 1"),
+    ).toBeInTheDocument();
 
     // Check that the input has the correct step attribute
-    const numericalInput = screen.getByPlaceholderText("os.environ/LANGSMITH_SAMPLING_RATE");
+    const numericalInput = screen.getByPlaceholderText(
+      "os.environ/LANGSMITH_SAMPLING_RATE",
+    );
     expect(numericalInput).toHaveAttribute("step", "0.01");
   });
 
@@ -80,11 +95,17 @@ describe("LoggingSettings", () => {
       },
     ];
 
-    renderWithProviders(<LoggingSettings value={initialValue} onChange={mockOnChange} />);
+    renderWithProviders(
+      <LoggingSettings value={initialValue} onChange={mockOnChange} />,
+    );
 
     // Find both number and text inputs
-    const numericalInput = screen.getByPlaceholderText("os.environ/LANGSMITH_SAMPLING_RATE");
-    const textInput = screen.getByPlaceholderText("os.environ/LANGSMITH_API_KEY");
+    const numericalInput = screen.getByPlaceholderText(
+      "os.environ/LANGSMITH_SAMPLING_RATE",
+    );
+    const textInput = screen.getByPlaceholderText(
+      "os.environ/LANGSMITH_API_KEY",
+    );
 
     // Verify initial values are displayed
     expect(numericalInput).toHaveValue(0.3); // NumberInput shows numeric value
@@ -98,7 +119,9 @@ describe("LoggingSettings", () => {
     let lastCall = mockOnChange.mock.calls[mockOnChange.mock.calls.length - 1];
     let updatedConfig = lastCall[0];
     expect(updatedConfig[0].callback_vars.langsmith_sampling_rate).toBe("0.5");
-    expect(updatedConfig[0].callback_vars.langsmith_api_key).toBe("initial-key"); // Should preserve existing value
+    expect(updatedConfig[0].callback_vars.langsmith_api_key).toBe(
+      "initial-key",
+    ); // Should preserve existing value
 
     // Change the text input (this tests that text inputs work independently)
     fireEvent.change(textInput, { target: { value: "test-api-key" } });
@@ -106,7 +129,9 @@ describe("LoggingSettings", () => {
     // Verify text input change was also recorded
     lastCall = mockOnChange.mock.calls[mockOnChange.mock.calls.length - 1];
     updatedConfig = lastCall[0];
-    expect(updatedConfig[0].callback_vars.langsmith_api_key).toBe("test-api-key");
+    expect(updatedConfig[0].callback_vars.langsmith_api_key).toBe(
+      "test-api-key",
+    );
     // The component preserves the original initial value since we're starting from initial state each time
     expect(updatedConfig[0].callback_vars.langsmith_sampling_rate).toBe("0.3"); // Preserves initial value
   });
@@ -122,9 +147,13 @@ describe("LoggingSettings", () => {
       },
     ];
 
-    renderWithProviders(<LoggingSettings value={initialValue} onChange={mockOnChange} />);
+    renderWithProviders(
+      <LoggingSettings value={initialValue} onChange={mockOnChange} />,
+    );
 
-    const numericalInput = screen.getByPlaceholderText("os.environ/LANGSMITH_SAMPLING_RATE");
+    const numericalInput = screen.getByPlaceholderText(
+      "os.environ/LANGSMITH_SAMPLING_RATE",
+    );
 
     // Test various decimal values
     const testValues = ["0.1", "0.25", "0.5", "0.75", "1.0"];
@@ -132,9 +161,12 @@ describe("LoggingSettings", () => {
     testValues.forEach((value) => {
       fireEvent.change(numericalInput, { target: { value } });
 
-      const lastCall = mockOnChange.mock.calls[mockOnChange.mock.calls.length - 1];
+      const lastCall =
+        mockOnChange.mock.calls[mockOnChange.mock.calls.length - 1];
       const updatedConfig = lastCall[0];
-      expect(updatedConfig[0].callback_vars.langsmith_sampling_rate).toBe(value);
+      expect(updatedConfig[0].callback_vars.langsmith_sampling_rate).toBe(
+        value,
+      );
     });
   });
 });

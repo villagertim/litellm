@@ -1,6 +1,15 @@
 import { useModelCostMap } from "@/app/(dashboard)/hooks/models/useModelCostMap";
+import { isProxyAdminRole } from "@/utils/roles";
 import { ArrowRightIcon, PlayIcon, TrashIcon } from "@heroicons/react/outline";
-import { Icon, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "@tremor/react";
+import {
+  Icon,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+} from "@tremor/react";
 import { Tooltip, Typography } from "antd";
 import openai from "openai";
 import React, { useEffect, useState } from "react";
@@ -8,7 +17,6 @@ import DeleteResourceModal from "../../../common_components/DeleteResourceModal"
 import { ProviderLogo } from "../../../molecules/models/ProviderLogo";
 import NotificationsManager from "../../../molecules/notifications_manager";
 import { getCallbacksCall, setCallbacksCall } from "../../../networking";
-import { isProxyAdminRole } from "@/utils/roles";
 import AddFallbacks from "./AddFallbacks";
 
 type FallbackEntry = { [modelName: string]: string[] };
@@ -59,7 +67,11 @@ function renderFallbacksChain(
         {list.map((model, i) => (
           <React.Fragment key={model}>
             {i > 0 && (
-              <Icon icon={ArrowRightIcon} size="xs" className="shrink-0 text-gray-400" />
+              <Icon
+                icon={ArrowRightIcon}
+                size="xs"
+                className="shrink-0 text-gray-400"
+              />
             )}
             <ChainCard modelName={model} />
           </React.Fragment>
@@ -76,12 +88,17 @@ interface FallbacksProps {
   modelData: any;
 }
 
-async function testFallbackModelResponse(selectedModel: string, accessToken: string) {
+async function testFallbackModelResponse(
+  selectedModel: string,
+  accessToken: string,
+) {
   const isLocal = process.env.NODE_ENV === "development";
   if (isLocal != true) {
-    console.log = function () { };
+    console.log = () => {};
   }
-  const proxyBaseUrl = isLocal ? "http://localhost:4000" : window.location.origin;
+  const proxyBaseUrl = isLocal
+    ? "http://localhost:4000"
+    : window.location.origin;
   const client = new openai.OpenAI({
     apiKey: accessToken,
     baseURL: proxyBaseUrl,
@@ -109,7 +126,12 @@ async function testFallbackModelResponse(selectedModel: string, accessToken: str
         <strong>{response.model}</strong>. See{" "}
         <a
           href="#"
-          onClick={() => window.open("https://docs.litellm.ai/docs/proxy/reliability", "_blank")}
+          onClick={() =>
+            window.open(
+              "https://docs.litellm.ai/docs/proxy/reliability",
+              "_blank",
+            )
+          }
           style={{ textDecoration: "underline", color: "blue" }}
         >
           curl
@@ -123,15 +145,27 @@ async function testFallbackModelResponse(selectedModel: string, accessToken: str
   }
 }
 
-const Fallbacks: React.FC<FallbacksProps> = ({ accessToken, userRole, userID, modelData }) => {
-  const [routerSettings, setRouterSettings] = useState<{ [key: string]: any }>({});
+const Fallbacks: React.FC<FallbacksProps> = ({
+  accessToken,
+  userRole,
+  userID,
+  modelData,
+}) => {
+  const [routerSettings, setRouterSettings] = useState<{ [key: string]: any }>(
+    {},
+  );
   const [isDeleting, setIsDeleting] = useState(false);
-  const [fallbackToDelete, setFallbackToDelete] = useState<FallbackEntry | null>(null);
+  const [fallbackToDelete, setFallbackToDelete] =
+    useState<FallbackEntry | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const { data: modelCostMapData } = useModelCostMap();
   const getProviderFromModel = (model: string): string => {
-    if (modelCostMapData != null && typeof modelCostMapData === "object" && model in modelCostMapData) {
+    if (
+      modelCostMapData != null &&
+      typeof modelCostMapData === "object" &&
+      model in modelCostMapData
+    ) {
       return modelCostMapData[model]["litellm_provider"] ?? "";
     }
     return "";
@@ -143,7 +177,7 @@ const Fallbacks: React.FC<FallbacksProps> = ({ accessToken, userRole, userID, mo
     }
     getCallbacksCall(accessToken, userID, userRole).then((data) => {
       console.log("callbacks", data);
-      let router_settings = data.router_settings;
+      const router_settings = data.router_settings;
       if ("model_group_retry_policy" in router_settings) {
         delete router_settings["model_group_retry_policy"];
       }
@@ -191,7 +225,9 @@ const Fallbacks: React.FC<FallbacksProps> = ({ accessToken, userRole, userID, mo
       setRouterSettings(updatedSettings);
       NotificationsManager.success("Router settings updated successfully");
     } catch (error) {
-      NotificationsManager.fromBackend("Failed to update router settings: " + error);
+      NotificationsManager.fromBackend(
+        "Failed to update router settings: " + error,
+      );
     } finally {
       setIsDeleting(false);
       setIsDeleteModalOpen(false);
@@ -228,10 +264,12 @@ const Fallbacks: React.FC<FallbacksProps> = ({ accessToken, userRole, userID, mo
       setRouterSettings(updatedSettings);
     } catch (error) {
       // Revert on error by refetching from server
-      NotificationsManager.fromBackend("Failed to update router settings: " + error);
+      NotificationsManager.fromBackend(
+        "Failed to update router settings: " + error,
+      );
       if (accessToken && userRole && userID) {
         getCallbacksCall(accessToken, userID, userRole).then((data) => {
-          let router_settings = data.router_settings;
+          const router_settings = data.router_settings;
           if ("model_group_retry_policy" in router_settings) {
             delete router_settings["model_group_retry_policy"];
           }
@@ -243,7 +281,9 @@ const Fallbacks: React.FC<FallbacksProps> = ({ accessToken, userRole, userID, mo
     }
   };
 
-  const hasFallbacks = Array.isArray(routerSettings.fallbacks) && routerSettings.fallbacks.length > 0;
+  const hasFallbacks =
+    Array.isArray(routerSettings.fallbacks) &&
+    routerSettings.fallbacks.length > 0;
   // Admin Viewer follows the read-parity rule: see fallbacks, no writes.
   const canModify = isProxyAdminRole(userRole ?? "");
 
@@ -251,7 +291,11 @@ const Fallbacks: React.FC<FallbacksProps> = ({ accessToken, userRole, userID, mo
     <>
       {canModify && (
         <AddFallbacks
-          models={modelData?.data ? modelData.data.map((data: any) => data.model_name) : []}
+          models={
+            modelData?.data
+              ? modelData.data.map((data: any) => data.model_name)
+              : []
+          }
           accessToken={accessToken || ""}
           value={routerSettings.fallbacks || []}
           onChange={handleFallbacksChange}
@@ -260,8 +304,8 @@ const Fallbacks: React.FC<FallbacksProps> = ({ accessToken, userRole, userID, mo
       {!hasFallbacks ? (
         <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-6 text-center">
           <Typography.Text type="secondary">
-            No fallbacks configured. Add fallbacks to automatically try another model when the primary
-            fails.
+            No fallbacks configured. Add fallbacks to automatically try another
+            model when the primary fails.
           </Typography.Text>
         </div>
       ) : (
@@ -275,47 +319,59 @@ const Fallbacks: React.FC<FallbacksProps> = ({ accessToken, userRole, userID, mo
           </TableHead>
 
           <TableBody>
-            {routerSettings["fallbacks"].map((item: FallbackEntry, index: number) =>
-              Object.entries(item).map(([key, value]) => (
-                <TableRow key={index.toString() + key}>
-                  <TableCell className="align-top">
-                    {renderModelNameCell(key, getProviderFromModel)}
-                  </TableCell>
-                  <TableCell className="align-top">
-                    {renderFallbacksChain(key, Array.isArray(value) ? value : [], getProviderFromModel)}
-                  </TableCell>
-                  <TableCell className="align-top">
-                    {canModify && (
-                      <>
-                        <Tooltip title="Test fallback">
-                          <Icon
-                            icon={PlayIcon}
-                            size="sm"
-                            onClick={() => testFallbackModelResponse(Object.keys(item)[0], accessToken || "")}
-                            className="cursor-pointer hover:text-blue-600"
-                          />
-                        </Tooltip>
-                        <Tooltip title="Delete fallback">
-                          <span
-                            data-testid="delete-fallback-button"
-                            role="button"
-                            tabIndex={0}
-                            onClick={() => handleDeleteClick(item)}
-                            onKeyDown={(e) => e.key === "Enter" && handleDeleteClick(item)}
-                            className="cursor-pointer inline-flex"
-                          >
+            {routerSettings["fallbacks"].map(
+              (item: FallbackEntry, index: number) =>
+                Object.entries(item).map(([key, value]) => (
+                  <TableRow key={index.toString() + key}>
+                    <TableCell className="align-top">
+                      {renderModelNameCell(key, getProviderFromModel)}
+                    </TableCell>
+                    <TableCell className="align-top">
+                      {renderFallbacksChain(
+                        key,
+                        Array.isArray(value) ? value : [],
+                        getProviderFromModel,
+                      )}
+                    </TableCell>
+                    <TableCell className="align-top">
+                      {canModify && (
+                        <>
+                          <Tooltip title="Test fallback">
                             <Icon
-                              icon={TrashIcon}
+                              icon={PlayIcon}
                               size="sm"
-                              className="hover:text-red-600"
+                              onClick={() =>
+                                testFallbackModelResponse(
+                                  Object.keys(item)[0],
+                                  accessToken || "",
+                                )
+                              }
+                              className="cursor-pointer hover:text-blue-600"
                             />
-                          </span>
-                        </Tooltip>
-                      </>
-                    )}
-                  </TableCell>
-                </TableRow>
-              )),
+                          </Tooltip>
+                          <Tooltip title="Delete fallback">
+                            <span
+                              data-testid="delete-fallback-button"
+                              role="button"
+                              tabIndex={0}
+                              onClick={() => handleDeleteClick(item)}
+                              onKeyDown={(e) =>
+                                e.key === "Enter" && handleDeleteClick(item)
+                              }
+                              className="cursor-pointer inline-flex"
+                            >
+                              <Icon
+                                icon={TrashIcon}
+                                size="sm"
+                                className="hover:text-red-600"
+                              />
+                            </span>
+                          </Tooltip>
+                        </>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                )),
             )}
           </TableBody>
         </Table>

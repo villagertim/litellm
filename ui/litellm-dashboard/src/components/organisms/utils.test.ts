@@ -15,13 +15,17 @@ describe("simplifyKeyGenerateError", () => {
     it("should return the original error message for other endpoint errors", () => {
       const error = "Error: Failed to fetch /key/list";
       const result = simplifyKeyGenerateError(error);
-      expect(result).toBe("Error creating the key: Error: Failed to fetch /key/list");
+      expect(result).toBe(
+        "Error creating the key: Error: Failed to fetch /key/list",
+      );
     });
 
     it("should handle Error objects for non-/key/generate errors", () => {
       const error = new Error("Database connection failed");
       const result = simplifyKeyGenerateError(error);
-      expect(result).toBe("Error creating the key: Error: Database connection failed");
+      expect(result).toBe(
+        "Error creating the key: Error: Database connection failed",
+      );
     });
   });
 
@@ -78,13 +82,16 @@ describe("simplifyKeyGenerateError", () => {
     it("should return original error message for /key/generate validation errors", () => {
       const error = "Invalid request to /key/generate: missing required field";
       const result = simplifyKeyGenerateError(error);
-      expect(result).toBe("Error creating the key: Invalid request to /key/generate: missing required field");
+      expect(result).toBe(
+        "Error creating the key: Invalid request to /key/generate: missing required field",
+      );
     });
 
     it("should return original error message for /key/generate server errors", () => {
       const error = JSON.stringify({
         error: {
-          message: "Internal server error occurred while processing /key/generate",
+          message:
+            "Internal server error occurred while processing /key/generate",
           type: "server_error",
           code: "500",
         },

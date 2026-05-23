@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { act, renderHook, waitFor } from "@testing-library/react";
-import { useDisableUsageIndicator } from "./useDisableUsageIndicator";
 import { LOCAL_STORAGE_EVENT } from "@/utils/localStorageUtils";
+import { act, renderHook, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { useDisableUsageIndicator } from "./useDisableUsageIndicator";
 
 describe("useDisableUsageIndicator", () => {
   const STORAGE_KEY = "disableUsageIndicator";
@@ -157,14 +157,26 @@ describe("useDisableUsageIndicator", () => {
     const { unmount } = renderHook(() => useDisableUsageIndicator());
 
     expect(addEventListenerSpy).toHaveBeenCalledTimes(2);
-    expect(addEventListenerSpy).toHaveBeenCalledWith("storage", expect.any(Function));
-    expect(addEventListenerSpy).toHaveBeenCalledWith(LOCAL_STORAGE_EVENT, expect.any(Function));
+    expect(addEventListenerSpy).toHaveBeenCalledWith(
+      "storage",
+      expect.any(Function),
+    );
+    expect(addEventListenerSpy).toHaveBeenCalledWith(
+      LOCAL_STORAGE_EVENT,
+      expect.any(Function),
+    );
 
     unmount();
 
     expect(removeEventListenerSpy).toHaveBeenCalledTimes(2);
-    expect(removeEventListenerSpy).toHaveBeenCalledWith("storage", expect.any(Function));
-    expect(removeEventListenerSpy).toHaveBeenCalledWith(LOCAL_STORAGE_EVENT, expect.any(Function));
+    expect(removeEventListenerSpy).toHaveBeenCalledWith(
+      "storage",
+      expect.any(Function),
+    );
+    expect(removeEventListenerSpy).toHaveBeenCalledWith(
+      LOCAL_STORAGE_EVENT,
+      expect.any(Function),
+    );
   });
 
   it("should handle multiple hooks independently", async () => {

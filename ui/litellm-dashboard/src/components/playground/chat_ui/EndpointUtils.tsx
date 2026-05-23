@@ -1,4 +1,4 @@
-import { ModelGroup } from "../llm_calls/fetch_models";
+import type { ModelGroup } from "../llm_calls/fetch_models";
 import { EndpointType, getEndpointType } from "./mode_endpoint_mapping";
 
 /**
@@ -8,9 +8,14 @@ import { EndpointType, getEndpointType } from "./mode_endpoint_mapping";
  * @param modelInfo - Array of model information
  * @returns The appropriate endpoint type
  */
-export const determineEndpointType = (selectedModel: string, modelInfo: ModelGroup[]): EndpointType => {
+export const determineEndpointType = (
+  selectedModel: string,
+  modelInfo: ModelGroup[],
+): EndpointType => {
   // Find the model information for the selected model
-  const selectedModelInfo = modelInfo.find((option) => option.model_group === selectedModel);
+  const selectedModelInfo = modelInfo.find(
+    (option) => option.model_group === selectedModel,
+  );
 
   // If model info is found and it has a mode, determine the endpoint type
   if (selectedModelInfo?.mode) {

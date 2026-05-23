@@ -1,6 +1,6 @@
-import { LogEntry } from "./columns";
-import NotificationsManager from "../molecules/notifications_manager";
 import { JsonView, defaultStyles } from "react-json-view-lite";
+import NotificationsManager from "../molecules/notifications_manager";
+import type { LogEntry } from "./columns";
 import "react-json-view-lite/dist/index.css";
 
 interface RequestResponsePanelProps {
@@ -55,7 +55,9 @@ export function RequestResponsePanel({
   };
 
   const handleCopyRequest = async () => {
-    const success = await copyToClipboard(JSON.stringify(getRawRequest(), null, 2));
+    const success = await copyToClipboard(
+      JSON.stringify(getRawRequest(), null, 2),
+    );
     if (success) {
       NotificationsManager.success("Request copied to clipboard");
     } else {
@@ -64,7 +66,9 @@ export function RequestResponsePanel({
   };
 
   const handleCopyResponse = async () => {
-    const success = await copyToClipboard(JSON.stringify(formattedResponse(), null, 2));
+    const success = await copyToClipboard(
+      JSON.stringify(formattedResponse(), null, 2),
+    );
     if (success) {
       NotificationsManager.success("Response copied to clipboard");
     } else {
@@ -78,7 +82,11 @@ export function RequestResponsePanel({
       <div className="bg-white rounded-lg shadow w-full max-w-full overflow-hidden">
         <div className="flex justify-between items-center p-4 border-b">
           <h3 className="text-lg font-medium">Request</h3>
-          <button onClick={handleCopyRequest} className="p-1 hover:bg-gray-200 rounded" title="Copy request">
+          <button
+            onClick={handleCopyRequest}
+            className="p-1 hover:bg-gray-200 rounded"
+            title="Copy request"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -97,7 +105,11 @@ export function RequestResponsePanel({
         </div>
         <div className="p-4 overflow-auto max-h-96 w-full max-w-full box-border">
           <div className="[&_[role='tree']]:bg-white [&_[role='tree']]:text-slate-900">
-            <JsonView data={getRawRequest()} style={defaultStyles} clickToExpandNode={true} />
+            <JsonView
+              data={getRawRequest()}
+              style={defaultStyles}
+              clickToExpandNode={true}
+            />
           </div>
         </div>
       </div>
@@ -107,7 +119,11 @@ export function RequestResponsePanel({
         <div className="flex justify-between items-center p-4 border-b">
           <h3 className="text-lg font-medium">
             Response
-            {hasError && <span className="ml-2 text-sm text-red-600">• HTTP code {errorInfo?.error_code || 400}</span>}
+            {hasError && (
+              <span className="ml-2 text-sm text-red-600">
+                • HTTP code {errorInfo?.error_code || 400}
+              </span>
+            )}
           </h3>
           <button
             onClick={handleCopyResponse}
@@ -134,10 +150,16 @@ export function RequestResponsePanel({
         <div className="p-4 overflow-auto max-h-96 w-full max-w-full box-border">
           {hasResponse || hasError ? (
             <div className="[&_[role='tree']]:bg-white [&_[role='tree']]:text-slate-900">
-              <JsonView data={formattedResponse()} style={defaultStyles} clickToExpandNode />
+              <JsonView
+                data={formattedResponse()}
+                style={defaultStyles}
+                clickToExpandNode
+              />
             </div>
           ) : (
-            <div className="text-gray-500 text-sm italic text-center py-4">Response data not available</div>
+            <div className="text-gray-500 text-sm italic text-center py-4">
+              Response data not available
+            </div>
           )}
         </div>
       </div>

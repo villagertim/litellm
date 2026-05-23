@@ -1,11 +1,11 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
-import EditSSOSettingsModal from "./EditSSOSettingsModal";
-import { useSSOSettings } from "@/app/(dashboard)/hooks/sso/useSSOSettings";
 import { useEditSSOSettings } from "@/app/(dashboard)/hooks/sso/useEditSSOSettings";
+import { useSSOSettings } from "@/app/(dashboard)/hooks/sso/useSSOSettings";
 import NotificationsManager from "@/components/molecules/notifications_manager";
 import { parseErrorMessage } from "@/components/shared/errorUtils";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { type Mock, beforeEach, describe, expect, it, vi } from "vitest";
 import { processSSOSettingsPayload } from "../utils";
+import EditSSOSettingsModal from "./EditSSOSettingsModal";
 
 // Constants
 const SSO_PROVIDERS = {
@@ -86,7 +86,8 @@ const createGenericSSOData = (overrides: Record<string, any> = {}) =>
   createSSOData({
     generic_client_id: "test-generic-id",
     generic_client_secret: "test-generic-secret",
-    generic_authorization_endpoint: overrides.authorization_endpoint || "https://custom.example.com/oauth",
+    generic_authorization_endpoint:
+      overrides.authorization_endpoint || "https://custom.example.com/oauth",
     ...overrides,
   });
 
@@ -99,7 +100,9 @@ const createRoleMappingsSSOData = (overrides: Record<string, any> = {}) =>
         proxy_admin: overrides.proxy_admin || ["admin-group"],
         proxy_admin_viewer: overrides.proxy_admin_viewer || ["viewer-group"],
         internal_user: overrides.internal_user || ["user-group"],
-        internal_user_viewer: overrides.internal_user_viewer || ["readonly-group"],
+        internal_user_viewer: overrides.internal_user_viewer || [
+          "readonly-group",
+        ],
       },
     },
     ...overrides,
@@ -130,15 +133,35 @@ const createMockHooks = (): {
 });
 
 vi.mock("antd", () => ({
-  Modal: ({ children, open, title, footer, onCancel, width, ...props }: any) => (
-    <div data-testid={TEST_IDS.MODAL} data-open={open} data-title={title} data-width={width} {...props}>
+  Modal: ({
+    children,
+    open,
+    title,
+    footer,
+    onCancel,
+    width,
+    ...props
+  }: any) => (
+    <div
+      data-testid={TEST_IDS.MODAL}
+      data-open={open}
+      data-title={title}
+      data-width={width}
+      {...props}
+    >
       <div data-testid="modal-content">{children}</div>
       <div data-testid="modal-footer">{footer}</div>
       <button data-testid="modal-cancel" onClick={onCancel} />
     </div>
   ),
   Button: ({ children, onClick, loading, disabled, ...props }: any) => (
-    <button data-testid={TEST_IDS.BUTTON} onClick={onClick} data-loading={loading} disabled={disabled} {...props}>
+    <button
+      data-testid={TEST_IDS.BUTTON}
+      onClick={onClick}
+      data-loading={loading}
+      disabled={disabled}
+      {...props}
+    >
       {children}
     </button>
   ),
@@ -155,7 +178,10 @@ vi.mock("antd", () => ({
 vi.mock("./BaseSSOSettingsForm", () => ({
   default: ({ form, onFormSubmit }: any) => (
     <div data-testid={TEST_IDS.BASE_SSO_FORM}>
-      <button data-testid={TEST_IDS.TRIGGER_FORM_SUBMIT} onClick={() => onFormSubmit({ testField: "testValue" })}>
+      <button
+        data-testid={TEST_IDS.TRIGGER_FORM_SUBMIT}
+        onClick={() => onFormSubmit({ testField: "testValue" })}
+      >
         Trigger Form Submit
       </button>
     </div>
@@ -194,8 +220,14 @@ const setupMocks = (
 ) => {
   const defaultMocks = createMockHooks();
   const mocks = {
-    useSSOSettings: { ...defaultMocks.useSSOSettings, ...overrides.useSSOSettings },
-    useEditSSOSettings: { ...defaultMocks.useEditSSOSettings, ...overrides.useEditSSOSettings },
+    useSSOSettings: {
+      ...defaultMocks.useSSOSettings,
+      ...overrides.useSSOSettings,
+    },
+    useEditSSOSettings: {
+      ...defaultMocks.useEditSSOSettings,
+      ...overrides.useEditSSOSettings,
+    },
   };
 
   (useSSOSettings as Mock).mockReturnValue(mocks.useSSOSettings);
@@ -204,7 +236,9 @@ const setupMocks = (
   return mocks;
 };
 
-const renderComponent = (props: Partial<React.ComponentProps<typeof EditSSOSettingsModal>> = {}) => {
+const renderComponent = (
+  props: Partial<React.ComponentProps<typeof EditSSOSettingsModal>> = {},
+) => {
   const defaultProps = {
     isVisible: true,
     onCancel: vi.fn(),
@@ -347,7 +381,9 @@ describe("EditSSOSettingsModal", () => {
 
       fireEvent.click(screen.getByTestId(TEST_IDS.TRIGGER_FORM_SUBMIT));
 
-      expect(NotificationsManager.success).toHaveBeenCalledWith(TEST_DATA.SUCCESS_MESSAGE);
+      expect(NotificationsManager.success).toHaveBeenCalledWith(
+        TEST_DATA.SUCCESS_MESSAGE,
+      );
       expect(mockOnSuccess).toHaveBeenCalled();
     });
 
@@ -377,7 +413,11 @@ describe("EditSSOSettingsModal", () => {
 
   describe("Form Initialization", () => {
     describe("Provider Detection", () => {
-      const testProviderDetection = (testName: string, ssoData: SSOData, expectedProvider: string) => {
+      const testProviderDetection = (
+        testName: string,
+        ssoData: SSOData,
+        expectedProvider: string,
+      ) => {
         it(`detects ${testName} provider`, async () => {
           setupMocks({
             useSSOSettings: { data: ssoData, isLoading: false, error: null },
@@ -394,9 +434,17 @@ describe("EditSSOSettingsModal", () => {
         });
       };
 
-      testProviderDetection("Google", createGoogleSSOData(), SSO_PROVIDERS.GOOGLE);
+      testProviderDetection(
+        "Google",
+        createGoogleSSOData(),
+        SSO_PROVIDERS.GOOGLE,
+      );
 
-      testProviderDetection("Microsoft", createMicrosoftSSOData(), SSO_PROVIDERS.MICROSOFT);
+      testProviderDetection(
+        "Microsoft",
+        createMicrosoftSSOData(),
+        SSO_PROVIDERS.MICROSOFT,
+      );
 
       testProviderDetection(
         "Okta",
@@ -414,7 +462,11 @@ describe("EditSSOSettingsModal", () => {
         SSO_PROVIDERS.OKTA, // Auth0 URLs are detected as Okta provider
       );
 
-      testProviderDetection("generic", createGenericSSOData(), SSO_PROVIDERS.GENERIC);
+      testProviderDetection(
+        "generic",
+        createGenericSSOData(),
+        SSO_PROVIDERS.GENERIC,
+      );
     });
 
     describe("Role Mappings", () => {
@@ -529,7 +581,9 @@ describe("EditSSOSettingsModal", () => {
 
       fireEvent.click(screen.getByTestId(TEST_IDS.TRIGGER_FORM_SUBMIT));
 
-      expect(NotificationsManager.fromBackend).toHaveBeenCalledWith(`${TEST_DATA.ERROR_MESSAGE_PREFIX} undefined`);
+      expect(NotificationsManager.fromBackend).toHaveBeenCalledWith(
+        `${TEST_DATA.ERROR_MESSAGE_PREFIX} undefined`,
+      );
     });
 
     it("handles form submission with malformed data", async () => {

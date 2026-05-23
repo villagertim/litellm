@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import PatternModal from "./PatternModal";
 
 describe("PatternModal", () => {
@@ -10,13 +10,29 @@ describe("PatternModal", () => {
   const mockOnActionChange = vi.fn();
 
   const mockPrebuiltPatterns = [
-    { name: "us_ssn", category: "PII Patterns", description: "US Social Security Number" },
+    {
+      name: "us_ssn",
+      category: "PII Patterns",
+      description: "US Social Security Number",
+    },
     { name: "email", category: "PII Patterns", description: "Email addresses" },
-    { name: "visa", category: "Financial Patterns", description: "Visa credit card numbers" },
-    { name: "aws_access_key", category: "Credential Patterns", description: "AWS Access Keys" },
+    {
+      name: "visa",
+      category: "Financial Patterns",
+      description: "Visa credit card numbers",
+    },
+    {
+      name: "aws_access_key",
+      category: "Credential Patterns",
+      description: "AWS Access Keys",
+    },
   ];
 
-  const mockCategories = ["PII Patterns", "Financial Patterns", "Credential Patterns"];
+  const mockCategories = [
+    "PII Patterns",
+    "Financial Patterns",
+    "Credential Patterns",
+  ];
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -40,7 +56,7 @@ describe("PatternModal", () => {
         onActionChange={mockOnActionChange}
         onAdd={mockOnAdd}
         onCancel={mockOnCancel}
-      />
+      />,
     );
 
     // Wait for modal to be visible
@@ -59,7 +75,7 @@ describe("PatternModal", () => {
     // Verify that pattern options are available in the dropdown
     // Ant Design renders Select options in a portal, so we need to query the whole document
     await waitFor(() => {
-      const options = document.querySelectorAll('.ant-select-item-option');
+      const options = document.querySelectorAll(".ant-select-item-option");
       expect(options.length).toBeGreaterThan(0);
     });
 
@@ -77,9 +93,9 @@ describe("PatternModal", () => {
     expect(document.body).toHaveTextContent("aws_access_key");
 
     // Select a pattern by clicking on its option element
-    const ssnOption = Array.from(document.querySelectorAll('.ant-select-item-option')).find(
-      el => el.textContent === "us_ssn"
-    ) as HTMLElement;
+    const ssnOption = Array.from(
+      document.querySelectorAll(".ant-select-item-option"),
+    ).find((el) => el.textContent === "us_ssn") as HTMLElement;
     await user.click(ssnOption);
 
     // Verify the change handler was called with the pattern name
@@ -89,4 +105,3 @@ describe("PatternModal", () => {
     expect(callArgs[0]).toBe("us_ssn");
   });
 });
-

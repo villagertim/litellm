@@ -1,5 +1,5 @@
+import { type LoginRequest, loginCall } from "@/components/networking";
 import { useMutation } from "@tanstack/react-query";
-import { loginCall, LoginRequest } from "@/components/networking";
 
 export const useLogin = () => {
   return useMutation({

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as networking from "./networking";
 
 // Mock the networking module
@@ -140,7 +140,10 @@ describe("UIAccessControlForm Logic", () => {
       // Simulate the API call
       await networking.updateSSOSettings(mockAccessToken, expectedPayload);
 
-      expect(networking.updateSSOSettings).toHaveBeenCalledWith(mockAccessToken, { ui_access_mode: "none" });
+      expect(networking.updateSSOSettings).toHaveBeenCalledWith(
+        mockAccessToken,
+        { ui_access_mode: "none" },
+      );
     });
 
     it("should call updateSSOSettings with correct payload for restricted_sso_group", async () => {
@@ -158,13 +161,16 @@ describe("UIAccessControlForm Logic", () => {
       // Simulate the API call
       await networking.updateSSOSettings(mockAccessToken, expectedPayload);
 
-      expect(networking.updateSSOSettings).toHaveBeenCalledWith(mockAccessToken, {
-        ui_access_mode: {
-          type: "restricted_sso_group",
-          restricted_sso_group: "admin-team",
-          sso_group_jwt_field: "team_groups",
+      expect(networking.updateSSOSettings).toHaveBeenCalledWith(
+        mockAccessToken,
+        {
+          ui_access_mode: {
+            type: "restricted_sso_group",
+            restricted_sso_group: "admin-team",
+            sso_group_jwt_field: "team_groups",
+          },
         },
-      });
+      );
     });
   });
 });

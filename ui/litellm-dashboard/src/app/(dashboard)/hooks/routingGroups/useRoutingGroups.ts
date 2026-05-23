@@ -1,10 +1,19 @@
 "use client";
 
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { useMutation, useQuery, useQueryClient, UseMutationResult, UseQueryResult } from "@tanstack/react-query";
-import { getRouterSettingsCall, setCallbacksCall } from "@/components/networking";
-import { createQueryKeys } from "../common/queryKeysFactory";
+import {
+  getRouterSettingsCall,
+  setCallbacksCall,
+} from "@/components/networking";
 import type { RoutingGroup } from "@/components/routing_groups/types";
+import {
+  type UseMutationResult,
+  type UseQueryResult,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { createQueryKeys } from "../common/queryKeysFactory";
 
 const routingGroupsKeys = createQueryKeys("routingGroups");
 
@@ -14,16 +23,24 @@ interface RoutingGroupsQueryData {
   availableStrategies: string[];
 }
 
-const fetchRoutingGroups = async (accessToken: string): Promise<RoutingGroupsQueryData> => {
+const fetchRoutingGroups = async (
+  accessToken: string,
+): Promise<RoutingGroupsQueryData> => {
   const data = await getRouterSettingsCall(accessToken);
   const currentValues = data?.current_values ?? {};
   const fields = Array.isArray(data?.fields) ? data.fields : [];
-  const routingStrategyField = fields.find((f: any) => f?.field_name === "routing_strategy");
+  const routingStrategyField = fields.find(
+    (f: any) => f?.field_name === "routing_strategy",
+  );
 
   return {
-    routingGroups: Array.isArray(currentValues.routing_groups) ? currentValues.routing_groups : [],
+    routingGroups: Array.isArray(currentValues.routing_groups)
+      ? currentValues.routing_groups
+      : [],
     routingStrategy: currentValues.routing_strategy ?? null,
-    availableStrategies: Array.isArray(routingStrategyField?.options) ? routingStrategyField.options : [],
+    availableStrategies: Array.isArray(routingStrategyField?.options)
+      ? routingStrategyField.options
+      : [],
   };
 };
 
@@ -36,7 +53,11 @@ export const useRoutingGroups = (): UseQueryResult<RoutingGroupsQueryData> => {
   });
 };
 
-export const useSaveRoutingGroups = (): UseMutationResult<unknown, Error, RoutingGroup[]> => {
+export const useSaveRoutingGroups = (): UseMutationResult<
+  unknown,
+  Error,
+  RoutingGroup[]
+> => {
   const { accessToken } = useAuthorized();
   const queryClient = useQueryClient();
   return useMutation({

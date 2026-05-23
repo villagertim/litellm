@@ -1,7 +1,13 @@
-import React, { useState } from "react";
+import {
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  CopyOutlined,
+  DownOutlined,
+  RightOutlined,
+} from "@ant-design/icons";
 import { Button, Card } from "@tremor/react";
 import { Typography } from "antd";
-import { CopyOutlined, CheckCircleOutlined, ClockCircleOutlined, DownOutlined, RightOutlined } from "@ant-design/icons";
+import React, { useState } from "react";
 import NotificationsManager from "../molecules/notifications_manager";
 
 const { Text } = Typography;
@@ -23,8 +29,13 @@ interface GuardrailTestResultsProps {
   errors: TestError[] | null;
 }
 
-export function GuardrailTestResults({ results, errors }: GuardrailTestResultsProps) {
-  const [collapsedResults, setCollapsedResults] = useState<Set<string>>(new Set());
+export function GuardrailTestResults({
+  results,
+  errors,
+}: GuardrailTestResultsProps) {
+  const [collapsedResults, setCollapsedResults] = useState<Set<string>>(
+    new Set(),
+  );
 
   const toggleResultCollapse = (guardrailName: string) => {
     const newCollapsed = new Set(collapsedResults);
@@ -77,10 +88,13 @@ export function GuardrailTestResults({ results, errors }: GuardrailTestResultsPr
         results.map((result) => {
           const isCollapsed = collapsedResults.has(result.guardrailName);
           return (
-            <Card key={result.guardrailName} className="bg-green-50 border-green-200">
+            <Card
+              key={result.guardrailName}
+              className="bg-green-50 border-green-200"
+            >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <div 
+                  <div
                     className="flex items-center space-x-2 cursor-pointer flex-1"
                     onClick={() => toggleResultCollapse(result.guardrailName)}
                   >
@@ -105,11 +119,17 @@ export function GuardrailTestResults({ results, errors }: GuardrailTestResultsPr
                         variant="secondary"
                         icon={CopyOutlined}
                         onClick={async () => {
-                          const success = await copyToClipboard(result.response_text);
+                          const success = await copyToClipboard(
+                            result.response_text,
+                          );
                           if (success) {
-                            NotificationsManager.success("Result copied to clipboard");
+                            NotificationsManager.success(
+                              "Result copied to clipboard",
+                            );
                           } else {
-                            NotificationsManager.fromBackend("Failed to copy result");
+                            NotificationsManager.fromBackend(
+                              "Failed to copy result",
+                            );
                           }
                         }}
                       >
@@ -129,7 +149,8 @@ export function GuardrailTestResults({ results, errors }: GuardrailTestResultsPr
                       </div>
                     </div>
                     <div className="text-xs text-gray-600">
-                      <span className="font-medium">Characters:</span> {result.response_text.length}
+                      <span className="font-medium">Characters:</span>{" "}
+                      {result.response_text.length}
                     </div>
                   </>
                 )}
@@ -143,9 +164,12 @@ export function GuardrailTestResults({ results, errors }: GuardrailTestResultsPr
         errors.map((errorItem) => {
           const isCollapsed = collapsedResults.has(errorItem.guardrailName);
           return (
-            <Card key={errorItem.guardrailName} className="bg-red-50 border-red-200">
+            <Card
+              key={errorItem.guardrailName}
+              className="bg-red-50 border-red-200"
+            >
               <div className="flex items-start space-x-2">
-                <div 
+                <div
                   className="cursor-pointer mt-0.5"
                   onClick={() => toggleResultCollapse(errorItem.guardrailName)}
                 >
@@ -156,7 +180,11 @@ export function GuardrailTestResults({ results, errors }: GuardrailTestResultsPr
                   )}
                 </div>
                 <div className="text-red-600 mt-0.5">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
                     <path
                       fillRule="evenodd"
                       d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
@@ -166,9 +194,11 @@ export function GuardrailTestResults({ results, errors }: GuardrailTestResultsPr
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
-                    <p 
+                    <p
                       className="text-sm font-medium text-red-800 cursor-pointer"
-                      onClick={() => toggleResultCollapse(errorItem.guardrailName)}
+                      onClick={() =>
+                        toggleResultCollapse(errorItem.guardrailName)
+                      }
                     >
                       {errorItem.guardrailName} - Error
                     </p>
@@ -178,7 +208,9 @@ export function GuardrailTestResults({ results, errors }: GuardrailTestResultsPr
                     </div>
                   </div>
                   {!isCollapsed && (
-                    <p className="text-sm text-red-700 mt-1">{errorItem.error.message}</p>
+                    <p className="text-sm text-red-700 mt-1">
+                      {errorItem.error.message}
+                    </p>
                   )}
                 </div>
               </div>
@@ -190,4 +222,3 @@ export function GuardrailTestResults({ results, errors }: GuardrailTestResultsPr
 }
 
 export default GuardrailTestResults;
-

@@ -11,7 +11,9 @@ export const getCallbackConfigsCall = async (accessToken: string) => {
    * Get callback configuration metadata (logos, params, etc.)
    */
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/callbacks/configs` : `/callbacks/configs`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/callbacks/configs`
+      : `/callbacks/configs`;
 
     const response = await fetch(url, {
       method: "GET",
@@ -41,7 +43,9 @@ export const getInProductNudgesCall = async (accessToken: string) => {
    * Get in-product nudges configuration.
    */
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/in_product_nudges` : `/in_product_nudges`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/in_product_nudges`
+      : `/in_product_nudges`;
 
     const response = await fetch(url, {
       method: "GET",
@@ -70,20 +74,27 @@ export const getInProductNudgesCall = async (accessToken: string) => {
  */
 import MessageManager from "@/components/molecules/message_manager";
 import { clearTokenCookies, storeLoginToken } from "@/utils/cookieUtils";
-import { TagNewRequest, TagUpdateRequest, TagListResponse, TagInfoResponse } from "./tag_management/types";
-import { Team } from "./key_team_helpers/key_list";
-import { UserInfo } from "./view_users/types";
-import { EmailEventSettingsResponse, EmailEventSettingsUpdateRequest } from "./email_events/types";
 import { jsonFields } from "./common_components/check_openapi_schema";
+import type {
+  EmailEventSettingsResponse,
+  EmailEventSettingsUpdateRequest,
+} from "./email_events/types";
+import type { Team } from "./key_team_helpers/key_list";
 import NotificationsManager from "./molecules/notifications_manager";
+import type {
+  TagInfoResponse,
+  TagListResponse,
+  TagNewRequest,
+  TagUpdateRequest,
+} from "./tag_management/types";
+import type { UserInfo } from "./view_users/types";
 
 const isLocal = process.env.NODE_ENV === "development";
 // In dev, if NEXT_PUBLIC_USE_REWRITES=true the Next.js dev server proxies API calls
 // to the backend — use relative URLs (null) so rewrites can intercept them.
-const defaultProxyBaseUrl =
-  process.env.NEXT_PUBLIC_BASE_URL
-    ? process.env.NEXT_PUBLIC_BASE_URL
-    : isLocal && process.env.NEXT_PUBLIC_USE_REWRITES !== "true"
+const defaultProxyBaseUrl = process.env.NEXT_PUBLIC_BASE_URL
+  ? process.env.NEXT_PUBLIC_BASE_URL
+  : isLocal && process.env.NEXT_PUBLIC_USE_REWRITES !== "true"
     ? "http://localhost:4000"
     : null;
 const defaultServerRootPath = "/";
@@ -92,21 +103,28 @@ const WORKER_URL_KEY = "litellm_worker_url";
 // If a worker URL is in localStorage, use it as the initial proxyBaseUrl.
 // This survives page navigation and the sessionStorage.clear() in user_dashboard.
 const _rawWorkerUrl =
-  typeof window !== "undefined" ? window.localStorage.getItem(WORKER_URL_KEY) : null;
+  typeof window !== "undefined"
+    ? window.localStorage.getItem(WORKER_URL_KEY)
+    : null;
 // Validate stored worker URL — reject non-HTTP schemes to prevent exfiltration
 const _initialWorkerUrl = (() => {
   if (!_rawWorkerUrl) return null;
   try {
     const parsed = new URL(_rawWorkerUrl);
-    if (parsed.protocol === "http:" || parsed.protocol === "https:") return _rawWorkerUrl;
-  } catch { /* invalid URL */ }
+    if (parsed.protocol === "http:" || parsed.protocol === "https:")
+      return _rawWorkerUrl;
+  } catch {
+    /* invalid URL */
+  }
   // Invalid URL in storage — clear it
-  if (typeof window !== "undefined") window.localStorage.removeItem(WORKER_URL_KEY);
+  if (typeof window !== "undefined")
+    window.localStorage.removeItem(WORKER_URL_KEY);
   return null;
 })();
-export let proxyBaseUrl: string | null = _initialWorkerUrl ?? defaultProxyBaseUrl;
+export let proxyBaseUrl: string | null =
+  _initialWorkerUrl ?? defaultProxyBaseUrl;
 if (isLocal != true) {
-  console.log = function () { };
+  console.log = () => {};
 }
 
 const getWindowLocation = () => {
@@ -116,20 +134,26 @@ const getWindowLocation = () => {
   return window.location;
 };
 
-const updateProxyBaseUrl = (serverRootPath: string, receivedProxyBaseUrl: string | null = null) => {
+const updateProxyBaseUrl = (
+  serverRootPath: string,
+  receivedProxyBaseUrl: string | null = null,
+) => {
   /**
    * Special function for updating the proxy base url. Should only be called by getUiConfig.
    */
   // If a worker URL is in localStorage, don't let getUiConfig overwrite it
-  if (typeof window !== "undefined" && window.localStorage.getItem(WORKER_URL_KEY)) {
+  if (
+    typeof window !== "undefined" &&
+    window.localStorage.getItem(WORKER_URL_KEY)
+  ) {
     return;
   }
   const browserLocation = getWindowLocation();
   const resolvedDefaultProxyBaseUrl = process.env.NEXT_PUBLIC_BASE_URL
     ? process.env.NEXT_PUBLIC_BASE_URL
     : isLocal && process.env.NEXT_PUBLIC_USE_REWRITES !== "true"
-    ? "http://localhost:4000"
-    : browserLocation?.origin ?? null;
+      ? "http://localhost:4000"
+      : browserLocation?.origin ?? null;
   let initialProxyBaseUrl = receivedProxyBaseUrl || resolvedDefaultProxyBaseUrl;
   console.log("proxyBaseUrl:", proxyBaseUrl);
   console.log("serverRootPath:", serverRootPath);
@@ -140,7 +164,11 @@ const updateProxyBaseUrl = (serverRootPath: string, receivedProxyBaseUrl: string
     return;
   }
 
-  if (serverRootPath.length > 0 && !initialProxyBaseUrl.endsWith(serverRootPath) && serverRootPath != "/") {
+  if (
+    serverRootPath.length > 0 &&
+    !initialProxyBaseUrl.endsWith(serverRootPath) &&
+    serverRootPath != "/"
+  ) {
     initialProxyBaseUrl += serverRootPath;
   }
 
@@ -346,7 +374,8 @@ export const handleError = async (errorData: string | any) => {
   if (currentTime - lastErrorTime > 60000) {
     // 60000 milliseconds = 60 seconds
     // Convert errorData to string if it isn't already
-    const errorString = typeof errorData === "string" ? errorData : JSON.stringify(errorData);
+    const errorString =
+      typeof errorData === "string" ? errorData : JSON.stringify(errorData);
     if (errorString.includes("Authentication Error - Expired Key")) {
       NotificationsManager.info("UI Session Expired. Logging out.");
       lastErrorTime = currentTime;
@@ -362,19 +391,27 @@ export const handleError = async (errorData: string | any) => {
   }
 };
 
-export const getProviderCreateMetadata = async (): Promise<ProviderCreateInfo[]> => {
+export const getProviderCreateMetadata = async (): Promise<
+  ProviderCreateInfo[]
+> => {
   /**
    * Fetch provider credential field metadata from the proxy's public endpoint.
    * This is used by the UI to dynamically render provider-specific credential fields.
    */
-  const url = proxyBaseUrl ? `${proxyBaseUrl}/public/providers/fields` : `/public/providers/fields`;
+  const url = proxyBaseUrl
+    ? `${proxyBaseUrl}/public/providers/fields`
+    : `/public/providers/fields`;
   const response = await fetch(url, {
     method: "GET",
   });
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error("Failed to fetch provider create metadata:", response.status, errorText);
+    console.error(
+      "Failed to fetch provider create metadata:",
+      response.status,
+      errorText,
+    );
     throw new Error("Failed to load provider configuration");
   }
 
@@ -387,14 +424,20 @@ export const getAgentCreateMetadata = async (): Promise<AgentCreateInfo[]> => {
    * Fetch agent type metadata from the proxy's public endpoint.
    * This is used by the UI to dynamically render agent-specific credential fields.
    */
-  const url = proxyBaseUrl ? `${proxyBaseUrl}/public/agents/fields` : `/public/agents/fields`;
+  const url = proxyBaseUrl
+    ? `${proxyBaseUrl}/public/agents/fields`
+    : `/public/agents/fields`;
   const response = await fetch(url, {
     method: "GET",
   });
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error("Failed to fetch agent create metadata:", response.status, errorText);
+    console.error(
+      "Failed to fetch agent create metadata:",
+      response.status,
+      errorText,
+    );
     throw new Error("Failed to load agent configuration");
   }
 
@@ -403,11 +446,11 @@ export const getAgentCreateMetadata = async (): Promise<AgentCreateInfo[]> => {
 };
 
 // Global variable for the header name
-let globalLitellmHeaderName: string = "Authorization";
+let globalLitellmHeaderName = "Authorization";
 const MCP_AUTH_HEADER: string = "x-mcp-auth";
 
 // Function to set the global header name
-export function setGlobalLitellmHeaderName(headerName: string = "Authorization") {
+export function setGlobalLitellmHeaderName(headerName = "Authorization") {
   console.log(`setGlobalLitellmHeaderName: ${headerName}`);
   globalLitellmHeaderName = headerName;
 }
@@ -417,8 +460,13 @@ export function getGlobalLitellmHeaderName(): string {
   return globalLitellmHeaderName;
 }
 
-export const makeModelGroupPublic = async (accessToken: string, modelGroups: string[]) => {
-  const url = proxyBaseUrl ? `${proxyBaseUrl}/model_group/make_public` : `/model_group/make_public`;
+export const makeModelGroupPublic = async (
+  accessToken: string,
+  modelGroups: string[],
+) => {
+  const url = proxyBaseUrl
+    ? `${proxyBaseUrl}/model_group/make_public`
+    : `/model_group/make_public`;
   const response = await fetch(url, {
     method: "POST",
     headers: {
@@ -449,7 +497,9 @@ export const getUiConfig = async () => {
 };
 
 export const getPublicModelHubInfo = async () => {
-  const url = proxyBaseUrl ? `${proxyBaseUrl}/public/model_hub/info` : `/public/model_hub/info`;
+  const url = proxyBaseUrl
+    ? `${proxyBaseUrl}/public/model_hub/info`
+    : `/public/model_hub/info`;
   const response = await fetch(url);
   const jsonData: PublicModelHubInfo = await response.json();
   return jsonData;
@@ -464,7 +514,9 @@ export const getOpenAPISchema = async () => {
 
 export const modelCostMap = async () => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/public/litellm_model_cost_map` : `/public/litellm_model_cost_map`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/public/litellm_model_cost_map`
+      : `/public/litellm_model_cost_map`;
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -482,7 +534,9 @@ export const modelCostMap = async () => {
 
 export const reloadModelCostMap = async (accessToken: string) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/reload/model_cost_map` : `/reload/model_cost_map`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/reload/model_cost_map`
+      : `/reload/model_cost_map`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -499,7 +553,10 @@ export const reloadModelCostMap = async (accessToken: string) => {
   }
 };
 
-export const scheduleModelCostMapReload = async (accessToken: string, hours: number) => {
+export const scheduleModelCostMapReload = async (
+  accessToken: string,
+  hours: number,
+) => {
   try {
     const url = proxyBaseUrl
       ? `${proxyBaseUrl}/schedule/model_cost_map_reload?hours=${hours}`
@@ -522,7 +579,9 @@ export const scheduleModelCostMapReload = async (accessToken: string, hours: num
 
 export const cancelModelCostMapReload = async (accessToken: string) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/schedule/model_cost_map_reload` : `/schedule/model_cost_map_reload`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/schedule/model_cost_map_reload`
+      : `/schedule/model_cost_map_reload`;
     const response = await fetch(url, {
       method: "DELETE",
       headers: {
@@ -595,7 +654,10 @@ export const getModelCostMapReloadStatus = async (accessToken: string) => {
     throw error;
   }
 };
-export const modelCreateCall = async (accessToken: string, formValues: Model) => {
+export const modelCreateCall = async (
+  accessToken: string,
+  formValues: Model,
+) => {
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/model/new` : `/model/new`;
     const response = await fetch(url, {
@@ -623,7 +685,9 @@ export const modelCreateCall = async (accessToken: string, formValues: Model) =>
     MessageManager.destroy();
 
     // Sequential success messages
-    NotificationsManager.success(`Model ${formValues.model_name} created successfully`);
+    NotificationsManager.success(
+      `Model ${formValues.model_name} created successfully`,
+    );
 
     return data;
   } catch (error) {
@@ -632,7 +696,10 @@ export const modelCreateCall = async (accessToken: string, formValues: Model) =>
   }
 };
 
-export const modelDeleteCall = async (accessToken: string, model_id: string) => {
+export const modelDeleteCall = async (
+  accessToken: string,
+  model_id: string,
+) => {
   console.log(`model_id in model delete call: ${model_id}`);
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/model/delete` : `/model/delete`;
@@ -663,7 +730,10 @@ export const modelDeleteCall = async (accessToken: string, model_id: string) => 
   }
 };
 
-export const budgetDeleteCall = async (accessToken: string | null, budget_id: string) => {
+export const budgetDeleteCall = async (
+  accessToken: string | null,
+  budget_id: string,
+) => {
   console.log(`budget_id in budget delete call: ${budget_id}`);
 
   if (accessToken == null) {
@@ -671,7 +741,9 @@ export const budgetDeleteCall = async (accessToken: string | null, budget_id: st
   }
 
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/budget/delete` : `/budget/delete`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/budget/delete`
+      : `/budget/delete`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -744,7 +816,9 @@ export const budgetUpdateCall = async (
     console.log("Form Values in budgetUpdateCall:", formValues); // Log the form values before making the API call
 
     console.log("Form Values after check:", formValues);
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/budget/update` : `/budget/update`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/budget/update`
+      : `/budget/update`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -778,7 +852,9 @@ export const invitationCreateCall = async (
   userID: string, // Assuming formValues is an object
 ) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/invitation/new` : `/invitation/new`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/invitation/new`
+      : `/invitation/new`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -812,7 +888,9 @@ export const alertingSettingsCall = async (accessToken: string) => {
    * Get all configurable params for setting a model
    */
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/alerting/settings` : `/alerting/settings`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/alerting/settings`
+      : `/alerting/settings`;
 
     //NotificationsManager.info("Requesting model data");
     const response = await fetch(url, {
@@ -873,7 +951,9 @@ export const keyCreateServiceAccountCall = async (
     }
 
     console.log("Form Values after check:", formValues);
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/key/service-account/generate` : `/key/service-account/generate`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/key/service-account/generate`
+      : `/key/service-account/generate`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -1102,7 +1182,10 @@ export const keyDeleteCall = async (accessToken: string, user_key: string) => {
   }
 };
 
-export const userDeleteCall = async (accessToken: string, userIds: string[]) => {
+export const userDeleteCall = async (
+  accessToken: string,
+  userIds: string[],
+) => {
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/user/delete` : `/user/delete`;
     console.log("in userDeleteCall:", userIds);
@@ -1331,12 +1414,14 @@ export const userInfoCall = async (
   accessToken: string,
   userID: string | null,
   userRole: string,
-  viewAll: boolean = false,
+  viewAll = false,
   page: number | null,
   page_size: number | null,
-  lookup_user_id: boolean = false,
+  lookup_user_id = false,
 ) => {
-  console.log(`userInfoCall: ${userID}, ${userRole}, ${viewAll}, ${page}, ${page_size}, ${lookup_user_id}`);
+  console.log(
+    `userInfoCall: ${userID}, ${userRole}, ${viewAll}, ${page}, ${page_size}, ${lookup_user_id}`,
+  );
   try {
     let url: string;
 
@@ -1345,12 +1430,16 @@ export const userInfoCall = async (
       url = proxyBaseUrl ? `${proxyBaseUrl}/user/list` : `/user/list`;
       const queryParams = new URLSearchParams();
       if (page != null) queryParams.append("page", page.toString());
-      if (page_size != null) queryParams.append("page_size", page_size.toString());
+      if (page_size != null)
+        queryParams.append("page_size", page_size.toString());
       url += `?${queryParams.toString()}`;
     } else {
       // Use /user/info endpoint for individual user info
       url = proxyBaseUrl ? `${proxyBaseUrl}/user/info` : `/user/info`;
-      if ((userRole === "Admin" || userRole === "Admin Viewer") && !lookup_user_id) {
+      if (
+        (userRole === "Admin" || userRole === "Admin Viewer") &&
+        !lookup_user_id
+      ) {
         // do nothing
       } else if (userID) {
         url += `?user_id=${userID}`;
@@ -1382,7 +1471,10 @@ export const userInfoCall = async (
   }
 };
 
-export const teamInfoCall = async (accessToken: string, teamID: string | null) => {
+export const teamInfoCall = async (
+  accessToken: string,
+  teamID: string | null,
+) => {
   try {
     let url = proxyBaseUrl ? `${proxyBaseUrl}/team/info` : `/team/info`;
     if (teamID) {
@@ -1428,8 +1520,8 @@ export const v2TeamListCall = async (
   userID: string | null = null,
   teamID: string | null = null,
   team_alias: string | null = null,
-  page: number = 1,
-  page_size: number = 10,
+  page = 1,
+  page_size = 10,
   sort_by: string | null = null,
   sort_order: "asc" | "desc" | null = null,
 ): Promise<TeamListResponse> => {
@@ -1553,7 +1645,9 @@ export const availableTeamListCall = async (accessToken: string) => {
    * Get all available teams on proxy
    */
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/team/available` : `/team/available`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/team/available`
+      : `/team/available`;
     console.log("in availableTeamListCall");
     const response = await fetch(url, {
       method: "GET",
@@ -1587,7 +1681,9 @@ export const organizationListCall = async (
    * Get all organizations on proxy
    */
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/organization/list` : `/organization/list`;
+    let url = proxyBaseUrl
+      ? `${proxyBaseUrl}/organization/list`
+      : `/organization/list`;
     const queryParams = new URLSearchParams();
 
     if (org_id) {
@@ -1626,9 +1722,14 @@ export const organizationListCall = async (
   }
 };
 
-export const organizationInfoCall = async (accessToken: string, organizationID: string) => {
+export const organizationInfoCall = async (
+  accessToken: string,
+  organizationID: string,
+) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/organization/info` : `/organization/info`;
+    let url = proxyBaseUrl
+      ? `${proxyBaseUrl}/organization/info`
+      : `/organization/info`;
     if (organizationID) {
       url = `${url}?organization_id=${organizationID}`;
     }
@@ -1676,7 +1777,9 @@ export const organizationCreateCall = async (
       }
     }
 
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/organization/new` : `/organization/new`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/organization/new`
+      : `/organization/new`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -1712,7 +1815,9 @@ export const organizationUpdateCall = async (
   try {
     console.log("Form Values in organizationUpdateCall:", formValues); // Log the form values before making the API call
 
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/organization/update` : `/organization/update`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/organization/update`
+      : `/organization/update`;
     const response = await fetch(url, {
       method: "PATCH",
       headers: {
@@ -1741,9 +1846,14 @@ export const organizationUpdateCall = async (
   }
 };
 
-export const organizationDeleteCall = async (accessToken: string, organizationID: string) => {
+export const organizationDeleteCall = async (
+  accessToken: string,
+  organizationID: string,
+) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/organization/delete` : `/organization/delete`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/organization/delete`
+      : `/organization/delete`;
     const response = await fetch(url, {
       method: "DELETE",
       headers: {
@@ -1769,13 +1879,18 @@ export const organizationDeleteCall = async (accessToken: string, organizationID
   }
 };
 
-export const transformRequestCall = async (accessToken: string, request: object) => {
+export const transformRequestCall = async (
+  accessToken: string,
+  request: object,
+) => {
   /**
    * Transform request
    */
 
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/utils/transform_request` : `/utils/transform_request`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/utils/transform_request`
+      : `/utils/transform_request`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -1805,7 +1920,11 @@ type DailyActivityQueryValue = string | number | string[] | null | undefined;
 
 const DEFAULT_DAILY_ACTIVITY_PAGE_SIZE = "1000";
 
-const appendDailyActivityQueryParam = (params: URLSearchParams, key: string, value: DailyActivityQueryValue) => {
+const appendDailyActivityQueryParam = (
+  params: URLSearchParams,
+  key: string,
+  value: DailyActivityQueryValue,
+) => {
   if (value === null || value === undefined) {
     return;
   }
@@ -1828,7 +1947,9 @@ const buildDailyActivityUrl = (
   extraQueryParams?: Record<string, DailyActivityQueryValue>,
 ) => {
   const resolvedEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
-  const baseUrl = proxyBaseUrl ? `${proxyBaseUrl}${resolvedEndpoint}` : resolvedEndpoint;
+  const baseUrl = proxyBaseUrl
+    ? `${proxyBaseUrl}${resolvedEndpoint}`
+    : resolvedEndpoint;
 
   const params = new URLSearchParams();
   params.append("start_date", formatDate(startTime));
@@ -1866,7 +1987,13 @@ const fetchDailyActivity = async ({
   extraQueryParams,
 }: DailyActivityCallOptions) => {
   try {
-    const url = buildDailyActivityUrl(endpoint, startTime, endTime, page, extraQueryParams);
+    const url = buildDailyActivityUrl(
+      endpoint,
+      startTime,
+      endTime,
+      page,
+      extraQueryParams,
+    );
 
     const response = await fetch(url, {
       method: "GET",
@@ -1891,7 +2018,13 @@ const fetchDailyActivity = async ({
   }
 };
 
-export const userDailyActivityCall = async (accessToken: string, startTime: Date, endTime: Date, page: number = 1, userId: string | null = null) => {
+export const userDailyActivityCall = async (
+  accessToken: string,
+  startTime: Date,
+  endTime: Date,
+  page = 1,
+  userId: string | null = null,
+) => {
   /**
    * Get daily user activity on proxy
    */
@@ -1911,7 +2044,7 @@ export const tagDailyActivityCall = async (
   accessToken: string,
   startTime: Date,
   endTime: Date,
-  page: number = 1,
+  page = 1,
   tags: string[] | null = null,
 ) => {
   /**
@@ -1933,7 +2066,7 @@ export const teamDailyActivityCall = async (
   accessToken: string,
   startTime: Date,
   endTime: Date,
-  page: number = 1,
+  page = 1,
   teamIds: string[] | null = null,
 ) => {
   /**
@@ -1956,7 +2089,7 @@ export const organizationDailyActivityCall = async (
   accessToken: string,
   startTime: Date,
   endTime: Date,
-  page: number = 1,
+  page = 1,
   organizationIds: string[] | null = null,
 ) => {
   return fetchDailyActivity({
@@ -1975,7 +2108,7 @@ export const customerDailyActivityCall = async (
   accessToken: string,
   startTime: Date,
   endTime: Date,
-  page: number = 1,
+  page = 1,
   customerIds: string[] | null = null,
 ) => {
   return fetchDailyActivity({
@@ -1994,7 +2127,7 @@ export const agentDailyActivityCall = async (
   accessToken: string,
   startTime: Date,
   endTime: Date,
-  page: number = 1,
+  page = 1,
   agentIds: string[] | null = null,
 ) => {
   return fetchDailyActivity({
@@ -2014,7 +2147,9 @@ export const getOnboardingCredentials = async (inviteUUID: string) => {
    * Get all models on proxy
    */
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/onboarding/get_token` : `/onboarding/get_token`;
+    let url = proxyBaseUrl
+      ? `${proxyBaseUrl}/onboarding/get_token`
+      : `/onboarding/get_token`;
     url += `?invite_link=${inviteUUID}`;
 
     const response = await fetch(url, {
@@ -2046,7 +2181,9 @@ export const claimOnboardingToken = async (
   userID: string,
   password: string,
 ) => {
-  const url = proxyBaseUrl ? `${proxyBaseUrl}/onboarding/claim_token` : `/onboarding/claim_token`;
+  const url = proxyBaseUrl
+    ? `${proxyBaseUrl}/onboarding/claim_token`
+    : `/onboarding/claim_token`;
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -2078,7 +2215,11 @@ export const claimOnboardingToken = async (
   }
 };
 
-export const regenerateKeyCall = async (accessToken: string, keyToRegenerate: string, formData: any) => {
+export const regenerateKeyCall = async (
+  accessToken: string,
+  keyToRegenerate: string,
+  formData: any,
+) => {
   try {
     const url = proxyBaseUrl
       ? `${proxyBaseUrl}/key/${keyToRegenerate}/regenerate`
@@ -2116,8 +2257,8 @@ export const modelInfoCall = async (
   accessToken: string,
   userID: string,
   userRole: string,
-  page: number = 1,
-  size: number = 50,
+  page = 1,
+  size = 50,
   search?: string,
   modelId?: string,
   teamId?: string,
@@ -2237,7 +2378,9 @@ export const modelInfoV1Call = async (accessToken: string, modelId: string) => {
 };
 
 export const modelHubPublicModelsCall = async () => {
-  const url = proxyBaseUrl ? `${proxyBaseUrl}/public/model_hub` : `/public/model_hub`;
+  const url = proxyBaseUrl
+    ? `${proxyBaseUrl}/public/model_hub`
+    : `/public/model_hub`;
   const response = await fetch(url, {
     method: "GET",
     headers: {
@@ -2245,14 +2388,18 @@ export const modelHubPublicModelsCall = async () => {
     },
   });
   if (!response.ok) {
-    console.error(`modelHubPublicModelsCall failed with status ${response.status}`);
+    console.error(
+      `modelHubPublicModelsCall failed with status ${response.status}`,
+    );
     return [];
   }
   return response.json();
 };
 
 export const agentHubPublicModelsCall = async () => {
-  const url = proxyBaseUrl ? `${proxyBaseUrl}/public/agent_hub` : `/public/agent_hub`;
+  const url = proxyBaseUrl
+    ? `${proxyBaseUrl}/public/agent_hub`
+    : `/public/agent_hub`;
   const response = await fetch(url, {
     method: "GET",
     headers: {
@@ -2260,14 +2407,18 @@ export const agentHubPublicModelsCall = async () => {
     },
   });
   if (!response.ok) {
-    console.error(`agentHubPublicModelsCall failed with status ${response.status}`);
+    console.error(
+      `agentHubPublicModelsCall failed with status ${response.status}`,
+    );
     return [];
   }
   return response.json();
 };
 
 export const mcpHubPublicServersCall = async () => {
-  const url = proxyBaseUrl ? `${proxyBaseUrl}/public/mcp_hub` : `/public/mcp_hub`;
+  const url = proxyBaseUrl
+    ? `${proxyBaseUrl}/public/mcp_hub`
+    : `/public/mcp_hub`;
   const response = await fetch(url, {
     method: "GET",
     headers: {
@@ -2275,14 +2426,18 @@ export const mcpHubPublicServersCall = async () => {
     },
   });
   if (!response.ok) {
-    console.error(`mcpHubPublicServersCall failed with status ${response.status}`);
+    console.error(
+      `mcpHubPublicServersCall failed with status ${response.status}`,
+    );
     return [];
   }
   return response.json();
 };
 
 export const skillHubPublicCall = async () => {
-  const url = proxyBaseUrl ? `${proxyBaseUrl}/public/skill_hub` : `/public/skill_hub`;
+  const url = proxyBaseUrl
+    ? `${proxyBaseUrl}/public/skill_hub`
+    : `/public/skill_hub`;
   const response = await fetch(url, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
@@ -2299,7 +2454,9 @@ export const modelHubCall = async (accessToken: string) => {
    * Get all models on proxy
    */
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/model_group/info` : `/model_group/info`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/model_group/info`
+      : `/model_group/info`;
 
     //NotificationsManager.info("Requesting model data");
     const response = await fetch(url, {
@@ -2331,7 +2488,9 @@ export const modelHubCall = async (accessToken: string) => {
 // Function to get allowed IPs
 export const getAllowedIPs = async (accessToken: string) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/get/allowed_ips` : `/get/allowed_ips`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/get/allowed_ips`
+      : `/get/allowed_ips`;
 
     const response = await fetch(url, {
       method: "GET",
@@ -2360,7 +2519,9 @@ export const getAllowedIPs = async (accessToken: string) => {
 // Function to add an allowed IP
 export const addAllowedIP = async (accessToken: string, ip: string) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/add/allowed_ip` : `/add/allowed_ip`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/add/allowed_ip`
+      : `/add/allowed_ip`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -2390,7 +2551,9 @@ export const addAllowedIP = async (accessToken: string, ip: string) => {
 // Function to delete an allowed IP
 export const deleteAllowedIP = async (accessToken: string, ip: string) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/delete/allowed_ip` : `/delete/allowed_ip`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/delete/allowed_ip`
+      : `/delete/allowed_ip`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -2422,7 +2585,9 @@ export const updateUsefulLinksCall = async (
   useful_links: Record<string, string | { url: string; index: number }>,
 ) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/model_hub/update_useful_links` : `/model_hub/update_useful_links`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/model_hub/update_useful_links`
+      : `/model_hub/update_useful_links`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -2449,16 +2614,19 @@ export const modelAvailableCall = async (
   accessToken: string,
   userID: string,
   userRole: string,
-  return_wildcard_routes: boolean = false,
+  return_wildcard_routes = false,
   teamID: string | null = null,
-  include_model_access_groups: boolean = false,
-  only_model_access_groups: boolean = false,
+  include_model_access_groups = false,
+  only_model_access_groups = false,
   scope?: string,
 ) => {
   /**
    * Get all the models user has access to
    */
-  console.log("in /models calls, globalLitellmHeaderName", globalLitellmHeaderName);
+  console.log(
+    "in /models calls, globalLitellmHeaderName",
+    globalLitellmHeaderName,
+  );
   try {
     let url = proxyBaseUrl ? `${proxyBaseUrl}/models` : `/models`;
     const params = new URLSearchParams();
@@ -2507,7 +2675,9 @@ export const modelAvailableCall = async (
 
 export const teamSpendLogsCall = async (accessToken: string) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/global/spend/teams` : `/global/spend/teams`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/global/spend/teams`
+      : `/global/spend/teams`;
     console.log("in teamSpendLogsCall:", url);
     const response = await fetch(`${url}`, {
       method: "GET",
@@ -2539,7 +2709,9 @@ export const tagsSpendLogsCall = async (
   tags: string[] | undefined,
 ) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/global/spend/tags` : `/global/spend/tags`;
+    let url = proxyBaseUrl
+      ? `${proxyBaseUrl}/global/spend/tags`
+      : `/global/spend/tags`;
 
     if (startTime && endTime) {
       url = `${url}?start_date=${startTime}&end_date=${endTime}`;
@@ -2576,7 +2748,9 @@ export const tagsSpendLogsCall = async (
 
 export const allTagNamesCall = async (accessToken: string) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/global/spend/all_tag_names` : `/global/spend/all_tag_names`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/global/spend/all_tag_names`
+      : `/global/spend/all_tag_names`;
 
     console.log("in global/spend/all_tag_names call", url);
     const response = await fetch(`${url}`, {
@@ -2604,7 +2778,9 @@ export const allTagNamesCall = async (accessToken: string) => {
 
 export const allEndUsersCall = async (accessToken: string) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/customer/list` : `/customer/list`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/customer/list`
+      : `/customer/list`;
 
     console.log("in customer/list", url);
     const response = await fetch(`${url}`, {
@@ -2630,9 +2806,14 @@ export const allEndUsersCall = async (accessToken: string) => {
   }
 };
 
-export const userFilterUICall = async (accessToken: string, params: URLSearchParams) => {
+export const userFilterUICall = async (
+  accessToken: string,
+  params: URLSearchParams,
+) => {
   try {
-    const base = proxyBaseUrl ? `${proxyBaseUrl}/user/filter/ui` : `/user/filter/ui`;
+    const base = proxyBaseUrl
+      ? `${proxyBaseUrl}/user/filter/ui`
+      : `/user/filter/ui`;
     const queryParams = new URLSearchParams();
     if (params.get("user_email")) {
       queryParams.append("user_email", params.get("user_email")!);
@@ -2758,7 +2939,9 @@ export const uiSpendLogsCall = async ({
 
 export const adminSpendLogsCall = async (accessToken: string) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/global/spend/logs` : `/global/spend/logs`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/global/spend/logs`
+      : `/global/spend/logs`;
 
     //NotificationsManager.info("Making spend logs request");
     const response = await fetch(url, {
@@ -2787,7 +2970,9 @@ export const adminSpendLogsCall = async (accessToken: string) => {
 
 export const adminTopKeysCall = async (accessToken: string) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/global/spend/keys?limit=5` : `/global/spend/keys?limit=5`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/global/spend/keys?limit=5`
+      : `/global/spend/keys?limit=5`;
 
     //NotificationsManager.info("Making spend keys request");
     const response = await fetch(url, {
@@ -2821,7 +3006,9 @@ export const adminTopEndUsersCall = async (
   endTime: string | undefined,
 ) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/global/spend/end_users` : `/global/spend/end_users`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/global/spend/end_users`
+      : `/global/spend/end_users`;
 
     let body = "";
     if (keyToken) {
@@ -2871,7 +3058,9 @@ export const adminspendByProvider = async (
   endTime: string | undefined,
 ) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/global/spend/provider` : `/global/spend/provider`;
+    let url = proxyBaseUrl
+      ? `${proxyBaseUrl}/global/spend/provider`
+      : `/global/spend/provider`;
 
     if (startTime && endTime) {
       url += `?start_date=${startTime}&end_date=${endTime}`;
@@ -2912,7 +3101,9 @@ export const adminGlobalActivity = async (
   endTime: string | undefined,
 ) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/global/activity` : `/global/activity`;
+    let url = proxyBaseUrl
+      ? `${proxyBaseUrl}/global/activity`
+      : `/global/activity`;
 
     if (startTime && endTime) {
       url += `?start_date=${startTime}&end_date=${endTime}`;
@@ -2949,7 +3140,9 @@ export const adminGlobalCacheActivity = async (
   endTime: string | undefined,
 ) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/global/activity/cache_hits` : `/global/activity/cache_hits`;
+    let url = proxyBaseUrl
+      ? `${proxyBaseUrl}/global/activity/cache_hits`
+      : `/global/activity/cache_hits`;
 
     if (startTime && endTime) {
       url += `?start_date=${startTime}&end_date=${endTime}`;
@@ -2986,7 +3179,9 @@ export const adminGlobalActivityPerModel = async (
   endTime: string | undefined,
 ) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/global/activity/model` : `/global/activity/model`;
+    let url = proxyBaseUrl
+      ? `${proxyBaseUrl}/global/activity/model`
+      : `/global/activity/model`;
 
     if (startTime && endTime) {
       url += `?start_date=${startTime}&end_date=${endTime}`;
@@ -3019,7 +3214,9 @@ export const adminGlobalActivityPerModel = async (
 
 export const adminTopModelsCall = async (accessToken: string) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/global/spend/models?limit=5` : `/global/spend/models?limit=5`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/global/spend/models?limit=5`
+      : `/global/spend/models?limit=5`;
 
     //NotificationsManager.info("Making top models request");
     const response = await fetch(url, {
@@ -3048,7 +3245,7 @@ export const adminTopModelsCall = async (accessToken: string) => {
 
 export const keyInfoCall = async (accessToken: string, keys: string[]) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/v2/key/info` : `/v2/key/info`;
+    const url = proxyBaseUrl ? `${proxyBaseUrl}/v2/key/info` : `/v2/key/info`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -3086,10 +3283,15 @@ export const testConnectionRequest = async (
   mode: string,
 ) => {
   try {
-    console.log("Sending model connection test request:", JSON.stringify(litellm_params));
+    console.log(
+      "Sending model connection test request:",
+      JSON.stringify(litellm_params),
+    );
 
     // Construct the URL based on environment
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/health/test_connection` : `/health/test_connection`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/health/test_connection`
+      : `/health/test_connection`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -3124,7 +3326,9 @@ export const testConnectionRequest = async (
       } else {
         return {
           status: "error",
-          message: data.error?.message || `Connection test failed: ${response.status} ${response.statusText}`,
+          message:
+            data.error?.message ||
+            `Connection test failed: ${response.status} ${response.statusText}`,
         };
       }
     }
@@ -3158,7 +3362,9 @@ export const keyInfoV1Call = async (accessToken: string, key: string) => {
     if (!response.ok) {
       const errorData = await response.text();
       handleError(errorData);
-      NotificationsManager.fromBackend("Failed to fetch key info - " + errorData);
+      NotificationsManager.fromBackend(
+        "Failed to fetch key info - " + errorData,
+      );
     }
 
     const data = await response.json();
@@ -3280,8 +3486,8 @@ export interface PaginatedKeyAliasResponse {
 
 export const keyAliasesCall = async (
   accessToken: string,
-  page: number = 1,
-  size: number = 50,
+  page = 1,
+  size = 50,
   search?: string,
   team_id?: string,
 ): Promise<PaginatedKeyAliasResponse> => {
@@ -3324,12 +3530,19 @@ export const keyAliasesCall = async (
   }
 };
 
-export const userDailyActivityAggregatedCall = async (accessToken: string, startTime: Date, endTime: Date, userId: string | null = null) => {
+export const userDailyActivityAggregatedCall = async (
+  accessToken: string,
+  startTime: Date,
+  endTime: Date,
+  userId: string | null = null,
+) => {
   /**
    * Get aggregated daily user activity (no pagination)
    */
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/user/daily/activity/aggregated` : `/user/daily/activity/aggregated`;
+    let url = proxyBaseUrl
+      ? `${proxyBaseUrl}/user/daily/activity/aggregated`
+      : `/user/daily/activity/aggregated`;
     const queryParams = new URLSearchParams();
     // Format dates as YYYY-MM-DD for the API
     const formatDate = (date: Date) => {
@@ -3375,7 +3588,9 @@ export const userDailyActivityAggregatedCall = async (accessToken: string, start
 
 export const getPossibleUserRoles = async (accessToken: string) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/user/available_roles` : `/user/available_roles`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/user/available_roles`
+      : `/user/available_roles`;
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -3391,7 +3606,10 @@ export const getPossibleUserRoles = async (accessToken: string) => {
       throw new Error(errorMessage);
     }
 
-    const data = (await response.json()) as Record<string, Record<string, string>>;
+    const data = (await response.json()) as Record<
+      string,
+      Record<string, string>
+    >;
     console.log("response from user/available_role", data);
     return data;
     // Handle success - you might want to update some state or UI based on the created key
@@ -3495,7 +3713,7 @@ export const credentialListCall = async (accessToken: string) => {
    * Get all available teams on proxy
    */
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/credentials` : `/credentials`;
+    const url = proxyBaseUrl ? `${proxyBaseUrl}/credentials` : `/credentials`;
     console.log("in credentialListCall");
 
     const response = await fetch(url, {
@@ -3523,7 +3741,11 @@ export const credentialListCall = async (accessToken: string) => {
   }
 };
 
-export const credentialGetCall = async (accessToken: string, credentialName: string | null, modelId: string | null) => {
+export const credentialGetCall = async (
+  accessToken: string,
+  credentialName: string | null,
+  modelId: string | null,
+) => {
   try {
     let url = proxyBaseUrl ? `${proxyBaseUrl}/credentials` : `/credentials`;
 
@@ -3560,9 +3782,14 @@ export const credentialGetCall = async (accessToken: string, credentialName: str
   }
 };
 
-export const credentialDeleteCall = async (accessToken: string, credentialName: string) => {
+export const credentialDeleteCall = async (
+  accessToken: string,
+  credentialName: string,
+) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/credentials/${credentialName}` : `/credentials/${credentialName}`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/credentials/${credentialName}`
+      : `/credentials/${credentialName}`;
     console.log("in credentialDeleteCall:", credentialName);
     const response = await fetch(url, {
       method: "DELETE",
@@ -3606,7 +3833,9 @@ export const credentialUpdateCall = async (
       }
     }
 
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/credentials/${credentialName}` : `/credentials/${credentialName}`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/credentials/${credentialName}`
+      : `/credentials/${credentialName}`;
     const response = await fetch(url, {
       method: "PATCH",
       headers: {
@@ -3712,7 +3941,9 @@ export const teamUpdateCall = async (
       const errorData = await response.text();
       handleError(errorData);
       console.error("Error response from the server:", errorData);
-      NotificationsManager.fromBackend("Failed to update team settings: " + errorData);
+      NotificationsManager.fromBackend(
+        "Failed to update team settings: " + errorData,
+      );
       throw new Error(errorData);
     }
     const data = (await response.json()) as { data: Team; team_id: string };
@@ -3740,7 +3971,9 @@ export const modelPatchUpdateCall = async (
   try {
     console.log("Form Values in modelUpateCall:", formValues); // Log the form values before making the API call
 
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/model/${modelId}/update` : `/model/${modelId}/update`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/model/${modelId}/update`
+      : `/model/${modelId}/update`;
     const response = await fetch(url, {
       method: "PATCH",
       headers: {
@@ -3778,11 +4011,17 @@ export interface Member {
   allowed_models?: string[] | null;
 }
 
-export const teamMemberAddCall = async (accessToken: string, teamId: string, formValues: Member) => {
+export const teamMemberAddCall = async (
+  accessToken: string,
+  teamId: string,
+  formValues: Member,
+) => {
   try {
     console.log("Form Values in teamMemberAddCall:", formValues);
 
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/team/member_add` : `/team/member_add`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/team/member_add`
+      : `/team/member_add`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -3807,7 +4046,8 @@ export const teamMemberAddCall = async (accessToken: string, teamId: string, for
         console.warn("Failed to parse error body as JSON:", errorText);
       }
 
-      const rawMessage = parsedError?.detail?.error || "Failed to add team member";
+      const rawMessage =
+        parsedError?.detail?.error || "Failed to add team member";
       const err = new Error(rawMessage);
       (err as any).raw = parsedError;
       throw err;
@@ -3832,9 +4072,11 @@ export const teamBulkMemberAddCall = async (
   try {
     console.log("Bulk add team members:", { teamId, members, maxBudgetInTeam });
 
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/team/bulk_member_add` : `/team/bulk_member_add`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/team/bulk_member_add`
+      : `/team/bulk_member_add`;
 
-    let requestBody: any = {
+    const requestBody: any = {
       team_id: teamId,
     };
 
@@ -3868,7 +4110,8 @@ export const teamBulkMemberAddCall = async (
         console.warn("Failed to parse error body as JSON:", errorText);
       }
 
-      const rawMessage = parsedError?.detail?.error || "Failed to bulk add team members";
+      const rawMessage =
+        parsedError?.detail?.error || "Failed to bulk add team members";
       const err = new Error(rawMessage);
       (err as any).raw = parsedError;
       throw err;
@@ -3894,7 +4137,9 @@ export const teamMemberUpdateCall = async (
     console.log("TPM limit:", formValues.tpm_limit);
     console.log("RPM limit:", formValues.rpm_limit);
 
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/team/member_update` : `/team/member_update`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/team/member_update`
+      : `/team/member_update`;
 
     const requestBody: any = {
       team_id: teamId,
@@ -3906,7 +4151,10 @@ export const teamMemberUpdateCall = async (
     if (formValues.user_email !== undefined) {
       requestBody.user_email = formValues.user_email;
     }
-    if (formValues.max_budget_in_team !== undefined && formValues.max_budget_in_team !== null) {
+    if (
+      formValues.max_budget_in_team !== undefined &&
+      formValues.max_budget_in_team !== null
+    ) {
       requestBody.max_budget_in_team = formValues.max_budget_in_team;
     }
     if (formValues.tpm_limit !== undefined && formValues.tpm_limit !== null) {
@@ -3941,7 +4189,8 @@ export const teamMemberUpdateCall = async (
         console.warn("Failed to parse error body as JSON:", errorText);
       }
 
-      const rawMessage = parsedError?.detail?.error || "Failed to add team member";
+      const rawMessage =
+        parsedError?.detail?.error || "Failed to add team member";
       const err = new Error(rawMessage);
       (err as any).raw = parsedError;
       throw err;
@@ -3964,7 +4213,9 @@ export const teamMemberDeleteCall = async (
   try {
     console.log("Form Values in teamMemberAddCall:", formValues); // Log the form values before making the API call
 
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/team/member_delete` : `/team/member_delete`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/team/member_delete`
+      : `/team/member_delete`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -4007,7 +4258,9 @@ export const organizationMemberAddCall = async (
   try {
     console.log("Form Values in teamMemberAddCall:", formValues); // Log the form values before making the API call
 
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/organization/member_add` : `/organization/member_add`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/organization/member_add`
+      : `/organization/member_add`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -4037,11 +4290,17 @@ export const organizationMemberAddCall = async (
   }
 };
 
-export const organizationMemberDeleteCall = async (accessToken: string, organizationId: string, userId: string) => {
+export const organizationMemberDeleteCall = async (
+  accessToken: string,
+  organizationId: string,
+  userId: string,
+) => {
   try {
     console.log("Form Values in organizationMemberDeleteCall:", userId); // Log the form values before making the API call
 
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/organization/member_delete` : `/organization/member_delete`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/organization/member_delete`
+      : `/organization/member_delete`;
 
     const response = await fetch(url, {
       method: "DELETE",
@@ -4078,7 +4337,9 @@ export const organizationMemberUpdateCall = async (
   try {
     console.log("Form Values in organizationMemberUpdateCall:", formValues); // Log the form values before making the API call
 
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/organization/member_update` : `/organization/member_update`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/organization/member_update`
+      : `/organization/member_update`;
 
     const response = await fetch(url, {
       method: "PATCH",
@@ -4156,12 +4417,14 @@ export const userBulkUpdateUserCall = async (
   accessToken: string,
   formValues: any, // Assuming formValues is an object
   userIds?: string[], // Optional - if not provided, will update all users
-  allUsers: boolean = false, // Flag to update all users
+  allUsers = false, // Flag to update all users
 ) => {
   try {
     console.log("Form Values in userUpdateUserCall:", formValues); // Log the form values before making the API call
 
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/user/bulk_update` : `/user/bulk_update`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/user/bulk_update`
+      : `/user/bulk_update`;
 
     let request_body_json: string;
 
@@ -4173,7 +4436,7 @@ export const userBulkUpdateUserCall = async (
       });
     } else if (userIds && userIds.length > 0) {
       // Update specific users mode
-      let request_body = [];
+      const request_body = [];
       for (const user_id of userIds) {
         request_body.push({
           user_id: user_id,
@@ -4225,9 +4488,12 @@ export const userBulkUpdateUserCall = async (
   }
 };
 
-export const serviceHealthCheck = async (accessToken: string, service: string) => {
+export const serviceHealthCheck = async (
+  accessToken: string,
+  service: string,
+) => {
   try {
-    let url = proxyBaseUrl
+    const url = proxyBaseUrl
       ? `${proxyBaseUrl}/health/services?service=${service}`
       : `/health/services?service=${service}`;
 
@@ -4262,7 +4528,7 @@ export const getBudgetList = async (accessToken: string) => {
    * Get all configurable params for setting a budget
    */
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/budget/list` : `/budget/list`;
+    const url = proxyBaseUrl ? `${proxyBaseUrl}/budget/list` : `/budget/list`;
 
     //NotificationsManager.info("Requesting model data");
     const response = await fetch(url, {
@@ -4289,12 +4555,18 @@ export const getBudgetList = async (accessToken: string) => {
     throw error;
   }
 };
-export const getCallbacksCall = async (accessToken: string, userID: string, userRole: string) => {
+export const getCallbacksCall = async (
+  accessToken: string,
+  userID: string,
+  userRole: string,
+) => {
   /**
    * Get all the models user has access to
    */
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/get/config/callbacks` : `/get/config/callbacks`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/get/config/callbacks`
+      : `/get/config/callbacks`;
 
     //NotificationsManager.info("Requesting model data");
     const response = await fetch(url, {
@@ -4324,7 +4596,7 @@ export const getCallbacksCall = async (accessToken: string, userID: string, user
 
 export const getGeneralSettingsCall = async (accessToken: string) => {
   try {
-    let url = proxyBaseUrl
+    const url = proxyBaseUrl
       ? `${proxyBaseUrl}/config/list?config_type=general_settings`
       : `/config/list?config_type=general_settings`;
 
@@ -4356,7 +4628,9 @@ export const getGeneralSettingsCall = async (accessToken: string) => {
 
 export const getRouterSettingsCall = async (accessToken: string) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/router/settings` : `/router/settings`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/router/settings`
+      : `/router/settings`;
 
     const response = await fetch(url, {
       method: "GET",
@@ -4383,7 +4657,9 @@ export const getRouterSettingsCall = async (accessToken: string) => {
 
 export const getCacheSettingsCall = async (accessToken: string) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/cache/settings` : `/cache/settings`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/cache/settings`
+      : `/cache/settings`;
 
     const response = await fetch(url, {
       method: "GET",
@@ -4408,9 +4684,14 @@ export const getCacheSettingsCall = async (accessToken: string) => {
   }
 };
 
-export const testCacheConnectionCall = async (accessToken: string, cacheSettings: Record<string, any>) => {
+export const testCacheConnectionCall = async (
+  accessToken: string,
+  cacheSettings: Record<string, any>,
+) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/cache/settings/test` : `/cache/settings/test`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/cache/settings/test`
+      : `/cache/settings/test`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -4438,9 +4719,14 @@ export const testCacheConnectionCall = async (accessToken: string, cacheSettings
   }
 };
 
-export const updateCacheSettingsCall = async (accessToken: string, cacheSettings: Record<string, any>) => {
+export const updateCacheSettingsCall = async (
+  accessToken: string,
+  cacheSettings: Record<string, any>,
+) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/cache/settings` : `/cache/settings`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/cache/settings`
+      : `/cache/settings`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -4468,9 +4754,14 @@ export const updateCacheSettingsCall = async (accessToken: string, cacheSettings
   }
 };
 
-export const getPassThroughEndpointsCall = async (accessToken: string, teamId?: string | null) => {
+export const getPassThroughEndpointsCall = async (
+  accessToken: string,
+  teamId?: string | null,
+) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/config/pass_through_endpoint` : `/config/pass_through_endpoint`;
+    let url = proxyBaseUrl
+      ? `${proxyBaseUrl}/config/pass_through_endpoint`
+      : `/config/pass_through_endpoint`;
 
     if (teamId) {
       url += `/team/${teamId}`;
@@ -4502,9 +4793,12 @@ export const getPassThroughEndpointsCall = async (accessToken: string, teamId?: 
   }
 };
 
-export const getConfigFieldSetting = async (accessToken: string, fieldName: string) => {
+export const getConfigFieldSetting = async (
+  accessToken: string,
+  fieldName: string,
+) => {
   try {
-    let url = proxyBaseUrl
+    const url = proxyBaseUrl
       ? `${proxyBaseUrl}/config/field/info?field_name=${fieldName}`
       : `/config/field/info?field_name=${fieldName}`;
 
@@ -4533,12 +4827,17 @@ export const getConfigFieldSetting = async (accessToken: string, fieldName: stri
   }
 };
 
-export const createPassThroughEndpoint = async (accessToken: string, formValues: Record<string, any>) => {
+export const createPassThroughEndpoint = async (
+  accessToken: string,
+  formValues: Record<string, any>,
+) => {
   /**
    * Set callbacks on proxy
    */
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/config/pass_through_endpoint` : `/config/pass_through_endpoint`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/config/pass_through_endpoint`
+      : `/config/pass_through_endpoint`;
 
     //NotificationsManager.info("Requesting model data");
     const response = await fetch(url, {
@@ -4569,11 +4868,17 @@ export const createPassThroughEndpoint = async (accessToken: string, formValues:
   }
 };
 
-export const updateConfigFieldSetting = async (accessToken: string, fieldName: string, fieldValue: any) => {
+export const updateConfigFieldSetting = async (
+  accessToken: string,
+  fieldName: string,
+  fieldValue: any,
+) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/config/field/update` : `/config/field/update`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/config/field/update`
+      : `/config/field/update`;
 
-    let formData = {
+    const formData = {
       field_name: fieldName,
       field_value: fieldValue,
       config_type: "general_settings",
@@ -4606,11 +4911,16 @@ export const updateConfigFieldSetting = async (accessToken: string, fieldName: s
   }
 };
 
-export const deleteConfigFieldSetting = async (accessToken: string, fieldName: string) => {
+export const deleteConfigFieldSetting = async (
+  accessToken: string,
+  fieldName: string,
+) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/config/field/delete` : `/config/field/delete`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/config/field/delete`
+      : `/config/field/delete`;
 
-    let formData = {
+    const formData = {
       field_name: fieldName,
       config_type: "general_settings",
     };
@@ -4641,9 +4951,12 @@ export const deleteConfigFieldSetting = async (accessToken: string, fieldName: s
   }
 };
 
-export const deletePassThroughEndpointsCall = async (accessToken: string, endpointId: string) => {
+export const deletePassThroughEndpointsCall = async (
+  accessToken: string,
+  endpointId: string,
+) => {
   try {
-    let url = proxyBaseUrl
+    const url = proxyBaseUrl
       ? `${proxyBaseUrl}/config/pass_through_endpoint?endpoint_id=${endpointId}`
       : `/config/pass_through_endpoint?endpoint_id=${endpointId}`;
 
@@ -4673,12 +4986,17 @@ export const deletePassThroughEndpointsCall = async (accessToken: string, endpoi
   }
 };
 
-export const setCallbacksCall = async (accessToken: string, formValues: Record<string, any>) => {
+export const setCallbacksCall = async (
+  accessToken: string,
+  formValues: Record<string, any>,
+) => {
   /**
    * Set callbacks on proxy
    */
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/config/update` : `/config/update`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/config/update`
+      : `/config/update`;
 
     //NotificationsManager.info("Requesting model data");
     const response = await fetch(url, {
@@ -4709,12 +5027,15 @@ export const setCallbacksCall = async (accessToken: string, formValues: Record<s
   }
 };
 
-export const individualModelHealthCheckCall = async (accessToken: string, modelId: string) => {
+export const individualModelHealthCheckCall = async (
+  accessToken: string,
+  modelId: string,
+) => {
   /**
    * Run health check for a specific model using model ID (so each deployment is checked separately).
    */
   try {
-    let url = proxyBaseUrl
+    const url = proxyBaseUrl
       ? `${proxyBaseUrl}/health?model_id=${encodeURIComponent(modelId)}`
       : `/health?model_id=${encodeURIComponent(modelId)}`;
 
@@ -4746,7 +5067,7 @@ export const cachingHealthCheckCall = async (accessToken: string) => {
    * Get all the models user has access to
    */
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/cache/ping` : `/cache/ping`;
+    const url = proxyBaseUrl ? `${proxyBaseUrl}/cache/ping` : `/cache/ping`;
 
     //NotificationsManager.info("Requesting model data");
     const response = await fetch(url, {
@@ -4778,7 +5099,9 @@ export const latestHealthChecksCall = async (accessToken: string) => {
    * Get the latest health check status for all models
    */
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/health/latest` : `/health/latest`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/health/latest`
+      : `/health/latest`;
 
     const response = await fetch(url, {
       method: "GET",
@@ -4809,7 +5132,9 @@ export const getProxyUISettings = async (accessToken: string) => {
   try {
     console.log("Getting proxy UI settings");
     console.log("proxyBaseUrl in getProxyUISettings:", proxyBaseUrl);
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/sso/get/ui_settings` : `/sso/get/ui_settings`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/sso/get/ui_settings`
+      : `/sso/get/ui_settings`;
 
     //NotificationsManager.info("Requesting model data");
     const response = await fetch(url, {
@@ -4842,7 +5167,9 @@ export const getUISettings = async (accessToken: string) => {
    * Get UI-specific configuration flags from the database
    */
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/get/ui_settings` : `/get/ui_settings`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/get/ui_settings`
+      : `/get/ui_settings`;
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -4871,7 +5198,9 @@ export const getMCPSemanticFilterSettings = async (accessToken: string) => {
    * Get MCP semantic filter configuration
    */
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/get/mcp_semantic_filter_settings` : `/get/mcp_semantic_filter_settings`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/get/mcp_semantic_filter_settings`
+      : `/get/mcp_semantic_filter_settings`;
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -4895,7 +5224,10 @@ export const getMCPSemanticFilterSettings = async (accessToken: string) => {
   }
 };
 
-export const updateMCPSemanticFilterSettings = async (accessToken: string, settings: Record<string, any>) => {
+export const updateMCPSemanticFilterSettings = async (
+  accessToken: string,
+  settings: Record<string, any>,
+) => {
   /**
    * Update MCP semantic filter settings
    * Settings will be applied across all pods within 10 seconds
@@ -4928,7 +5260,11 @@ export const updateMCPSemanticFilterSettings = async (accessToken: string, setti
   }
 };
 
-export const testMCPSemanticFilter = async (accessToken: string, model: string, query: string) => {
+export const testMCPSemanticFilter = async (
+  accessToken: string,
+  model: string,
+  query: string,
+) => {
   /**
    * Test MCP semantic filter by making a responses API call
    * Returns both the response data and headers containing filter information
@@ -4990,7 +5326,9 @@ export const testMCPSemanticFilter = async (accessToken: string, model: string, 
 
 export const getGuardrailsList = async (accessToken: string) => {
   try {
-    const v2Url = proxyBaseUrl ? `${proxyBaseUrl}/v2/guardrails/list` : `/v2/guardrails/list`;
+    const v2Url = proxyBaseUrl
+      ? `${proxyBaseUrl}/v2/guardrails/list`
+      : `/v2/guardrails/list`;
     const response = await fetch(v2Url, {
       method: "GET",
       headers: {
@@ -5008,7 +5346,9 @@ export const getGuardrailsList = async (accessToken: string) => {
   } catch (error) {
     console.log("v2/guardrails/list failed, falling back to v1:", error);
     try {
-      const v1Url = proxyBaseUrl ? `${proxyBaseUrl}/guardrails/list` : `/guardrails/list`;
+      const v1Url = proxyBaseUrl
+        ? `${proxyBaseUrl}/guardrails/list`
+        : `/guardrails/list`;
       const fallbackResponse = await fetch(v1Url, {
         method: "GET",
         headers: {
@@ -5063,15 +5403,25 @@ interface ListGuardrailSubmissionsResponse {
 
 export const listGuardrailSubmissions = async (
   accessToken: string,
-  params?: { status?: string; team_id?: string; team_guardrail?: boolean; search?: string }
+  params?: {
+    status?: string;
+    team_id?: string;
+    team_guardrail?: boolean;
+    search?: string;
+  },
 ): Promise<ListGuardrailSubmissionsResponse> => {
-  const url = proxyBaseUrl ? `${proxyBaseUrl}/guardrails/submissions` : `/guardrails/submissions`;
+  const url = proxyBaseUrl
+    ? `${proxyBaseUrl}/guardrails/submissions`
+    : `/guardrails/submissions`;
   const searchParams = new URLSearchParams();
   if (params?.status) searchParams.set("status", params.status);
   if (params?.team_id) searchParams.set("team_id", params.team_id);
-  if (params?.team_guardrail !== undefined) searchParams.set("team_guardrail", String(params.team_guardrail));
+  if (params?.team_guardrail !== undefined)
+    searchParams.set("team_guardrail", String(params.team_guardrail));
   if (params?.search) searchParams.set("search", params.search);
-  const fullUrl = searchParams.toString() ? `${url}?${searchParams.toString()}` : url;
+  const fullUrl = searchParams.toString()
+    ? `${url}?${searchParams.toString()}`
+    : url;
   const response = await fetch(fullUrl, {
     method: "GET",
     headers: {
@@ -5090,7 +5440,7 @@ export const listGuardrailSubmissions = async (
 
 export const approveGuardrailSubmission = async (
   accessToken: string,
-  guardrailId: string
+  guardrailId: string,
 ): Promise<{ guardrail_id: string; status: string; message: string }> => {
   const url = proxyBaseUrl
     ? `${proxyBaseUrl}/guardrails/submissions/${encodeURIComponent(guardrailId)}/approve`
@@ -5113,7 +5463,7 @@ export const approveGuardrailSubmission = async (
 
 export const rejectGuardrailSubmission = async (
   accessToken: string,
-  guardrailId: string
+  guardrailId: string,
 ): Promise<{ guardrail_id: string; status: string; message: string }> => {
   const url = proxyBaseUrl
     ? `${proxyBaseUrl}/guardrails/submissions/${encodeURIComponent(guardrailId)}/reject`
@@ -5138,10 +5488,12 @@ export const rejectGuardrailSubmission = async (
 export const getGuardrailsUsageOverview = async (
   accessToken: string,
   startDate?: string,
-  endDate?: string
+  endDate?: string,
 ) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/guardrails/usage/overview` : `/guardrails/usage/overview`;
+    let url = proxyBaseUrl
+      ? `${proxyBaseUrl}/guardrails/usage/overview`
+      : `/guardrails/usage/overview`;
     const params = new URLSearchParams();
     if (startDate) params.append("start_date", startDate);
     if (endDate) params.append("end_date", endDate);
@@ -5168,10 +5520,12 @@ export const getGuardrailsUsageDetail = async (
   accessToken: string,
   guardrailId: string,
   startDate?: string,
-  endDate?: string
+  endDate?: string,
 ) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/guardrails/usage/detail/${encodeURIComponent(guardrailId)}` : `/guardrails/usage/detail/${encodeURIComponent(guardrailId)}`;
+    let url = proxyBaseUrl
+      ? `${proxyBaseUrl}/guardrails/usage/detail/${encodeURIComponent(guardrailId)}`
+      : `/guardrails/usage/detail/${encodeURIComponent(guardrailId)}`;
     const params = new URLSearchParams();
     if (startDate) params.append("start_date", startDate);
     if (endDate) params.append("end_date", endDate);
@@ -5196,15 +5550,26 @@ export const getGuardrailsUsageDetail = async (
 
 export const getGuardrailsUsageLogs = async (
   accessToken: string,
-  options: { guardrailId?: string; policyId?: string; page?: number; pageSize?: number; action?: string; startDate?: string; endDate?: string }
+  options: {
+    guardrailId?: string;
+    policyId?: string;
+    page?: number;
+    pageSize?: number;
+    action?: string;
+    startDate?: string;
+    endDate?: string;
+  },
 ) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/guardrails/usage/logs` : `/guardrails/usage/logs`;
+    let url = proxyBaseUrl
+      ? `${proxyBaseUrl}/guardrails/usage/logs`
+      : `/guardrails/usage/logs`;
     const params = new URLSearchParams();
     if (options.guardrailId) params.append("guardrail_id", options.guardrailId);
     if (options.policyId) params.append("policy_id", options.policyId);
     if (options.page != null) params.append("page", String(options.page));
-    if (options.pageSize != null) params.append("page_size", String(options.pageSize));
+    if (options.pageSize != null)
+      params.append("page_size", String(options.pageSize));
     if (options.action) params.append("action", options.action);
     if (options.startDate) params.append("start_date", options.startDate);
     if (options.endDate) params.append("end_date", options.endDate);
@@ -5233,7 +5598,9 @@ export const getGuardrailsUsageLogs = async (
 
 export const getPoliciesList = async (accessToken: string) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/policies/list` : `/policies/list`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/policies/list`
+      : `/policies/list`;
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -5298,7 +5665,7 @@ interface TestPoliciesAndGuardrailsResponse {
 export const testPoliciesAndGuardrails = async (
   accessToken: string,
   body: TestPoliciesAndGuardrailsRequest,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ): Promise<TestPoliciesAndGuardrailsResponse> => {
   try {
     const url = proxyBaseUrl
@@ -5327,7 +5694,11 @@ export const testPoliciesAndGuardrails = async (
       let errorMessage = "Failed to test policies and guardrails";
       try {
         const errorJson = JSON.parse(errorData);
-        if (errorJson.detail) errorMessage = typeof errorJson.detail === "string" ? errorJson.detail : JSON.stringify(errorJson.detail);
+        if (errorJson.detail)
+          errorMessage =
+            typeof errorJson.detail === "string"
+              ? errorJson.detail
+              : JSON.stringify(errorJson.detail);
         else if (errorJson.message) errorMessage = errorJson.message;
       } catch {
         errorMessage = errorData || errorMessage;
@@ -5343,9 +5714,14 @@ export const testPoliciesAndGuardrails = async (
   }
 };
 
-export const getPolicyInfoWithGuardrails = async (accessToken: string, policyName: string) => {
+export const getPolicyInfoWithGuardrails = async (
+  accessToken: string,
+  policyName: string,
+) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/policy/info/${policyName}` : `/policy/info/${policyName}`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/policy/info/${policyName}`
+      : `/policy/info/${policyName}`;
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -5371,7 +5747,9 @@ export const getPolicyInfoWithGuardrails = async (accessToken: string, policyNam
 
 export const getPolicyTemplates = async (accessToken: string) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/policy/templates` : `/policy/templates`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/policy/templates`
+      : `/policy/templates`;
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -5400,7 +5778,7 @@ export const enrichPolicyTemplate = async (
   templateId: string,
   parameters: Record<string, string>,
   model?: string,
-  competitors?: string[]
+  competitors?: string[],
 ) => {
   try {
     const url = proxyBaseUrl
@@ -5437,7 +5815,7 @@ export const suggestPolicyTemplates = async (
   accessToken: string,
   attackExamples: string[],
   description: string,
-  model: string
+  model: string,
 ) => {
   try {
     const url = proxyBaseUrl
@@ -5473,7 +5851,7 @@ export const suggestPolicyTemplates = async (
 export const testPolicyTemplate = async (
   accessToken: string,
   guardrailDefinitions: any[],
-  text: string
+  text: string,
 ) => {
   try {
     const url = proxyBaseUrl
@@ -5518,14 +5896,15 @@ export const enrichPolicyTemplateStream = async (
   }) => void,
   onError?: (error: string) => void,
   options?: { instruction?: string; existingCompetitors?: string[] },
-  onStatus?: (message: string) => void
+  onStatus?: (message: string) => void,
 ) => {
   const url = proxyBaseUrl
     ? `${proxyBaseUrl}/policy/templates/enrich/stream`
     : `/policy/templates/enrich/stream`;
   const body: any = { template_id: templateId, parameters, model };
   if (options?.instruction) body.instruction = options.instruction;
-  if (options?.existingCompetitors) body.competitors = options.existingCompetitors;
+  if (options?.existingCompetitors)
+    body.competitors = options.existingCompetitors;
 
   const response = await fetch(url, {
     method: "POST",
@@ -5597,9 +5976,7 @@ export const usageAiChatStream = async (
   onToolCall?: (event: UsageAiToolCallEvent) => void,
   signal?: AbortSignal,
 ) => {
-  const url = proxyBaseUrl
-    ? `${proxyBaseUrl}/usage/ai/chat`
-    : `/usage/ai/chat`;
+  const url = proxyBaseUrl ? `${proxyBaseUrl}/usage/ai/chat` : `/usage/ai/chat`;
 
   const response = await fetch(url, {
     method: "POST",
@@ -5655,7 +6032,10 @@ export const usageAiChatStream = async (
   }
 };
 
-export const createPolicyCall = async (accessToken: string, policyData: any) => {
+export const createPolicyCall = async (
+  accessToken: string,
+  policyData: any,
+) => {
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/policies` : `/policies`;
     const response = await fetch(url, {
@@ -5682,9 +6062,15 @@ export const createPolicyCall = async (accessToken: string, policyData: any) => 
   }
 };
 
-export const updatePolicyCall = async (accessToken: string, policyId: string, policyData: any) => {
+export const updatePolicyCall = async (
+  accessToken: string,
+  policyId: string,
+  policyData: any,
+) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/policies/${policyId}` : `/policies/${policyId}`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/policies/${policyId}`
+      : `/policies/${policyId}`;
     const response = await fetch(url, {
       method: "PUT",
       headers: {
@@ -5711,7 +6097,7 @@ export const updatePolicyCall = async (accessToken: string, policyId: string, po
 
 export const listPolicyVersions = async (
   accessToken: string,
-  policyName: string
+  policyName: string,
 ): Promise<{ policy_name: string; versions: any[]; total_count: number }> => {
   try {
     const encodedName = encodeURIComponent(policyName);
@@ -5743,7 +6129,7 @@ export const listPolicyVersions = async (
 export const createPolicyVersion = async (
   accessToken: string,
   policyName: string,
-  sourcePolicyId?: string | null
+  sourcePolicyId?: string | null,
 ): Promise<any> => {
   try {
     const encodedName = encodeURIComponent(policyName);
@@ -5776,7 +6162,7 @@ export const createPolicyVersion = async (
 export const updatePolicyVersionStatus = async (
   accessToken: string,
   policyId: string,
-  versionStatus: "published" | "production"
+  versionStatus: "published" | "production",
 ): Promise<any> => {
   try {
     const url = proxyBaseUrl
@@ -5805,9 +6191,14 @@ export const updatePolicyVersionStatus = async (
   }
 };
 
-export const deletePolicyCall = async (accessToken: string, policyId: string) => {
+export const deletePolicyCall = async (
+  accessToken: string,
+  policyId: string,
+) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/policies/${policyId}` : `/policies/${policyId}`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/policies/${policyId}`
+      : `/policies/${policyId}`;
     const response = await fetch(url, {
       method: "DELETE",
       headers: {
@@ -5833,7 +6224,9 @@ export const deletePolicyCall = async (accessToken: string, policyId: string) =>
 
 export const getPolicyInfo = async (accessToken: string, policyId: string) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/policies/${policyId}` : `/policies/${policyId}`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/policies/${policyId}`
+      : `/policies/${policyId}`;
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -5861,7 +6254,9 @@ export const getPolicyInfo = async (accessToken: string, policyId: string) => {
 
 export const getPolicyAttachmentsList = async (accessToken: string) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/policies/attachments/list` : `/policies/attachments/list`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/policies/attachments/list`
+      : `/policies/attachments/list`;
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -5885,9 +6280,14 @@ export const getPolicyAttachmentsList = async (accessToken: string) => {
   }
 };
 
-export const createPolicyAttachmentCall = async (accessToken: string, attachmentData: any) => {
+export const createPolicyAttachmentCall = async (
+  accessToken: string,
+  attachmentData: any,
+) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/policies/attachments` : `/policies/attachments`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/policies/attachments`
+      : `/policies/attachments`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -5912,7 +6312,10 @@ export const createPolicyAttachmentCall = async (accessToken: string, attachment
   }
 };
 
-export const deletePolicyAttachmentCall = async (accessToken: string, attachmentId: string) => {
+export const deletePolicyAttachmentCall = async (
+  accessToken: string,
+  attachmentId: string,
+) => {
   try {
     const url = proxyBaseUrl
       ? `${proxyBaseUrl}/policies/attachments/${attachmentId}`
@@ -5943,10 +6346,12 @@ export const deletePolicyAttachmentCall = async (accessToken: string, attachment
 export const testPipelineCall = async (
   accessToken: string,
   pipeline: any,
-  testMessages: Array<{role: string, content: string}>
+  testMessages: Array<{ role: string; content: string }>,
 ) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/policies/test-pipeline` : `/policies/test-pipeline`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/policies/test-pipeline`
+      : `/policies/test-pipeline`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -5971,7 +6376,10 @@ export const testPipelineCall = async (
   }
 };
 
-export const getResolvedGuardrails = async (accessToken: string, policyId: string) => {
+export const getResolvedGuardrails = async (
+  accessToken: string,
+  policyId: string,
+) => {
   try {
     const url = proxyBaseUrl
       ? `${proxyBaseUrl}/policies/${policyId}/resolved-guardrails`
@@ -6001,7 +6409,12 @@ export const getResolvedGuardrails = async (accessToken: string, policyId: strin
 
 export const resolvePoliciesCall = async (
   accessToken: string,
-  context: { team_alias?: string; key_alias?: string; model?: string; tags?: string[] }
+  context: {
+    team_alias?: string;
+    key_alias?: string;
+    model?: string;
+    tags?: string[];
+  },
 ) => {
   try {
     const url = proxyBaseUrl
@@ -6032,7 +6445,7 @@ export const resolvePoliciesCall = async (
 
 export const estimateAttachmentImpactCall = async (
   accessToken: string,
-  attachmentData: any
+  attachmentData: any,
 ) => {
   try {
     const url = proxyBaseUrl
@@ -6093,9 +6506,15 @@ export const getPromptsList = async (
   }
 };
 
-export const getPromptInfo = async (accessToken: string, promptId: string, environment?: string): Promise<PromptInfoResponse> => {
+export const getPromptInfo = async (
+  accessToken: string,
+  promptId: string,
+  environment?: string,
+): Promise<PromptInfoResponse> => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/prompts/${promptId}/info` : `/prompts/${promptId}/info`;
+    let url = proxyBaseUrl
+      ? `${proxyBaseUrl}/prompts/${promptId}/info`
+      : `/prompts/${promptId}/info`;
     if (environment) {
       url += `?environment=${encodeURIComponent(environment)}`;
     }
@@ -6122,9 +6541,15 @@ export const getPromptInfo = async (accessToken: string, promptId: string, envir
   }
 };
 
-export const getPromptVersions = async (accessToken: string, promptId: string, environment?: string): Promise<ListPromptsResponse> => {
+export const getPromptVersions = async (
+  accessToken: string,
+  promptId: string,
+  environment?: string,
+): Promise<ListPromptsResponse> => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/prompts/${promptId}/versions` : `/prompts/${promptId}/versions`;
+    let url = proxyBaseUrl
+      ? `${proxyBaseUrl}/prompts/${promptId}/versions`
+      : `/prompts/${promptId}/versions`;
     if (environment) {
       url += `?environment=${encodeURIComponent(environment)}`;
     }
@@ -6154,7 +6579,10 @@ export const getPromptVersions = async (accessToken: string, promptId: string, e
   }
 };
 
-export const createPromptCall = async (accessToken: string, promptData: any) => {
+export const createPromptCall = async (
+  accessToken: string,
+  promptData: any,
+) => {
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/prompts` : `/prompts`;
 
@@ -6182,9 +6610,15 @@ export const createPromptCall = async (accessToken: string, promptData: any) => 
   }
 };
 
-export const updatePromptCall = async (accessToken: string, promptId: string, promptData: any) => {
+export const updatePromptCall = async (
+  accessToken: string,
+  promptId: string,
+  promptData: any,
+) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/prompts/${promptId}` : `/prompts/${promptId}`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/prompts/${promptId}`
+      : `/prompts/${promptId}`;
 
     const response = await fetch(url, {
       method: "PUT",
@@ -6210,9 +6644,14 @@ export const updatePromptCall = async (accessToken: string, promptId: string, pr
   }
 };
 
-export const deletePromptCall = async (accessToken: string, promptId: string) => {
+export const deletePromptCall = async (
+  accessToken: string,
+  promptId: string,
+) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/prompts/${promptId}` : `/prompts/${promptId}`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/prompts/${promptId}`
+      : `/prompts/${promptId}`;
 
     const response = await fetch(url, {
       method: "DELETE",
@@ -6245,7 +6684,9 @@ export const convertPromptFileToJson = async (
     const formData = new FormData();
     formData.append("file", file);
 
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/utils/dotprompt_json_converter` : `/utils/dotprompt_json_converter`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/utils/dotprompt_json_converter`
+      : `/utils/dotprompt_json_converter`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -6299,7 +6740,10 @@ export const createAgentCall = async (accessToken: string, agentData: any) => {
   }
 };
 
-export const createGuardrailCall = async (accessToken: string, guardrailData: any) => {
+export const createGuardrailCall = async (
+  accessToken: string,
+  guardrailData: any,
+) => {
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/guardrails` : `/guardrails`;
 
@@ -6329,10 +6773,14 @@ export const createGuardrailCall = async (accessToken: string, guardrailData: an
   }
 };
 
-export const uiSpendLogDetailsCall = async (accessToken: string, logId: string, start_date: string) => {
+export const uiSpendLogDetailsCall = async (
+  accessToken: string,
+  logId: string,
+  start_date: string,
+) => {
   try {
     // Construct base URL
-    let url = proxyBaseUrl
+    const url = proxyBaseUrl
       ? `${proxyBaseUrl}/spend/logs/ui/${logId}?start_date=${encodeURIComponent(start_date)}`
       : `/spend/logs/ui/${logId}?start_date=${encodeURIComponent(start_date)}`;
 
@@ -6365,7 +6813,9 @@ export const uiSpendLogDetailsCall = async (accessToken: string, logId: string, 
 export const getInternalUserSettings = async (accessToken: string) => {
   try {
     // Construct base URL
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/get/internal_user_settings` : `/get/internal_user_settings`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/get/internal_user_settings`
+      : `/get/internal_user_settings`;
 
     console.log("Fetching SSO settings from:", url);
 
@@ -6393,10 +6843,15 @@ export const getInternalUserSettings = async (accessToken: string) => {
   }
 };
 
-export const updateInternalUserSettings = async (accessToken: string, settings: Record<string, any>) => {
+export const updateInternalUserSettings = async (
+  accessToken: string,
+  settings: Record<string, any>,
+) => {
   try {
     // Construct base URL
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/update/internal_user_settings` : `/update/internal_user_settings`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/update/internal_user_settings`
+      : `/update/internal_user_settings`;
 
     console.log("Updating internal user settings:", settings);
 
@@ -6479,7 +6934,10 @@ export const fetchDiscoverableMCPServers = async (accessToken: string) => {
   }
 };
 
-export const fetchMCPServers = async (accessToken: string, teamId?: string | null) => {
+export const fetchMCPServers = async (
+  accessToken: string,
+  teamId?: string | null,
+) => {
   try {
     // Construct base URL with optional team_id filter
     let url = proxyBaseUrl ? `${proxyBaseUrl}/v1/mcp/server` : `/v1/mcp/server`;
@@ -6515,10 +6973,15 @@ export const fetchMCPServers = async (accessToken: string, teamId?: string | nul
   }
 };
 
-export const fetchMCPServerHealth = async (accessToken: string, serverIds?: string[]) => {
+export const fetchMCPServerHealth = async (
+  accessToken: string,
+  serverIds?: string[],
+) => {
   try {
     // Construct base URL
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/v1/mcp/server/health` : `/v1/mcp/server/health`;
+    let url = proxyBaseUrl
+      ? `${proxyBaseUrl}/v1/mcp/server/health`
+      : `/v1/mcp/server/health`;
 
     // Add server_ids query parameters if provided
     if (serverIds && serverIds.length > 0) {
@@ -6556,7 +7019,9 @@ export const fetchMCPServerHealth = async (accessToken: string, serverIds?: stri
 export const fetchMCPAccessGroups = async (accessToken: string) => {
   try {
     // Construct base URL
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/mcp/access_groups` : `/v1/mcp/access_groups`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/v1/mcp/access_groups`
+      : `/v1/mcp/access_groups`;
 
     console.log("Fetching MCP access groups from:", url);
 
@@ -6584,7 +7049,9 @@ export const fetchMCPAccessGroups = async (accessToken: string) => {
   }
 };
 
-export const fetchMCPClientIp = async (accessToken: string): Promise<string | null> => {
+export const fetchMCPClientIp = async (
+  accessToken: string,
+): Promise<string | null> => {
   try {
     const url = proxyBaseUrl
       ? `${proxyBaseUrl}/v1/mcp/network/client-ip`
@@ -6615,7 +7082,9 @@ export const createMCPServer = async (
   try {
     console.log("Form Values in createMCPServer:", formValues); // Log the form values before making the API call
 
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/mcp/server` : `/v1/mcp/server`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/v1/mcp/server`
+      : `/v1/mcp/server`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -6645,9 +7114,14 @@ export const createMCPServer = async (
   }
 };
 
-export const updateMCPServer = async (accessToken: string, formValues: Record<string, any>) => {
+export const updateMCPServer = async (
+  accessToken: string,
+  formValues: Record<string, any>,
+) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/mcp/server` : `/v1/mcp/server`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/v1/mcp/server`
+      : `/v1/mcp/server`;
     const response = await fetch(url, {
       method: "PUT",
       headers: {
@@ -6671,9 +7145,13 @@ export const updateMCPServer = async (accessToken: string, formValues: Record<st
   }
 };
 
-export const deleteMCPServer = async (accessToken: string, serverId: string) => {
+export const deleteMCPServer = async (
+  accessToken: string,
+  serverId: string,
+) => {
   try {
-    const url = (proxyBaseUrl ? `${proxyBaseUrl}` : "") + `/v1/mcp/server/${serverId}`;
+    const url =
+      (proxyBaseUrl ? `${proxyBaseUrl}` : "") + `/v1/mcp/server/${serverId}`;
     console.log("in deleteMCPServer:", serverId);
     const response = await fetch(url, {
       method: HTTP_REQUEST.DELETE,
@@ -6718,7 +7196,10 @@ export const fetchMCPToolsets = async (accessToken: string): Promise<any[]> => {
   }
 };
 
-export const createMCPToolset = async (accessToken: string, formValues: Record<string, any>) => {
+export const createMCPToolset = async (
+  accessToken: string,
+  formValues: Record<string, any>,
+) => {
   try {
     const url = (proxyBaseUrl ? `${proxyBaseUrl}` : "") + `/v1/mcp/toolset`;
     const response = await fetch(url, {
@@ -6742,7 +7223,10 @@ export const createMCPToolset = async (accessToken: string, formValues: Record<s
   }
 };
 
-export const updateMCPToolset = async (accessToken: string, formValues: Record<string, any>) => {
+export const updateMCPToolset = async (
+  accessToken: string,
+  formValues: Record<string, any>,
+) => {
   try {
     const url = (proxyBaseUrl ? `${proxyBaseUrl}` : "") + `/v1/mcp/toolset`;
     const response = await fetch(url, {
@@ -6766,9 +7250,13 @@ export const updateMCPToolset = async (accessToken: string, formValues: Record<s
   }
 };
 
-export const deleteMCPToolset = async (accessToken: string, toolsetId: string) => {
+export const deleteMCPToolset = async (
+  accessToken: string,
+  toolsetId: string,
+) => {
   try {
-    const url = (proxyBaseUrl ? `${proxyBaseUrl}` : "") + `/v1/mcp/toolset/${toolsetId}`;
+    const url =
+      (proxyBaseUrl ? `${proxyBaseUrl}` : "") + `/v1/mcp/toolset/${toolsetId}`;
     const response = await fetch(url, {
       method: HTTP_REQUEST.DELETE,
       headers: {
@@ -6788,9 +7276,13 @@ export const deleteMCPToolset = async (accessToken: string, toolsetId: string) =
   }
 };
 
-export const registerMCPServer = async (accessToken: string, formValues: Record<string, any>) => {
+export const registerMCPServer = async (
+  accessToken: string,
+  formValues: Record<string, any>,
+) => {
   try {
-    const url = (proxyBaseUrl ? `${proxyBaseUrl}` : "") + `/v1/mcp/server/register`;
+    const url =
+      (proxyBaseUrl ? `${proxyBaseUrl}` : "") + `/v1/mcp/server/register`;
     const response = await fetch(url, {
       method: HTTP_REQUEST.POST,
       headers: {
@@ -6814,7 +7306,8 @@ export const registerMCPServer = async (accessToken: string, formValues: Record<
 
 export const fetchMCPSubmissions = async (accessToken: string) => {
   try {
-    const url = (proxyBaseUrl ? `${proxyBaseUrl}` : "") + `/v1/mcp/server/submissions`;
+    const url =
+      (proxyBaseUrl ? `${proxyBaseUrl}` : "") + `/v1/mcp/server/submissions`;
     const response = await fetch(url, {
       method: HTTP_REQUEST.GET,
       headers: {
@@ -6835,9 +7328,14 @@ export const fetchMCPSubmissions = async (accessToken: string) => {
   }
 };
 
-export const approveMCPServer = async (accessToken: string, serverId: string) => {
+export const approveMCPServer = async (
+  accessToken: string,
+  serverId: string,
+) => {
   try {
-    const url = (proxyBaseUrl ? `${proxyBaseUrl}` : "") + `/v1/mcp/server/${encodeURIComponent(serverId)}/approve`;
+    const url =
+      (proxyBaseUrl ? `${proxyBaseUrl}` : "") +
+      `/v1/mcp/server/${encodeURIComponent(serverId)}/approve`;
     const response = await fetch(url, {
       method: HTTP_REQUEST.PUT,
       headers: {
@@ -6857,9 +7355,15 @@ export const approveMCPServer = async (accessToken: string, serverId: string) =>
   }
 };
 
-export const rejectMCPServer = async (accessToken: string, serverId: string, reviewNotes?: string) => {
+export const rejectMCPServer = async (
+  accessToken: string,
+  serverId: string,
+  reviewNotes?: string,
+) => {
   try {
-    const url = (proxyBaseUrl ? `${proxyBaseUrl}` : "") + `/v1/mcp/server/${encodeURIComponent(serverId)}/reject`;
+    const url =
+      (proxyBaseUrl ? `${proxyBaseUrl}` : "") +
+      `/v1/mcp/server/${encodeURIComponent(serverId)}/reject`;
     const response = await fetch(url, {
       method: HTTP_REQUEST.PUT,
       headers: {
@@ -6884,7 +7388,9 @@ export const rejectMCPServer = async (accessToken: string, serverId: string, rev
 // Search Tools API calls
 export const fetchSearchTools = async (accessToken: string) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/search_tools/list` : `/search_tools/list`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/search_tools/list`
+      : `/search_tools/list`;
     console.log("Fetching search tools from:", url);
 
     const response = await fetch(url, {
@@ -6911,7 +7417,10 @@ export const fetchSearchTools = async (accessToken: string) => {
   }
 };
 
-export const createSearchTool = async (accessToken: string, formValues: Record<string, any>) => {
+export const createSearchTool = async (
+  accessToken: string,
+  formValues: Record<string, any>,
+) => {
   try {
     console.log("Creating search tool with values:", formValues);
     const url = proxyBaseUrl ? `${proxyBaseUrl}/search_tools` : `/search_tools`;
@@ -6943,10 +7452,21 @@ export const createSearchTool = async (accessToken: string, formValues: Record<s
   }
 };
 
-export const updateSearchTool = async (accessToken: string, searchToolId: string, formValues: Record<string, any>) => {
+export const updateSearchTool = async (
+  accessToken: string,
+  searchToolId: string,
+  formValues: Record<string, any>,
+) => {
   try {
-    console.log("Updating search tool with ID:", searchToolId, "values:", formValues);
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/search_tools/${searchToolId}` : `/search_tools/${searchToolId}`;
+    console.log(
+      "Updating search tool with ID:",
+      searchToolId,
+      "values:",
+      formValues,
+    );
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/search_tools/${searchToolId}`
+      : `/search_tools/${searchToolId}`;
 
     const response = await fetch(url, {
       method: HTTP_REQUEST.PUT,
@@ -6975,9 +7495,13 @@ export const updateSearchTool = async (accessToken: string, searchToolId: string
   }
 };
 
-export const deleteSearchTool = async (accessToken: string, searchToolId: string) => {
+export const deleteSearchTool = async (
+  accessToken: string,
+  searchToolId: string,
+) => {
   try {
-    const url = (proxyBaseUrl ? `${proxyBaseUrl}` : "") + `/search_tools/${searchToolId}`;
+    const url =
+      (proxyBaseUrl ? `${proxyBaseUrl}` : "") + `/search_tools/${searchToolId}`;
     console.log("Deleting search tool:", searchToolId);
 
     const response = await fetch(url, {
@@ -7035,9 +7559,14 @@ export const fetchAvailableSearchProviders = async (accessToken: string) => {
   }
 };
 
-export const testSearchToolConnection = async (accessToken: string, litellmParams: Record<string, any>) => {
+export const testSearchToolConnection = async (
+  accessToken: string,
+  litellmParams: Record<string, any>,
+) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/search_tools/test_connection` : `/search_tools/test_connection`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/search_tools/test_connection`
+      : `/search_tools/test_connection`;
     console.log("Testing search tool connection:", url);
 
     const response = await fetch(url, {
@@ -7068,13 +7597,13 @@ export const testSearchToolConnection = async (accessToken: string, litellmParam
 };
 
 export const listMCPTools = async (
-  accessToken: string, 
+  accessToken: string,
   serverId: string,
-  customHeaders?: Record<string, string>
+  customHeaders?: Record<string, string>,
 ) => {
   try {
     // Construct base URL
-    let url = proxyBaseUrl
+    const url = proxyBaseUrl
       ? `${proxyBaseUrl}/mcp-rest/tools/list?server_id=${serverId}`
       : `/mcp-rest/tools/list?server_id=${serverId}`;
 
@@ -7111,7 +7640,8 @@ export const listMCPTools = async (
     return {
       tools: [],
       error: "network_error",
-      message: error instanceof Error ? error.message : "Failed to fetch MCP tools",
+      message:
+        error instanceof Error ? error.message : "Failed to fetch MCP tools",
       stack_trace: null,
     };
   }
@@ -7131,9 +7661,18 @@ export const callMCPTool = async (
 ) => {
   try {
     // Construct base URL
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/mcp-rest/tools/call` : `/mcp-rest/tools/call`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/mcp-rest/tools/call`
+      : `/mcp-rest/tools/call`;
 
-    console.log("Calling MCP tool:", toolName, "with arguments:", toolArguments, "for server:", serverId);
+    console.log(
+      "Calling MCP tool:",
+      toolName,
+      "with arguments:",
+      toolArguments,
+      "for server:",
+      serverId,
+    );
 
     const headers: Record<string, string> = {
       [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -7171,7 +7710,10 @@ export const callMCPTool = async (
           if (typeof errorData.detail === "string") {
             errorMessage = errorData.detail;
           } else if (typeof errorData.detail === "object") {
-            errorMessage = errorData.detail.message || errorData.detail.error || "An error occurred";
+            errorMessage =
+              errorData.detail.message ||
+              errorData.detail.error ||
+              "An error occurred";
             errorDetails = errorData.detail;
           }
         } else {
@@ -7209,9 +7751,12 @@ export const callMCPTool = async (
   }
 };
 
-export const tagCreateCall = async (accessToken: string, formValues: TagNewRequest): Promise<void> => {
+export const tagCreateCall = async (
+  accessToken: string,
+  formValues: TagNewRequest,
+): Promise<void> => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/tag/new` : `/tag/new`;
+    const url = proxyBaseUrl ? `${proxyBaseUrl}/tag/new` : `/tag/new`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -7235,9 +7780,12 @@ export const tagCreateCall = async (accessToken: string, formValues: TagNewReque
   }
 };
 
-export const tagUpdateCall = async (accessToken: string, formValues: TagUpdateRequest): Promise<void> => {
+export const tagUpdateCall = async (
+  accessToken: string,
+  formValues: TagUpdateRequest,
+): Promise<void> => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/tag/update` : `/tag/update`;
+    const url = proxyBaseUrl ? `${proxyBaseUrl}/tag/update` : `/tag/update`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -7261,9 +7809,12 @@ export const tagUpdateCall = async (accessToken: string, formValues: TagUpdateRe
   }
 };
 
-export const tagInfoCall = async (accessToken: string, tagNames: string[]): Promise<TagInfoResponse> => {
+export const tagInfoCall = async (
+  accessToken: string,
+  tagNames: string[],
+): Promise<TagInfoResponse> => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/tag/info` : `/tag/info`;
+    const url = proxyBaseUrl ? `${proxyBaseUrl}/tag/info` : `/tag/info`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -7332,9 +7883,12 @@ export const tagListCall = async (
   }
 };
 
-export const tagDeleteCall = async (accessToken: string, tagName: string): Promise<void> => {
+export const tagDeleteCall = async (
+  accessToken: string,
+  tagName: string,
+): Promise<void> => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/tag/delete` : `/tag/delete`;
+    const url = proxyBaseUrl ? `${proxyBaseUrl}/tag/delete` : `/tag/delete`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -7361,7 +7915,9 @@ export const tagDeleteCall = async (accessToken: string, tagName: string): Promi
 export const getDefaultTeamSettings = async (accessToken: string) => {
   try {
     // Construct base URL
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/get/default_team_settings` : `/get/default_team_settings`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/get/default_team_settings`
+      : `/get/default_team_settings`;
 
     console.log("Fetching default team settings from:", url);
 
@@ -7389,10 +7945,15 @@ export const getDefaultTeamSettings = async (accessToken: string) => {
   }
 };
 
-export const updateDefaultTeamSettings = async (accessToken: string, settings: Record<string, any>) => {
+export const updateDefaultTeamSettings = async (
+  accessToken: string,
+  settings: Record<string, any>,
+) => {
   try {
     // Construct base URL
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/update/default_team_settings` : `/update/default_team_settings`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/update/default_team_settings`
+      : `/update/default_team_settings`;
 
     console.log("Updating default team settings:", settings);
 
@@ -7421,9 +7982,12 @@ export const updateDefaultTeamSettings = async (accessToken: string, settings: R
   }
 };
 
-export const getTeamPermissionsCall = async (accessToken: string, teamId: string) => {
+export const getTeamPermissionsCall = async (
+  accessToken: string,
+  teamId: string,
+) => {
   try {
-    let url = proxyBaseUrl
+    const url = proxyBaseUrl
       ? `${proxyBaseUrl}/team/permissions_list?team_id=${teamId}`
       : `/team/permissions_list?team_id=${teamId}`;
 
@@ -7450,9 +8014,15 @@ export const getTeamPermissionsCall = async (accessToken: string, teamId: string
   }
 };
 
-export const teamPermissionsUpdateCall = async (accessToken: string, teamId: string, permissions: string[]) => {
+export const teamPermissionsUpdateCall = async (
+  accessToken: string,
+  teamId: string,
+  permissions: string[],
+) => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/team/permissions_update` : `/team/permissions_update`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/team/permissions_update`
+      : `/team/permissions_update`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -7485,9 +8055,12 @@ export const teamPermissionsUpdateCall = async (accessToken: string, teamId: str
 /**
  * Get all spend logs for a particular session
  */
-export const sessionSpendLogsCall = async (accessToken: string, session_id: string) => {
+export const sessionSpendLogsCall = async (
+  accessToken: string,
+  session_id: string,
+) => {
   try {
-    let url = proxyBaseUrl
+    const url = proxyBaseUrl
       ? `${proxyBaseUrl}/spend/logs/session/ui?session_id=${encodeURIComponent(session_id)}`
       : `/spend/logs/session/ui?session_id=${encodeURIComponent(session_id)}`;
 
@@ -7514,9 +8087,14 @@ export const sessionSpendLogsCall = async (accessToken: string, session_id: stri
   }
 };
 
-export const vectorStoreCreateCall = async (accessToken: string, formValues: Record<string, any>): Promise<void> => {
+export const vectorStoreCreateCall = async (
+  accessToken: string,
+  formValues: Record<string, any>,
+): Promise<void> => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/vector_store/new` : `/vector_store/new`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/vector_store/new`
+      : `/vector_store/new`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -7541,11 +8119,13 @@ export const vectorStoreCreateCall = async (accessToken: string, formValues: Rec
 
 export const vectorStoreListCall = async (
   accessToken: string,
-  page: number = 1,
-  page_size: number = 100,
+  page = 1,
+  page_size = 100,
 ): Promise<any> => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/vector_store/list` : `/vector_store/list`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/vector_store/list`
+      : `/vector_store/list`;
 
     const response = await fetch(url, {
       method: "GET",
@@ -7567,9 +8147,14 @@ export const vectorStoreListCall = async (
   }
 };
 
-export const vectorStoreDeleteCall = async (accessToken: string, vectorStoreId: string): Promise<void> => {
+export const vectorStoreDeleteCall = async (
+  accessToken: string,
+  vectorStoreId: string,
+): Promise<void> => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/vector_store/delete` : `/vector_store/delete`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/vector_store/delete`
+      : `/vector_store/delete`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -7592,9 +8177,14 @@ export const vectorStoreDeleteCall = async (accessToken: string, vectorStoreId: 
   }
 };
 
-export const vectorStoreInfoCall = async (accessToken: string, vectorStoreId: string): Promise<any> => {
+export const vectorStoreInfoCall = async (
+  accessToken: string,
+  vectorStoreId: string,
+): Promise<any> => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/vector_store/info` : `/vector_store/info`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/vector_store/info`
+      : `/vector_store/info`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -7617,9 +8207,14 @@ export const vectorStoreInfoCall = async (accessToken: string, vectorStoreId: st
   }
 };
 
-export const vectorStoreUpdateCall = async (accessToken: string, formValues: Record<string, any>): Promise<any> => {
+export const vectorStoreUpdateCall = async (
+  accessToken: string,
+  formValues: Record<string, any>,
+): Promise<any> => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/vector_store/update` : `/vector_store/update`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/vector_store/update`
+      : `/vector_store/update`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -7652,7 +8247,7 @@ export const ragIngestCall = async (
   providerSpecificParams?: Record<string, any>,
 ): Promise<any> => {
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/rag/ingest` : `/rag/ingest`;
+    const url = proxyBaseUrl ? `${proxyBaseUrl}/rag/ingest` : `/rag/ingest`;
 
     const formData = new FormData();
     formData.append("file", file);
@@ -7671,10 +8266,12 @@ export const ragIngestCall = async (
     if (vectorStoreName || vectorStoreDescription) {
       ingestOptions.ingest_options.litellm_vector_store_params = {};
       if (vectorStoreName) {
-        ingestOptions.ingest_options.litellm_vector_store_params.vector_store_name = vectorStoreName;
+        ingestOptions.ingest_options.litellm_vector_store_params.vector_store_name =
+          vectorStoreName;
       }
       if (vectorStoreDescription) {
-        ingestOptions.ingest_options.litellm_vector_store_params.vector_store_description = vectorStoreDescription;
+        ingestOptions.ingest_options.litellm_vector_store_params.vector_store_description =
+          vectorStoreDescription;
       }
     }
 
@@ -7690,7 +8287,9 @@ export const ragIngestCall = async (
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error?.message || error.detail || "Failed to ingest document");
+      throw new Error(
+        error.error?.message || error.detail || "Failed to ingest document",
+      );
     }
 
     return await response.json();
@@ -7700,9 +8299,13 @@ export const ragIngestCall = async (
   }
 };
 
-export const getEmailEventSettings = async (accessToken: string): Promise<EmailEventSettingsResponse> => {
+export const getEmailEventSettings = async (
+  accessToken: string,
+): Promise<EmailEventSettingsResponse> => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/email/event_settings` : `/email/event_settings`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/email/event_settings`
+      : `/email/event_settings`;
 
     const response = await fetch(url, {
       method: "GET",
@@ -7727,9 +8330,14 @@ export const getEmailEventSettings = async (accessToken: string): Promise<EmailE
   }
 };
 
-export const updateEmailEventSettings = async (accessToken: string, settings: EmailEventSettingsUpdateRequest) => {
+export const updateEmailEventSettings = async (
+  accessToken: string,
+  settings: EmailEventSettingsUpdateRequest,
+) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/email/event_settings` : `/email/event_settings`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/email/event_settings`
+      : `/email/event_settings`;
 
     const response = await fetch(url, {
       method: "PATCH",
@@ -7757,7 +8365,9 @@ export const updateEmailEventSettings = async (accessToken: string, settings: Em
 
 export const resetEmailEventSettings = async (accessToken: string) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/email/event_settings/reset` : `/email/event_settings/reset`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/email/event_settings/reset`
+      : `/email/event_settings/reset`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -7787,7 +8397,9 @@ export { type Team } from "./key_team_helpers/key_list"; // Re-export Team
 
 export const deleteAgentCall = async (accessToken: string, agentId: string) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/agents/${agentId}` : `/v1/agents/${agentId}`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/v1/agents/${agentId}`
+      : `/v1/agents/${agentId}`;
 
     const response = await fetch(url, {
       method: "DELETE",
@@ -7812,9 +8424,14 @@ export const deleteAgentCall = async (accessToken: string, agentId: string) => {
   }
 };
 
-export const makeAgentsPublicCall = async (accessToken: string, agentIds: string[]) => {
+export const makeAgentsPublicCall = async (
+  accessToken: string,
+  agentIds: string[],
+) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/agents/make_public` : `/v1/agents/make_public`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/v1/agents/make_public`
+      : `/v1/agents/make_public`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -7842,9 +8459,14 @@ export const makeAgentsPublicCall = async (accessToken: string, agentIds: string
   }
 };
 
-export const makeMCPPublicCall = async (accessToken: string, mcpServerIds: string[]) => {
+export const makeMCPPublicCall = async (
+  accessToken: string,
+  mcpServerIds: string[],
+) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/mcp/make_public` : `/v1/mcp/make_public`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/v1/mcp/make_public`
+      : `/v1/mcp/make_public`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -7872,9 +8494,14 @@ export const makeMCPPublicCall = async (accessToken: string, mcpServerIds: strin
   }
 };
 
-export const deleteGuardrailCall = async (accessToken: string, guardrailId: string) => {
+export const deleteGuardrailCall = async (
+  accessToken: string,
+  guardrailId: string,
+) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/guardrails/${guardrailId}` : `/guardrails/${guardrailId}`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/guardrails/${guardrailId}`
+      : `/guardrails/${guardrailId}`;
 
     const response = await fetch(url, {
       method: "DELETE",
@@ -7928,7 +8555,9 @@ export const getGuardrailUISettings = async (accessToken: string) => {
   }
 };
 
-export const getGuardrailProviderSpecificParams = async (accessToken: string) => {
+export const getGuardrailProviderSpecificParams = async (
+  accessToken: string,
+) => {
   try {
     const url = proxyBaseUrl
       ? `${proxyBaseUrl}/guardrails/ui/provider_specific_params`
@@ -7952,12 +8581,18 @@ export const getGuardrailProviderSpecificParams = async (accessToken: string) =>
     console.log("Guardrail provider specific params response:", data);
     return data;
   } catch (error) {
-    console.error("Failed to get guardrail provider specific parameters:", error);
+    console.error(
+      "Failed to get guardrail provider specific parameters:",
+      error,
+    );
     throw error;
   }
 };
 
-export const getCategoryYaml = async (accessToken: string, categoryName: string) => {
+export const getCategoryYaml = async (
+  accessToken: string,
+  categoryName: string,
+) => {
   try {
     // URL encode the category name to handle special characters
     const encodedCategoryName = encodeURIComponent(categoryName);
@@ -7977,9 +8612,14 @@ export const getCategoryYaml = async (accessToken: string, categoryName: string)
 
     if (!response.ok) {
       const errorData = await response.text();
-      console.error(`Failed to get category YAML. Status: ${response.status}, Error:`, errorData);
+      console.error(
+        `Failed to get category YAML. Status: ${response.status}, Error:`,
+        errorData,
+      );
       handleError(errorData);
-      throw new Error(`Failed to get category YAML: ${response.status} ${errorData}`);
+      throw new Error(
+        `Failed to get category YAML: ${response.status} ${errorData}`,
+      );
     }
 
     const data = await response.json();
@@ -8009,10 +8649,12 @@ export const getMajorAirlines = async (accessToken: string) => {
       const errorData = await response.text();
       console.error(
         `Failed to get major airlines. Status: ${response.status}, Error:`,
-        errorData
+        errorData,
       );
       handleError(errorData);
-      throw new Error(`Failed to get major airlines: ${response.status} ${errorData}`);
+      throw new Error(
+        `Failed to get major airlines: ${response.status} ${errorData}`,
+      );
     }
 
     const data = await response.json();
@@ -8023,10 +8665,15 @@ export const getMajorAirlines = async (accessToken: string) => {
   }
 };
 
-export const getAgentsList = async (accessToken: string, healthCheck: boolean = false) => {
+export const getAgentsList = async (
+  accessToken: string,
+  healthCheck = false,
+) => {
   try {
     const params = healthCheck ? "?health_check=true" : "";
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/agents${params}` : `/v1/agents${params}`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/v1/agents${params}`
+      : `/v1/agents${params}`;
 
     const response = await fetch(url, {
       method: "GET",
@@ -8053,7 +8700,9 @@ export const getAgentsList = async (accessToken: string, healthCheck: boolean = 
 
 export const getAgentInfo = async (accessToken: string, agentId: string) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/agents/${agentId}` : `/v1/agents/${agentId}`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/v1/agents/${agentId}`
+      : `/v1/agents/${agentId}`;
 
     const response = await fetch(url, {
       method: "GET",
@@ -8078,9 +8727,14 @@ export const getAgentInfo = async (accessToken: string, agentId: string) => {
   }
 };
 
-export const getGuardrailInfo = async (accessToken: string, guardrailId: string) => {
+export const getGuardrailInfo = async (
+  accessToken: string,
+  guardrailId: string,
+) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/guardrails/${guardrailId}/info` : `/guardrails/${guardrailId}/info`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/guardrails/${guardrailId}/info`
+      : `/guardrails/${guardrailId}/info`;
 
     const response = await fetch(url, {
       method: "GET",
@@ -8119,7 +8773,9 @@ export const patchAgentCall = async (
   },
 ) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/agents/${agentId}` : `/v1/agents/${agentId}`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/v1/agents/${agentId}`
+      : `/v1/agents/${agentId}`;
 
     const response = await fetch(url, {
       method: "PATCH",
@@ -8156,7 +8812,9 @@ export const updateGuardrailCall = async (
   },
 ) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/guardrails/${guardrailId}` : `/guardrails/${guardrailId}`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/guardrails/${guardrailId}`
+      : `/guardrails/${guardrailId}`;
 
     const response = await fetch(url, {
       method: "PATCH",
@@ -8190,7 +8848,9 @@ export const applyGuardrail = async (
   entities?: string[] | null,
 ) => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/guardrails/apply_guardrail` : `/guardrails/apply_guardrail`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/guardrails/apply_guardrail`
+      : `/guardrails/apply_guardrail`;
 
     const requestBody: Record<string, any> = {
       guardrail_name: guardrailName,
@@ -8284,7 +8944,9 @@ export const testCustomCodeGuardrail = async (
   request: TestCustomCodeGuardrailRequest,
 ): Promise<TestCustomCodeGuardrailResponse> => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/guardrails/test_custom_code` : `/guardrails/test_custom_code`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/guardrails/test_custom_code`
+      : `/guardrails/test_custom_code`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -8325,7 +8987,10 @@ export const testCustomCodeGuardrail = async (
   }
 };
 
-export const validateBlockedWordsFile = async (accessToken: string, fileContent: string) => {
+export const validateBlockedWordsFile = async (
+  accessToken: string,
+  fileContent: string,
+) => {
   try {
     const url = proxyBaseUrl
       ? `${proxyBaseUrl}/guardrails/validate_blocked_words_file`
@@ -8358,7 +9023,9 @@ export const validateBlockedWordsFile = async (accessToken: string, fileContent:
 export const getSSOSettings = async (accessToken: string) => {
   try {
     // Construct base URL
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/get/sso_settings` : `/get/sso_settings`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/get/sso_settings`
+      : `/get/sso_settings`;
 
     console.log("Fetching SSO configuration from:", url);
 
@@ -8386,10 +9053,15 @@ export const getSSOSettings = async (accessToken: string) => {
   }
 };
 
-export const updateSSOSettings = async (accessToken: string, settings: Record<string, any>) => {
+export const updateSSOSettings = async (
+  accessToken: string,
+  settings: Record<string, any>,
+) => {
   try {
     // Construct base URL
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/update/sso_settings` : `/update/sso_settings`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/update/sso_settings`
+      : `/update/sso_settings`;
 
     console.log("Updating SSO configuration:", settings);
 
@@ -8409,7 +9081,9 @@ export const updateSSOSettings = async (accessToken: string, settings: Record<st
           ? errorData.detail?.error || errorData.detail?.message
           : errorData?.detail;
       const errorMessage =
-        typeof detailMessage === "string" && detailMessage.length > 0 ? detailMessage : deriveErrorMessage(errorData);
+        typeof detailMessage === "string" && detailMessage.length > 0
+          ? detailMessage
+          : deriveErrorMessage(errorData);
 
       handleError(errorMessage);
 
@@ -8504,7 +9178,9 @@ export const getRemainingUsers = async (
   total_teams_remaining: number | null;
 } | null> => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/user/available_users` : `/user/available_users`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/user/available_users`
+      : `/user/available_users`;
 
     const response = await fetch(url, {
       method: "GET",
@@ -8546,7 +9222,9 @@ export const getLicenseInfo = async (
   accessToken: string,
 ): Promise<LicenseInfo | null> => {
   try {
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/health/license` : `/health/license`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/health/license`
+      : `/health/license`;
 
     const response = await fetch(url, {
       method: "GET",
@@ -8579,7 +9257,7 @@ export const updatePassThroughEndpoint = async (
   formValues: Record<string, any>,
 ) => {
   try {
-    let url = proxyBaseUrl
+    const url = proxyBaseUrl
       ? `${proxyBaseUrl}/config/pass_through_endpoint/${encodeURIComponent(endpointPath)}`
       : `/config/pass_through_endpoint/${encodeURIComponent(endpointPath)}`;
 
@@ -8608,12 +9286,17 @@ export const updatePassThroughEndpoint = async (
   }
 };
 
-export const deleteCallback = async (accessToken: string, callbackName: string) => {
+export const deleteCallback = async (
+  accessToken: string,
+  callbackName: string,
+) => {
   /**
    * Delete specific callback from proxy using the /config/callback/delete API
    */
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/config/callback/delete` : `/config/callback/delete`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/config/callback/delete`
+      : `/config/callback/delete`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -8647,10 +9330,15 @@ export const testMCPToolsListRequest = async (
   oauthAccessToken?: string | null,
 ) => {
   try {
-    console.log("Testing MCP tools list with config:", JSON.stringify(mcpServerConfig));
+    console.log(
+      "Testing MCP tools list with config:",
+      JSON.stringify(mcpServerConfig),
+    );
 
     // Construct the URL for POST request
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/mcp-rest/test/tools/list` : `/mcp-rest/test/tools/list`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/mcp-rest/test/tools/list`
+      : `/mcp-rest/test/tools/list`;
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
@@ -8691,7 +9379,9 @@ export const testMCPToolsListRequest = async (
         return {
           tools: [],
           error: "request_failed",
-          message: data.message || `MCP tools list failed: ${response.status} ${response.statusText}`,
+          message:
+            data.message ||
+            `MCP tools list failed: ${response.status} ${response.statusText}`,
         };
       }
     }
@@ -8704,8 +9394,13 @@ export const testMCPToolsListRequest = async (
   }
 };
 
-export const cacheTemporaryMcpServer = async (accessToken: string, payload: Record<string, any>) => {
-  const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/mcp/server/oauth/session` : `/v1/mcp/server/oauth/session`;
+export const cacheTemporaryMcpServer = async (
+  accessToken: string,
+  payload: Record<string, any>,
+) => {
+  const url = proxyBaseUrl
+    ? `${proxyBaseUrl}/v1/mcp/server/oauth/session`
+    : `/v1/mcp/server/oauth/session`;
   const response = await fetch(url, {
     method: "POST",
     headers: {
@@ -8717,7 +9412,8 @@ export const cacheTemporaryMcpServer = async (accessToken: string, payload: Reco
 
   const data = await response.json();
   if (!response.ok) {
-    const errorMessage = deriveErrorMessage(data) || data?.error || "Failed to cache MCP server";
+    const errorMessage =
+      deriveErrorMessage(data) || data?.error || "Failed to cache MCP server";
     throw new Error(errorMessage);
   }
   return data;
@@ -8751,7 +9447,10 @@ export const registerMcpOAuthClient = async (
 
   const data = await response.json();
   if (!response.ok) {
-    const errorMessage = deriveErrorMessage(data) || data?.detail || "Failed to register OAuth client";
+    const errorMessage =
+      deriveErrorMessage(data) ||
+      data?.detail ||
+      "Failed to register OAuth client";
     throw new Error(errorMessage);
   }
   return data;
@@ -8843,7 +9542,8 @@ export const exchangeMcpOAuthToken = async ({
 
   const data = await response.json();
   if (!response.ok) {
-    const errorMessage = deriveErrorMessage(data) || data?.detail || "OAuth token exchange failed";
+    const errorMessage =
+      deriveErrorMessage(data) || data?.detail || "OAuth token exchange failed";
     throw new Error(errorMessage);
   }
   return data;
@@ -8916,7 +9616,12 @@ export const searchToolQueryCall = async (
 };
 
 // New endpoint functions for DAU, WAU, MAU
-export const tagDauCall = async (accessToken: string, endDate: Date, tagFilter?: string, tagFilters?: string[]) => {
+export const tagDauCall = async (
+  accessToken: string,
+  endDate: Date,
+  tagFilter?: string,
+  tagFilters?: string[],
+) => {
   /**
    * Get Daily Active Users (DAU) for last 7 days ending on endDate
    */
@@ -8972,7 +9677,12 @@ export const tagDauCall = async (accessToken: string, endDate: Date, tagFilter?:
   }
 };
 
-export const tagWauCall = async (accessToken: string, endDate: Date, tagFilter?: string, tagFilters?: string[]) => {
+export const tagWauCall = async (
+  accessToken: string,
+  endDate: Date,
+  tagFilter?: string,
+  tagFilters?: string[],
+) => {
   /**
    * Get Weekly Active Users (WAU) for last 7 weeks ending on endDate
    */
@@ -9028,7 +9738,12 @@ export const tagWauCall = async (accessToken: string, endDate: Date, tagFilter?:
   }
 };
 
-export const tagMauCall = async (accessToken: string, endDate: Date, tagFilter?: string, tagFilters?: string[]) => {
+export const tagMauCall = async (
+  accessToken: string,
+  endDate: Date,
+  tagFilter?: string,
+  tagFilters?: string[],
+) => {
   /**
    * Get Monthly Active Users (MAU) for last 7 months ending on endDate
    */
@@ -9089,7 +9804,7 @@ export const tagDistinctCall = async (accessToken: string) => {
    * Get all distinct user agent tags (up to 250)
    */
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/tag/distinct` : `/tag/distinct`;
+    const url = proxyBaseUrl ? `${proxyBaseUrl}/tag/distinct` : `/tag/distinct`;
 
     const response = await fetch(url, {
       method: "GET",
@@ -9176,15 +9891,17 @@ export const userAgentSummaryCall = async (
 
 export const perUserAnalyticsCall = async (
   accessToken: string,
-  page: number = 1,
-  pageSize: number = 50,
+  page = 1,
+  pageSize = 50,
   tagFilters?: string[],
 ) => {
   /**
    * Get per-user analytics data for the last 30 days
    */
   try {
-    let url = proxyBaseUrl ? `${proxyBaseUrl}/tag/user-agent/per-user-analytics` : `/tag/user-agent/per-user-analytics`;
+    let url = proxyBaseUrl
+      ? `${proxyBaseUrl}/tag/user-agent/per-user-analytics`
+      : `/tag/user-agent/per-user-analytics`;
 
     const queryParams = new URLSearchParams();
 
@@ -9234,7 +9951,9 @@ export const deriveErrorMessage = (errorData: any): string => {
       ? detail
       : undefined;
   return (
-    (errorData?.error && (errorData.error.message || (typeof errorData.error === "string" ? errorData.error : undefined))) ||
+    (errorData?.error &&
+      (errorData.error.message ||
+        (typeof errorData.error === "string" ? errorData.error : undefined))) ||
     errorData?.message ||
     detailStr ||
     JSON.stringify(errorData)
@@ -9254,7 +9973,11 @@ interface LoginResponse {
   expires_in?: number;
 }
 
-export const loginCall = async (username: string, password: string, useV3?: boolean): Promise<LoginResponse> => {
+export const loginCall = async (
+  username: string,
+  password: string,
+  useV3?: boolean,
+): Promise<LoginResponse> => {
   const proxyBaseUrl = getProxyBaseUrl();
   const loginPath = useV3 ? "/v3/login" : "/v2/login";
   const loginUrl = proxyBaseUrl ? `${proxyBaseUrl}${loginPath}` : loginPath;
@@ -9318,7 +10041,10 @@ export const loginCall = async (username: string, password: string, useV3?: bool
  * Exchange a single-use login code for a JWT token.
  * Used by the SSO callback when the worker redirects back with ?code=.
  */
-export const exchangeLoginCode = async (code: string, workerBaseUrl?: string | null): Promise<string> => {
+export const exchangeLoginCode = async (
+  code: string,
+  workerBaseUrl?: string | null,
+): Promise<string> => {
   const base = workerBaseUrl || getProxyBaseUrl();
   const response = await fetch(`${base}/v3/login/exchange`, {
     method: "POST",
@@ -9340,7 +10066,9 @@ export const exchangeLoginCode = async (code: string, workerBaseUrl?: string | n
 
 export const getUiSettings = async () => {
   const proxyBaseUrl = getProxyBaseUrl();
-  const url = proxyBaseUrl ? `${proxyBaseUrl}/get/ui_settings` : `/get/ui_settings`;
+  const url = proxyBaseUrl
+    ? `${proxyBaseUrl}/get/ui_settings`
+    : `/get/ui_settings`;
   const response = await fetch(url, {
     method: "GET",
   });
@@ -9353,9 +10081,14 @@ export const getUiSettings = async () => {
   return data;
 };
 
-export const updateUiSettings = async (accessToken: string, settings: Record<string, any>) => {
+export const updateUiSettings = async (
+  accessToken: string,
+  settings: Record<string, any>,
+) => {
   const proxyBaseUrl = getProxyBaseUrl();
-  const url = proxyBaseUrl ? `${proxyBaseUrl}/update/ui_settings` : `/update/ui_settings`;
+  const url = proxyBaseUrl
+    ? `${proxyBaseUrl}/update/ui_settings`
+    : `/update/ui_settings`;
   const response = await fetch(url, {
     method: "PATCH",
     headers: {
@@ -9373,7 +10106,6 @@ export const updateUiSettings = async (accessToken: string, settings: Record<str
   return data;
 };
 
-
 // Claude Code Marketplace Networking Functions
 
 /**
@@ -9383,7 +10115,9 @@ export const updateUiSettings = async (accessToken: string, settings: Record<str
 export const getClaudeCodeMarketplace = async () => {
   try {
     const proxyBaseUrl = getProxyBaseUrl();
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/claude-code/marketplace.json` : `/claude-code/marketplace.json`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/claude-code/marketplace.json`
+      : `/claude-code/marketplace.json`;
 
     const response = await fetch(url, {
       method: "GET",
@@ -9412,7 +10146,10 @@ export const getClaudeCodeMarketplace = async () => {
  * @param accessToken - Admin access token
  * @param enabledOnly - If true, only return enabled plugins (default: false)
  */
-export const getClaudeCodePluginsList = async (accessToken: string, enabledOnly: boolean = false) => {
+export const getClaudeCodePluginsList = async (
+  accessToken: string,
+  enabledOnly = false,
+) => {
   try {
     const proxyBaseUrl = getProxyBaseUrl();
     const url = proxyBaseUrl
@@ -9447,7 +10184,10 @@ export const getClaudeCodePluginsList = async (accessToken: string, enabledOnly:
  * @param accessToken - Admin access token
  * @param pluginName - Name of the plugin
  */
-export const getClaudeCodePluginDetails = async (accessToken: string, pluginName: string) => {
+export const getClaudeCodePluginDetails = async (
+  accessToken: string,
+  pluginName: string,
+) => {
   try {
     const proxyBaseUrl = getProxyBaseUrl();
     const url = proxyBaseUrl
@@ -9497,7 +10237,9 @@ export const registerClaudeCodePlugin = async (
 ) => {
   try {
     const proxyBaseUrl = getProxyBaseUrl();
-    const url = proxyBaseUrl ? `${proxyBaseUrl}/claude-code/plugins` : `/claude-code/plugins`;
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/claude-code/plugins`
+      : `/claude-code/plugins`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -9528,7 +10270,10 @@ export const registerClaudeCodePlugin = async (
  * @param accessToken - Admin access token
  * @param pluginName - Name of the plugin to enable
  */
-export const enableClaudeCodePlugin = async (accessToken: string, pluginName: string) => {
+export const enableClaudeCodePlugin = async (
+  accessToken: string,
+  pluginName: string,
+) => {
   try {
     const proxyBaseUrl = getProxyBaseUrl();
     const url = proxyBaseUrl
@@ -9563,7 +10308,10 @@ export const enableClaudeCodePlugin = async (accessToken: string, pluginName: st
  * @param accessToken - Admin access token
  * @param pluginName - Name of the plugin to disable
  */
-export const disableClaudeCodePlugin = async (accessToken: string, pluginName: string) => {
+export const disableClaudeCodePlugin = async (
+  accessToken: string,
+  pluginName: string,
+) => {
   try {
     const proxyBaseUrl = getProxyBaseUrl();
     const url = proxyBaseUrl
@@ -9598,7 +10346,10 @@ export const disableClaudeCodePlugin = async (accessToken: string, pluginName: s
  * @param accessToken - Admin access token
  * @param pluginName - Name of the plugin to delete
  */
-export const deleteClaudeCodePlugin = async (accessToken: string, pluginName: string) => {
+export const deleteClaudeCodePlugin = async (
+  accessToken: string,
+  pluginName: string,
+) => {
   try {
     const proxyBaseUrl = getProxyBaseUrl();
     const url = proxyBaseUrl
@@ -9653,7 +10404,7 @@ export interface ComplianceCheckRequest {
 
 export const checkEuAiActCompliance = async (
   accessToken: string,
-  payload: ComplianceCheckRequest
+  payload: ComplianceCheckRequest,
 ): Promise<ComplianceResponse> => {
   const url = proxyBaseUrl
     ? `${proxyBaseUrl}/compliance/eu-ai-act`
@@ -9675,7 +10426,7 @@ export const checkEuAiActCompliance = async (
 
 export const checkGdprCompliance = async (
   accessToken: string,
-  payload: ComplianceCheckRequest
+  payload: ComplianceCheckRequest,
 ): Promise<ComplianceResponse> => {
   const url = proxyBaseUrl
     ? `${proxyBaseUrl}/compliance/gdpr`
@@ -9726,7 +10477,7 @@ export interface ToolPolicyOptionsResponse {
 }
 
 export const fetchToolPolicyOptions = async (
-  accessToken: string
+  accessToken: string,
 ): Promise<ToolPolicyOptionsResponse> => {
   const url = proxyBaseUrl
     ? `${proxyBaseUrl}/v1/tool/policy/options`
@@ -9745,7 +10496,9 @@ export const fetchToolPolicyOptions = async (
   return response.json();
 };
 
-export const fetchToolsList = async (accessToken: string): Promise<ToolRow[]> => {
+export const fetchToolsList = async (
+  accessToken: string,
+): Promise<ToolRow[]> => {
   const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/tool/list` : `/v1/tool/list`;
   const response = await fetch(url, {
     method: "GET",
@@ -9797,7 +10550,12 @@ export interface ToolUsageLogsResponse {
 export const getToolUsageLogs = async (
   accessToken: string,
   toolName: string,
-  options: { page?: number; pageSize?: number; startDate?: string; endDate?: string }
+  options: {
+    page?: number;
+    pageSize?: number;
+    startDate?: string;
+    endDate?: string;
+  },
 ): Promise<ToolUsageLogsResponse> => {
   const encoded = encodeURIComponent(toolName);
   const url = proxyBaseUrl
@@ -9805,7 +10563,8 @@ export const getToolUsageLogs = async (
     : `/v1/tool/${encoded}/logs`;
   const params = new URLSearchParams();
   if (options.page != null) params.append("page", String(options.page));
-  if (options.pageSize != null) params.append("page_size", String(options.pageSize));
+  if (options.pageSize != null)
+    params.append("page_size", String(options.pageSize));
   if (options.startDate) params.append("start_date", options.startDate);
   if (options.endDate) params.append("end_date", options.endDate);
   const fullUrl = params.toString() ? `${url}?${params.toString()}` : url;
@@ -9825,7 +10584,7 @@ export const getToolUsageLogs = async (
 
 export const fetchToolDetail = async (
   accessToken: string,
-  toolName: string
+  toolName: string,
 ): Promise<ToolDetailResponse> => {
   const encoded = encodeURIComponent(toolName);
   const url = proxyBaseUrl
@@ -9849,17 +10608,25 @@ export const updateToolPolicy = async (
   accessToken: string,
   toolName: string,
   policies: { input_policy?: string; output_policy?: string },
-  options?: { team_id?: string | null; key_hash?: string | null; key_alias?: string | null }
+  options?: {
+    team_id?: string | null;
+    key_hash?: string | null;
+    key_alias?: string | null;
+  },
 ): Promise<ToolRow> => {
-  const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/tool/policy` : `/v1/tool/policy`;
+  const url = proxyBaseUrl
+    ? `${proxyBaseUrl}/v1/tool/policy`
+    : `/v1/tool/policy`;
   const body: Record<string, string | undefined | null> = {
     tool_name: toolName,
   };
   if (policies.input_policy != null) body.input_policy = policies.input_policy;
-  if (policies.output_policy != null) body.output_policy = policies.output_policy;
+  if (policies.output_policy != null)
+    body.output_policy = policies.output_policy;
   if (options?.team_id != null) body.team_id = options.team_id || undefined;
   if (options?.key_hash != null) body.key_hash = options.key_hash || undefined;
-  if (options?.key_alias != null) body.key_alias = options.key_alias || undefined;
+  if (options?.key_alias != null)
+    body.key_alias = options.key_alias || undefined;
   const response = await fetch(url, {
     method: "POST",
     headers: {
@@ -9878,12 +10645,14 @@ export const updateToolPolicy = async (
 export const deleteToolPolicyOverride = async (
   accessToken: string,
   toolName: string,
-  params: { team_id?: string | null; key_hash?: string | null }
+  params: { team_id?: string | null; key_hash?: string | null },
 ): Promise<{ deleted: boolean; tool_name: string }> => {
   const encoded = encodeURIComponent(toolName);
   const q = new URLSearchParams();
-  if (params.team_id != null && params.team_id !== "") q.set("team_id", params.team_id);
-  if (params.key_hash != null && params.key_hash !== "") q.set("key_hash", params.key_hash);
+  if (params.team_id != null && params.team_id !== "")
+    q.set("team_id", params.team_id);
+  if (params.key_hash != null && params.key_hash !== "")
+    q.set("key_hash", params.key_hash);
   const query = q.toString();
   const url = proxyBaseUrl
     ? `${proxyBaseUrl}/v1/tool/${encoded}/overrides${query ? `?${query}` : ""}`
@@ -9924,7 +10693,12 @@ export interface MCPUserCredentialListItem {
 export const storeMCPOAuthUserCredential = async (
   accessToken: string,
   serverId: string,
-  tokenResponse: { access_token: string; refresh_token?: string; expires_in?: number; scopes?: string[] },
+  tokenResponse: {
+    access_token: string;
+    refresh_token?: string;
+    expires_in?: number;
+    scopes?: string[];
+  },
 ): Promise<MCPOAuthUserCredentialStatus> => {
   const url = proxyBaseUrl
     ? `${proxyBaseUrl}/v1/mcp/server/${serverId}/oauth-user-credential`
@@ -9941,14 +10715,20 @@ export const storeMCPOAuthUserCredential = async (
     const err = await response.json().catch(() => ({}));
     const errObj = err as { detail?: unknown };
     const detail = errObj?.detail;
-    const detailMsg =
-      Array.isArray(detail)
-        ? detail.map((d: unknown) => (d && typeof d === "object" ? (d as Record<string, unknown>).msg ?? JSON.stringify(d) : String(d))).join("; ")
-        : typeof detail === "string"
-          ? detail
-          : detail && typeof (detail as Record<string, unknown>).error === "string"
-            ? (detail as Record<string, unknown>).error as string
-            : undefined;
+    const detailMsg = Array.isArray(detail)
+      ? detail
+          .map((d: unknown) =>
+            d && typeof d === "object"
+              ? (d as Record<string, unknown>).msg ?? JSON.stringify(d)
+              : String(d),
+          )
+          .join("; ")
+      : typeof detail === "string"
+        ? detail
+        : detail &&
+            typeof (detail as Record<string, unknown>).error === "string"
+          ? ((detail as Record<string, unknown>).error as string)
+          : undefined;
     throw new Error(detailMsg || "Failed to store OAuth credential");
   }
   return response.json();
@@ -9969,14 +10749,20 @@ export const deleteMCPOAuthUserCredential = async (
     const err = await response.json().catch(() => ({}));
     const errObj = err as { detail?: unknown };
     const detail = errObj?.detail;
-    const detailMsg =
-      Array.isArray(detail)
-        ? detail.map((d: unknown) => (d && typeof d === "object" ? (d as Record<string, unknown>).msg ?? JSON.stringify(d) : String(d))).join("; ")
-        : typeof detail === "string"
-          ? detail
-          : detail && typeof (detail as Record<string, unknown>).error === "string"
-            ? (detail as Record<string, unknown>).error as string
-            : undefined;
+    const detailMsg = Array.isArray(detail)
+      ? detail
+          .map((d: unknown) =>
+            d && typeof d === "object"
+              ? (d as Record<string, unknown>).msg ?? JSON.stringify(d)
+              : String(d),
+          )
+          .join("; ")
+      : typeof detail === "string"
+        ? detail
+        : detail &&
+            typeof (detail as Record<string, unknown>).error === "string"
+          ? ((detail as Record<string, unknown>).error as string)
+          : undefined;
     throw new Error(detailMsg || "Failed to revoke OAuth credential");
   }
   return response.json();

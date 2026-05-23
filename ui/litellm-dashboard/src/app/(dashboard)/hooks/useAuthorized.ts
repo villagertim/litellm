@@ -3,10 +3,13 @@
 import { getProxyBaseUrl } from "@/components/networking";
 import { clearTokenCookies, getCookie } from "@/utils/cookieUtils";
 import { checkTokenValidity, decodeToken } from "@/utils/jwtUtils";
-import { buildLoginUrlWithReturn, storeReturnUrl } from "@/utils/returnUrlUtils";
+import {
+  buildLoginUrlWithReturn,
+  storeReturnUrl,
+} from "@/utils/returnUrlUtils";
+import { formatUserRole } from "@/utils/roles";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo } from "react";
-import { formatUserRole } from "@/utils/roles";
 import { useUIConfig } from "./uiConfig/useUIConfig";
 
 const useAuthorized = () => {
@@ -49,7 +52,8 @@ const useAuthorized = () => {
     userEmail: decoded?.user_email ?? null,
     userRole: formatUserRole(decoded?.user_role),
     premiumUser: decoded?.premium_user ?? null,
-    disabledPersonalKeyCreation: decoded?.disabled_non_admin_personal_key_creation ?? null,
+    disabledPersonalKeyCreation:
+      decoded?.disabled_non_admin_personal_key_creation ?? null,
     showSSOBanner: decoded?.login_method === "username_password",
   };
 };

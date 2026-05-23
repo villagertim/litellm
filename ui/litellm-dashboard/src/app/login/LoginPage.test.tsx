@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import LoginPage from "./LoginPage";
 
 const mockPush = vi.fn();
@@ -26,7 +26,8 @@ vi.mock("@/utils/jwtUtils", () => ({
 }));
 
 vi.mock("@/components/networking", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/components/networking")>();
+  const actual =
+    await importOriginal<typeof import("@/components/networking")>();
   return {
     ...actual,
     getProxyBaseUrl: vi.fn().mockReturnValue("http://localhost:4000"),
@@ -93,7 +94,9 @@ describe("LoginPage", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("heading", { name: "Login" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: "Login" }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -145,7 +148,9 @@ describe("LoginPage", () => {
     );
 
     await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith("http://localhost:4000/sso/key/generate");
+      expect(mockPush).toHaveBeenCalledWith(
+        "http://localhost:4000/sso/key/generate",
+      );
     });
   });
 
@@ -171,7 +176,9 @@ describe("LoginPage", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("heading", { name: "Login" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: "Login" }),
+      ).toBeInTheDocument();
     });
 
     expect(mockPush).not.toHaveBeenCalled();
@@ -255,10 +262,14 @@ describe("LoginPage", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("heading", { name: "Login" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: "Login" }),
+      ).toBeInTheDocument();
     });
 
-    expect(screen.getByRole("button", { name: "Login with SSO" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Login with SSO" }),
+    ).toBeInTheDocument();
   });
 
   it("should show disabled Login with SSO button with popover when sso_configured is false", async () => {
@@ -282,7 +293,9 @@ describe("LoginPage", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("heading", { name: "Login" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: "Login" }),
+      ).toBeInTheDocument();
     });
 
     const ssoButton = screen.getByRole("button", { name: "Login with SSO" });
@@ -335,7 +348,9 @@ describe("LoginPage", () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByRole("heading", { name: "Login" })).toBeInTheDocument();
+        expect(
+          screen.getByRole("heading", { name: "Login" }),
+        ).toBeInTheDocument();
       });
 
       expect(document.cookie).not.toContain("token=attacker.jwt.value");
@@ -352,7 +367,9 @@ describe("LoginPage", () => {
         },
         isLoading: false,
       });
-      (getCookie as ReturnType<typeof vi.fn>).mockReturnValue("legitimate-session-jwt");
+      (getCookie as ReturnType<typeof vi.fn>).mockReturnValue(
+        "legitimate-session-jwt",
+      );
       (isJwtExpired as ReturnType<typeof vi.fn>).mockReturnValue(false);
 
       const queryClient = createQueryClient();

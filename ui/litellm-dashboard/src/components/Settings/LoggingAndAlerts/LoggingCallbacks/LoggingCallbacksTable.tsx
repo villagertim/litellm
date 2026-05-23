@@ -2,9 +2,9 @@ import { Button } from "@tremor/react";
 import type { TableProps } from "antd";
 import { Table } from "antd";
 import Title from "antd/es/typography/Title";
-import React from "react";
+import type React from "react";
 import TableIconActionButton from "../../../common_components/IconActionButton/TableIconActionButtons/TableIconActionButton";
-import { AlertingObject } from "./types";
+import type { AlertingObject } from "./types";
 
 type LoggingCallbacksProps = {
   callbacks: AlertingObject[];
@@ -58,7 +58,8 @@ export const LoggingCallbacksTable: React.FC<LoggingCallbacksProps> = ({
       key: "mode",
       render: (_: unknown, record: CallbackRow) => {
         const mode = record.mode || "success";
-        const label = CALLBACK_MODES.find((m) => m.value === mode)?.label || mode;
+        const label =
+          CALLBACK_MODES.find((m) => m.value === mode)?.label || mode;
         const badgeClass =
           mode === "success"
             ? "bg-green-100 text-green-800"
@@ -66,7 +67,9 @@ export const LoggingCallbacksTable: React.FC<LoggingCallbacksProps> = ({
               ? "bg-red-100 text-red-800"
               : "bg-blue-100 text-blue-800";
         return (
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badgeClass}`}>
+          <span
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badgeClass}`}
+          >
             {label}
           </span>
         );
@@ -74,14 +77,30 @@ export const LoggingCallbacksTable: React.FC<LoggingCallbacksProps> = ({
       width: 240,
     },
     {
-      title: <span className="font-medium text-gray-700 text-right w-full block">Actions</span>,
+      title: (
+        <span className="font-medium text-gray-700 text-right w-full block">
+          Actions
+        </span>
+      ),
       key: "actions",
       align: "right",
       render: (_: unknown, record: CallbackRow) => (
         <div className="flex justify-end gap-2">
-          <TableIconActionButton variant="Test" tooltipText="Test Callback" onClick={() => onTest(record)} />
-          <TableIconActionButton variant="Edit" tooltipText="Edit Callback" onClick={() => onEdit(record)} />
-          <TableIconActionButton variant="Delete" tooltipText="Delete Callback" onClick={() => onDelete(record)} />
+          <TableIconActionButton
+            variant="Test"
+            tooltipText="Test Callback"
+            onClick={() => onTest(record)}
+          />
+          <TableIconActionButton
+            variant="Edit"
+            tooltipText="Edit Callback"
+            onClick={() => onEdit(record)}
+          />
+          <TableIconActionButton
+            variant="Delete"
+            tooltipText="Delete Callback"
+            onClick={() => onDelete(record)}
+          />
         </div>
       ),
       width: 240,
@@ -100,8 +119,13 @@ export const LoggingCallbacksTable: React.FC<LoggingCallbacksProps> = ({
         {callbacks.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-8 bg-gray-50 border border-gray-200 rounded-lg">
             <div className="text-center">
-              <h3 className="text-lg font-medium text-gray-700 mb-2">No callbacks configured</h3>
-              <p className="text-gray-500">Add your first callback to start logging data to external services.</p>
+              <h3 className="text-lg font-medium text-gray-700 mb-2">
+                No callbacks configured
+              </h3>
+              <p className="text-gray-500">
+                Add your first callback to start logging data to external
+                services.
+              </p>
             </div>
           </div>
         ) : (

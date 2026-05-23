@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
 import React from "react";
+import { describe, expect, it, vi } from "vitest";
 
 vi.mock("./vector_store_management/VectorStoreSelector", () => ({
   __esModule: true,

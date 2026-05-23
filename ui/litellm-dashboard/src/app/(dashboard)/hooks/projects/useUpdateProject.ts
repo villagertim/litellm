@@ -1,12 +1,12 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import {
-  getProxyBaseUrl,
-  getGlobalLitellmHeaderName,
   deriveErrorMessage,
+  getGlobalLitellmHeaderName,
+  getProxyBaseUrl,
   handleError,
 } from "@/components/networking";
-import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { ProjectResponse, projectKeys } from "./useProjects";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { type ProjectResponse, projectKeys } from "./useProjects";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 

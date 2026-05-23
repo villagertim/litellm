@@ -1,5 +1,5 @@
-import React from "react";
 import { Select } from "antd";
+import type React from "react";
 
 interface RoutingStrategySelectorProps {
   selectedStrategy: string | null;
@@ -20,7 +20,8 @@ const RoutingStrategySelector: React.FC<RoutingStrategySelectorProps> = ({
     <div className="space-y-2 max-w-3xl">
       <div>
         <label className="text-xs font-medium text-gray-700 uppercase tracking-wide">
-          {routerFieldsMetadata["routing_strategy"]?.ui_field_name || "Routing Strategy"}
+          {routerFieldsMetadata["routing_strategy"]?.ui_field_name ||
+            "Routing Strategy"}
         </label>
         <p className="text-xs text-gray-500 mt-0.5 mb-2">
           {routerFieldsMetadata["routing_strategy"]?.field_description || ""}
@@ -36,7 +37,9 @@ const RoutingStrategySelector: React.FC<RoutingStrategySelectorProps> = ({
           {availableStrategies.map((strategy) => (
             <Select.Option key={strategy} value={strategy} label={strategy}>
               <div className="flex flex-col gap-0.5 py-1">
-                <span className="font-mono text-sm font-medium">{strategy}</span>
+                <span className="font-mono text-sm font-medium">
+                  {strategy}
+                </span>
                 {routingStrategyDescriptions[strategy] && (
                   <span className="text-xs text-gray-500 font-normal">
                     {routingStrategyDescriptions[strategy]}
@@ -52,4 +55,3 @@ const RoutingStrategySelector: React.FC<RoutingStrategySelectorProps> = ({
 };
 
 export default RoutingStrategySelector;
-

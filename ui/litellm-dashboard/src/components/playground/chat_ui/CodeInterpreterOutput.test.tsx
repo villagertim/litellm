@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import CodeInterpreterOutput from "./CodeInterpreterOutput";
 
 vi.mock("@/components/networking", () => ({
@@ -22,7 +22,9 @@ describe("CodeInterpreterOutput", () => {
   });
 
   it("should render", () => {
-    render(<CodeInterpreterOutput code="print('hello')" accessToken="test-token" />);
+    render(
+      <CodeInterpreterOutput code="print('hello')" accessToken="test-token" />,
+    );
 
     expect(screen.getByText("Python Code Executed")).toBeInTheDocument();
   });
@@ -30,7 +32,9 @@ describe("CodeInterpreterOutput", () => {
   it("should display code in syntax highlighter", async () => {
     const user = userEvent.setup();
     const code = "print('hello world')";
-    const { container } = render(<CodeInterpreterOutput code={code} accessToken="test-token" />);
+    const { container } = render(
+      <CodeInterpreterOutput code={code} accessToken="test-token" />,
+    );
 
     expect(screen.getByText("Python Code Executed")).toBeInTheDocument();
 
@@ -208,7 +212,13 @@ describe("CodeInterpreterOutput", () => {
       },
     ];
 
-    render(<CodeInterpreterOutput code="import pandas as pd" annotations={annotations} accessToken="test-token" />);
+    render(
+      <CodeInterpreterOutput
+        code="import pandas as pd"
+        annotations={annotations}
+        accessToken="test-token"
+      />,
+    );
 
     await waitFor(() => {
       expect(screen.getByText("data.csv")).toBeInTheDocument();
@@ -233,7 +243,9 @@ describe("CodeInterpreterOutput", () => {
   });
 
   it("should return null when no code and no annotations", () => {
-    const { container } = render(<CodeInterpreterOutput accessToken="test-token" />);
+    const { container } = render(
+      <CodeInterpreterOutput accessToken="test-token" />,
+    );
 
     expect(container.firstChild).toBeNull();
   });
@@ -296,7 +308,9 @@ describe("CodeInterpreterOutput", () => {
   });
 
   it("should handle fetch errors gracefully", async () => {
-    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const consoleErrorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
     (global.fetch as any).mockRejectedValue(new Error("Network error"));
 
     const annotations = [

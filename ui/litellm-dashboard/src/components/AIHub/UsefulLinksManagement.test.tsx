@@ -1,5 +1,9 @@
 import NotificationsManager from "@/components/molecules/notifications_manager";
-import { getProxyBaseUrl, getPublicModelHubInfo, updateUsefulLinksCall } from "@/components/networking";
+import {
+  getProxyBaseUrl,
+  getPublicModelHubInfo,
+  updateUsefulLinksCall,
+} from "@/components/networking";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -51,7 +55,8 @@ describe("UsefulLinksManagement", () => {
     const user = userEvent.setup();
     render(<UsefulLinksManagement accessToken="token" userRole="Admin" />);
 
-    const displayNameInput = await screen.findByPlaceholderText("Friendly name");
+    const displayNameInput =
+      await screen.findByPlaceholderText("Friendly name");
     const urlInput = screen.getByPlaceholderText("https://example.com");
 
     await user.type(displayNameInput, "Docs");
@@ -66,7 +71,9 @@ describe("UsefulLinksManagement", () => {
 
     expect(await screen.findByText("Docs")).toBeInTheDocument();
     expect(screen.getByText("https://docs.example.com")).toBeInTheDocument();
-    expect(mockedNotifications.success).toHaveBeenCalledWith("Link added successfully");
+    expect(mockedNotifications.success).toHaveBeenCalledWith(
+      "Link added successfully",
+    );
   });
 
   it("should rearrange links and save the new order", async () => {
@@ -84,7 +91,9 @@ describe("UsefulLinksManagement", () => {
 
     render(<UsefulLinksManagement accessToken="token" userRole="Admin" />);
 
-    await waitFor(() => expect(screen.getByText("First Link")).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText("First Link")).toBeInTheDocument(),
+    );
 
     await user.click(screen.getByRole("button", { name: /rearrange order/i }));
 
@@ -101,13 +110,17 @@ describe("UsefulLinksManagement", () => {
       }),
     );
 
-    expect(mockedNotifications.success).toHaveBeenCalledWith("Link order saved successfully");
+    expect(mockedNotifications.success).toHaveBeenCalledWith(
+      "Link order saved successfully",
+    );
   });
 
   it("should display the Model Hub link", async () => {
     render(<UsefulLinksManagement accessToken="token" userRole="Admin" />);
 
-    expect(await screen.findByRole("link", { name: /public model hub/i })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("link", { name: /public model hub/i }),
+    ).toBeInTheDocument();
   });
 
   it("should edit a link when edit button is clicked", async () => {
@@ -123,7 +136,9 @@ describe("UsefulLinksManagement", () => {
 
     render(<UsefulLinksManagement accessToken="token" userRole="Admin" />);
 
-    await waitFor(() => expect(screen.getByText("Test Link")).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText("Test Link")).toBeInTheDocument(),
+    );
 
     // Click edit button
     const editButton = screen.getByTestId("edit-link-0-Test Link");
@@ -131,7 +146,9 @@ describe("UsefulLinksManagement", () => {
 
     // Should show input fields in edit mode
     expect(screen.getByDisplayValue("Test Link")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("https://test.example.com")).toBeInTheDocument();
+    expect(
+      screen.getByDisplayValue("https://test.example.com"),
+    ).toBeInTheDocument();
   });
 
   it("should update a link when save is clicked in edit mode", async () => {
@@ -147,7 +164,9 @@ describe("UsefulLinksManagement", () => {
 
     render(<UsefulLinksManagement accessToken="token" userRole="Admin" />);
 
-    await waitFor(() => expect(screen.getByText("Test Link")).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText("Test Link")).toBeInTheDocument(),
+    );
 
     // Click edit button
     const editButton = screen.getByTestId("edit-link-0-Test Link");
@@ -167,7 +186,9 @@ describe("UsefulLinksManagement", () => {
       }),
     );
 
-    expect(mockedNotifications.success).toHaveBeenCalledWith("Link updated successfully");
+    expect(mockedNotifications.success).toHaveBeenCalledWith(
+      "Link updated successfully",
+    );
   });
 
   it("should cancel editing when cancel button is clicked", async () => {
@@ -183,7 +204,9 @@ describe("UsefulLinksManagement", () => {
 
     render(<UsefulLinksManagement accessToken="token" userRole="Admin" />);
 
-    await waitFor(() => expect(screen.getByText("Test Link")).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText("Test Link")).toBeInTheDocument(),
+    );
 
     // Click edit button
     const editButton = screen.getByTestId("edit-link-0-Test Link");
@@ -216,13 +239,17 @@ describe("UsefulLinksManagement", () => {
 
     render(<UsefulLinksManagement accessToken="token" userRole="Admin" />);
 
-    await waitFor(() => expect(screen.getByText("First Link")).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText("First Link")).toBeInTheDocument(),
+    );
 
     // Enter rearrange mode
     await user.click(screen.getByRole("button", { name: /rearrange order/i }));
 
     // Try to move down the last item (should not do anything)
-    const secondLinkMoveDownButton = screen.getByTestId("move-down-1-Second Link");
+    const secondLinkMoveDownButton = screen.getByTestId(
+      "move-down-1-Second Link",
+    );
     await user.click(secondLinkMoveDownButton);
 
     // Links should remain in same order
@@ -235,7 +262,9 @@ describe("UsefulLinksManagement", () => {
     const user = userEvent.setup();
     render(<UsefulLinksManagement accessToken="token" userRole="Admin" />);
 
-    await waitFor(() => expect(screen.getByText("Link Management")).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText("Link Management")).toBeInTheDocument(),
+    );
 
     // Initially expanded
     expect(screen.getByText("Manage Existing Links")).toBeInTheDocument();

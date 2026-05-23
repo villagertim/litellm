@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Text, Badge } from "@tremor/react";
 import { DatabaseIcon } from "@heroicons/react/outline";
+import { Badge, Text } from "@tremor/react";
+import React, { useState, useEffect } from "react";
 import { vectorStoreListCall } from "../networking";
 
 interface VectorStoreDetails {
@@ -13,8 +13,13 @@ interface VectorStorePermissionsProps {
   accessToken?: string | null;
 }
 
-export function VectorStorePermissions({ vectorStores, accessToken }: VectorStorePermissionsProps) {
-  const [vectorStoreDetails, setVectorStoreDetails] = useState<VectorStoreDetails[]>([]);
+export function VectorStorePermissions({
+  vectorStores,
+  accessToken,
+}: VectorStorePermissionsProps) {
+  const [vectorStoreDetails, setVectorStoreDetails] = useState<
+    VectorStoreDetails[]
+  >([]);
 
   // Fetch vector store details when component mounts
   useEffect(() => {
@@ -41,7 +46,9 @@ export function VectorStorePermissions({ vectorStores, accessToken }: VectorStor
 
   // Function to get display name for vector store
   const getVectorStoreDisplayName = (storeId: string) => {
-    const storeDetail = vectorStoreDetails.find((store) => store.vector_store_id === storeId);
+    const storeDetail = vectorStoreDetails.find(
+      (store) => store.vector_store_id === storeId,
+    );
     if (storeDetail) {
       return `${storeDetail.vector_store_name || storeDetail.vector_store_id} (${storeDetail.vector_store_id})`;
     }
@@ -72,7 +79,9 @@ export function VectorStorePermissions({ vectorStores, accessToken }: VectorStor
       ) : (
         <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50 border border-gray-200">
           <DatabaseIcon className="h-4 w-4 text-gray-400" />
-          <Text className="text-gray-500 text-sm">No vector stores configured</Text>
+          <Text className="text-gray-500 text-sm">
+            No vector stores configured
+          </Text>
         </div>
       )}
     </div>

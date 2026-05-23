@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import OrganizationFilters, { FilterState } from "./OrganizationFilters";
+import OrganizationFilters, { type FilterState } from "./OrganizationFilters";
 
 describe("OrganizationFilters", () => {
   const defaultFilters: FilterState = {
@@ -26,9 +26,15 @@ describe("OrganizationFilters", () => {
       />,
     );
 
-    expect(screen.getByPlaceholderText("Search by Organization Name")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /^filters$/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /reset filters/i })).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Search by Organization Name"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /^filters$/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /reset filters/i }),
+    ).toBeInTheDocument();
   });
 
   it("should show additional filters when showFilters is true", () => {
@@ -46,7 +52,9 @@ describe("OrganizationFilters", () => {
       />,
     );
 
-    expect(screen.getByPlaceholderText("Search by Organization ID")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Search by Organization ID"),
+    ).toBeInTheDocument();
   });
 
   it("should call onChange when organization name input changes", async () => {

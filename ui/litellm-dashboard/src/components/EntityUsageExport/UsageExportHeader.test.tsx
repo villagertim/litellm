@@ -1,6 +1,6 @@
-import { renderWithProviders, screen } from "../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
+import { renderWithProviders, screen } from "../../../tests/test-utils";
 import UsageExportHeader from "./UsageExportHeader";
 import type { EntitySpendData } from "./types";
 
@@ -31,7 +31,9 @@ const defaultProps = {
 describe("UsageExportHeader", () => {
   it("should render", () => {
     renderWithProviders(<UsageExportHeader {...defaultProps} />);
-    expect(screen.getByRole("button", { name: /export data/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /export data/i }),
+    ).toBeInTheDocument();
   });
 
   it("should open the export modal when the export button is clicked", async () => {
@@ -50,7 +52,9 @@ describe("UsageExportHeader", () => {
   });
 
   it("should not show filter dropdown when showFilters is false", () => {
-    renderWithProviders(<UsageExportHeader {...defaultProps} showFilters={false} />);
+    renderWithProviders(
+      <UsageExportHeader {...defaultProps} showFilters={false} />,
+    );
     expect(screen.queryByText(/filter/i)).not.toBeInTheDocument();
   });
 

@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { Tooltip } from "antd";
 import {
+  type ComplianceCheckRequest,
+  type ComplianceResponse,
   checkEuAiActCompliance,
   checkGdprCompliance,
-  ComplianceResponse,
-  ComplianceCheckRequest,
 } from "@/components/networking";
+import { Tooltip } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
 
 interface CompliancePanelProps {
   accessToken: string | null;
@@ -22,22 +23,58 @@ interface CompliancePanelProps {
 
 const CheckIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <circle cx="8" cy="8" r="7" stroke="#16A34A" strokeWidth="1.5" fill="#F0FDF4" />
-    <path d="M5 8l2 2 4-4" stroke="#16A34A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <circle
+      cx="8"
+      cy="8"
+      r="7"
+      stroke="#16A34A"
+      strokeWidth="1.5"
+      fill="#F0FDF4"
+    />
+    <path
+      d="M5 8l2 2 4-4"
+      stroke="#16A34A"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </svg>
 );
 
 const CrossIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <circle cx="8" cy="8" r="7" stroke="#DC2626" strokeWidth="1.5" fill="#FEF2F2" />
-    <path d="M6 6l4 4M10 6l-4 4" stroke="#DC2626" strokeWidth="1.5" strokeLinecap="round" />
+    <circle
+      cx="8"
+      cy="8"
+      r="7"
+      stroke="#DC2626"
+      strokeWidth="1.5"
+      fill="#FEF2F2"
+    />
+    <path
+      d="M6 6l4 4M10 6l-4 4"
+      stroke="#DC2626"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
   </svg>
 );
 
 const SpinnerIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="animate-spin">
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    className="animate-spin"
+  >
     <circle cx="8" cy="8" r="6" stroke="#D1D5DB" strokeWidth="2" />
-    <path d="M8 2a6 6 0 0 1 6 6" stroke="#6366F1" strokeWidth="2" strokeLinecap="round" />
+    <path
+      d="M8 2a6 6 0 0 1 6 6"
+      stroke="#6366F1"
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
   </svg>
 );
 
@@ -100,14 +137,22 @@ const ComplianceCard = ({
             fill="none"
             className={`transition-transform ${expanded ? "rotate-180" : ""}`}
           >
-            <path d="M6 8l4 4 4-4" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+              d="M6 8l4 4 4-4"
+              stroke="#6B7280"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </div>
       </div>
 
       {expanded && (
         <div className="border-t border-gray-100 px-4 py-3">
-          {loading && <p className="text-sm text-gray-500">Checking compliance...</p>}
+          {loading && (
+            <p className="text-sm text-gray-500">Checking compliance...</p>
+          )}
           {error && <p className="text-sm text-red-600">{error}</p>}
           {data && (
             <div className="space-y-2">
@@ -118,10 +163,16 @@ const ComplianceCard = ({
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-gray-900">{check.check_name}</span>
-                      <span className="text-[10px] font-mono text-gray-400">{check.article}</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        {check.check_name}
+                      </span>
+                      <span className="text-[10px] font-mono text-gray-400">
+                        {check.article}
+                      </span>
                     </div>
-                    <p className="text-xs text-gray-500 mt-0.5">{check.detail}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      {check.detail}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -135,8 +186,13 @@ const ComplianceCard = ({
 
 // -- Main Component --
 
-const CompliancePanel: React.FC<CompliancePanelProps> = ({ accessToken, logEntry }) => {
-  const [euAiActData, setEuAiActData] = useState<ComplianceResponse | null>(null);
+const CompliancePanel: React.FC<CompliancePanelProps> = ({
+  accessToken,
+  logEntry,
+}) => {
+  const [euAiActData, setEuAiActData] = useState<ComplianceResponse | null>(
+    null,
+  );
   const [gdprData, setGdprData] = useState<ComplianceResponse | null>(null);
   const [euAiActLoading, setEuAiActLoading] = useState(false);
   const [gdprLoading, setGdprLoading] = useState(false);
@@ -158,14 +214,18 @@ const CompliancePanel: React.FC<CompliancePanelProps> = ({ accessToken, logEntry
     setEuAiActError(null);
     checkEuAiActCompliance(accessToken, payload)
       .then(setEuAiActData)
-      .catch((err) => setEuAiActError(err.message || "Failed to check EU AI Act compliance"))
+      .catch((err) =>
+        setEuAiActError(err.message || "Failed to check EU AI Act compliance"),
+      )
       .finally(() => setEuAiActLoading(false));
 
     setGdprLoading(true);
     setGdprError(null);
     checkGdprCompliance(accessToken, payload)
       .then(setGdprData)
-      .catch((err) => setGdprError(err.message || "Failed to check GDPR compliance"))
+      .catch((err) =>
+        setGdprError(err.message || "Failed to check GDPR compliance"),
+      )
       .finally(() => setGdprLoading(false));
   }, [accessToken, logEntry]);
 

@@ -1,19 +1,23 @@
-import React, { useState, useEffect } from "react";
-import { Button, Dropdown, Tabs } from "antd";
-import { DownOutlined, PlusOutlined, CodeOutlined } from "@ant-design/icons";
-import { getGuardrailsList, deleteGuardrailCall } from "./networking";
-import AddGuardrailForm from "./guardrails/add_guardrail_form";
-import GuardrailTable from "./guardrails/guardrail_table";
 import { isAdminRole } from "@/utils/roles";
-import GuardrailInfoView from "./guardrails/guardrail_info";
-import GuardrailTestPlayground from "./guardrails/GuardrailTestPlayground";
-import NotificationsManager from "./molecules/notifications_manager";
-import { Guardrail, GuardrailDefinitionLocation } from "./guardrails/types";
+import { CodeOutlined, DownOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, Dropdown, Tabs } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
 import DeleteResourceModal from "./common_components/DeleteResourceModal";
-import { getGuardrailLogoAndName } from "./guardrails/guardrail_info_helpers";
+import GuardrailTestPlayground from "./guardrails/GuardrailTestPlayground";
+import { TeamGuardrailsTab } from "./guardrails/TeamGuardrailsTab";
+import AddGuardrailForm from "./guardrails/add_guardrail_form";
 import { CustomCodeModal } from "./guardrails/custom_code";
 import GuardrailGarden from "./guardrails/guardrail_garden";
-import { TeamGuardrailsTab } from "./guardrails/TeamGuardrailsTab";
+import GuardrailInfoView from "./guardrails/guardrail_info";
+import { getGuardrailLogoAndName } from "./guardrails/guardrail_info_helpers";
+import GuardrailTable from "./guardrails/guardrail_table";
+import type {
+  Guardrail,
+  GuardrailDefinitionLocation,
+} from "./guardrails/types";
+import NotificationsManager from "./molecules/notifications_manager";
+import { deleteGuardrailCall, getGuardrailsList } from "./networking";
 
 interface GuardrailsPanelProps {
   accessToken: string | null;
@@ -38,15 +42,23 @@ interface GuardrailsResponse {
   guardrails: Guardrail[];
 }
 
-const GuardrailsPanel: React.FC<GuardrailsPanelProps> = ({ accessToken, userRole }) => {
+const GuardrailsPanel: React.FC<GuardrailsPanelProps> = ({
+  accessToken,
+  userRole,
+}) => {
   const [guardrailsList, setGuardrailsList] = useState<Guardrail[]>([]);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
-  const [isCustomCodeModalVisible, setIsCustomCodeModalVisible] = useState(false);
+  const [isCustomCodeModalVisible, setIsCustomCodeModalVisible] =
+    useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [guardrailToDelete, setGuardrailToDelete] = useState<Guardrail | null>(null);
+  const [guardrailToDelete, setGuardrailToDelete] = useState<Guardrail | null>(
+    null,
+  );
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedGuardrailId, setSelectedGuardrailId] = useState<string | null>(null);
+  const [selectedGuardrailId, setSelectedGuardrailId] = useState<string | null>(
+    null,
+  );
   const isAdmin = userRole ? isAdminRole(userRole) : false;
 
   const fetchGuardrails = async () => {
@@ -97,7 +109,8 @@ const GuardrailsPanel: React.FC<GuardrailsPanelProps> = ({ accessToken, userRole
   };
 
   const handleDeleteClick = (guardrailId: string, guardrailName: string) => {
-    const guardrail = guardrailsList.find((g) => g.guardrail_id === guardrailId) || null;
+    const guardrail =
+      guardrailsList.find((g) => g.guardrail_id === guardrailId) || null;
     setGuardrailToDelete(guardrail);
     setIsDeleteModalOpen(true);
   };
@@ -108,7 +121,9 @@ const GuardrailsPanel: React.FC<GuardrailsPanelProps> = ({ accessToken, userRole
     setIsDeleting(true);
     try {
       await deleteGuardrailCall(accessToken, guardrailToDelete.guardrail_id);
-      NotificationsManager.success(`Guardrail "${guardrailToDelete.guardrail_name}" deleted successfully`);
+      NotificationsManager.success(
+        `Guardrail "${guardrailToDelete.guardrail_name}" deleted successfully`,
+      );
       await fetchGuardrails();
     } catch (error) {
       console.error("Error deleting guardrail:", error);
@@ -127,7 +142,8 @@ const GuardrailsPanel: React.FC<GuardrailsPanelProps> = ({ accessToken, userRole
 
   const providerDisplayName =
     guardrailToDelete && guardrailToDelete.litellm_params
-      ? getGuardrailLogoAndName(guardrailToDelete.litellm_params.guardrail).displayName
+      ? getGuardrailLogoAndName(guardrailToDelete.litellm_params.guardrail)
+          .displayName
       : undefined;
 
   return (
@@ -174,7 +190,8 @@ const GuardrailsPanel: React.FC<GuardrailsPanelProps> = ({ accessToken, userRole
                           disabled={!accessToken}
                         >
                           <Button disabled={!accessToken}>
-                            + Add New Guardrail <DownOutlined className="ml-2" />
+                            + Add New Guardrail{" "}
+                            <DownOutlined className="ml-2" />
                           </Button>
                         </Dropdown>
                       </div>
@@ -218,13 +235,25 @@ const GuardrailsPanel: React.FC<GuardrailsPanelProps> = ({ accessToken, userRole
                         message={`Are you sure you want to delete guardrail: ${guardrailToDelete?.guardrail_name}? This action cannot be undone.`}
                         resourceInformationTitle="Guardrail Information"
                         resourceInformation={[
-                          { label: "Name", value: guardrailToDelete?.guardrail_name },
-                          { label: "ID", value: guardrailToDelete?.guardrail_id, code: true },
+                          {
+                            label: "Name",
+                            value: guardrailToDelete?.guardrail_name,
+                          },
+                          {
+                            label: "ID",
+                            value: guardrailToDelete?.guardrail_id,
+                            code: true,
+                          },
                           { label: "Provider", value: providerDisplayName },
-                          { label: "Mode", value: guardrailToDelete?.litellm_params.mode },
+                          {
+                            label: "Mode",
+                            value: guardrailToDelete?.litellm_params.mode,
+                          },
                           {
                             label: "Default On",
-                            value: guardrailToDelete?.litellm_params.default_on ? "Yes" : "No",
+                            value: guardrailToDelete?.litellm_params.default_on
+                              ? "Yes"
+                              : "No",
                           },
                         ]}
                         onCancel={handleDeleteCancel}

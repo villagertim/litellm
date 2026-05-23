@@ -62,28 +62,48 @@ describe("AdminPanel", () => {
 
   it("should render the admin panel", () => {
     render(<AdminPanel />);
-    expect(screen.getByRole("heading", { name: /admin access/i })).toBeInTheDocument();
-    expect(screen.getByText(/go to 'internal users' page to add other admins/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /admin access/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/go to 'internal users' page to add other admins/i),
+    ).toBeInTheDocument();
   });
 
   describe("Tabs", () => {
     it("should render all tabs", () => {
       render(<AdminPanel />);
-      expect(screen.getByRole("tab", { name: /sso settings/i })).toBeInTheDocument();
-      expect(screen.getByRole("tab", { name: /security settings/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("tab", { name: /sso settings/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("tab", { name: /security settings/i }),
+      ).toBeInTheDocument();
       expect(screen.getByRole("tab", { name: /scim/i })).toBeInTheDocument();
-      expect(screen.getByRole("tab", { name: /ui settings/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("tab", { name: /ui settings/i }),
+      ).toBeInTheDocument();
     });
 
     it("should display Security Settings content when Security Settings tab is clicked", async () => {
       const user = userEvent.setup();
       render(<AdminPanel />);
-      const securityTab = screen.getByRole("tab", { name: /security settings/i });
+      const securityTab = screen.getByRole("tab", {
+        name: /security settings/i,
+      });
       await user.click(securityTab);
-      expect(screen.getByRole("heading", { name: /security settings/i })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /add sso/i })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /allowed ips/i })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /ui access control/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: /security settings/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /add sso/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /allowed ips/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /ui access control/i }),
+      ).toBeInTheDocument();
     });
 
     it("should display SCIM content when SCIM tab is clicked", async () => {
@@ -109,10 +129,14 @@ describe("AdminPanel", () => {
         values: {},
       });
       render(<AdminPanel />);
-      const securityTab = screen.getByRole("tab", { name: /security settings/i });
+      const securityTab = screen.getByRole("tab", {
+        name: /security settings/i,
+      });
       await user.click(securityTab);
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /add sso/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: /add sso/i }),
+        ).toBeInTheDocument();
       });
     });
 
@@ -125,10 +149,14 @@ describe("AdminPanel", () => {
         },
       });
       render(<AdminPanel />);
-      const securityTab = screen.getByRole("tab", { name: /security settings/i });
+      const securityTab = screen.getByRole("tab", {
+        name: /security settings/i,
+      });
       await user.click(securityTab);
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /edit sso settings/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: /edit sso settings/i }),
+        ).toBeInTheDocument();
       });
     });
 
@@ -189,34 +217,46 @@ describe("AdminPanel", () => {
         userId: "user-1",
       });
       render(<AdminPanel />);
-      const securityTab = screen.getByRole("tab", { name: /security settings/i });
+      const securityTab = screen.getByRole("tab", {
+        name: /security settings/i,
+      });
       await user.click(securityTab);
     });
 
     it("should open allowed IPs modal when premium user clicks Allowed IPs button", async () => {
       const user = userEvent.setup();
       mockGetAllowedIPs.mockResolvedValue(["192.168.1.1", "10.0.0.1"]);
-      const allowedIPsButton = screen.getByRole("button", { name: /allowed ips/i });
+      const allowedIPsButton = screen.getByRole("button", {
+        name: /allowed ips/i,
+      });
       await user.click(allowedIPsButton);
       await waitFor(() => {
-        expect(screen.getByRole("dialog", { name: /manage allowed ip addresses/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole("dialog", { name: /manage allowed ip addresses/i }),
+        ).toBeInTheDocument();
       });
     });
 
     it("should display 'All IP Addresses Allowed' when no IPs are configured", async () => {
       const user = userEvent.setup();
       mockGetAllowedIPs.mockResolvedValue([]);
-      const allowedIPsButton = screen.getByRole("button", { name: /allowed ips/i });
+      const allowedIPsButton = screen.getByRole("button", {
+        name: /allowed ips/i,
+      });
       await user.click(allowedIPsButton);
       await waitFor(() => {
-        expect(screen.getByText("All IP Addresses Allowed")).toBeInTheDocument();
+        expect(
+          screen.getByText("All IP Addresses Allowed"),
+        ).toBeInTheDocument();
       });
     });
 
     it("should display list of allowed IPs", async () => {
       const user = userEvent.setup();
       mockGetAllowedIPs.mockResolvedValue(["192.168.1.1", "10.0.0.1"]);
-      const allowedIPsButton = screen.getByRole("button", { name: /allowed ips/i });
+      const allowedIPsButton = screen.getByRole("button", {
+        name: /allowed ips/i,
+      });
       await user.click(allowedIPsButton);
       await waitFor(() => {
         expect(screen.getByText("192.168.1.1")).toBeInTheDocument();
@@ -226,11 +266,18 @@ describe("AdminPanel", () => {
 
     it("should show delete button for IP addresses except 'All IP Addresses Allowed'", async () => {
       const user = userEvent.setup();
-      mockGetAllowedIPs.mockResolvedValue(["192.168.1.1", "All IP Addresses Allowed"]);
-      const allowedIPsButton = screen.getByRole("button", { name: /allowed ips/i });
+      mockGetAllowedIPs.mockResolvedValue([
+        "192.168.1.1",
+        "All IP Addresses Allowed",
+      ]);
+      const allowedIPsButton = screen.getByRole("button", {
+        name: /allowed ips/i,
+      });
       await user.click(allowedIPsButton);
       await waitFor(() => {
-        const deleteButtons = screen.queryAllByRole("button", { name: /delete/i });
+        const deleteButtons = screen.queryAllByRole("button", {
+          name: /delete/i,
+        });
         expect(deleteButtons.length).toBeGreaterThan(0);
       });
     });
@@ -238,19 +285,27 @@ describe("AdminPanel", () => {
     it("should not show delete button for 'All IP Addresses Allowed'", async () => {
       const user = userEvent.setup();
       mockGetAllowedIPs.mockResolvedValue(["All IP Addresses Allowed"]);
-      const allowedIPsButton = screen.getByRole("button", { name: /allowed ips/i });
+      const allowedIPsButton = screen.getByRole("button", {
+        name: /allowed ips/i,
+      });
       await user.click(allowedIPsButton);
       await waitFor(() => {
-        expect(screen.getByText("All IP Addresses Allowed")).toBeInTheDocument();
+        expect(
+          screen.getByText("All IP Addresses Allowed"),
+        ).toBeInTheDocument();
       });
-      const deleteButtons = screen.queryAllByRole("button", { name: /delete/i });
+      const deleteButtons = screen.queryAllByRole("button", {
+        name: /delete/i,
+      });
       expect(deleteButtons.length).toBe(0);
     });
 
     it("should handle error when fetching allowed IPs fails", async () => {
       const user = userEvent.setup();
       mockGetAllowedIPs.mockRejectedValue(new Error("Network error"));
-      const allowedIPsButton = screen.getByRole("button", { name: /allowed ips/i });
+      const allowedIPsButton = screen.getByRole("button", {
+        name: /allowed ips/i,
+      });
       await user.click(allowedIPsButton);
       await waitFor(() => {
         expect(mockGetAllowedIPs).toHaveBeenCalled();
@@ -267,12 +322,18 @@ describe("AdminPanel", () => {
         userId: "user-1",
       });
       render(<AdminPanel />);
-      const securityTab = screen.getByRole("tab", { name: /security settings/i });
+      const securityTab = screen.getByRole("tab", {
+        name: /security settings/i,
+      });
       await user.click(securityTab);
-      const uiAccessControlButton = screen.getByRole("button", { name: /ui access control/i });
+      const uiAccessControlButton = screen.getByRole("button", {
+        name: /ui access control/i,
+      });
       await user.click(uiAccessControlButton);
       await waitFor(() => {
-        expect(screen.queryByRole("dialog", { name: /ui access control settings/i })).not.toBeInTheDocument();
+        expect(
+          screen.queryByRole("dialog", { name: /ui access control settings/i }),
+        ).not.toBeInTheDocument();
       });
     });
 
@@ -284,12 +345,18 @@ describe("AdminPanel", () => {
         userId: "user-1",
       });
       render(<AdminPanel />);
-      const securityTab = screen.getByRole("tab", { name: /security settings/i });
+      const securityTab = screen.getByRole("tab", {
+        name: /security settings/i,
+      });
       await user.click(securityTab);
-      const uiAccessControlButton = screen.getByRole("button", { name: /ui access control/i });
+      const uiAccessControlButton = screen.getByRole("button", {
+        name: /ui access control/i,
+      });
       await user.click(uiAccessControlButton);
       await waitFor(() => {
-        expect(screen.getByRole("dialog", { name: /ui access control settings/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole("dialog", { name: /ui access control settings/i }),
+        ).toBeInTheDocument();
         expect(screen.getByText("UI Access Control Form")).toBeInTheDocument();
       });
     });
@@ -299,11 +366,18 @@ describe("AdminPanel", () => {
     it("should display fallback login URL", async () => {
       const user = userEvent.setup();
       render(<AdminPanel />);
-      const securityTab = screen.getByRole("tab", { name: /security settings/i });
+      const securityTab = screen.getByRole("tab", {
+        name: /security settings/i,
+      });
       await user.click(securityTab);
-      const link = screen.getByRole("link", { name: /http:\/\/localhost:4000\/fallback\/login/i });
+      const link = screen.getByRole("link", {
+        name: /http:\/\/localhost:4000\/fallback\/login/i,
+      });
       expect(link).toBeInTheDocument();
-      expect(link).toHaveAttribute("href", "http://localhost:4000/fallback/login");
+      expect(link).toHaveAttribute(
+        "href",
+        "http://localhost:4000/fallback/login",
+      );
       expect(link).toHaveAttribute("target", "_blank");
     });
   });
@@ -312,12 +386,18 @@ describe("AdminPanel", () => {
     it("should display deprecation warning in Security Settings tab", async () => {
       const user = userEvent.setup();
       render(<AdminPanel />);
-      const securityTab = screen.getByRole("tab", { name: /security settings/i });
+      const securityTab = screen.getByRole("tab", {
+        name: /security settings/i,
+      });
       await user.click(securityTab);
       await waitFor(() => {
-        expect(screen.getByText(/sso configuration deprecated/i)).toBeInTheDocument();
         expect(
-          screen.getByText(/editing sso settings on this page is deprecated and will be removed/i),
+          screen.getByText(/sso configuration deprecated/i),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            /editing sso settings on this page is deprecated and will be removed/i,
+          ),
         ).toBeInTheDocument();
       });
     });

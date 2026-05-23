@@ -46,13 +46,17 @@ export interface VectorStoreFieldConfig {
 }
 
 // Provider-specific field configurations
-export const vectorStoreProviderFields: Record<string, VectorStoreFieldConfig[]> = {
+export const vectorStoreProviderFields: Record<
+  string,
+  VectorStoreFieldConfig[]
+> = {
   bedrock: [],
   pg_vector: [
     {
       name: "api_base",
       label: "API Base",
-      tooltip: "Enter the base URL of your deployed litellm-pgvector server (e.g., http://your-server:8000)",
+      tooltip:
+        "Enter the base URL of your deployed litellm-pgvector server (e.g., http://your-server:8000)",
       placeholder: "http://your-deployed-server:8000",
       required: true,
       type: "text",
@@ -71,7 +75,8 @@ export const vectorStoreProviderFields: Record<string, VectorStoreFieldConfig[]>
     {
       name: "vertex_project",
       label: "Vertex Project",
-      tooltip: "Google Cloud project ID that hosts the Vertex AI Search data store.",
+      tooltip:
+        "Google Cloud project ID that hosts the Vertex AI Search data store.",
       placeholder: "my-gcp-project-id",
       required: true,
       type: "text",
@@ -79,7 +84,8 @@ export const vectorStoreProviderFields: Record<string, VectorStoreFieldConfig[]>
     {
       name: "vertex_location",
       label: "Vertex Location",
-      tooltip: "Vertex AI Search data store location. Must be one of global, us, or eu.",
+      tooltip:
+        "Vertex AI Search data store location. Must be one of global, us, or eu.",
       required: true,
       type: "select",
       options: [
@@ -92,7 +98,8 @@ export const vectorStoreProviderFields: Record<string, VectorStoreFieldConfig[]>
     {
       name: "vertex_collection_id",
       label: "Collection ID (optional)",
-      tooltip: "Discovery Engine collection ID. Leave blank to use the default collection.",
+      tooltip:
+        "Discovery Engine collection ID. Leave blank to use the default collection.",
       placeholder: "e.g. my-custom-collection",
       required: false,
       type: "text",
@@ -120,7 +127,8 @@ export const vectorStoreProviderFields: Record<string, VectorStoreFieldConfig[]>
     {
       name: "api_base",
       label: "API Base",
-      tooltip: "Enter your Azure OpenAI endpoint (e.g., https://your-resource.openai.azure.com/)",
+      tooltip:
+        "Enter your Azure OpenAI endpoint (e.g., https://your-resource.openai.azure.com/)",
       placeholder: "https://your-resource.openai.azure.com/",
       required: true,
       type: "text",
@@ -139,7 +147,8 @@ export const vectorStoreProviderFields: Record<string, VectorStoreFieldConfig[]>
     {
       name: "api_base",
       label: "API Base",
-      tooltip: "Enter your Milvus endpoint (e.g., https://your-milvus-endpoint.com/)",
+      tooltip:
+        "Enter your Milvus endpoint (e.g., https://your-milvus-endpoint.com/)",
       placeholder: "https://your-milvus-endpoint.com/",
       required: true,
       type: "text",
@@ -157,7 +166,8 @@ export const vectorStoreProviderFields: Record<string, VectorStoreFieldConfig[]>
     {
       name: "vector_bucket_name",
       label: "Vector Bucket Name",
-      tooltip: "S3 bucket name for vector storage (will be auto-created if it doesn't exist)",
+      tooltip:
+        "S3 bucket name for vector storage (will be auto-created if it doesn't exist)",
       placeholder: "my-vector-bucket",
       required: true,
       type: "text",
@@ -165,7 +175,8 @@ export const vectorStoreProviderFields: Record<string, VectorStoreFieldConfig[]>
     {
       name: "index_name",
       label: "Index Name",
-      tooltip: "Name for the vector index (optional, will be auto-generated if not provided)",
+      tooltip:
+        "Name for the vector index (optional, will be auto-generated if not provided)",
       placeholder: "my-vector-index",
       required: false,
       type: "text",
@@ -189,14 +200,17 @@ export const vectorStoreProviderFields: Record<string, VectorStoreFieldConfig[]>
   ],
 };
 
-export const getVectorStoreProviderLogoAndName = (providerValue: string): { logo: string; displayName: string } => {
+export const getVectorStoreProviderLogoAndName = (
+  providerValue: string,
+): { logo: string; displayName: string } => {
   if (!providerValue) {
     return { logo: "", displayName: "-" };
   }
 
   // Find the enum key by matching vectorStoreProviderMap values
   const enumKey = Object.keys(vectorStoreProviderMap).find(
-    (key) => vectorStoreProviderMap[key].toLowerCase() === providerValue.toLowerCase(),
+    (key) =>
+      vectorStoreProviderMap[key].toLowerCase() === providerValue.toLowerCase(),
   );
 
   if (!enumKey) {
@@ -204,12 +218,18 @@ export const getVectorStoreProviderLogoAndName = (providerValue: string): { logo
   }
 
   // Get the display name from VectorStoreProviders enum and logo from map
-  const displayName = VectorStoreProviders[enumKey as keyof typeof VectorStoreProviders];
-  const logo = vectorStoreProviderLogoMap[displayName as keyof typeof vectorStoreProviderLogoMap];
+  const displayName =
+    VectorStoreProviders[enumKey as keyof typeof VectorStoreProviders];
+  const logo =
+    vectorStoreProviderLogoMap[
+      displayName as keyof typeof vectorStoreProviderLogoMap
+    ];
 
   return { logo, displayName };
 };
 
-export const getProviderSpecificFields = (providerValue: string): VectorStoreFieldConfig[] => {
+export const getProviderSpecificFields = (
+  providerValue: string,
+): VectorStoreFieldConfig[] => {
   return vectorStoreProviderFields[providerValue] || [];
 };

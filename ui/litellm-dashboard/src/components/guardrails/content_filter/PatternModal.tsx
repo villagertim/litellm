@@ -1,5 +1,5 @@
-import React from "react";
-import { Typography, Select, Modal, Space, Button } from "antd";
+import { Button, Modal, Select, Space, Typography } from "antd";
+import type React from "react";
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -52,10 +52,14 @@ const PatternModal: React.FC<PatternModalProps> = ({
             style={{ width: "100%", marginTop: 8 }}
             showSearch
             filterOption={(input, option) => {
-              const pattern = prebuiltPatterns.find((p) => p.name === option?.value);
+              const pattern = prebuiltPatterns.find(
+                (p) => p.name === option?.value,
+              );
               if (pattern) {
                 return (
-                  pattern.display_name.toLowerCase().includes(input.toLowerCase()) ||
+                  pattern.display_name
+                    .toLowerCase()
+                    .includes(input.toLowerCase()) ||
                   pattern.name.toLowerCase().includes(input.toLowerCase())
                 );
               }
@@ -63,9 +67,11 @@ const PatternModal: React.FC<PatternModalProps> = ({
             }}
           >
             {categories.map((category) => {
-              const categoryPatterns = prebuiltPatterns.filter((p) => p.category === category);
+              const categoryPatterns = prebuiltPatterns.filter(
+                (p) => p.category === category,
+              );
               if (categoryPatterns.length === 0) return null;
-              
+
               return (
                 <Select.OptGroup key={category} label={category}>
                   {categoryPatterns.map((pattern) => (
@@ -81,8 +87,12 @@ const PatternModal: React.FC<PatternModalProps> = ({
 
         <div>
           <Text strong>Action</Text>
-          <Text type="secondary" style={{ display: "block", marginTop: 4, marginBottom: 8 }}>
-            Choose what action the guardrail should take when this pattern is detected
+          <Text
+            type="secondary"
+            style={{ display: "block", marginTop: 4, marginBottom: 8 }}
+          >
+            Choose what action the guardrail should take when this pattern is
+            detected
           </Text>
           <Select
             value={patternAction}
@@ -95,10 +105,15 @@ const PatternModal: React.FC<PatternModalProps> = ({
         </div>
       </Space>
 
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "24px" }}>
-        <Button onClick={onCancel}>
-          Cancel
-        </Button>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          gap: "8px",
+          marginTop: "24px",
+        }}
+      >
+        <Button onClick={onCancel}>Cancel</Button>
         <Button type="primary" onClick={onAdd}>
           Add
         </Button>
@@ -108,4 +123,3 @@ const PatternModal: React.FC<PatternModalProps> = ({
 };
 
 export default PatternModal;
-

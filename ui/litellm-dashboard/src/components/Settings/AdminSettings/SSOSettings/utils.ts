@@ -1,10 +1,12 @@
-import { SSOSettingsValues } from "@/app/(dashboard)/hooks/sso/useSSOSettings";
+import type { SSOSettingsValues } from "@/app/(dashboard)/hooks/sso/useSSOSettings";
 
 /**
  * Processes SSO settings form values and transforms them into the payload format expected by the API
  * Handles role mappings transformation and field extraction
  */
-export const processSSOSettingsPayload = (formValues: Record<string, any>): Record<string, any> => {
+export const processSSOSettingsPayload = (
+  formValues: Record<string, any>,
+): Record<string, any> => {
   const {
     proxy_admin_teams,
     admin_viewer_teams,

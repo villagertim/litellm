@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { renderWithProviders, screen } from "../../../tests/test-utils";
 import { ProjectKeysSection } from "./ProjectKeysSection";
 
@@ -47,7 +47,9 @@ describe("ProjectKeysSection", () => {
   it("should render a search input for filtering by key name", () => {
     mockUseKeys.mockReturnValue(emptyKeysResponse);
     renderWithProviders(<ProjectKeysSection projectId="proj-1" />);
-    expect(screen.getByPlaceholderText("Filter by key name...")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Filter by key name..."),
+    ).toBeInTheDocument();
   });
 
   it("should call useKeys with the projectId", () => {
@@ -56,7 +58,7 @@ describe("ProjectKeysSection", () => {
     expect(mockUseKeys).toHaveBeenCalledWith(
       expect.any(Number),
       expect.any(Number),
-      expect.objectContaining({ projectID: "proj-abc" })
+      expect.objectContaining({ projectID: "proj-abc" }),
     );
   });
 
@@ -66,7 +68,7 @@ describe("ProjectKeysSection", () => {
     expect(mockUseKeys).toHaveBeenCalledWith(
       expect.any(Number),
       expect.any(Number),
-      expect.objectContaining({ selectedKeyAlias: null })
+      expect.objectContaining({ selectedKeyAlias: null }),
     );
   });
 });

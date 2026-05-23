@@ -1,5 +1,5 @@
-import React from "react";
 import { Select } from "antd";
+import type React from "react";
 
 const { Option } = Select;
 
@@ -33,7 +33,9 @@ const BudgetDurationDropdown: React.FC<BudgetDurationDropdownProps> = ({
   );
 };
 
-export const getBudgetDurationLabel = (value: string | null | undefined): string => {
+export const getBudgetDurationLabel = (
+  value: string | null | undefined,
+): string => {
   if (!value) return "Not set";
 
   const budgetDurationMap: Record<string, string> = {

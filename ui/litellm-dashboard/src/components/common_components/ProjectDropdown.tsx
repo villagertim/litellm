@@ -1,7 +1,7 @@
-import React from "react";
-import { Select, Spin } from "antd";
+import type { ProjectResponse } from "@/app/(dashboard)/hooks/projects/useProjects";
 import { LoadingOutlined } from "@ant-design/icons";
-import { ProjectResponse } from "@/app/(dashboard)/hooks/projects/useProjects";
+import { Select, Spin } from "antd";
+import type React from "react";
 
 interface ProjectDropdownProps {
   projects?: ProjectResponse[] | null;
@@ -34,7 +34,11 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
       disabled={disabled}
       loading={loading}
       allowClear
-      notFoundContent={loading ? <Spin indicator={<LoadingOutlined spin />} size="small" /> : undefined}
+      notFoundContent={
+        loading ? (
+          <Spin indicator={<LoadingOutlined spin />} size="small" />
+        ) : undefined
+      }
       filterOption={(input, option) => {
         if (!option) return false;
         const project = filtered?.find((p) => p.project_id === option.key);
@@ -51,7 +55,9 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
       {!loading &&
         filtered?.map((project) => (
           <Select.Option key={project.project_id} value={project.project_id}>
-            <span className="font-medium">{project.project_alias || project.project_id}</span>{" "}
+            <span className="font-medium">
+              {project.project_alias || project.project_id}
+            </span>{" "}
             <span className="text-gray-500">({project.project_id})</span>
           </Select.Option>
         ))}

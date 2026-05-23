@@ -2,7 +2,7 @@ import { useInfiniteModelInfo } from "@/app/(dashboard)/hooks/models/useModels";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useDebouncedState } from "@tanstack/react-pacer/debouncer";
 import { Select, Space, Typography } from "antd";
-import { useMemo, useState, type UIEvent } from "react";
+import { type UIEvent, useMemo, useState } from "react";
 
 const { Text } = Typography;
 
@@ -33,19 +33,19 @@ export const PaginatedModelSelect = ({
     wait: DEBOUNCE_MS,
   });
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-  } = useInfiniteModelInfo(pageSize, debouncedSearch || undefined);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useInfiniteModelInfo(pageSize, debouncedSearch || undefined);
 
   const options = useMemo(() => {
     if (!data?.pages) return [];
 
     const seen = new Set<string>();
-    const result: { label: string; value: string; modelName: string; modelId: string }[] = [];
+    const result: {
+      label: string;
+      value: string;
+      modelName: string;
+      modelId: string;
+    }[] = [];
 
     for (const page of data.pages) {
       for (const model of page.data) {
@@ -68,7 +68,9 @@ export const PaginatedModelSelect = ({
     return result;
   }, [data]);
 
-  const optionRender = (option: { data: { modelName: string; modelId: string; label: string } }) => {
+  const optionRender = (option: {
+    data: { modelName: string; modelId: string; label: string };
+  }) => {
     const { modelName, modelId } = option.data;
 
     return (
@@ -79,12 +81,14 @@ export const PaginatedModelSelect = ({
               <Text strong>Model name:</Text>
               <Text ellipsis>{modelName}</Text>
             </Space>
-            <Text ellipsis type="secondary" >
+            <Text ellipsis type="secondary">
               Model ID: {modelId}
             </Text>
           </Space>
         ) : (
-          <Text ellipsis type="secondary">Model ID: {modelId}</Text>
+          <Text ellipsis type="secondary">
+            Model ID: {modelId}
+          </Text>
         )}
       </>
     );

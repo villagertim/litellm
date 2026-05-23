@@ -1,8 +1,18 @@
-import { useQuery, useMutation, useQueryClient, UseQueryResult } from "@tanstack/react-query";
-import { createQueryKeys } from "../common/queryKeysFactory";
-import { getBudgetList, budgetCreateCall, budgetUpdateCall, budgetDeleteCall } from "@/components/networking";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { budgetItem } from "@/components/budgets/budget_panel";
+import type { budgetItem } from "@/components/budgets/budget_panel";
+import {
+  budgetCreateCall,
+  budgetDeleteCall,
+  budgetUpdateCall,
+  getBudgetList,
+} from "@/components/networking";
+import {
+  type UseQueryResult,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { createQueryKeys } from "../common/queryKeysFactory";
 
 export const budgetKeys = createQueryKeys("budgets");
 
@@ -12,7 +22,9 @@ export const useBudgets = (): UseQueryResult<budgetItem[]> => {
     queryKey: budgetKeys.list({}),
     queryFn: async () => {
       const data = await getBudgetList(accessToken!);
-      return (data ?? []).filter((item: budgetItem | null): item is budgetItem => item != null);
+      return (data ?? []).filter(
+        (item: budgetItem | null): item is budgetItem => item != null,
+      );
     },
     enabled: Boolean(accessToken),
   });

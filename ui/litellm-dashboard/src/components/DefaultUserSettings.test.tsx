@@ -1,4 +1,10 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import DefaultUserSettings from "./DefaultUserSettings";
 import * as networking from "./networking";
@@ -10,8 +16,15 @@ vi.mock("./networking", () => ({
 }));
 
 vi.mock("./common_components/budget_duration_dropdown", () => ({
-  default: ({ value, onChange }: { value: string | null; onChange: (value: string | null) => void }) => (
-    <select data-testid="budget-duration" value={value || ""} onChange={(e) => onChange(e.target.value || null)}>
+  default: ({
+    value,
+    onChange,
+  }: { value: string | null; onChange: (value: string | null) => void }) => (
+    <select
+      data-testid="budget-duration"
+      value={value || ""}
+      onChange={(e) => onChange(e.target.value || null)}
+    >
       <option value="">Select duration</option>
       <option value="daily">Daily</option>
       <option value="monthly">Monthly</option>
@@ -25,8 +38,12 @@ vi.mock("./key_team_helpers/fetch_available_models_team_key", () => ({
 }));
 
 describe("DefaultUserSettings", () => {
-  const mockGetInternalUserSettings = vi.mocked(networking.getInternalUserSettings);
-  const mockUpdateInternalUserSettings = vi.mocked(networking.updateInternalUserSettings);
+  const mockGetInternalUserSettings = vi.mocked(
+    networking.getInternalUserSettings,
+  );
+  const mockUpdateInternalUserSettings = vi.mocked(
+    networking.updateInternalUserSettings,
+  );
   const mockModelAvailableCall = vi.mocked(networking.modelAvailableCall);
 
   const defaultProps = {

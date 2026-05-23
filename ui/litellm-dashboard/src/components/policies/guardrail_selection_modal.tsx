@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { Modal, Checkbox, Button, Divider, Tag } from "antd";
 import { CheckCircleOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import { Button, Checkbox, Divider, Modal, Tag } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
 
 interface GuardrailInfo {
   guardrail_name: string;
@@ -29,7 +30,7 @@ const GuardrailSelectionModal: React.FC<GuardrailSelectionModalProps> = ({
   progressInfo,
 }) => {
   const [selectedGuardrails, setSelectedGuardrails] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
 
   // Prepare guardrail info with existence status
@@ -83,7 +84,7 @@ const GuardrailSelectionModal: React.FC<GuardrailSelectionModalProps> = ({
   };
 
   const newGuardrailsCount = guardrailsInfo.filter(
-    (g) => !g.alreadyExists
+    (g) => !g.alreadyExists,
   ).length;
   const existingCount = guardrailsInfo.filter((g) => g.alreadyExists).length;
   const selectedCount = selectedGuardrails.size;
@@ -196,23 +197,26 @@ const GuardrailSelectionModal: React.FC<GuardrailSelectionModalProps> = ({
                   <p className="text-sm text-gray-600">
                     {guardrail.description}
                   </p>
-                  
+
                   {/* Show guardrail type and mode */}
                   <div className="flex gap-2 mt-2">
                     <Tag className="text-xs">
-                      {guardrail.definition?.litellm_params?.guardrail || "unknown"}
+                      {guardrail.definition?.litellm_params?.guardrail ||
+                        "unknown"}
                     </Tag>
                     <Tag className="text-xs" color="blue">
                       {guardrail.definition?.litellm_params?.mode || "unknown"}
                     </Tag>
                     {guardrail.definition?.litellm_params?.patterns && (
                       <Tag className="text-xs" color="purple">
-                        {guardrail.definition.litellm_params.patterns.length} pattern(s)
+                        {guardrail.definition.litellm_params.patterns.length}{" "}
+                        pattern(s)
                       </Tag>
                     )}
                     {guardrail.definition?.litellm_params?.categories && (
                       <Tag className="text-xs" color="orange">
-                        {guardrail.definition.litellm_params.categories.length} category/categories
+                        {guardrail.definition.litellm_params.categories.length}{" "}
+                        category/categories
                       </Tag>
                     )}
                   </div>
@@ -239,7 +243,8 @@ const GuardrailSelectionModal: React.FC<GuardrailSelectionModalProps> = ({
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-lg">✨</span>
                 <span className="font-medium text-purple-900 text-sm">
-                  AI-Discovered Competitors ({template.discoveredCompetitors.length})
+                  AI-Discovered Competitors (
+                  {template.discoveredCompetitors.length})
                 </span>
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -250,7 +255,8 @@ const GuardrailSelectionModal: React.FC<GuardrailSelectionModalProps> = ({
                 ))}
               </div>
               <p className="text-xs text-purple-600 mt-2">
-                These competitor names will be automatically blocked by the competitor-name-blocker guardrail.
+                These competitor names will be automatically blocked by the
+                competitor-name-blocker guardrail.
               </p>
             </div>
           </>
@@ -267,11 +273,13 @@ const GuardrailSelectionModal: React.FC<GuardrailSelectionModalProps> = ({
             </p>
           ) : existingCount > 0 ? (
             <p className="text-green-600">
-              All guardrails already exist. You can proceed to use this template.
+              All guardrails already exist. You can proceed to use this
+              template.
             </p>
           ) : (
             <p className="text-orange-600">
-              Select at least one guardrail to create, or click &quot;Use Template&quot; to proceed without creating new guardrails.
+              Select at least one guardrail to create, or click &quot;Use
+              Template&quot; to proceed without creating new guardrails.
             </p>
           )}
         </div>

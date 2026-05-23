@@ -63,7 +63,10 @@ export function calculateTotalMaskedEntities(entries: any[]): number {
     if (!maskedCounts) return sum;
     return (
       sum +
-      Object.values(maskedCounts).reduce<number>((acc, count) => (typeof count === "number" ? acc + count : acc), 0)
+      Object.values(maskedCounts).reduce<number>(
+        (acc, count) => (typeof count === "number" ? acc + count : acc),
+        0,
+      )
     );
   }, 0);
 }
@@ -84,7 +87,9 @@ export function getGuardrailLabel(entries: any[]): string {
  * @param metadata - Metadata object to check
  * @returns True if vector store data exists and is non-empty
  */
-export function checkHasVectorStoreData(metadata: Record<string, any>): boolean {
+export function checkHasVectorStoreData(
+  metadata: Record<string, any>,
+): boolean {
   return (
     metadata.vector_store_request_metadata &&
     Array.isArray(metadata.vector_store_request_metadata) &&

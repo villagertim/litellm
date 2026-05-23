@@ -1,7 +1,7 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, beforeAll } from "vitest";
-import UserAgentActivity from "./user_agent_activity";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import * as networking from "./networking";
+import UserAgentActivity from "./user_agent_activity";
 
 // Polyfill ResizeObserver for test environment
 beforeAll(() => {
@@ -36,7 +36,11 @@ describe("UserAgentActivity", () => {
   const mockTagDistinctCall = vi.mocked(networking.tagDistinctCall);
 
   const mockDistinctTagsData = {
-    results: [{ tag: "User-Agent: Chrome/1.0" }, { tag: "User-Agent: Firefox/2.0" }, { tag: "User-Agent: Safari/3.0" }],
+    results: [
+      { tag: "User-Agent: Chrome/1.0" },
+      { tag: "User-Agent: Firefox/2.0" },
+      { tag: "User-Agent: Safari/3.0" },
+    ],
   };
 
   const mockSummaryData = {
@@ -131,7 +135,9 @@ describe("UserAgentActivity", () => {
 
     // Check that summary section is displayed
     expect(screen.getByText("Summary by User Agent")).toBeInTheDocument();
-    expect(screen.getByText("Performance metrics for different user agents")).toBeInTheDocument();
+    expect(
+      screen.getByText("Performance metrics for different user agents"),
+    ).toBeInTheDocument();
 
     // Check that user agent cards are displayed
     await waitFor(() => {
@@ -156,7 +162,9 @@ describe("UserAgentActivity", () => {
     });
 
     // Check default DAU tab content
-    expect(screen.getByText("Daily Active Users - Last 7 Days")).toBeInTheDocument();
+    expect(
+      screen.getByText("Daily Active Users - Last 7 Days"),
+    ).toBeInTheDocument();
 
     // Find all WAU tab buttons (there might be multiple)
     const wauTabs = screen.getAllByText("WAU");
@@ -164,7 +172,9 @@ describe("UserAgentActivity", () => {
 
     // Check WAU tab content
     await waitFor(() => {
-      expect(screen.getByText("Weekly Active Users - Last 7 Weeks")).toBeInTheDocument();
+      expect(
+        screen.getByText("Weekly Active Users - Last 7 Weeks"),
+      ).toBeInTheDocument();
     });
 
     // Find all MAU tab buttons
@@ -173,7 +183,9 @@ describe("UserAgentActivity", () => {
 
     // Check MAU tab content
     await waitFor(() => {
-      expect(screen.getByText("Monthly Active Users - Last 7 Months")).toBeInTheDocument();
+      expect(
+        screen.getByText("Monthly Active Users - Last 7 Months"),
+      ).toBeInTheDocument();
     });
   });
 

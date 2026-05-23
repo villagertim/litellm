@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { Modal, Form, Button, Select as AntdSelect } from "antd";
 import { Text, TextInput } from "@tremor/react";
-import { modelAvailableCall, modelPatchUpdateCall } from "../networking";
-import { fetchAvailableModels, ModelGroup } from "../playground/llm_calls/fetch_models";
+import { Select as AntdSelect, Button, Form, Modal } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
 import RouterConfigBuilder from "../add_model/RouterConfigBuilder";
 import NotificationsManager from "../molecules/notifications_manager";
+import { modelAvailableCall, modelPatchUpdateCall } from "../networking";
+import {
+  type ModelGroup,
+  fetchAvailableModels,
+} from "../playground/llm_calls/fetch_models";
 
 interface EditAutoRouterModalProps {
   isVisible: boolean;
@@ -27,8 +31,10 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [modelAccessGroups, setModelAccessGroups] = useState<string[]>([]);
   const [modelInfo, setModelInfo] = useState<ModelGroup[]>([]);
-  const [showCustomDefaultModel, setShowCustomDefaultModel] = useState<boolean>(false);
-  const [showCustomEmbeddingModel, setShowCustomEmbeddingModel] = useState<boolean>(false);
+  const [showCustomDefaultModel, setShowCustomDefaultModel] =
+    useState<boolean>(false);
+  const [showCustomEmbeddingModel, setShowCustomEmbeddingModel] =
+    useState<boolean>(false);
   const [routerConfig, setRouterConfig] = useState<any>(null);
 
   useEffect(() => {
@@ -41,7 +47,15 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
     const fetchModelAccessGroups = async () => {
       if (!accessToken) return;
       try {
-        const response = await modelAvailableCall(accessToken, "", "", false, null, true, true);
+        const response = await modelAvailableCall(
+          accessToken,
+          "",
+          "",
+          false,
+          null,
+          true,
+          true,
+        );
         setModelAccessGroups(response["data"].map((model: any) => model["id"]));
       } catch (error) {
         console.error("Error fetching model access groups:", error);
@@ -70,7 +84,9 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
       let parsedConfig = null;
       if (modelData.litellm_params?.auto_router_config) {
         if (typeof modelData.litellm_params.auto_router_config === "string") {
-          parsedConfig = JSON.parse(modelData.litellm_params.auto_router_config);
+          parsedConfig = JSON.parse(
+            modelData.litellm_params.auto_router_config,
+          );
         } else {
           parsedConfig = modelData.litellm_params.auto_router_config;
         }
@@ -81,18 +97,32 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
       // Set form values
       form.setFieldsValue({
         auto_router_name: modelData.model_name,
-        auto_router_default_model: modelData.litellm_params?.auto_router_default_model || "",
-        auto_router_embedding_model: modelData.litellm_params?.auto_router_embedding_model || "",
+        auto_router_default_model:
+          modelData.litellm_params?.auto_router_default_model || "",
+        auto_router_embedding_model:
+          modelData.litellm_params?.auto_router_embedding_model || "",
         model_access_group: modelData.model_info?.access_groups || [],
       });
 
       // Check if using custom models
-      const allModelGroups = new Set(modelInfo.map((model) => model.model_group));
-      setShowCustomDefaultModel(!allModelGroups.has(modelData.litellm_params?.auto_router_default_model));
-      setShowCustomEmbeddingModel(!allModelGroups.has(modelData.litellm_params?.auto_router_embedding_model));
+      const allModelGroups = new Set(
+        modelInfo.map((model) => model.model_group),
+      );
+      setShowCustomDefaultModel(
+        !allModelGroups.has(
+          modelData.litellm_params?.auto_router_default_model,
+        ),
+      );
+      setShowCustomEmbeddingModel(
+        !allModelGroups.has(
+          modelData.litellm_params?.auto_router_embedding_model,
+        ),
+      );
     } catch (error) {
       console.error("Error parsing auto router config:", error);
-      NotificationsManager.fromBackend("Error loading auto router configuration");
+      NotificationsManager.fromBackend(
+        "Error loading auto router configuration",
+      );
     }
   };
 
@@ -106,7 +136,8 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
         ...modelData.litellm_params,
         auto_router_config: JSON.stringify(routerConfig),
         auto_router_default_model: values.auto_router_default_model,
-        auto_router_embedding_model: values.auto_router_embedding_model || undefined,
+        auto_router_embedding_model:
+          values.auto_router_embedding_model || undefined,
       };
 
       // Prepare updated model_info
@@ -121,7 +152,11 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
         model_info: updatedModelInfo,
       };
 
-      await modelPatchUpdateCall(accessToken, updateData, modelData.model_info.id);
+      await modelPatchUpdateCall(
+        accessToken,
+        updateData,
+        modelData.model_info.id,
+      );
 
       const updatedModelData = {
         ...modelData,
@@ -130,12 +165,16 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
         model_info: updatedModelInfo,
       };
 
-      NotificationsManager.success("Auto router configuration updated successfully");
+      NotificationsManager.success(
+        "Auto router configuration updated successfully",
+      );
       onSuccess(updatedModelData);
       onCancel();
     } catch (error) {
       console.error("Error updating auto router:", error);
-      NotificationsManager.fromBackend("Failed to update auto router configuration");
+      NotificationsManager.fromBackend(
+        "Failed to update auto router configuration",
+      );
     } finally {
       setLoading(false);
     }
@@ -164,7 +203,8 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
     >
       <div className="space-y-6">
         <Text className="text-gray-600">
-          Edit the auto router configuration including routing logic, default models, and access settings.
+          Edit the auto router configuration including routing logic, default
+          models, and access settings.
         </Text>
 
         <Form form={form} layout="vertical" className="space-y-4">
@@ -172,7 +212,9 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
           <Form.Item
             label="Auto Router Name"
             name="auto_router_name"
-            rules={[{ required: true, message: "Auto router name is required" }]}
+            rules={[
+              { required: true, message: "Auto router name is required" },
+            ]}
           >
             <TextInput placeholder="e.g., auto_router_1, smart_routing" />
           </Form.Item>
@@ -199,7 +241,10 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
               onChange={(value) => {
                 setShowCustomDefaultModel(value === "custom");
               }}
-              options={[...modelOptions, { value: "custom", label: "Enter custom model name" }]}
+              options={[
+                ...modelOptions,
+                { value: "custom", label: "Enter custom model name" },
+              ]}
               showSearch={true}
             />
           </Form.Item>
@@ -211,7 +256,10 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
               onChange={(value) => {
                 setShowCustomEmbeddingModel(value === "custom");
               }}
-              options={[...modelOptions, { value: "custom", label: "Enter custom model name" }]}
+              options={[
+                ...modelOptions,
+                { value: "custom", label: "Enter custom model name" },
+              ]}
               showSearch={true}
               allowClear
             />

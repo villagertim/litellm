@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
-import { Select } from "antd";
-import { CloudServerOutlined } from "@ant-design/icons";
 import { useWorker } from "@/hooks/useWorker";
+import { CloudServerOutlined } from "@ant-design/icons";
+import { Select } from "antd";
+import type React from "react";
 
 interface WorkerDropdownProps {
   onWorkerSwitch: (workerId: string) => void;
@@ -18,7 +18,9 @@ const WorkerDropdown: React.FC<WorkerDropdownProps> = ({ onWorkerSwitch }) => {
     <Select
       showSearch
       filterOption={(input, option) =>
-        (option?.label as string ?? "").toLowerCase().includes(input.toLowerCase())
+        ((option?.label as string) ?? "")
+          .toLowerCase()
+          .includes(input.toLowerCase())
       }
       value={selectedWorker.worker_id}
       style={{ minWidth: 180 }}

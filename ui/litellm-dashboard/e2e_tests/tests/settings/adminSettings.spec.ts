@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { ADMIN_STORAGE_PATH } from "../../constants";
 
 test.describe("Add Model", () => {

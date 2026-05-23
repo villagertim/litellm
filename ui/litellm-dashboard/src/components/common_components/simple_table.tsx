@@ -1,5 +1,13 @@
-import React from "react";
-import { Table, TableHead, TableRow, TableHeaderCell, TableBody, TableCell, Text } from "@tremor/react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+  Text,
+} from "@tremor/react";
+import type React from "react";
 
 export interface SimpleTableColumn<T> {
   header: string;
@@ -52,7 +60,9 @@ export function SimpleTable<T>({
             <TableRow key={getRowKey ? getRowKey(row, rowIndex) : rowIndex}>
               {columns.map((column, colIndex) => (
                 <TableCell key={colIndex}>
-                  {column.cell ? column.cell(row) : String(row[column.accessor as keyof T] ?? "")}
+                  {column.cell
+                    ? column.cell(row)
+                    : String(row[column.accessor as keyof T] ?? "")}
                 </TableCell>
               ))}
             </TableRow>
@@ -68,4 +78,3 @@ export function SimpleTable<T>({
     </Table>
   );
 }
-

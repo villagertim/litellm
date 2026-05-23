@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 
 interface VariableWarningProps {
   extractedVariables: string[];
@@ -10,7 +10,7 @@ const VariableWarning: React.FC<VariableWarningProps> = ({
   variables,
 }) => {
   const missingVariables = extractedVariables.filter(
-    (varName) => !variables[varName] || variables[varName].trim() === ""
+    (varName) => !variables[varName] || variables[varName].trim() === "",
   );
 
   if (missingVariables.length === 0) {
@@ -26,7 +26,8 @@ const VariableWarning: React.FC<VariableWarningProps> = ({
             Please fill in all template variables above
           </p>
           <p className="text-xs text-yellow-700">
-            Missing: {missingVariables.map((varName) => `{{${varName}}}`).join(", ")}
+            Missing:{" "}
+            {missingVariables.map((varName) => `{{${varName}}}`).join(", ")}
           </p>
         </div>
       </div>
@@ -35,4 +36,3 @@ const VariableWarning: React.FC<VariableWarningProps> = ({
 };
 
 export default VariableWarning;
-

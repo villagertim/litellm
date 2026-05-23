@@ -2,7 +2,7 @@ import { useInfiniteKeyAliases } from "@/app/(dashboard)/hooks/keys/useKeyAliase
 import { LoadingOutlined } from "@ant-design/icons";
 import { useDebouncedState } from "@tanstack/react-pacer/debouncer";
 import { Select } from "antd";
-import { useMemo, useState, type UIEvent } from "react";
+import { type UIEvent, useMemo, useState } from "react";
 
 export interface PaginatedKeyAliasSelectProps {
   value?: string;
@@ -35,13 +35,8 @@ export const PaginatedKeyAliasSelect = ({
 
   const teamId = allFilters?.["Team ID"] || undefined;
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-  } = useInfiniteKeyAliases(pageSize, debouncedSearch || undefined, teamId);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useInfiniteKeyAliases(pageSize, debouncedSearch || undefined, teamId);
 
   const options = useMemo(() => {
     if (!data?.pages) return [];
@@ -93,7 +88,9 @@ export const PaginatedKeyAliasSelect = ({
       searchValue={searchInput}
       onPopupScroll={handlePopupScroll}
       loading={isLoading}
-      notFoundContent={isLoading ? <LoadingOutlined spin /> : "No key aliases found"}
+      notFoundContent={
+        isLoading ? <LoadingOutlined spin /> : "No key aliases found"
+      }
       options={options}
       popupRender={(menu) => (
         <>

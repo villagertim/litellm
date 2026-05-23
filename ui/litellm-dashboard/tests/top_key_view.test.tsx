@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderWithProviders, screen, fireEvent } from "./test-utils";
-import TopKeyView from "../src/components/UsagePage/components/EntityUsage/TopKeyView";
-import { TagUsage } from "../src/components/UsagePage/types";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import useAuthorized from "../src/app/(dashboard)/hooks/useAuthorized";
+import TopKeyView from "../src/components/UsagePage/components/EntityUsage/TopKeyView";
+import type { TagUsage } from "../src/components/UsagePage/types";
+import { fireEvent, renderWithProviders, screen } from "./test-utils";
 
 // Mock the networking module
 vi.mock("../src/components/networking", () => ({
@@ -90,7 +90,13 @@ describe("TopKeyView", () => {
 
   describe("Tags Display and Sorting", () => {
     beforeEach(() => {
-      renderWithProviders(<TopKeyView {...mockProps} topKeys={mockKeysWithTags} showTags={true} />);
+      renderWithProviders(
+        <TopKeyView
+          {...mockProps}
+          topKeys={mockKeysWithTags}
+          showTags={true}
+        />,
+      );
     });
 
     it("should display tags for each key", () => {
@@ -123,14 +129,18 @@ describe("TopKeyView", () => {
       // Production Key has 3 tags, so it should have an expand arrow
       // Look for the chevron down icon (expand button)
       const expandButtons = screen.getAllByRole("button");
-      const expandButton = expandButtons.find((button) => button.getAttribute("title") === "Show all tags");
+      const expandButton = expandButtons.find(
+        (button) => button.getAttribute("title") === "Show all tags",
+      );
       expect(expandButton).toBeInTheDocument();
     });
 
     it("should show all tags when expanded", async () => {
       // Find and click the expand button for Production Key (has 3 tags)
       const expandButtons = screen.getAllByRole("button");
-      const expandButton = expandButtons.find((button) => button.getAttribute("title") === "Show all tags");
+      const expandButton = expandButtons.find(
+        (button) => button.getAttribute("title") === "Show all tags",
+      );
 
       if (expandButton) {
         fireEvent.click(expandButton);
@@ -153,7 +163,13 @@ describe("TopKeyView", () => {
 
   describe("Tag Spend Formatting", () => {
     it("should handle high spend amounts", () => {
-      renderWithProviders(<TopKeyView {...mockProps} topKeys={mockKeysWithTags} showTags={true} />);
+      renderWithProviders(
+        <TopKeyView
+          {...mockProps}
+          topKeys={mockKeysWithTags}
+          showTags={true}
+        />,
+      );
 
       // Test that high spend amounts are displayed
       // This would require checking tooltip content or finding a way to access the formatted values
@@ -161,7 +177,13 @@ describe("TopKeyView", () => {
     });
 
     it("should handle micro spend amounts", () => {
-      renderWithProviders(<TopKeyView {...mockProps} topKeys={mockKeysWithTags} showTags={true} />);
+      renderWithProviders(
+        <TopKeyView
+          {...mockProps}
+          topKeys={mockKeysWithTags}
+          showTags={true}
+        />,
+      );
 
       // Test that very small amounts are displayed (only the top 2 tags are visible by default)
       // product... has usage: 0.005 (<$0.01)
@@ -186,7 +208,9 @@ describe("TopKeyView", () => {
         },
       ];
 
-      renderWithProviders(<TopKeyView {...mockProps} topKeys={keysWithoutTags} showTags={true} />);
+      renderWithProviders(
+        <TopKeyView {...mockProps} topKeys={keysWithoutTags} showTags={true} />,
+      );
       expect(screen.getByText("-")).toBeInTheDocument();
     });
 
@@ -200,7 +224,13 @@ describe("TopKeyView", () => {
         },
       ];
 
-      renderWithProviders(<TopKeyView {...mockProps} topKeys={keysWithUndefinedTags} showTags={true} />);
+      renderWithProviders(
+        <TopKeyView
+          {...mockProps}
+          topKeys={keysWithUndefinedTags}
+          showTags={true}
+        />,
+      );
       expect(screen.getByText("-")).toBeInTheDocument();
     });
 
@@ -214,7 +244,13 @@ describe("TopKeyView", () => {
         },
       ];
 
-      renderWithProviders(<TopKeyView {...mockProps} topKeys={keysWithNullTags} showTags={true} />);
+      renderWithProviders(
+        <TopKeyView
+          {...mockProps}
+          topKeys={keysWithNullTags}
+          showTags={true}
+        />,
+      );
       expect(screen.getByText("-")).toBeInTheDocument();
     });
   });
@@ -225,12 +261,21 @@ describe("TopKeyView", () => {
         {
           api_key: "key-long-tags",
           key_alias: "Long Tags Key",
-          tags: [{ tag: "very-long-tag-name", usage: 10.0 } as TagUsage, { tag: "short", usage: 5.0 } as TagUsage],
+          tags: [
+            { tag: "very-long-tag-name", usage: 10.0 } as TagUsage,
+            { tag: "short", usage: 5.0 } as TagUsage,
+          ],
           spend: 15.0,
         },
       ];
 
-      renderWithProviders(<TopKeyView {...mockProps} topKeys={keysWithLongTags} showTags={true} />);
+      renderWithProviders(
+        <TopKeyView
+          {...mockProps}
+          topKeys={keysWithLongTags}
+          showTags={true}
+        />,
+      );
 
       // Should show truncated version
       expect(screen.getByText("very-lo...")).toBeInTheDocument();
@@ -245,18 +290,26 @@ describe("TopKeyView", () => {
         {
           api_key: "key-mixed-1",
           key_alias: "Mixed Key 1",
-          tags: [{ tag: "expensive", usage: 999.99 } as TagUsage, { tag: "cheap", usage: 0.001 } as TagUsage],
+          tags: [
+            { tag: "expensive", usage: 999.99 } as TagUsage,
+            { tag: "cheap", usage: 0.001 } as TagUsage,
+          ],
           spend: 1000.0,
         },
         {
           api_key: "key-mixed-2",
           key_alias: "Mixed Key 2",
-          tags: [{ tag: "moderate", usage: 50.0 } as TagUsage, { tag: "tiny", usage: 0.005 } as TagUsage],
+          tags: [
+            { tag: "moderate", usage: 50.0 } as TagUsage,
+            { tag: "tiny", usage: 0.005 } as TagUsage,
+          ],
           spend: 50.01,
         },
       ];
 
-      renderWithProviders(<TopKeyView {...mockProps} topKeys={mixedSpendKeys} showTags={true} />);
+      renderWithProviders(
+        <TopKeyView {...mockProps} topKeys={mixedSpendKeys} showTags={true} />,
+      );
 
       // Verify that all tag types are displayed
       expect(screen.getByText("expensi...")).toBeInTheDocument();
@@ -297,7 +350,9 @@ describe("TopKeyView", () => {
         },
       ];
 
-      renderWithProviders(<TopKeyView {...mockProps} topKeys={simpleKeys} showTags={true} />);
+      renderWithProviders(
+        <TopKeyView {...mockProps} topKeys={simpleKeys} showTags={true} />,
+      );
 
       // Check that key alias is displayed
       expect(screen.getByText("Test Key")).toBeInTheDocument();

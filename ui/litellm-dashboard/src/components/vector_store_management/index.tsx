@@ -1,16 +1,33 @@
-import React, { useState, useEffect } from "react";
-import { Icon, Button as TremorButton, Col, Text, Grid, TabGroup, TabList, Tab, TabPanels, TabPanel } from "@tremor/react";
+import { isAdminRole } from "@/utils/roles";
 import { RefreshIcon } from "@heroicons/react/outline";
-import { vectorStoreListCall, vectorStoreDeleteCall, credentialListCall, CredentialItem } from "../networking";
-import { VectorStore } from "./types";
-import VectorStoreTable from "./VectorStoreTable";
-import VectorStoreForm from "./VectorStoreForm";
+import {
+  Col,
+  Grid,
+  Icon,
+  Tab,
+  TabGroup,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Text,
+  Button as TremorButton,
+} from "@tremor/react";
+import type React from "react";
+import { useEffect, useState } from "react";
 import DeleteResourceModal from "../common_components/DeleteResourceModal";
-import VectorStoreInfoView from "./vector_store_info";
+import NotificationsManager from "../molecules/notifications_manager";
+import {
+  type CredentialItem,
+  credentialListCall,
+  vectorStoreDeleteCall,
+  vectorStoreListCall,
+} from "../networking";
 import CreateVectorStore from "./CreateVectorStore";
 import TestVectorStoreTab from "./TestVectorStoreTab";
-import { isAdminRole } from "@/utils/roles";
-import NotificationsManager from "../molecules/notifications_manager";
+import VectorStoreForm from "./VectorStoreForm";
+import VectorStoreTable from "./VectorStoreTable";
+import type { VectorStore } from "./types";
+import VectorStoreInfoView from "./vector_store_info";
 
 interface VectorStoreProps {
   accessToken: string | null;
@@ -18,14 +35,22 @@ interface VectorStoreProps {
   userRole: string | null;
 }
 
-const VectorStoreManagement: React.FC<VectorStoreProps> = ({ accessToken, userID, userRole }) => {
+const VectorStoreManagement: React.FC<VectorStoreProps> = ({
+  accessToken,
+  userID,
+  userRole,
+}) => {
   const [vectorStores, setVectorStores] = useState<VectorStore[]>([]);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [vectorStoreToDelete, setVectorStoreToDelete] = useState<string | null>(null);
+  const [vectorStoreToDelete, setVectorStoreToDelete] = useState<string | null>(
+    null,
+  );
   const [lastRefreshed, setLastRefreshed] = useState("");
   const [credentials, setCredentials] = useState<CredentialItem[]>([]);
-  const [selectedVectorStoreId, setSelectedVectorStoreId] = useState<string | null>(null);
+  const [selectedVectorStoreId, setSelectedVectorStoreId] = useState<
+    string | null
+  >(null);
   const [editVectorStore, setEditVectorStore] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -37,7 +62,9 @@ const VectorStoreManagement: React.FC<VectorStoreProps> = ({ accessToken, userID
       setVectorStores(response.data || []);
     } catch (error) {
       console.error("Error fetching vector stores:", error);
-      NotificationsManager.fromBackend("Error fetching vector stores: " + error);
+      NotificationsManager.fromBackend(
+        "Error fetching vector stores: " + error,
+      );
     }
   };
 
@@ -155,12 +182,18 @@ const VectorStoreManagement: React.FC<VectorStoreProps> = ({ accessToken, userID
           <TabPanels>
             {/* Tab 1: Create Vector Store */}
             <TabPanel>
-              <CreateVectorStore accessToken={accessToken} onSuccess={handleVectorStoreCreated} />
+              <CreateVectorStore
+                accessToken={accessToken}
+                onSuccess={handleVectorStoreCreated}
+              />
             </TabPanel>
 
             {/* Tab 2: Manage Vector Stores */}
             <TabPanel>
-              <TremorButton className="mb-4" onClick={() => setIsCreateModalVisible(true)}>
+              <TremorButton
+                className="mb-4"
+                onClick={() => setIsCreateModalVisible(true)}
+              >
                 + Add Vector Store
               </TremorButton>
 
@@ -178,7 +211,10 @@ const VectorStoreManagement: React.FC<VectorStoreProps> = ({ accessToken, userID
 
             {/* Tab 3: Test Vector Store */}
             <TabPanel>
-              <TestVectorStoreTab accessToken={accessToken} vectorStores={vectorStores} />
+              <TestVectorStoreTab
+                accessToken={accessToken}
+                vectorStores={vectorStores}
+              />
             </TabPanel>
           </TabPanels>
         </TabGroup>
@@ -198,7 +234,13 @@ const VectorStoreManagement: React.FC<VectorStoreProps> = ({ accessToken, userID
           title="Delete Vector Store"
           message="Are you sure you want to delete this vector store? This action cannot be undone."
           resourceInformationTitle="Vector Store Information"
-          resourceInformation={[{ label: "Vector Store ID", value: vectorStoreToDelete, code: true }]}
+          resourceInformation={[
+            {
+              label: "Vector Store ID",
+              value: vectorStoreToDelete,
+              code: true,
+            },
+          ]}
           onCancel={() => setIsDeleteModalOpen(false)}
           onOk={confirmDelete}
           confirmLoading={isDeleting}

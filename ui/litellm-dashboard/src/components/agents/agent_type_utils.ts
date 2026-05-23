@@ -1,5 +1,5 @@
-import { Agent } from "./types";
-import { AgentCreateInfo } from "../networking";
+import type { AgentCreateInfo } from "../networking";
+import type { Agent } from "./types";
 
 /**
  * Detects the agent type from an agent's litellm_params.
@@ -29,7 +29,7 @@ export const detectAgentType = (agent: Agent): string => {
  */
 export const parseDynamicAgentForForm = (
   agent: Agent,
-  agentTypeInfo: AgentCreateInfo
+  agentTypeInfo: AgentCreateInfo,
 ): Record<string, any> => {
   const values: Record<string, any> = {
     agent_name: agent.agent_name,
@@ -39,14 +39,15 @@ export const parseDynamicAgentForForm = (
   // Extract credential field values from litellm_params
   for (const field of agentTypeInfo.credential_fields) {
     if (field.include_in_litellm_params !== false) {
-      values[field.key] = agent.litellm_params?.[field.key] || field.default_value || "";
+      values[field.key] =
+        agent.litellm_params?.[field.key] || field.default_value || "";
     } else {
       // For fields not in litellm_params (like agent_id), try to extract from model string
       if (agentTypeInfo.model_template && agent.litellm_params?.model) {
         const model = agent.litellm_params.model;
         const templateParts = agentTypeInfo.model_template.split("/");
         const modelParts = model.split("/");
-        
+
         // Find the placeholder position and extract the value
         templateParts.forEach((part, index) => {
           if (part === `{${field.key}}` && modelParts[index]) {
@@ -64,4 +65,3 @@ export const parseDynamicAgentForForm = (
 
   return values;
 };
-

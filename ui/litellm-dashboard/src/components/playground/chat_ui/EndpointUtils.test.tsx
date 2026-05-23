@@ -128,7 +128,10 @@ describe("determineEndpointType", () => {
 
     // Test transcription mode
     vi.mocked(getEndpointType).mockReturnValueOnce(EndpointType.TRANSCRIPTION);
-    const transcriptionResult = determineEndpointType("whisper-model", mockModelInfo);
+    const transcriptionResult = determineEndpointType(
+      "whisper-model",
+      mockModelInfo,
+    );
     expect(getEndpointType).toHaveBeenCalledWith("audio_transcription");
     expect(transcriptionResult).toBe(EndpointType.TRANSCRIPTION);
 
@@ -137,7 +140,10 @@ describe("determineEndpointType", () => {
 
     // Test embedding mode
     vi.mocked(getEndpointType).mockReturnValueOnce(EndpointType.EMBEDDINGS);
-    const embeddingResult = determineEndpointType("embedding-model", mockModelInfo);
+    const embeddingResult = determineEndpointType(
+      "embedding-model",
+      mockModelInfo,
+    );
     expect(getEndpointType).toHaveBeenCalledWith("embedding");
     expect(embeddingResult).toBe(EndpointType.EMBEDDINGS);
 

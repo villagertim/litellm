@@ -1,9 +1,9 @@
 import { useCloudZeroUpdateSettings } from "@/app/(dashboard)/hooks/cloudzero/useCloudZeroSettings";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { Form, Input, Modal } from "antd";
 import MessageManager from "@/components/molecules/message_manager";
+import { Form, Input, Modal } from "antd";
 import { useEffect } from "react";
-import { CloudZeroSettings } from "./types";
+import type { CloudZeroSettings } from "./types";
 
 interface CloudZeroUpdateModalProps {
   open: boolean;
@@ -12,7 +12,12 @@ interface CloudZeroUpdateModalProps {
   settings: CloudZeroSettings;
 }
 
-export default function CloudZeroUpdateModal({ open, onOk, onCancel, settings }: CloudZeroUpdateModalProps) {
+export default function CloudZeroUpdateModal({
+  open,
+  onOk,
+  onCancel,
+  settings,
+}: CloudZeroUpdateModalProps) {
   const { accessToken } = useAuthorized();
   const [form] = Form.useForm();
   const updateMutation = useCloudZeroUpdateSettings(accessToken || "");
@@ -40,7 +45,9 @@ export default function CloudZeroUpdateModal({ open, onOk, onCancel, settings }:
         },
         {
           onSuccess: () => {
-            MessageManager.success("CloudZero integration updated successfully");
+            MessageManager.success(
+              "CloudZero integration updated successfully",
+            );
             form.resetFields();
             onOk();
           },
@@ -48,7 +55,9 @@ export default function CloudZeroUpdateModal({ open, onOk, onCancel, settings }:
             if (error?.errorFields) {
               return;
             }
-            MessageManager.error(error?.message || "Failed to update CloudZero integration");
+            MessageManager.error(
+              error?.message || "Failed to update CloudZero integration",
+            );
           },
         },
       );
@@ -56,7 +65,9 @@ export default function CloudZeroUpdateModal({ open, onOk, onCancel, settings }:
       if (error?.errorFields) {
         return;
       }
-      MessageManager.error(error?.message || "Failed to update CloudZero integration");
+      MessageManager.error(
+        error?.message || "Failed to update CloudZero integration",
+      );
     }
   };
 
@@ -85,7 +96,9 @@ export default function CloudZeroUpdateModal({ open, onOk, onCancel, settings }:
         <Form.Item
           label="CloudZero API Key"
           name="api_key"
-          rules={[{ required: false, message: "Please enter your CloudZero API key" }]}
+          rules={[
+            { required: false, message: "Please enter your CloudZero API key" },
+          ]}
           tooltip="Leave empty to keep the existing API key"
         >
           <Input.Password placeholder="Leave empty to keep existing" />
@@ -93,7 +106,12 @@ export default function CloudZeroUpdateModal({ open, onOk, onCancel, settings }:
         <Form.Item
           label="Connection ID"
           name="connection_id"
-          rules={[{ required: true, message: "Please enter your CloudZero connection ID" }]}
+          rules={[
+            {
+              required: true,
+              message: "Please enter your CloudZero connection ID",
+            },
+          ]}
         >
           <Input placeholder="Enter your CloudZero connection ID" />
         </Form.Item>

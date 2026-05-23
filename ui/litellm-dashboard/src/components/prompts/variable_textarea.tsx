@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { Input, Popover, Tag } from "antd";
 import { EditOutlined } from "@ant-design/icons";
+import { Input, Popover, Tag } from "antd";
+import type React from "react";
+import { useState } from "react";
 
 const { TextArea } = Input;
 
@@ -27,7 +28,11 @@ const VariableTextArea: React.FC<VariableTextAreaProps> = ({
   const [newVariableName, setNewVariableName] = useState("");
 
   // Extract all variables from the text
-  const extractVariables = (): Array<{ name: string; start: number; end: number }> => {
+  const extractVariables = (): Array<{
+    name: string;
+    start: number;
+    end: number;
+  }> => {
     const variableRegex = /\{\{(\w+)\}\}/g;
     const variables: Array<{ name: string; start: number; end: number }> = [];
     let match;
@@ -62,7 +67,7 @@ const VariableTextArea: React.FC<VariableTextAreaProps> = ({
   // This is much harder to get right with React, so for now, let's stick to the reliable
   // "Tags Below" approach which is robust and functional.
   // If user insists on inline coloring, we can revisit the overlay approach but it's very fragile.
-  
+
   // BUT, to satisfy "variables in text box", we can try a simple trick:
   // Render the text as HTML with colored spans inside a contentEditable div
   // and sync it back. This is the "wysiwyg" approach.
@@ -81,7 +86,7 @@ const VariableTextArea: React.FC<VariableTextAreaProps> = ({
           }
         `}
       </style>
-      
+
       {/* Using standard TextArea for reliability */}
       <TextArea
         value={value}
@@ -90,17 +95,21 @@ const VariableTextArea: React.FC<VariableTextAreaProps> = ({
         rows={rows}
         className="font-sans"
       />
-      
+
       {/* Variable Management - Clear and Functional */}
       {variables.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-2 items-center">
-          <span className="text-xs text-gray-500 mr-1">Detected variables:</span>
+          <span className="text-xs text-gray-500 mr-1">
+            Detected variables:
+          </span>
           {variables.map((variable, index) => (
             <Popover
               key={`${variable.start}-${index}`}
               content={
                 <div className="p-2" style={{ minWidth: "200px" }}>
-                  <div className="text-xs text-gray-500 mb-2">Edit variable name</div>
+                  <div className="text-xs text-gray-500 mb-2">
+                    Edit variable name
+                  </div>
                   <Input
                     size="small"
                     value={newVariableName}

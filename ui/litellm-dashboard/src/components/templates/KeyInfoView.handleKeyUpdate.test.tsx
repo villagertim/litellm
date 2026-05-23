@@ -2,13 +2,15 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // ---- Hoisted shared mocks (safe to use inside vi.mock factories) ----
-const { keyUpdateCallMock, keyDeleteCallMock, mockUseAuthorized } = vi.hoisted(() => {
-  return {
-    keyUpdateCallMock: vi.fn().mockResolvedValue({}),
-    keyDeleteCallMock: vi.fn().mockResolvedValue({}),
-    mockUseAuthorized: vi.fn(),
-  };
-});
+const { keyUpdateCallMock, keyDeleteCallMock, mockUseAuthorized } = vi.hoisted(
+  () => {
+    return {
+      keyUpdateCallMock: vi.fn().mockResolvedValue({}),
+      keyDeleteCallMock: vi.fn().mockResolvedValue({}),
+      mockUseAuthorized: vi.fn(),
+    };
+  },
+);
 
 // ---- Module mocks ----
 
@@ -256,7 +258,9 @@ vi.mock("@/app/(dashboard)/hooks/projects/useProjects", () => ({
 
 // Mock useUISettings hook
 vi.mock("@/app/(dashboard)/hooks/uiSettings/useUISettings", () => ({
-  useUISettings: vi.fn().mockReturnValue({ data: { values: {} }, isLoading: false }),
+  useUISettings: vi
+    .fn()
+    .mockReturnValue({ data: { values: {} }, isLoading: false }),
 }));
 
 // Mock useResetKeySpend hook (requires QueryClientProvider which is not available in this test)
@@ -277,7 +281,8 @@ vi.mock("./key_edit_view", async () => {
       React.createElement(
         "button",
         {
-          onClick: () => props.onSubmit((globalThis as any).__TEST_FORM_VALUES ?? {}),
+          onClick: () =>
+            props.onSubmit((globalThis as any).__TEST_FORM_VALUES ?? {}),
         },
         "Mock Submit",
       ),
@@ -438,24 +443,26 @@ describe("KeyInfoView handleKeyUpdate guardrails guard", () => {
 });
 
 describe("KeyInfoView handleKeyUpdate empty strings", () => {
-  ["tpm_limit", "rpm_limit", "max_parallel_requests", "max_budget"].forEach((limit) => {
-    it(`maps empty strings to null for ${limit}`, async () => {
-      renderView(true); // premiumUser = true
+  ["tpm_limit", "rpm_limit", "max_parallel_requests", "max_budget"].forEach(
+    (limit) => {
+      it(`maps empty strings to null for ${limit}`, async () => {
+        renderView(true); // premiumUser = true
 
-      fireEvent.click(screen.getByText("Settings"));
-      fireEvent.click(screen.getByText("Edit Settings"));
-      (globalThis as any).__TEST_FORM_VALUES = {
-        token: "tok_123",
-        [limit]: "",
-      };
+        fireEvent.click(screen.getByText("Settings"));
+        fireEvent.click(screen.getByText("Edit Settings"));
+        (globalThis as any).__TEST_FORM_VALUES = {
+          token: "tok_123",
+          [limit]: "",
+        };
 
-      fireEvent.click(screen.getByText("Mock Submit"));
+        fireEvent.click(screen.getByText("Mock Submit"));
 
-      await waitFor(() => expect(keyUpdateCallMock).toHaveBeenCalled());
+        await waitFor(() => expect(keyUpdateCallMock).toHaveBeenCalled());
 
-      const [sentAccessToken, sentPayload] = keyUpdateCallMock.mock.calls[0];
-      expect(sentAccessToken).toBe("access_abc");
-      expect(sentPayload[limit]).toBeNull();
-    });
-  });
+        const [sentAccessToken, sentPayload] = keyUpdateCallMock.mock.calls[0];
+        expect(sentAccessToken).toBe("access_abc");
+        expect(sentPayload[limit]).toBeNull();
+      });
+    },
+  );
 });

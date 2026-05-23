@@ -10,13 +10,17 @@ const SENSITIVE_METADATA_FIELDS = ["logging"] as const;
  * @param metadata - The metadata object to filter
  * @returns Filtered metadata object without sensitive fields
  */
-export const filterSensitiveMetadata = (metadata: Record<string, any> | null | undefined): Record<string, any> => {
+export const filterSensitiveMetadata = (
+  metadata: Record<string, any> | null | undefined,
+): Record<string, any> => {
   if (!metadata || typeof metadata !== "object") {
     return {};
   }
 
   return Object.fromEntries(
-    Object.entries(metadata).filter(([key]) => !SENSITIVE_METADATA_FIELDS.includes(key as any)),
+    Object.entries(metadata).filter(
+      ([key]) => !SENSITIVE_METADATA_FIELDS.includes(key as any),
+    ),
   );
 };
 
@@ -25,7 +29,9 @@ export const filterSensitiveMetadata = (metadata: Record<string, any> | null | u
  * @param metadata - The metadata object to extract from
  * @returns Array of logging configurations or empty array if not found
  */
-export const extractLoggingSettings = (metadata: Record<string, any> | null | undefined): any[] => {
+export const extractLoggingSettings = (
+  metadata: Record<string, any> | null | undefined,
+): any[] => {
   if (!metadata || typeof metadata !== "object") {
     return [];
   }
@@ -41,7 +47,7 @@ export const extractLoggingSettings = (metadata: Record<string, any> | null | un
  */
 export const formatMetadataForDisplay = (
   metadata: Record<string, any> | null | undefined,
-  indent: number = 2,
+  indent = 2,
 ): string => {
   const filtered = filterSensitiveMetadata(metadata);
   return JSON.stringify(filtered, null, indent);

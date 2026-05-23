@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import TopModelView from "./TopModelView";
 
 describe("TopModelView", () => {
@@ -11,22 +11,50 @@ describe("TopModelView", () => {
   });
 
   it("should render", () => {
-    render(<TopModelView topModels={[]} topModelsLimit={5} setTopModelsLimit={mockSetTopModelsLimit} />);
+    render(
+      <TopModelView
+        topModels={[]}
+        topModelsLimit={5}
+        setTopModelsLimit={mockSetTopModelsLimit}
+      />,
+    );
     expect(screen.getByText("Table View")).toBeInTheDocument();
   });
 
   it("should display table view button", () => {
-    render(<TopModelView topModels={[]} topModelsLimit={5} setTopModelsLimit={mockSetTopModelsLimit} />);
-    expect(screen.getByRole("button", { name: "Table View" })).toBeInTheDocument();
+    render(
+      <TopModelView
+        topModels={[]}
+        topModelsLimit={5}
+        setTopModelsLimit={mockSetTopModelsLimit}
+      />,
+    );
+    expect(
+      screen.getByRole("button", { name: "Table View" }),
+    ).toBeInTheDocument();
   });
 
   it("should display chart view button", () => {
-    render(<TopModelView topModels={[]} topModelsLimit={5} setTopModelsLimit={mockSetTopModelsLimit} />);
-    expect(screen.getByRole("button", { name: "Chart View" })).toBeInTheDocument();
+    render(
+      <TopModelView
+        topModels={[]}
+        topModelsLimit={5}
+        setTopModelsLimit={mockSetTopModelsLimit}
+      />,
+    );
+    expect(
+      screen.getByRole("button", { name: "Chart View" }),
+    ).toBeInTheDocument();
   });
 
   it("should display all table column headers", () => {
-    render(<TopModelView topModels={[]} topModelsLimit={5} setTopModelsLimit={mockSetTopModelsLimit} />);
+    render(
+      <TopModelView
+        topModels={[]}
+        topModelsLimit={5}
+        setTopModelsLimit={mockSetTopModelsLimit}
+      />,
+    );
     expect(screen.getByText("Model")).toBeInTheDocument();
     expect(screen.getByText("Spend (USD)")).toBeInTheDocument();
     expect(screen.getByText("Successful")).toBeInTheDocument();
@@ -62,7 +90,13 @@ describe("TopModelView", () => {
 
   it("should switch to chart view when chart view button is clicked", async () => {
     const user = userEvent.setup();
-    render(<TopModelView topModels={[]} topModelsLimit={5} setTopModelsLimit={mockSetTopModelsLimit} />);
+    render(
+      <TopModelView
+        topModels={[]}
+        topModelsLimit={5}
+        setTopModelsLimit={mockSetTopModelsLimit}
+      />,
+    );
 
     const chartViewButton = screen.getByRole("button", { name: "Chart View" });
     await user.click(chartViewButton);
@@ -72,7 +106,13 @@ describe("TopModelView", () => {
 
   it("should switch to table view when table view button is clicked", async () => {
     const user = userEvent.setup();
-    render(<TopModelView topModels={[]} topModelsLimit={5} setTopModelsLimit={mockSetTopModelsLimit} />);
+    render(
+      <TopModelView
+        topModels={[]}
+        topModelsLimit={5}
+        setTopModelsLimit={mockSetTopModelsLimit}
+      />,
+    );
 
     const chartViewButton = screen.getByRole("button", { name: "Chart View" });
     const tableViewButton = screen.getByRole("button", { name: "Table View" });
@@ -85,7 +125,13 @@ describe("TopModelView", () => {
 
   it("should call setTopModelsLimit when limit is changed via Segmented control", async () => {
     const user = userEvent.setup();
-    render(<TopModelView topModels={[]} topModelsLimit={5} setTopModelsLimit={mockSetTopModelsLimit} />);
+    render(
+      <TopModelView
+        topModels={[]}
+        topModelsLimit={5}
+        setTopModelsLimit={mockSetTopModelsLimit}
+      />,
+    );
 
     const limit10Radio = screen.getByRole("radio", { name: "10" });
     const limit10Label = limit10Radio.closest("label");
@@ -109,7 +155,13 @@ describe("TopModelView", () => {
       tokens: 10000 + i * 1000,
     }));
 
-    render(<TopModelView topModels={manyModels} topModelsLimit={5} setTopModelsLimit={mockSetTopModelsLimit} />);
+    render(
+      <TopModelView
+        topModels={manyModels}
+        topModelsLimit={5}
+        setTopModelsLimit={mockSetTopModelsLimit}
+      />,
+    );
 
     expect(screen.getByText("model-1")).toBeInTheDocument();
     expect(screen.getByText("model-5")).toBeInTheDocument();
@@ -134,7 +186,13 @@ describe("TopModelView", () => {
       },
     ];
 
-    render(<TopModelView topModels={models} topModelsLimit={10} setTopModelsLimit={mockSetTopModelsLimit} />);
+    render(
+      <TopModelView
+        topModels={models}
+        topModelsLimit={10}
+        setTopModelsLimit={mockSetTopModelsLimit}
+      />,
+    );
 
     expect(screen.getByText("model-1")).toBeInTheDocument();
     expect(screen.getByText("model-2")).toBeInTheDocument();
@@ -217,7 +275,9 @@ describe("TopModelView", () => {
         setTopModelsLimit={mockSetTopModelsLimit}
       />,
     );
-    const failedCell = screen.getAllByText("5").find((el) => el.closest("span")?.classList.contains("text-red-600"));
+    const failedCell = screen
+      .getAllByText("5")
+      .find((el) => el.closest("span")?.classList.contains("text-red-600"));
     expect(failedCell).toBeDefined();
   });
 
@@ -241,7 +301,13 @@ describe("TopModelView", () => {
   });
 
   it("should handle empty model list", () => {
-    render(<TopModelView topModels={[]} topModelsLimit={5} setTopModelsLimit={mockSetTopModelsLimit} />);
+    render(
+      <TopModelView
+        topModels={[]}
+        topModelsLimit={5}
+        setTopModelsLimit={mockSetTopModelsLimit}
+      />,
+    );
     expect(screen.getByText("Model")).toBeInTheDocument();
     expect(screen.getByText("Spend (USD)")).toBeInTheDocument();
   });

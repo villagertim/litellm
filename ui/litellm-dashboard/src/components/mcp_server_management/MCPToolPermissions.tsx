@@ -1,11 +1,12 @@
-import React, { useEffect, useRef, useState, useMemo } from "react";
-import { listMCPTools } from "../networking";
-import { MCPTool, MCPServer } from "../mcp_tools/types";
 import { Text } from "@tremor/react";
-import { Spin, Radio } from "antd";
+import { Radio, Spin } from "antd";
+import type React from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useMCPServers } from "../../app/(dashboard)/hooks/mcpServers/useMCPServers";
-import McpCrudPermissionPanel from "../mcp_tools/McpCrudPermissionPanel";
 import { classifyToolOp } from "../../utils/mcpToolCrudClassification";
+import McpCrudPermissionPanel from "../mcp_tools/McpCrudPermissionPanel";
+import type { MCPServer, MCPTool } from "../mcp_tools/types";
+import { listMCPTools } from "../networking";
 
 interface MCPToolPermissionsProps {
   accessToken: string;
@@ -26,7 +27,9 @@ const MCPToolPermissions: React.FC<MCPToolPermissionsProps> = ({
   const [serverTools, setServerTools] = useState<Record<string, MCPTool[]>>({});
   const [loadingTools, setLoadingTools] = useState<Record<string, boolean>>({});
   const [toolErrors, setToolErrors] = useState<Record<string, string>>({});
-  const [viewModes, setViewModes] = useState<Record<string, "crud" | "flat">>({});
+  const [viewModes, setViewModes] = useState<Record<string, "crud" | "flat">>(
+    {},
+  );
 
   // Keep a ref to the latest toolPermissions so async fetch callbacks always
   // read the current value and do not overwrite sibling servers' results when
@@ -39,7 +42,9 @@ const MCPToolPermissions: React.FC<MCPToolPermissionsProps> = ({
   // Filter servers based on selectedServers
   const servers = useMemo(() => {
     if (selectedServers.length === 0) return [];
-    return allServers.filter((server: MCPServer) => selectedServers.includes(server.server_id));
+    return allServers.filter((server: MCPServer) =>
+      selectedServers.includes(server.server_id),
+    );
   }, [allServers, selectedServers]);
 
   // Fetch tools for a specific server; applies delete-blocked-by-default for new servers.
@@ -52,7 +57,10 @@ const MCPToolPermissions: React.FC<MCPToolPermissionsProps> = ({
       const response = await listMCPTools(token, serverId);
 
       if (response.error) {
-        setToolErrors((prev) => ({ ...prev, [serverId]: response.message || "Failed to fetch tools" }));
+        setToolErrors((prev) => ({
+          ...prev,
+          [serverId]: response.message || "Failed to fetch tools",
+        }));
         setServerTools((prev) => ({ ...prev, [serverId]: [] }));
       } else {
         const fetchedTools: MCPTool[] = response.tools || [];
@@ -63,14 +71,19 @@ const MCPToolPermissions: React.FC<MCPToolPermissionsProps> = ({
         const latestPermissions = toolPermissionsRef.current;
         if (!latestPermissions[serverId] && fetchedTools.length > 0) {
           const nonDeleteTools = fetchedTools
-            .filter((t) => classifyToolOp(t.name, t.description || "") !== "delete")
+            .filter(
+              (t) => classifyToolOp(t.name, t.description || "") !== "delete",
+            )
             .map((t) => t.name);
           onChange({ ...latestPermissions, [serverId]: nonDeleteTools });
         }
       }
     } catch (err) {
       console.error(`Error fetching tools for server ${serverId}:`, err);
-      setToolErrors((prev) => ({ ...prev, [serverId]: "Failed to fetch tools" }));
+      setToolErrors((prev) => ({
+        ...prev,
+        [serverId]: "Failed to fetch tools",
+      }));
       setServerTools((prev) => ({ ...prev, [serverId]: [] }));
     } finally {
       setLoadingTools((prev) => ({ ...prev, [serverId]: false }));
@@ -109,7 +122,8 @@ const MCPToolPermissions: React.FC<MCPToolPermissionsProps> = ({
   return (
     <div className="space-y-4">
       {servers.map((server) => {
-        const serverName = server.server_name || server.alias || server.server_id;
+        const serverName =
+          server.server_name || server.alias || server.server_id;
         const tools = serverTools[server.server_id] || [];
         const selectedTools = toolPermissions[server.server_id] || [];
         const isLoading = loadingTools[server.server_id];
@@ -121,15 +135,24 @@ const MCPToolPermissions: React.FC<MCPToolPermissionsProps> = ({
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b bg-white rounded-t-lg">
               <div>
-                <Text className="font-semibold text-gray-900">{serverName}</Text>
-                {server.description && <Text className="text-sm text-gray-500">{server.description}</Text>}
+                <Text className="font-semibold text-gray-900">
+                  {serverName}
+                </Text>
+                {server.description && (
+                  <Text className="text-sm text-gray-500">
+                    {server.description}
+                  </Text>
+                )}
               </div>
               <div className="flex items-center gap-3">
                 {!disabled && tools.length > 0 && (
                   <Radio.Group
                     value={viewMode}
                     onChange={(e) =>
-                      setViewModes((prev) => ({ ...prev, [server.server_id]: e.target.value }))
+                      setViewModes((prev) => ({
+                        ...prev,
+                        [server.server_id]: e.target.value,
+                      }))
                     }
                     size="small"
                     optionType="button"
@@ -176,54 +199,70 @@ const MCPToolPermissions: React.FC<MCPToolPermissionsProps> = ({
               {/* Error */}
               {error && !isLoading && (
                 <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-center">
-                  <Text className="text-red-600 font-medium">Unable to load tools</Text>
+                  <Text className="text-red-600 font-medium">
+                    Unable to load tools
+                  </Text>
                   <Text className="text-sm text-red-500 mt-1">{error}</Text>
                 </div>
               )}
 
               {/* CRUD grouped view */}
-              {!isLoading && !error && tools.length > 0 && viewMode === "crud" && (
-                <McpCrudPermissionPanel
-                  tools={tools}
-                  value={!toolPermissions[server.server_id] ? undefined : selectedTools}
-                  onChange={(allowed) => handleCrudPanelChange(server.server_id, allowed)}
-                  readOnly={disabled}
-                />
-              )}
+              {!isLoading &&
+                !error &&
+                tools.length > 0 &&
+                viewMode === "crud" && (
+                  <McpCrudPermissionPanel
+                    tools={tools}
+                    value={
+                      !toolPermissions[server.server_id]
+                        ? undefined
+                        : selectedTools
+                    }
+                    onChange={(allowed) =>
+                      handleCrudPanelChange(server.server_id, allowed)
+                    }
+                    readOnly={disabled}
+                  />
+                )}
 
               {/* Flat list view */}
-              {!isLoading && !error && tools.length > 0 && viewMode === "flat" && (
-                <div className="space-y-2">
-                  {tools.map((tool) => {
-                    const isSelected = selectedTools.includes(tool.name);
-                    return (
-                      <div key={tool.name} className="flex items-start gap-2">
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => {
-                            if (disabled) return;
-                            const next = isSelected
-                              ? selectedTools.filter((n) => n !== tool.name)
-                              : [...selectedTools, tool.name];
-                            handleCrudPanelChange(server.server_id, next);
-                          }}
-                          disabled={disabled}
-                          className="mt-0.5"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <Text className="font-medium text-gray-900">{tool.name}</Text>
-                            <Text className="text-sm text-gray-500">
-                              - {tool.description || "No description"}
-                            </Text>
+              {!isLoading &&
+                !error &&
+                tools.length > 0 &&
+                viewMode === "flat" && (
+                  <div className="space-y-2">
+                    {tools.map((tool) => {
+                      const isSelected = selectedTools.includes(tool.name);
+                      return (
+                        <div key={tool.name} className="flex items-start gap-2">
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => {
+                              if (disabled) return;
+                              const next = isSelected
+                                ? selectedTools.filter((n) => n !== tool.name)
+                                : [...selectedTools, tool.name];
+                              handleCrudPanelChange(server.server_id, next);
+                            }}
+                            disabled={disabled}
+                            className="mt-0.5"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <Text className="font-medium text-gray-900">
+                                {tool.name}
+                              </Text>
+                              <Text className="text-sm text-gray-500">
+                                - {tool.description || "No description"}
+                              </Text>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+                      );
+                    })}
+                  </div>
+                )}
 
               {/* Empty State */}
               {!isLoading && !error && tools.length === 0 && (

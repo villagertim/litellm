@@ -14,7 +14,10 @@ vi.mock("@/utils/localStorageUtils", () => ({
 }));
 
 import { useDisableShowPrompts } from "@/app/(dashboard)/hooks/useDisableShowPrompts";
-import { emitLocalStorageChange, setLocalStorageItem } from "@/utils/localStorageUtils";
+import {
+  emitLocalStorageChange,
+  setLocalStorageItem,
+} from "@/utils/localStorageUtils";
 
 const mockUseDisableShowPrompts = vi.mocked(useDisableShowPrompts);
 const mockSetLocalStorageItem = vi.mocked(setLocalStorageItem);
@@ -53,7 +56,9 @@ describe("NudgePrompt", () => {
 
     expect(screen.getByText("Test Title")).toBeInTheDocument();
     expect(screen.getByText("Test Description")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Open Modal" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Open Modal" }),
+    ).toBeInTheDocument();
     expect(container.querySelector("svg")).toBeInTheDocument();
   });
 
@@ -72,7 +77,9 @@ describe("NudgePrompt", () => {
   });
 
   it("should display progress bar with correct accent color", () => {
-    const { container } = render(<NudgePrompt {...defaultProps} accentColor="#ff0000" />);
+    const { container } = render(
+      <NudgePrompt {...defaultProps} accentColor="#ff0000" />,
+    );
 
     const progressBar = container.querySelector("div[style*='width']");
     expect(progressBar).toHaveStyle({ backgroundColor: "#ff0000" });

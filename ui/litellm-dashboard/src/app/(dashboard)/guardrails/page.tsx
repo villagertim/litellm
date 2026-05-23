@@ -1,7 +1,7 @@
 "use client";
 
-import GuardrailsPanel from "@/components/guardrails";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import GuardrailsPanel from "@/components/guardrails";
 
 const GuardrailsPage = () => {
   const { accessToken } = useAuthorized();

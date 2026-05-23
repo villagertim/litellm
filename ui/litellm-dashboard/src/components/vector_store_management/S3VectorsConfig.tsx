@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { Alert, Form, Input, Select, Tooltip } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { fetchAvailableModels, ModelGroup } from "../playground/llm_calls/fetch_models";
+import { Alert, Form, Input, Select, Tooltip } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
+import {
+  type ModelGroup,
+  fetchAvailableModels,
+} from "../playground/llm_calls/fetch_models";
 
 interface S3VectorsConfigProps {
   accessToken: string | null;
@@ -25,7 +29,9 @@ const S3VectorsConfig: React.FC<S3VectorsConfigProps> = ({
       try {
         const models = await fetchAvailableModels(accessToken);
         // Filter for embedding models only
-        const embeddingOnly = models.filter((model) => model.mode === "embedding");
+        const embeddingOnly = models.filter(
+          (model) => model.mode === "embedding",
+        );
         setEmbeddingModels(embeddingOnly);
       } catch (error) {
         console.error("Error fetching embedding models:", error);
@@ -51,11 +57,23 @@ const S3VectorsConfig: React.FC<S3VectorsConfigProps> = ({
         message="AWS S3 Vectors Setup"
         description={
           <div>
-            <p>AWS S3 Vectors allows you to store and query vector embeddings directly in S3:</p>
+            <p>
+              AWS S3 Vectors allows you to store and query vector embeddings
+              directly in S3:
+            </p>
             <ul style={{ marginLeft: "16px", marginTop: "8px" }}>
-              <li>Vector buckets and indexes will be automatically created if they don&apos;t exist</li>
-              <li>Vector dimensions are auto-detected from your selected embedding model</li>
-              <li>Ensure your AWS credentials have permissions for S3 Vectors operations</li>
+              <li>
+                Vector buckets and indexes will be automatically created if they
+                don&apos;t exist
+              </li>
+              <li>
+                Vector dimensions are auto-detected from your selected embedding
+                model
+              </li>
+              <li>
+                Ensure your AWS credentials have permissions for S3 Vectors
+                operations
+              </li>
               <li>
                 Learn more:{" "}
                 <a
@@ -86,19 +104,23 @@ const S3VectorsConfig: React.FC<S3VectorsConfigProps> = ({
         }
         required
         validateStatus={
-          providerParams.vector_bucket_name && providerParams.vector_bucket_name.length < 3
+          providerParams.vector_bucket_name &&
+          providerParams.vector_bucket_name.length < 3
             ? "error"
             : undefined
         }
         help={
-          providerParams.vector_bucket_name && providerParams.vector_bucket_name.length < 3
+          providerParams.vector_bucket_name &&
+          providerParams.vector_bucket_name.length < 3
             ? "Bucket name must be at least 3 characters"
             : undefined
         }
       >
         <Input
           value={providerParams.vector_bucket_name || ""}
-          onChange={(e) => handleFieldChange("vector_bucket_name", e.target.value)}
+          onChange={(e) =>
+            handleFieldChange("vector_bucket_name", e.target.value)
+          }
           placeholder="my-vector-bucket (min 3 chars)"
           size="large"
           className="rounded-md"
@@ -116,12 +138,16 @@ const S3VectorsConfig: React.FC<S3VectorsConfigProps> = ({
           </span>
         }
         validateStatus={
-          providerParams.index_name && providerParams.index_name.length > 0 && providerParams.index_name.length < 3
+          providerParams.index_name &&
+          providerParams.index_name.length > 0 &&
+          providerParams.index_name.length < 3
             ? "error"
             : undefined
         }
         help={
-          providerParams.index_name && providerParams.index_name.length > 0 && providerParams.index_name.length < 3
+          providerParams.index_name &&
+          providerParams.index_name.length > 0 &&
+          providerParams.index_name.length < 3
             ? "Index name must be at least 3 characters if provided"
             : undefined
         }

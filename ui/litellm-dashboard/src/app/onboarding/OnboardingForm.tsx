@@ -1,13 +1,16 @@
 "use client";
-import React from "react";
-import { useSearchParams } from "next/navigation";
-import { jwtDecode } from "jwt-decode";
-import { useOnboardingCredentials, useClaimOnboardingToken } from "@/app/(dashboard)/hooks/onboarding/useOnboarding";
+import {
+  useClaimOnboardingToken,
+  useOnboardingCredentials,
+} from "@/app/(dashboard)/hooks/onboarding/useOnboarding";
 import { getProxyBaseUrl } from "@/components/networking";
 import { clearTokenCookies, storeLoginToken } from "@/utils/cookieUtils";
-import { OnboardingLoadingView } from "./OnboardingLoadingView";
+import { jwtDecode } from "jwt-decode";
+import { useSearchParams } from "next/navigation";
+import React from "react";
 import { OnboardingErrorView } from "./OnboardingErrorView";
 import { OnboardingFormBody } from "./OnboardingFormBody";
+import { OnboardingLoadingView } from "./OnboardingLoadingView";
 
 type OnboardingFormProps = {
   variant: "signup" | "reset_password";
@@ -60,7 +63,7 @@ export function OnboardingForm({ variant }: OnboardingFormProps) {
         onError: (error: Error) => {
           setClaimError(error.message || "Failed to submit. Please try again.");
         },
-      }
+      },
     );
   };
 

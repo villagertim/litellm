@@ -1,8 +1,8 @@
-import React from "react";
-import Image from "next/image";
-import { MessageType } from "./types";
-import { shouldShowChatAttachedImage } from "./ChatImageUtils";
 import { FilePdfOutlined } from "@ant-design/icons";
+import Image from "next/image";
+import type React from "react";
+import { shouldShowChatAttachedImage } from "./ChatImageUtils";
+import type { MessageType } from "./types";
 
 interface ChatImageRendererProps {
   message: MessageType;
@@ -13,7 +13,9 @@ const ChatImageRenderer: React.FC<ChatImageRendererProps> = ({ message }) => {
     return null;
   }
 
-  const isPdf = typeof message.content === "string" && message.content.includes("[PDF attached]");
+  const isPdf =
+    typeof message.content === "string" &&
+    message.content.includes("[PDF attached]");
 
   return (
     <div className="mb-2">

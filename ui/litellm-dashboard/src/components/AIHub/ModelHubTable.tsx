@@ -1,17 +1,24 @@
-import { AgentHubData, getAgentHubTableColumns } from "@/components/AIHub/AgentHubTableColumns";
+import { useUISettings } from "@/app/(dashboard)/hooks/uiSettings/useUISettings";
+import {
+  type AgentHubData,
+  getAgentHubTableColumns,
+} from "@/components/AIHub/AgentHubTableColumns";
+import SkillHubDashboard from "@/components/AIHub/SkillHubDashboard";
+import UsefulLinksManagement from "@/components/AIHub/UsefulLinksManagement";
 import MakeAgentPublicForm from "@/components/AIHub/forms/MakeAgentPublicForm";
 import MakeMCPPublicForm from "@/components/AIHub/forms/MakeMCPPublicForm";
 import MakeModelPublicForm from "@/components/AIHub/forms/MakeModelPublicForm";
-import { mcpHubColumns, MCPServerData } from "@/components/mcp_hub_table_columns";
-import { modelHubColumns } from "@/components/model_hub_table_columns";
-import UsefulLinksManagement from "@/components/AIHub/UsefulLinksManagement";
-import { getClaudeCodePluginsList } from "@/components/networking";
-import { Plugin } from "@/components/claude_code_plugins/types";
-import SkillHubDashboard from "@/components/AIHub/SkillHubDashboard";
 import MakeSkillPublicForm from "@/components/claude_code_plugins/MakeSkillPublicForm";
+import type { Plugin } from "@/components/claude_code_plugins/types";
+import {
+  type MCPServerData,
+  mcpHubColumns,
+} from "@/components/mcp_hub_table_columns";
 import { ModelDataTable } from "@/components/model_dashboard/table";
 import ModelFilters from "@/components/model_filters";
+import { modelHubColumns } from "@/components/model_hub_table_columns";
 import NotificationsManager from "@/components/molecules/notifications_manager";
+import { getClaudeCodePluginsList } from "@/components/networking";
 import {
   fetchMCPServers,
   getAgentsList,
@@ -22,17 +29,28 @@ import {
   modelHubPublicModelsCall,
 } from "@/components/networking";
 import PublicModelHub from "@/components/public_model_hub";
+import { getCookie } from "@/utils/cookieUtils";
+import { checkTokenValidity } from "@/utils/jwtUtils";
 import { isAdminRole, isProxyAdminRole } from "@/utils/roles";
 import { CopyOutlined } from "@ant-design/icons";
-import { Badge, Button, Card, Tab, TabGroup, TabList, TabPanel, TabPanels, Text, Title } from "@tremor/react";
+import {
+  Badge,
+  Button,
+  Card,
+  Tab,
+  TabGroup,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Text,
+  Title,
+} from "@tremor/react";
 import { Modal } from "antd";
 import { Copy } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useCallback, useEffect, useState } from "react";
+import type React from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { useUISettings } from "@/app/(dashboard)/hooks/uiSettings/useUISettings";
-import { checkTokenValidity } from "@/utils/jwtUtils";
-import { getCookie } from "@/utils/cookieUtils";
 
 interface ModelHubTableProps {
   accessToken: string | null;
@@ -60,35 +78,50 @@ interface ModelGroupInfo {
   [key: string]: any;
 }
 
-const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, premiumUser, userRole }) => {
+const ModelHubTable: React.FC<ModelHubTableProps> = ({
+  accessToken,
+  publicPage,
+  premiumUser,
+  userRole,
+}) => {
   // Admin Viewer follows the read-parity rule: see the AI Hub catalog, but
   // cannot toggle public visibility (write).
   const canModify = isProxyAdminRole(userRole || "");
 
   const [publicPageAllowed, setPublicPageAllowed] = useState<boolean>(false);
-  const [modelHubData, setModelHubData] = useState<ModelGroupInfo[] | null>(null);
+  const [modelHubData, setModelHubData] = useState<ModelGroupInfo[] | null>(
+    null,
+  );
   const [loading, setLoading] = useState<boolean>(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isPublicPageModalVisible, setIsPublicPageModalVisible] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<null | ModelGroupInfo>(null);
+  const [isPublicPageModalVisible, setIsPublicPageModalVisible] =
+    useState(false);
+  const [selectedModel, setSelectedModel] = useState<null | ModelGroupInfo>(
+    null,
+  );
   const [filteredData, setFilteredData] = useState<ModelGroupInfo[]>([]);
-  const [isMakePublicModalVisible, setIsMakePublicModalVisible] = useState(false);
+  const [isMakePublicModalVisible, setIsMakePublicModalVisible] =
+    useState(false);
   // Agent Hub state
   const [agentHubData, setAgentHubData] = useState<AgentHubData[] | null>(null);
-  const [isMakeAgentPublicModalVisible, setIsMakeAgentPublicModalVisible] = useState(false);
+  const [isMakeAgentPublicModalVisible, setIsMakeAgentPublicModalVisible] =
+    useState(false);
   const [agentLoading, setAgentLoading] = useState<boolean>(true);
   const [selectedAgent, setSelectedAgent] = useState<null | AgentHubData>(null);
   const [isAgentModalVisible, setIsAgentModalVisible] = useState(false);
   // MCP Hub state
   const [mcpHubData, setMcpHubData] = useState<MCPServerData[] | null>(null);
   const [mcpLoading, setMcpLoading] = useState<boolean>(true);
-  const [selectedMcpServer, setSelectedMcpServer] = useState<null | MCPServerData>(null);
+  const [selectedMcpServer, setSelectedMcpServer] =
+    useState<null | MCPServerData>(null);
   const [isMcpModalVisible, setIsMcpModalVisible] = useState(false);
-  const [isMakeMcpPublicModalVisible, setIsMakeMcpPublicModalVisible] = useState(false);
+  const [isMakeMcpPublicModalVisible, setIsMakeMcpPublicModalVisible] =
+    useState(false);
   // Skill Hub state
   const [skillHubData, setSkillHubData] = useState<Plugin[]>([]);
   const [skillLoading, setSkillLoading] = useState<boolean>(false);
-  const [isMakeSkillPublicModalVisible, setIsMakeSkillPublicModalVisible] = useState(false);
+  const [isMakeSkillPublicModalVisible, setIsMakeSkillPublicModalVisible] =
+    useState(false);
   const router = useRouter();
   const { data: uiSettings, isLoading: isUISettingsLoading } = useUISettings();
 
@@ -152,7 +185,10 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
         setModelHubData(_modelHubData);
         setPublicPageAllowed(true);
       } catch (error) {
-        console.error("There was an error fetching the public model data", error);
+        console.error(
+          "There was an error fetching the public model data",
+          error,
+        );
       } finally {
         setLoading(false);
       }
@@ -176,8 +212,8 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
         setAgentLoading(true);
         const response = await getAgentsList(accessToken);
         console.log("AgentHubData:", response);
-        let agents = response.agents;
-        let agent_card_list = agents.map((agent: any) => ({
+        const agents = response.agents;
+        const agent_card_list = agents.map((agent: any) => ({
           agent_id: agent.agent_id,
           ...agent.agent_card_params,
           is_public: agent.litellm_params.is_public,
@@ -226,7 +262,10 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
       try {
         setSkillLoading(true);
         const enabledOnly = publicPage === true;
-        const response = await getClaudeCodePluginsList(accessToken, enabledOnly);
+        const response = await getClaudeCodePluginsList(
+          accessToken,
+          enabledOnly,
+        );
         setSkillHubData(response.plugins);
       } catch (error) {
         console.error("Error fetching skill hub data", error);
@@ -350,8 +389,8 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
       const fetchAgentData = async () => {
         try {
           const response = await getAgentsList(accessToken);
-          let agents = response.agents;
-          let agent_card_list = agents.map((agent: any) => ({
+          const agents = response.agents;
+          const agent_card_list = agents.map((agent: any) => ({
             agent_id: agent.agent_id,
             ...agent.agent_card_params,
             is_public: agent.is_public,
@@ -380,9 +419,12 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
     }
   };
 
-  const handleFilteredDataChange = useCallback((newFilteredData: ModelGroupInfo[]) => {
-    setFilteredData(newFilteredData);
-  }, []);
+  const handleFilteredDataChange = useCallback(
+    (newFilteredData: ModelGroupInfo[]) => {
+      setFilteredData(newFilteredData);
+    },
+    [],
+  );
 
   console.log("publicPage: ", publicPage);
   console.log("publicPageAllowed: ", publicPageAllowed);
@@ -402,10 +444,13 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
               <Title className="text-center">AI Hub</Title>
               {isAdminRole(userRole || "") ? (
                 <p className="text-sm text-gray-600">
-                  Make models, agents, and MCP servers public for developers to know what&apos;s available.
+                  Make models, agents, and MCP servers public for developers to
+                  know what&apos;s available.
                 </p>
               ) : (
-                <p className="text-sm text-gray-600">A list of all public model names personally available to you.</p>
+                <p className="text-sm text-gray-600">
+                  A list of all public model names personally available to you.
+                </p>
               )}
             </div>
             <div className="flex items-center space-x-4">
@@ -413,7 +458,9 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
               <div className="flex items-center bg-gray-200 px-2 py-1 rounded">
                 <Text className="mr-2">{`${getProxyBaseUrl()}/ui/model_hub_table`}</Text>
                 <button
-                  onClick={() => copyToClipboard(`${getProxyBaseUrl()}/ui/model_hub_table`)}
+                  onClick={() =>
+                    copyToClipboard(`${getProxyBaseUrl()}/ui/model_hub_table`)
+                  }
                   className="p-1 hover:bg-gray-300 rounded transition-colors"
                   title="Copy URL"
                 >
@@ -426,7 +473,10 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
           {/* Useful Links Management Section for Admins */}
           {canModify && (
             <div className="mt-8 mb-2">
-              <UsefulLinksManagement accessToken={accessToken} userRole={userRole} />
+              <UsefulLinksManagement
+                accessToken={accessToken}
+                userRole={userRole}
+              />
             </div>
           )}
 
@@ -447,16 +497,25 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
                   {/* Header with Make Public Button */}
                   {publicPage == false && canModify && (
                     <div className="flex justify-end mb-4">
-                      <Button onClick={() => handleMakePublicPage()}>Select Models to Make Public</Button>
+                      <Button onClick={() => handleMakePublicPage()}>
+                        Select Models to Make Public
+                      </Button>
                     </div>
                   )}
 
                   {/* Filters */}
-                  <ModelFilters modelHubData={modelHubData || []} onFilteredDataChange={handleFilteredDataChange} />
+                  <ModelFilters
+                    modelHubData={modelHubData || []}
+                    onFilteredDataChange={handleFilteredDataChange}
+                  />
 
                   {/* Model Table */}
                   <ModelDataTable
-                    columns={modelHubColumns(showModal, copyToClipboard, publicPage)}
+                    columns={modelHubColumns(
+                      showModal,
+                      copyToClipboard,
+                      publicPage,
+                    )}
                     data={filteredData}
                     isLoading={loading}
                     defaultSorting={[{ id: "model_group", desc: false }]}
@@ -465,7 +524,8 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
 
                 <div className="mt-4 text-center space-y-2">
                   <Text className="text-sm text-gray-600">
-                    Showing {filteredData.length} of {modelHubData?.length || 0} models
+                    Showing {filteredData.length} of {modelHubData?.length || 0}{" "}
+                    models
                   </Text>
                 </div>
               </TabPanel>
@@ -476,13 +536,19 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
                   {/* Header with Make Public Button */}
                   {publicPage == false && canModify && (
                     <div className="flex justify-end mb-4">
-                      <Button onClick={() => handleMakeAgentPublicPage()}>Select Agents to Make Public</Button>
+                      <Button onClick={() => handleMakeAgentPublicPage()}>
+                        Select Agents to Make Public
+                      </Button>
                     </div>
                   )}
 
                   {/* Agent Table */}
                   <ModelDataTable
-                    columns={getAgentHubTableColumns(showAgentModal, copyToClipboard, publicPage)}
+                    columns={getAgentHubTableColumns(
+                      showAgentModal,
+                      copyToClipboard,
+                      publicPage,
+                    )}
                     data={agentHubData || []}
                     isLoading={agentLoading}
                     defaultSorting={[{ id: "name", desc: false }]}
@@ -491,7 +557,8 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
 
                 <div className="mt-4 text-center space-y-2">
                   <Text className="text-sm text-gray-600">
-                    Showing {agentHubData?.length || 0} agent{agentHubData?.length !== 1 ? "s" : ""}
+                    Showing {agentHubData?.length || 0} agent
+                    {agentHubData?.length !== 1 ? "s" : ""}
                   </Text>
                 </div>
               </TabPanel>
@@ -502,13 +569,19 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
                   {/* Header with Make Public Button */}
                   {publicPage == false && canModify && (
                     <div className="flex justify-end mb-4">
-                      <Button onClick={() => handleMakeMcpPublicPage()}>Select MCP Servers to Make Public</Button>
+                      <Button onClick={() => handleMakeMcpPublicPage()}>
+                        Select MCP Servers to Make Public
+                      </Button>
                     </div>
                   )}
 
                   {/* MCP Server Table */}
                   <ModelDataTable
-                    columns={mcpHubColumns(showMcpModal, copyToClipboard, publicPage)}
+                    columns={mcpHubColumns(
+                      showMcpModal,
+                      copyToClipboard,
+                      publicPage,
+                    )}
                     data={mcpHubData || []}
                     isLoading={mcpLoading}
                     defaultSorting={[{ id: "server_name", desc: false }]}
@@ -517,7 +590,8 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
 
                 <div className="mt-4 text-center space-y-2">
                   <Text className="text-sm text-gray-600">
-                    Showing {mcpHubData?.length || 0} MCP server{mcpHubData?.length !== 1 ? "s" : ""}
+                    Showing {mcpHubData?.length || 0} MCP server
+                    {mcpHubData?.length !== 1 ? "s" : ""}
                   </Text>
                 </div>
               </TabPanel>
@@ -526,7 +600,9 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
               <TabPanel>
                 {publicPage == false && canModify && (
                   <div className="flex justify-end mb-4">
-                    <Button onClick={() => setIsMakeSkillPublicModalVisible(true)}>
+                    <Button
+                      onClick={() => setIsMakeSkillPublicModalVisible(true)}
+                    >
                       Select Skills to Make Public
                     </Button>
                   </div>
@@ -538,7 +614,10 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
                   accessToken={accessToken}
                   publicPage={publicPage}
                   onPublishSuccess={async () => {
-                    const response = await getClaudeCodePluginsList(accessToken || "", publicPage);
+                    const response = await getClaudeCodePluginsList(
+                      accessToken || "",
+                      publicPage,
+                    );
                     setSkillHubData(response.plugins);
                   }}
                 />
@@ -548,8 +627,12 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
         </div>
       ) : (
         <Card className="mx-auto max-w-xl mt-10">
-          <Text className="text-xl text-center mb-2 text-black">Public Model Hub not enabled.</Text>
-          <p className="text-base text-center text-slate-800">Ask your proxy admin to enable this on their Admin UI.</p>
+          <Text className="text-xl text-center mb-2 text-black">
+            Public Model Hub not enabled.
+          </Text>
+          <p className="text-base text-center text-slate-800">
+            Ask your proxy admin to enable this on their Admin UI.
+          </p>
         </Card>
       )}
 
@@ -613,15 +696,23 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
 
             {/* Token and Cost Information */}
             <div>
-              <Text className="text-lg font-semibold mb-4">Token & Cost Information</Text>
+              <Text className="text-lg font-semibold mb-4">
+                Token & Cost Information
+              </Text>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Text className="font-medium">Max Input Tokens:</Text>
-                  <Text>{selectedModel.max_input_tokens?.toLocaleString() || "Not specified"}</Text>
+                  <Text>
+                    {selectedModel.max_input_tokens?.toLocaleString() ||
+                      "Not specified"}
+                  </Text>
                 </div>
                 <div>
                   <Text className="font-medium">Max Output Tokens:</Text>
-                  <Text>{selectedModel.max_output_tokens?.toLocaleString() || "Not specified"}</Text>
+                  <Text>
+                    {selectedModel.max_output_tokens?.toLocaleString() ||
+                      "Not specified"}
+                  </Text>
                 </div>
                 <div>
                   <Text className="font-medium">Input Cost per 1M Tokens:</Text>
@@ -632,7 +723,9 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
                   </Text>
                 </div>
                 <div>
-                  <Text className="font-medium">Output Cost per 1M Tokens:</Text>
+                  <Text className="font-medium">
+                    Output Cost per 1M Tokens:
+                  </Text>
                   <Text>
                     {selectedModel.output_cost_per_token
                       ? formatCost(selectedModel.output_cost_per_token)
@@ -648,14 +741,28 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
               <div className="flex flex-wrap gap-2">
                 {(() => {
                   const capabilities = getModelCapabilities(selectedModel);
-                  const colors = ["green", "blue", "purple", "orange", "red", "yellow"];
+                  const colors = [
+                    "green",
+                    "blue",
+                    "purple",
+                    "orange",
+                    "red",
+                    "yellow",
+                  ];
 
                   if (capabilities.length === 0) {
-                    return <Text className="text-gray-500">No special capabilities listed</Text>;
+                    return (
+                      <Text className="text-gray-500">
+                        No special capabilities listed
+                      </Text>
+                    );
                   }
 
                   return capabilities.map((capability, index) => (
-                    <Badge key={capability} color={colors[index % colors.length]}>
+                    <Badge
+                      key={capability}
+                      color={colors[index % colors.length]}
+                    >
                       {formatCapabilityName(capability)}
                     </Badge>
                   ));
@@ -687,7 +794,9 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
             {/* Supported OpenAI Parameters */}
             {selectedModel.supported_openai_params && (
               <div>
-                <Text className="text-lg font-semibold mb-4">Supported OpenAI Parameters</Text>
+                <Text className="text-lg font-semibold mb-4">
+                  Supported OpenAI Parameters
+                </Text>
                 <div className="flex flex-wrap gap-2">
                   {selectedModel.supported_openai_params.map((param) => (
                     <Badge key={param} color="green">
@@ -771,24 +880,29 @@ print(response.choices[0].message.content)`}
             </div>
 
             {/* Capabilities */}
-            {selectedAgent.capabilities && Object.keys(selectedAgent.capabilities).length > 0 && (
-              <div>
-                <Text className="text-lg font-semibold mb-4">Capabilities</Text>
-                <div className="flex flex-wrap gap-2">
-                  {Object.entries(selectedAgent.capabilities)
-                    .filter(([_, value]) => value === true)
-                    .map(([key]) => (
-                      <Badge key={key} color="green">
-                        {key}
-                      </Badge>
-                    ))}
+            {selectedAgent.capabilities &&
+              Object.keys(selectedAgent.capabilities).length > 0 && (
+                <div>
+                  <Text className="text-lg font-semibold mb-4">
+                    Capabilities
+                  </Text>
+                  <div className="flex flex-wrap gap-2">
+                    {Object.entries(selectedAgent.capabilities)
+                      .filter(([_, value]) => value === true)
+                      .map(([key]) => (
+                        <Badge key={key} color="green">
+                          {key}
+                        </Badge>
+                      ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {/* Input/Output Modes */}
             <div>
-              <Text className="text-lg font-semibold mb-4">Input/Output Modes</Text>
+              <Text className="text-lg font-semibold mb-4">
+                Input/Output Modes
+              </Text>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Text className="font-medium">Input Modes:</Text>
@@ -819,11 +933,18 @@ print(response.choices[0].message.content)`}
                 <Text className="text-lg font-semibold mb-4">Skills</Text>
                 <div className="space-y-4">
                   {selectedAgent.skills.map((skill) => (
-                    <div key={skill.id} className="border border-gray-200 rounded p-4">
+                    <div
+                      key={skill.id}
+                      className="border border-gray-200 rounded p-4"
+                    >
                       <div className="flex justify-between items-start mb-2">
                         <div>
-                          <Text className="font-medium text-base">{skill.name}</Text>
-                          <Text className="text-xs text-gray-500">ID: {skill.id}</Text>
+                          <Text className="font-medium text-base">
+                            {skill.name}
+                          </Text>
+                          <Text className="text-xs text-gray-500">
+                            ID: {skill.id}
+                          </Text>
                         </div>
                         {skill.tags && skill.tags.length > 0 && (
                           <div className="flex flex-wrap gap-1">
@@ -838,7 +959,9 @@ print(response.choices[0].message.content)`}
                       <Text className="text-sm mb-2">{skill.description}</Text>
                       {skill.examples && skill.examples.length > 0 && (
                         <div>
-                          <Text className="text-xs font-medium text-gray-700">Examples:</Text>
+                          <Text className="text-xs font-medium text-gray-700">
+                            Examples:
+                          </Text>
                           <div className="flex flex-wrap gap-1 mt-1">
                             {skill.examples.map((example, idx) => (
                               <Badge key={idx} color="gray" size="xs">
@@ -857,8 +980,12 @@ print(response.choices[0].message.content)`}
             {/* Additional Properties */}
             {selectedAgent.supportsAuthenticatedExtendedCard && (
               <div>
-                <Text className="text-lg font-semibold mb-4">Additional Features</Text>
-                <Badge color="green">Supports Authenticated Extended Card</Badge>
+                <Text className="text-lg font-semibold mb-4">
+                  Additional Features
+                </Text>
+                <Badge color="green">
+                  Supports Authenticated Extended Card
+                </Badge>
               </div>
             )}
           </div>
@@ -878,7 +1005,9 @@ print(response.choices[0].message.content)`}
           <div className="space-y-6">
             {/* Server Overview */}
             <div>
-              <Text className="text-lg font-semibold mb-4">Server Overview</Text>
+              <Text className="text-lg font-semibold mb-4">
+                Server Overview
+              </Text>
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <Text className="font-medium">Server Name:</Text>
@@ -887,9 +1016,13 @@ print(response.choices[0].message.content)`}
                 <div>
                   <Text className="font-medium">Server ID:</Text>
                   <div className="flex items-center space-x-2">
-                    <Text className="text-xs truncate">{selectedMcpServer.server_id}</Text>
+                    <Text className="text-xs truncate">
+                      {selectedMcpServer.server_id}
+                    </Text>
                     <CopyOutlined
-                      onClick={() => copyToClipboard(selectedMcpServer.server_id)}
+                      onClick={() =>
+                        copyToClipboard(selectedMcpServer.server_id)
+                      }
                       className="cursor-pointer text-gray-500 hover:text-blue-500"
                     />
                   </div>
@@ -906,7 +1039,11 @@ print(response.choices[0].message.content)`}
                 </div>
                 <div>
                   <Text className="font-medium">Auth Type:</Text>
-                  <Badge color={selectedMcpServer.auth_type === "none" ? "gray" : "green"}>
+                  <Badge
+                    color={
+                      selectedMcpServer.auth_type === "none" ? "gray" : "green"
+                    }
+                  >
                     {selectedMcpServer.auth_type}
                   </Badge>
                 </div>
@@ -914,9 +1051,11 @@ print(response.choices[0].message.content)`}
                   <Text className="font-medium">Status:</Text>
                   <Badge
                     color={
-                      selectedMcpServer.status === "active" || selectedMcpServer.status === "healthy"
+                      selectedMcpServer.status === "active" ||
+                      selectedMcpServer.status === "healthy"
                         ? "green"
-                        : selectedMcpServer.status === "inactive" || selectedMcpServer.status === "unhealthy"
+                        : selectedMcpServer.status === "inactive" ||
+                            selectedMcpServer.status === "unhealthy"
                           ? "red"
                           : "gray"
                     }
@@ -935,12 +1074,16 @@ print(response.choices[0].message.content)`}
 
             {/* Connection Details */}
             <div>
-              <Text className="text-lg font-semibold mb-4">Connection Details</Text>
+              <Text className="text-lg font-semibold mb-4">
+                Connection Details
+              </Text>
               <div className="space-y-2">
                 <div>
                   <Text className="font-medium">URL:</Text>
                   <div className="flex items-center space-x-2 mt-1">
-                    <Text className="text-sm break-all bg-gray-100 p-2 rounded flex-1">{selectedMcpServer.url}</Text>
+                    <Text className="text-sm break-all bg-gray-100 p-2 rounded flex-1">
+                      {selectedMcpServer.url}
+                    </Text>
                     <CopyOutlined
                       onClick={() => copyToClipboard(selectedMcpServer.url)}
                       className="cursor-pointer text-gray-500 hover:text-blue-500 flex-shrink-0"
@@ -950,25 +1093,30 @@ print(response.choices[0].message.content)`}
                 {selectedMcpServer.command && (
                   <div>
                     <Text className="font-medium">Command:</Text>
-                    <Text className="text-sm bg-gray-100 p-2 rounded mt-1 font-mono">{selectedMcpServer.command}</Text>
+                    <Text className="text-sm bg-gray-100 p-2 rounded mt-1 font-mono">
+                      {selectedMcpServer.command}
+                    </Text>
                   </div>
                 )}
               </div>
             </div>
 
             {/* Tools */}
-            {selectedMcpServer.allowed_tools && selectedMcpServer.allowed_tools.length > 0 && (
-              <div>
-                <Text className="text-lg font-semibold mb-4">Allowed Tools</Text>
-                <div className="flex flex-wrap gap-2">
-                  {selectedMcpServer.allowed_tools.map((tool, idx) => (
-                    <Badge key={idx} color="purple">
-                      {tool}
-                    </Badge>
-                  ))}
+            {selectedMcpServer.allowed_tools &&
+              selectedMcpServer.allowed_tools.length > 0 && (
+                <div>
+                  <Text className="text-lg font-semibold mb-4">
+                    Allowed Tools
+                  </Text>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedMcpServer.allowed_tools.map((tool, idx) => (
+                      <Badge key={idx} color="purple">
+                        {tool}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {/* Teams */}
             {selectedMcpServer.teams && selectedMcpServer.teams.length > 0 && (
@@ -985,18 +1133,21 @@ print(response.choices[0].message.content)`}
             )}
 
             {/* Access Groups */}
-            {selectedMcpServer.mcp_access_groups && selectedMcpServer.mcp_access_groups.length > 0 && (
-              <div>
-                <Text className="text-lg font-semibold mb-4">Access Groups</Text>
-                <div className="flex flex-wrap gap-2">
-                  {selectedMcpServer.mcp_access_groups.map((group, idx) => (
-                    <Badge key={idx} color="green">
-                      {group}
-                    </Badge>
-                  ))}
+            {selectedMcpServer.mcp_access_groups &&
+              selectedMcpServer.mcp_access_groups.length > 0 && (
+                <div>
+                  <Text className="text-lg font-semibold mb-4">
+                    Access Groups
+                  </Text>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedMcpServer.mcp_access_groups.map((group, idx) => (
+                      <Badge key={idx} color="green">
+                        {group}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {/* Metadata */}
             <div>
@@ -1012,23 +1163,35 @@ print(response.choices[0].message.content)`}
                 </div>
                 <div>
                   <Text className="font-medium">Created At:</Text>
-                  <Text className="text-sm">{new Date(selectedMcpServer.created_at).toLocaleString()}</Text>
+                  <Text className="text-sm">
+                    {new Date(selectedMcpServer.created_at).toLocaleString()}
+                  </Text>
                 </div>
                 <div>
                   <Text className="font-medium">Updated At:</Text>
-                  <Text className="text-sm">{new Date(selectedMcpServer.updated_at).toLocaleString()}</Text>
+                  <Text className="text-sm">
+                    {new Date(selectedMcpServer.updated_at).toLocaleString()}
+                  </Text>
                 </div>
                 {selectedMcpServer.last_health_check && (
                   <div>
                     <Text className="font-medium">Last Health Check:</Text>
-                    <Text className="text-sm">{new Date(selectedMcpServer.last_health_check).toLocaleString()}</Text>
+                    <Text className="text-sm">
+                      {new Date(
+                        selectedMcpServer.last_health_check,
+                      ).toLocaleString()}
+                    </Text>
                   </div>
                 )}
               </div>
               {selectedMcpServer.health_check_error && (
                 <div className="mt-2 p-2 bg-red-50 rounded">
-                  <Text className="font-medium text-red-700">Health Check Error:</Text>
-                  <Text className="text-sm text-red-600 mt-1">{selectedMcpServer.health_check_error}</Text>
+                  <Text className="font-medium text-red-700">
+                    Health Check Error:
+                  </Text>
+                  <Text className="text-sm text-red-600 mt-1">
+                    {selectedMcpServer.health_check_error}
+                  </Text>
                 </div>
               )}
             </div>
@@ -1110,7 +1273,10 @@ if __name__ == "__main__":
         accessToken={accessToken || ""}
         skillsList={skillHubData}
         onSuccess={async () => {
-          const response = await getClaudeCodePluginsList(accessToken || "", publicPage === true);
+          const response = await getClaudeCodePluginsList(
+            accessToken || "",
+            publicPage === true,
+          );
           setSkillHubData(response.plugins);
         }}
       />

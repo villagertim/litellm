@@ -1,7 +1,7 @@
-import React from "react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../../tests/test-utils";
 import PricingCalculator from "./index";
 import type { ModelEntry } from "./types";
@@ -11,17 +11,24 @@ vi.mock("./use_multi_cost_estimate", () => ({
   useMultiCostEstimate: vi.fn(() => ({
     debouncedFetchForEntry: vi.fn(),
     removeEntry: vi.fn(),
-    getMultiModelResult: vi.fn((entries: ModelEntry[]): MultiModelResult => ({
-      entries: entries.map((e) => ({ entry: e, result: null, loading: false, error: null })),
-      totals: {
-        cost_per_request: 0,
-        daily_cost: null,
-        monthly_cost: null,
-        margin_per_request: 0,
-        daily_margin: null,
-        monthly_margin: null,
-      },
-    })),
+    getMultiModelResult: vi.fn(
+      (entries: ModelEntry[]): MultiModelResult => ({
+        entries: entries.map((e) => ({
+          entry: e,
+          result: null,
+          loading: false,
+          error: null,
+        })),
+        totals: {
+          cost_per_request: 0,
+          daily_cost: null,
+          monthly_cost: null,
+          margin_per_request: 0,
+          daily_margin: null,
+          monthly_margin: null,
+        },
+      }),
+    ),
   })),
 }));
 
@@ -31,8 +38,8 @@ vi.mock("./multi_export_utils", () => ({
 }));
 
 vi.mock("@/utils/dataUtils", () => ({
-  formatNumberWithCommas: vi.fn((v: number, d: number = 0) =>
-    Number.isFinite(v) ? v.toFixed(d) : "-"
+  formatNumberWithCommas: vi.fn((v: number, d = 0) =>
+    Number.isFinite(v) ? v.toFixed(d) : "-",
   ),
 }));
 
@@ -59,7 +66,9 @@ describe("PricingCalculator", () => {
 
   it("should render an Add Another Model button", () => {
     renderWithProviders(<PricingCalculator {...DEFAULT_PROPS} />);
-    expect(screen.getByRole("button", { name: /add another model/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /add another model/i }),
+    ).toBeInTheDocument();
   });
 
   it("should show the Requests/Month column header by default", () => {
@@ -74,7 +83,9 @@ describe("PricingCalculator", () => {
     const table = screen.getByRole("table");
     const initialRows = within(table).getAllByRole("row");
 
-    await user.click(screen.getByRole("button", { name: /add another model/i }));
+    await user.click(
+      screen.getByRole("button", { name: /add another model/i }),
+    );
 
     const updatedRows = within(table).getAllByRole("row");
     // One new data row added (header row + data rows)
@@ -84,7 +95,9 @@ describe("PricingCalculator", () => {
   it("should have the delete button disabled when there is only one row", () => {
     renderWithProviders(<PricingCalculator {...DEFAULT_PROPS} />);
     const allButtons = screen.getAllByRole("button");
-    const disabledButtons = allButtons.filter((btn) => btn.hasAttribute("disabled"));
+    const disabledButtons = allButtons.filter((btn) =>
+      btn.hasAttribute("disabled"),
+    );
     expect(disabledButtons.length).toBeGreaterThan(0);
   });
 
@@ -92,11 +105,15 @@ describe("PricingCalculator", () => {
     const user = userEvent.setup();
     renderWithProviders(<PricingCalculator {...DEFAULT_PROPS} />);
 
-    await user.click(screen.getByRole("button", { name: /add another model/i }));
+    await user.click(
+      screen.getByRole("button", { name: /add another model/i }),
+    );
 
     // With two rows, no delete buttons should be disabled
     const allButtons = screen.getAllByRole("button");
-    const disabledButtons = allButtons.filter((btn) => btn.hasAttribute("disabled"));
+    const disabledButtons = allButtons.filter((btn) =>
+      btn.hasAttribute("disabled"),
+    );
     expect(disabledButtons.length).toBe(0);
   });
 

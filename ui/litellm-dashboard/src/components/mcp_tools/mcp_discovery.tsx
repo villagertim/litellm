@@ -1,8 +1,12 @@
-import React, { useState, useMemo, useEffect } from "react";
-import { Modal, Input, Typography } from "antd";
+import { Input, Modal, Typography } from "antd";
+import type React from "react";
+import { useEffect, useMemo, useState } from "react";
 import { fetchDiscoverableMCPServers } from "../networking";
-import { DiscoverableMCPServer, DiscoverMCPServersResponse } from "./types";
 import { mcpLogoImg } from "./create_mcp_server";
+import type {
+  DiscoverMCPServersResponse,
+  DiscoverableMCPServer,
+} from "./types";
 
 const { Search } = Input;
 const { Text } = Typography;
@@ -116,7 +120,9 @@ const MCPDiscovery: React.FC<MCPDiscoveryProps> = ({
                 objectFit: "contain",
               }}
             />
-            <h2 className="text-xl font-semibold text-gray-900">Add MCP Server</h2>
+            <h2 className="text-xl font-semibold text-gray-900">
+              Add MCP Server
+            </h2>
           </div>
           <button
             onClick={onCustomServer}
@@ -137,7 +143,9 @@ const MCPDiscovery: React.FC<MCPDiscoveryProps> = ({
       }}
     >
       {/* Filter pills */}
-      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
+      <div
+        style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}
+      >
         {["All", ...categories].map((cat) => {
           const isSelected = selectedCategory === cat;
           return (
@@ -188,13 +196,17 @@ const MCPDiscovery: React.FC<MCPDiscoveryProps> = ({
       )}
 
       {error && (
-        <div style={{ textAlign: "center", padding: "32px 0", color: "#9ca3af" }}>
+        <div
+          style={{ textAlign: "center", padding: "32px 0", color: "#9ca3af" }}
+        >
           <Text>Failed to load servers: {error}</Text>
         </div>
       )}
 
       {!loading && !error && filteredServers.length === 0 && (
-        <div style={{ textAlign: "center", padding: "32px 0", color: "#9ca3af" }}>
+        <div
+          style={{ textAlign: "center", padding: "32px 0", color: "#9ca3af" }}
+        >
           <Text>
             No servers found.{" "}
             <a
@@ -304,7 +316,14 @@ const MCPDiscovery: React.FC<MCPDiscoveryProps> = ({
                     >
                       {server.title || server.name}
                     </span>
-                    <span style={{ color: "#d1d5db", fontSize: 14, flexShrink: 0, marginLeft: 8 }}>
+                    <span
+                      style={{
+                        color: "#d1d5db",
+                        fontSize: 14,
+                        flexShrink: 0,
+                        marginLeft: 8,
+                      }}
+                    >
                       &#8250;
                     </span>
                   </div>

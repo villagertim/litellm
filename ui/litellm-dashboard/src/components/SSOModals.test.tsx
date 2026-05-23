@@ -87,7 +87,9 @@ describe("SSOModals", () => {
     // Check for validation error
     await waitFor(
       () => {
-        expect(screen.getByText("URL must start with http:// or https://")).toBeInTheDocument();
+        expect(
+          screen.getByText("URL must start with http:// or https://"),
+        ).toBeInTheDocument();
       },
       // The validation is based on a Promise, so we need to wait for it to resolve
       { timeout: 5000 },
@@ -129,7 +131,9 @@ describe("SSOModals", () => {
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
 
     // Fill in a URL with trailing slash
-    const urlInput = screen.getByLabelText("Proxy Base URL") as HTMLInputElement;
+    const urlInput = screen.getByLabelText(
+      "Proxy Base URL",
+    ) as HTMLInputElement;
     fireEvent.change(urlInput, { target: { value: "https://example.com/" } });
 
     // Submit the form
@@ -137,7 +141,11 @@ describe("SSOModals", () => {
     fireEvent.click(saveButton);
 
     // Check for validation error using findByText for async rendering
-    const errorMessage = await screen.findByText("URL must not end with a trailing slash", {}, { timeout: 5000 });
+    const errorMessage = await screen.findByText(
+      "URL must not end with a trailing slash",
+      {},
+      { timeout: 5000 },
+    );
     expect(errorMessage).toBeInTheDocument();
   });
 
@@ -162,7 +170,9 @@ describe("SSOModals", () => {
 
     render(<TestWrapper />);
 
-    const urlInput = screen.getByLabelText("Proxy Base URL") as HTMLInputElement;
+    const urlInput = screen.getByLabelText(
+      "Proxy Base URL",
+    ) as HTMLInputElement;
 
     // Simulate user typing "https://"
     fireEvent.change(urlInput, { target: { value: "h" } });
@@ -234,11 +244,17 @@ describe("SSOModals", () => {
     fireEvent.click(saveButton);
 
     // Check that only the URL format error appears (use findByText for async rendering)
-    const errorMessage = await screen.findByText("URL must start with http:// or https://", {}, { timeout: 3000 });
+    const errorMessage = await screen.findByText(
+      "URL must start with http:// or https://",
+      {},
+      { timeout: 3000 },
+    );
     expect(errorMessage).toBeInTheDocument();
 
     // Verify the trailing slash error does NOT appear
-    expect(screen.queryByText("URL must not end with a trailing slash")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("URL must not end with a trailing slash"),
+    ).not.toBeInTheDocument();
   });
 
   it("should load existing SSO settings when modal opens", async () => {
@@ -291,15 +307,21 @@ describe("SSOModals", () => {
 
     // Check that form fields are populated with loaded data
     await waitFor(() => {
-      const emailInput = screen.getByLabelText("Proxy Admin Email") as HTMLInputElement;
+      const emailInput = screen.getByLabelText(
+        "Proxy Admin Email",
+      ) as HTMLInputElement;
       expect(emailInput.value).toBe("admin@example.com");
     });
 
-    const urlInput = screen.getByLabelText("Proxy Base URL") as HTMLInputElement;
+    const urlInput = screen.getByLabelText(
+      "Proxy Base URL",
+    ) as HTMLInputElement;
     expect(urlInput.value).toBe("https://example.com");
 
     // Check that role mappings are populated
-    const groupClaimInput = screen.getByLabelText("Group Claim") as HTMLInputElement;
+    const groupClaimInput = screen.getByLabelText(
+      "Group Claim",
+    ) as HTMLInputElement;
     expect(groupClaimInput.value).toBe("groups");
   });
 
@@ -362,23 +384,33 @@ describe("SSOModals", () => {
     fireEvent.change(clientIdInput, { target: { value: "test-client-id" } });
 
     const clientSecretInput = screen.getByLabelText("Generic Client Secret");
-    fireEvent.change(clientSecretInput, { target: { value: "test-client-secret" } });
+    fireEvent.change(clientSecretInput, {
+      target: { value: "test-client-secret" },
+    });
 
     const authEndpointInput = screen.getByLabelText("Authorization Endpoint");
-    fireEvent.change(authEndpointInput, { target: { value: "https://example.okta.com/authorize" } });
+    fireEvent.change(authEndpointInput, {
+      target: { value: "https://example.okta.com/authorize" },
+    });
 
     const tokenEndpointInput = screen.getByLabelText("Token Endpoint");
-    fireEvent.change(tokenEndpointInput, { target: { value: "https://example.okta.com/token" } });
+    fireEvent.change(tokenEndpointInput, {
+      target: { value: "https://example.okta.com/token" },
+    });
 
     const userinfoEndpointInput = screen.getByLabelText("Userinfo Endpoint");
-    fireEvent.change(userinfoEndpointInput, { target: { value: "https://example.okta.com/userinfo" } });
+    fireEvent.change(userinfoEndpointInput, {
+      target: { value: "https://example.okta.com/userinfo" },
+    });
 
     // Fill role mapping fields
     const groupClaimInput = screen.getByLabelText("Group Claim");
     fireEvent.change(groupClaimInput, { target: { value: "groups" } });
 
     const proxyAdminTeamsInput = screen.getByLabelText("Proxy Admin Teams");
-    fireEvent.change(proxyAdminTeamsInput, { target: { value: "admin-group, super-admin" } });
+    fireEvent.change(proxyAdminTeamsInput, {
+      target: { value: "admin-group, super-admin" },
+    });
 
     // Submit the form
     const saveButton = screen.getByText("Save");
@@ -469,7 +501,9 @@ describe("SSOModals", () => {
       });
     });
 
-    expect(NotificationsManager.success).toHaveBeenCalledWith("SSO settings cleared successfully");
+    expect(NotificationsManager.success).toHaveBeenCalledWith(
+      "SSO settings cleared successfully",
+    );
     expect(mockHandleAddSSOOk).toHaveBeenCalled();
   });
 });

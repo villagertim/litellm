@@ -2,7 +2,7 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../tests/test-utils";
-import { KeyResponse } from "../key_team_helpers/key_list";
+import type { KeyResponse } from "../key_team_helpers/key_list";
 import { KeyEditView } from "./key_edit_view";
 
 vi.mock("../networking", async () => {
@@ -75,11 +75,18 @@ vi.mock("@/app/(dashboard)/hooks/accessGroups/useAccessGroups", () => ({
 }));
 
 vi.mock("../common_components/AccessGroupSelector", () => ({
-  default: ({ value = [], onChange }: { value?: string[]; onChange?: (v: string[]) => void }) => (
+  default: ({
+    value = [],
+    onChange,
+  }: { value?: string[]; onChange?: (v: string[]) => void }) => (
     <input
       data-testid="access-group-selector"
       value={Array.isArray(value) ? value.join(",") : ""}
-      onChange={(e) => onChange?.(e.target.value ? e.target.value.split(",").map((s) => s.trim()) : [])}
+      onChange={(e) =>
+        onChange?.(
+          e.target.value ? e.target.value.split(",").map((s) => s.trim()) : [],
+        )
+      }
     />
   ),
 }));
@@ -228,7 +235,9 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /cancel/i }),
+      ).toBeInTheDocument();
     });
 
     const cancelButton = screen.getByRole("button", { name: /cancel/i });
@@ -324,7 +333,9 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /save changes/i }),
+      ).toBeInTheDocument();
     });
 
     const submitButton = screen.getByRole("button", { name: /save changes/i });
@@ -354,7 +365,9 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Models field is disabled for this key type")).toBeInTheDocument();
+      expect(
+        screen.getByText("Models field is disabled for this key type"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -377,7 +390,9 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Models field is disabled for this key type")).toBeInTheDocument();
+      expect(
+        screen.getByText("Models field is disabled for this key type"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -486,7 +501,9 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /save changes/i }),
+      ).toBeInTheDocument();
     });
 
     const submitButton = screen.getByRole("button", { name: /save changes/i });
@@ -518,7 +535,9 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /save changes/i }),
+      ).toBeInTheDocument();
     });
 
     const submitButton = screen.getByRole("button", { name: /save changes/i });
@@ -550,7 +569,9 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /save changes/i }),
+      ).toBeInTheDocument();
     });
 
     const submitButton = screen.getByRole("button", { name: /save changes/i });
@@ -623,7 +644,9 @@ describe("KeyEditView", () => {
     });
 
     // The selected key type label should show "AI APIs" (not "LLM API")
-    const keyTypeSection = screen.getByText("Key Type").closest(".ant-form-item")!;
+    const keyTypeSection = screen
+      .getByText("Key Type")
+      .closest(".ant-form-item")!;
     expect(keyTypeSection).toBeInTheDocument();
 
     // Open the dropdown to see all options
@@ -663,7 +686,9 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /cancel/i }),
+      ).toBeInTheDocument();
     });
 
     const submitButton = screen.getByRole("button", { name: /save changes/i });
@@ -725,7 +750,9 @@ describe("KeyEditView", () => {
         expect(screen.getByText("Organization")).toBeInTheDocument();
       });
 
-      const orgFormItem = screen.getByText("Organization").closest(".ant-form-item");
+      const orgFormItem = screen
+        .getByText("Organization")
+        .closest(".ant-form-item");
       const disabledSelect = orgFormItem?.querySelector(".ant-select-disabled");
       expect(disabledSelect).toBeTruthy();
     });
@@ -747,7 +774,9 @@ describe("KeyEditView", () => {
         expect(screen.getByText("Organization")).toBeInTheDocument();
       });
 
-      const orgFormItem = screen.getByText("Organization").closest(".ant-form-item");
+      const orgFormItem = screen
+        .getByText("Organization")
+        .closest(".ant-form-item");
       const disabledSelect = orgFormItem?.querySelector(".ant-select-disabled");
       expect(disabledSelect).toBeFalsy();
     });

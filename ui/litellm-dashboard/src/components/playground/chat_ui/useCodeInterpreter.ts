@@ -3,14 +3,14 @@
  * Container creation is handled automatically by OpenAI with container: { type: "auto" }
  */
 
-import { useState, useCallback } from "react";
-import { CodeInterpreterResult } from "../llm_calls/code_interpreter_handler";
+import { useCallback, useState } from "react";
+import type { CodeInterpreterResult } from "../llm_calls/code_interpreter_handler";
 
 export interface UseCodeInterpreterReturn {
   // State
   enabled: boolean;
   result: CodeInterpreterResult | null;
-  
+
   // Actions
   setEnabled: (enabled: boolean) => void;
   setResult: (result: CodeInterpreterResult | null) => void;

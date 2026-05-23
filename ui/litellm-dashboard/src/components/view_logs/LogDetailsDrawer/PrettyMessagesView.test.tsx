@@ -1,6 +1,6 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import React from "react";
+import { describe, expect, it, vi } from "vitest";
 import { PrettyMessagesView } from "./PrettyMessagesView";
 
 vi.mock("antd", async () => {
@@ -50,7 +50,9 @@ describe("PrettyMessagesView", () => {
                 id: "item_1",
                 role: "assistant",
                 type: "message",
-                content: [{ type: "audio", transcript: "Hello from realtime!" }],
+                content: [
+                  { type: "audio", transcript: "Hello from realtime!" },
+                ],
               },
             ],
           },

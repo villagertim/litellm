@@ -5,7 +5,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as networking from "../networking";
 import SearchTools from "./SearchTools";
-import { AvailableSearchProvider, SearchTool } from "./types";
+import type { AvailableSearchProvider, SearchTool } from "./types";
 
 vi.mock("../networking", () => ({
   fetchSearchTools: vi.fn(),
@@ -19,7 +19,10 @@ vi.mock("@/utils/roles", () => ({
 }));
 
 vi.mock("./SearchToolView", () => {
-  const SearchToolView = ({ searchTool, onBack }: { searchTool: SearchTool; onBack: () => void }) => (
+  const SearchToolView = ({
+    searchTool,
+    onBack,
+  }: { searchTool: SearchTool; onBack: () => void }) => (
     <div data-testid="search-tool-view">
       <div>Search Tool View: {searchTool.search_tool_name}</div>
       <button onClick={onBack}>Back</button>
@@ -39,7 +42,9 @@ vi.mock("./CreateSearchTools", () => {
   }) =>
     isModalVisible ? (
       <div data-testid="create-search-tool-modal">
-        <button onClick={() => setModalVisible(false)}>Close Create Modal</button>
+        <button onClick={() => setModalVisible(false)}>
+          Close Create Modal
+        </button>
       </div>
     ) : null;
   CreateSearchTools.displayName = "CreateSearchTools";
@@ -124,8 +129,12 @@ describe("SearchTools", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(networking.fetchSearchTools).mockResolvedValue({ search_tools: mockSearchTools });
-    vi.mocked(networking.fetchAvailableSearchProviders).mockResolvedValue({ providers: mockAvailableProviders });
+    vi.mocked(networking.fetchSearchTools).mockResolvedValue({
+      search_tools: mockSearchTools,
+    });
+    vi.mocked(networking.fetchAvailableSearchProviders).mockResolvedValue({
+      providers: mockAvailableProviders,
+    });
     vi.mocked(roles.isAdminRole).mockReturnValue(true);
   });
 
@@ -137,18 +146,30 @@ describe("SearchTools", () => {
   });
 
   it("should display missing authentication parameters message when accessToken is missing", () => {
-    render(<SearchTools {...defaultProps} accessToken={null} />, { wrapper: createWrapper() });
-    expect(screen.getByText("Missing required authentication parameters.")).toBeInTheDocument();
+    render(<SearchTools {...defaultProps} accessToken={null} />, {
+      wrapper: createWrapper(),
+    });
+    expect(
+      screen.getByText("Missing required authentication parameters."),
+    ).toBeInTheDocument();
   });
 
   it("should display missing authentication parameters message when userRole is missing", () => {
-    render(<SearchTools {...defaultProps} userRole={null} />, { wrapper: createWrapper() });
-    expect(screen.getByText("Missing required authentication parameters.")).toBeInTheDocument();
+    render(<SearchTools {...defaultProps} userRole={null} />, {
+      wrapper: createWrapper(),
+    });
+    expect(
+      screen.getByText("Missing required authentication parameters."),
+    ).toBeInTheDocument();
   });
 
   it("should display missing authentication parameters message when userID is missing", () => {
-    render(<SearchTools {...defaultProps} userID={null} />, { wrapper: createWrapper() });
-    expect(screen.getByText("Missing required authentication parameters.")).toBeInTheDocument();
+    render(<SearchTools {...defaultProps} userID={null} />, {
+      wrapper: createWrapper(),
+    });
+    expect(
+      screen.getByText("Missing required authentication parameters."),
+    ).toBeInTheDocument();
   });
 
   it("should display search tools table with tools", async () => {
@@ -160,18 +181,24 @@ describe("SearchTools", () => {
   });
 
   it("should display empty state when no search tools are available", async () => {
-    vi.mocked(networking.fetchSearchTools).mockResolvedValue({ search_tools: [] });
+    vi.mocked(networking.fetchSearchTools).mockResolvedValue({
+      search_tools: [],
+    });
 
     render(<SearchTools {...defaultProps} />, { wrapper: createWrapper() });
     await waitFor(() => {
-      expect(screen.getByText("No search tools configured")).toBeInTheDocument();
+      expect(
+        screen.getByText("No search tools configured"),
+      ).toBeInTheDocument();
     });
   });
 
   it("should show Add New Search Tool button when user is admin", async () => {
     render(<SearchTools {...defaultProps} />, { wrapper: createWrapper() });
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /add new search tool/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /add new search tool/i }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -182,7 +209,9 @@ describe("SearchTools", () => {
     await waitFor(() => {
       expect(screen.getByText("Search Tools")).toBeInTheDocument();
     });
-    expect(screen.queryByRole("button", { name: /add new search tool/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /add new search tool/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("should open create modal when Add New Search Tool button is clicked", async () => {
@@ -190,10 +219,14 @@ describe("SearchTools", () => {
     render(<SearchTools {...defaultProps} />, { wrapper: createWrapper() });
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /add new search tool/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /add new search tool/i }),
+      ).toBeInTheDocument();
     });
 
-    const addButton = screen.getByRole("button", { name: /add new search tool/i });
+    const addButton = screen.getByRole("button", {
+      name: /add new search tool/i,
+    });
     await user.click(addButton);
 
     expect(screen.getByTestId("create-search-tool-modal")).toBeInTheDocument();
@@ -213,7 +246,9 @@ describe("SearchTools", () => {
     await waitFor(() => {
       expect(screen.getByTestId("search-tool-view")).toBeInTheDocument();
     });
-    expect(screen.getByText(/Search Tool View: Perplexity Search/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Search Tool View: Perplexity Search/i),
+    ).toBeInTheDocument();
   });
 
   it("should navigate back from tool view to table", async () => {

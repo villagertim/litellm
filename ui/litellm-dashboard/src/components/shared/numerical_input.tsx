@@ -1,5 +1,5 @@
-import React from "react";
 import { NumberInput } from "@tremor/react";
+import type React from "react";
 
 interface NumericalInputProps {
   step?: number;

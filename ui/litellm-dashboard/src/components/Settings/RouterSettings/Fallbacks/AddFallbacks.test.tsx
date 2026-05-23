@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import AddFallbacks, { Fallbacks } from "./AddFallbacks";
 import * as fetchModelsModule from "../../../playground/llm_calls/fetch_models";
+import AddFallbacks, { type Fallbacks } from "./AddFallbacks";
 
 vi.mock("../../../playground/llm_calls/fetch_models", () => ({
   fetchAvailableModels: vi.fn(),
@@ -44,7 +44,8 @@ vi.mock("./FallbackSelectionForm", () => ({
         <div data-testid="groups-count">{groups.length}</div>
         {groups.map((group: any) => (
           <div key={group.id} data-testid={`group-${group.id}`}>
-            Primary: {group.primaryModel || "None"}, Fallbacks: {group.fallbackModels.length}
+            Primary: {group.primaryModel || "None"}, Fallbacks:{" "}
+            {group.fallbackModels.length}
           </div>
         ))}
       </div>
@@ -69,12 +70,16 @@ describe("AddFallbacks", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(fetchModelsModule.fetchAvailableModels).mockResolvedValue(mockModelGroups);
+    vi.mocked(fetchModelsModule.fetchAvailableModels).mockResolvedValue(
+      mockModelGroups,
+    );
   });
 
   it("should render the component", () => {
     render(<AddFallbacks {...defaultProps} />);
-    expect(screen.getByRole("button", { name: /add fallbacks/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /add fallbacks/i }),
+    ).toBeInTheDocument();
   });
 
   it("should open modal when Add Fallbacks button is clicked", async () => {
@@ -97,7 +102,9 @@ describe("AddFallbacks", () => {
     await user.click(addButton);
 
     await waitFor(() => {
-      expect(fetchModelsModule.fetchAvailableModels).toHaveBeenCalledWith(mockAccessToken);
+      expect(fetchModelsModule.fetchAvailableModels).toHaveBeenCalledWith(
+        mockAccessToken,
+      );
     });
   });
 
@@ -133,11 +140,15 @@ describe("AddFallbacks", () => {
     });
 
     await waitFor(() => {
-      const saveButton = screen.getByRole("button", { name: /save all configurations/i });
+      const saveButton = screen.getByRole("button", {
+        name: /save all configurations/i,
+      });
       expect(saveButton).toBeInTheDocument();
     });
 
-    const saveButton = screen.getByRole("button", { name: /save all configurations/i });
+    const saveButton = screen.getByRole("button", {
+      name: /save all configurations/i,
+    });
     await user.click(saveButton);
 
     await waitFor(() => {
@@ -157,7 +168,9 @@ describe("AddFallbacks", () => {
       expect(screen.getByRole("dialog")).toBeInTheDocument();
     });
 
-    const saveButton = screen.getByRole("button", { name: /save all configurations/i });
+    const saveButton = screen.getByRole("button", {
+      name: /save all configurations/i,
+    });
     await user.click(saveButton);
 
     await waitFor(() => {
@@ -188,7 +201,9 @@ describe("AddFallbacks", () => {
       expect(screen.getByText(/Primary: gpt-4/i)).toBeInTheDocument();
     });
 
-    const saveButton = screen.getByRole("button", { name: /save all configurations/i });
+    const saveButton = screen.getByRole("button", {
+      name: /save all configurations/i,
+    });
     expect(saveButton).not.toBeDisabled();
     await user.click(saveButton);
 
@@ -225,7 +240,9 @@ describe("AddFallbacks", () => {
       expect(screen.getByText(/Primary: gpt-4/i)).toBeInTheDocument();
     });
 
-    const saveButton = screen.getByRole("button", { name: /save all configurations/i });
+    const saveButton = screen.getByRole("button", {
+      name: /save all configurations/i,
+    });
     await user.click(saveButton);
 
     await waitFor(() => {
@@ -287,7 +304,9 @@ describe("AddFallbacks", () => {
       expect(screen.getByText(/Primary: gpt-4/i)).toBeInTheDocument();
     });
 
-    const saveButton = screen.getByRole("button", { name: /save all configurations/i });
+    const saveButton = screen.getByRole("button", {
+      name: /save all configurations/i,
+    });
     await user.click(saveButton);
 
     await waitFor(() => {

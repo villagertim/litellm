@@ -1,10 +1,10 @@
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import {
   deriveErrorMessage,
   getGlobalLitellmHeaderName,
   getProxyBaseUrl,
 } from "@/components/networking";
-import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { type UseQueryResult, useQuery } from "@tanstack/react-query";
 
 export interface TeamMemberInfo {
   user_id: string;

@@ -1,12 +1,14 @@
-import React, { forwardRef, useImperativeHandle, useMemo } from "react";
-import { Form, Input, InputNumber, Select, Tooltip } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { MCPTool, InputSchema, InputSchemaProperty } from "./types";
+import { Form, Input, InputNumber, Select, Tooltip } from "antd";
+import React, { forwardRef, useImperativeHandle, useMemo } from "react";
+import type { InputSchema, InputSchemaProperty, MCPTool } from "./types";
 
 const isPlainObject = (value: unknown): value is Record<string, any> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 
-function buildArrayItems(items?: InputSchemaProperty | InputSchemaProperty[]): any[] {
+function buildArrayItems(
+  items?: InputSchemaProperty | InputSchemaProperty[],
+): any[] {
   if (!items) return [];
   if (Array.isArray(items)) {
     return items
@@ -17,9 +19,13 @@ function buildArrayItems(items?: InputSchemaProperty | InputSchemaProperty[]): a
   return itemDefault !== undefined ? [itemDefault] : [];
 }
 
-function buildDefaultValue(prop?: InputSchemaProperty, overrideDefault?: any): any {
+function buildDefaultValue(
+  prop?: InputSchemaProperty,
+  overrideDefault?: any,
+): any {
   if (!prop) return undefined;
-  const effectiveDefault = overrideDefault !== undefined ? overrideDefault : prop.default;
+  const effectiveDefault =
+    overrideDefault !== undefined ? overrideDefault : prop.default;
 
   if (prop.type === "object") {
     const base = isPlainObject(effectiveDefault) ? { ...effectiveDefault } : {};
@@ -45,7 +51,9 @@ function buildDefaultValue(prop?: InputSchemaProperty, overrideDefault?: any): a
           return buildDefaultValue(schema, value);
         });
       }
-      return effectiveDefault.map((value) => buildDefaultValue(itemSchema, value));
+      return effectiveDefault.map((value) =>
+        buildDefaultValue(itemSchema, value),
+      );
     }
     if (effectiveDefault !== undefined) return effectiveDefault;
     return buildArrayItems(prop.items);
@@ -101,14 +109,18 @@ function convertFormValues(
         case "object":
         case "array": {
           try {
-            const parsed = typeof value === "string" ? JSON.parse(value) : value;
+            const parsed =
+              typeof value === "string" ? JSON.parse(value) : value;
             const isValidObject =
               prop.type === "object" &&
               parsed !== null &&
               typeof parsed === "object" &&
               !Array.isArray(parsed);
             const isValidArray = prop.type === "array" && Array.isArray(parsed);
-            if ((prop.type === "object" && isValidObject) || (prop.type === "array" && isValidArray)) {
+            if (
+              (prop.type === "object" && isValidObject) ||
+              (prop.type === "array" && isValidArray)
+            ) {
               convertedValues[key] = parsed;
             } else {
               convertedValues[key] = value;
@@ -130,7 +142,8 @@ function convertFormValues(
   });
 
   const isNestedParams =
-    schema.properties?.params?.type === "object" && schema.properties.params.properties;
+    schema.properties?.params?.type === "object" &&
+    schema.properties.params.properties;
 
   return isNestedParams ? { params: convertedValues } : convertedValues;
 }
@@ -144,201 +157,215 @@ interface MCPToolArgumentsFormProps {
   className?: string;
 }
 
-const MCPToolArgumentsForm = forwardRef<MCPToolArgumentsFormRef, MCPToolArgumentsFormProps>(
-  ({ tool, className }, ref) => {
-    const [form] = Form.useForm();
+const MCPToolArgumentsForm = forwardRef<
+  MCPToolArgumentsFormRef,
+  MCPToolArgumentsFormProps
+>(({ tool, className }, ref) => {
+  const [form] = Form.useForm();
 
-    const schema: InputSchema = useMemo(() => {
-      if (typeof tool.inputSchema === "string") {
-        return {
-          type: "object",
-          properties: {
-            input: {
-              type: "string",
-              description: "Input for this tool",
-            },
-          },
-          required: ["input"],
-        };
-      }
-      return tool.inputSchema as InputSchema;
-    }, [tool.inputSchema]);
-
-    const actualSchema: InputSchema = useMemo(() => {
-      if (
-        schema.properties?.params?.type === "object" &&
-        schema.properties.params.properties
-      ) {
-        return {
-          type: "object",
-          properties: schema.properties.params.properties,
-          required: schema.properties.params.required || [],
-        };
-      }
-      return schema;
-    }, [schema]);
-
-    useImperativeHandle(ref, () => ({
-      getSubmitValues: async () => {
-        const values = await form.validateFields();
-        return convertFormValues(values, actualSchema, schema);
-      },
-    }));
-
-    React.useEffect(() => {
-      form.resetFields();
-      if (!actualSchema.properties) return;
-
-      const initialValues: Record<string, any> = {};
-      Object.entries(actualSchema.properties).forEach(([key, prop]) => {
-        initialValues[key] = getInitialValueForField(prop);
-      });
-      form.setFieldsValue(initialValues);
-    }, [form, actualSchema, tool]);
-
+  const schema: InputSchema = useMemo(() => {
     if (typeof tool.inputSchema === "string") {
-      return (
-        <Form form={form} layout="vertical" className={className}>
-          <Form.Item
-            label={
-              <span className="text-sm font-medium text-gray-700">
-                Input <span className="text-red-500">*</span>
-              </span>
-            }
-            name="input"
-            rules={[{ required: true, message: "Please enter input for this tool" }]}
-          >
-            <Input placeholder="Enter input for this tool" />
-          </Form.Item>
-        </Form>
-      );
+      return {
+        type: "object",
+        properties: {
+          input: {
+            type: "string",
+            description: "Input for this tool",
+          },
+        },
+        required: ["input"],
+      };
     }
+    return tool.inputSchema as InputSchema;
+  }, [tool.inputSchema]);
 
-    if (!actualSchema.properties) {
-      return (
-        <Form form={form} layout="vertical" className={className}>
-          <div className="py-4 text-center text-sm text-gray-500">
-            No parameters required for this tool.
-          </div>
-        </Form>
-      );
+  const actualSchema: InputSchema = useMemo(() => {
+    if (
+      schema.properties?.params?.type === "object" &&
+      schema.properties.params.properties
+    ) {
+      return {
+        type: "object",
+        properties: schema.properties.params.properties,
+        required: schema.properties.params.required || [],
+      };
     }
+    return schema;
+  }, [schema]);
 
+  useImperativeHandle(ref, () => ({
+    getSubmitValues: async () => {
+      const values = await form.validateFields();
+      return convertFormValues(values, actualSchema, schema);
+    },
+  }));
+
+  React.useEffect(() => {
+    form.resetFields();
+    if (!actualSchema.properties) return;
+
+    const initialValues: Record<string, any> = {};
+    Object.entries(actualSchema.properties).forEach(([key, prop]) => {
+      initialValues[key] = getInitialValueForField(prop);
+    });
+    form.setFieldsValue(initialValues);
+  }, [form, actualSchema, tool]);
+
+  if (typeof tool.inputSchema === "string") {
     return (
       <Form form={form} layout="vertical" className={className}>
-        {Object.entries(actualSchema.properties).map(([key, prop]) => {
-          const initialValue = getInitialValueForField(prop);
-          const fieldKey = `${tool.name}-${key}`;
-          return (
-            <Form.Item
-              key={fieldKey}
-              label={
-                <span className="text-sm font-medium text-gray-700 flex items-center">
-                  {key} {actualSchema.required?.includes(key) && <span className="text-red-500">*</span>}
-                  {prop.description && (
-                    <Tooltip title={prop.description}>
-                      <InfoCircleOutlined className="ml-2 text-gray-400 hover:text-gray-600" />
-                    </Tooltip>
-                  )}
-                </span>
-              }
-              name={key}
-              initialValue={initialValue}
-              rules={[
-                {
-                  required: actualSchema.required?.includes(key),
-                  message: `Please enter ${key}`,
-                },
-                ...(prop.type === "object" || prop.type === "array"
-                  ? [
-                      {
-                        validator: (_rule: any, value: any) => {
+        <Form.Item
+          label={
+            <span className="text-sm font-medium text-gray-700">
+              Input <span className="text-red-500">*</span>
+            </span>
+          }
+          name="input"
+          rules={[
+            { required: true, message: "Please enter input for this tool" },
+          ]}
+        >
+          <Input placeholder="Enter input for this tool" />
+        </Form.Item>
+      </Form>
+    );
+  }
+
+  if (!actualSchema.properties) {
+    return (
+      <Form form={form} layout="vertical" className={className}>
+        <div className="py-4 text-center text-sm text-gray-500">
+          No parameters required for this tool.
+        </div>
+      </Form>
+    );
+  }
+
+  return (
+    <Form form={form} layout="vertical" className={className}>
+      {Object.entries(actualSchema.properties).map(([key, prop]) => {
+        const initialValue = getInitialValueForField(prop);
+        const fieldKey = `${tool.name}-${key}`;
+        return (
+          <Form.Item
+            key={fieldKey}
+            label={
+              <span className="text-sm font-medium text-gray-700 flex items-center">
+                {key}{" "}
+                {actualSchema.required?.includes(key) && (
+                  <span className="text-red-500">*</span>
+                )}
+                {prop.description && (
+                  <Tooltip title={prop.description}>
+                    <InfoCircleOutlined className="ml-2 text-gray-400 hover:text-gray-600" />
+                  </Tooltip>
+                )}
+              </span>
+            }
+            name={key}
+            initialValue={initialValue}
+            rules={[
+              {
+                required: actualSchema.required?.includes(key),
+                message: `Please enter ${key}`,
+              },
+              ...(prop.type === "object" || prop.type === "array"
+                ? [
+                    {
+                      validator: (_rule: any, value: any) => {
+                        if (
+                          (value === undefined ||
+                            value === null ||
+                            value === "") &&
+                          !actualSchema.required?.includes(key)
+                        ) {
+                          return Promise.resolve();
+                        }
+                        try {
+                          const parsed =
+                            typeof value === "string"
+                              ? JSON.parse(value)
+                              : value;
+                          const isValidObject =
+                            prop.type === "object" &&
+                            parsed !== null &&
+                            typeof parsed === "object" &&
+                            !Array.isArray(parsed);
+                          const isValidArray =
+                            prop.type === "array" && Array.isArray(parsed);
                           if (
-                            (value === undefined || value === null || value === "") &&
-                            !actualSchema.required?.includes(key)
+                            (prop.type === "object" && isValidObject) ||
+                            (prop.type === "array" && isValidArray)
                           ) {
                             return Promise.resolve();
                           }
-                          try {
-                            const parsed = typeof value === "string" ? JSON.parse(value) : value;
-                            const isValidObject =
-                              prop.type === "object" &&
-                              parsed !== null &&
-                              typeof parsed === "object" &&
-                              !Array.isArray(parsed);
-                            const isValidArray = prop.type === "array" && Array.isArray(parsed);
-                            if (
-                              (prop.type === "object" && isValidObject) ||
-                              (prop.type === "array" && isValidArray)
-                            ) {
-                              return Promise.resolve();
-                            }
-                            return Promise.reject(
-                              new Error(
-                                prop.type === "object" ? "Please enter a JSON object" : "Please enter a JSON array",
-                              ),
-                            );
-                          } catch {
-                            return Promise.reject(new Error("Invalid JSON"));
-                          }
-                        },
+                          return Promise.reject(
+                            new Error(
+                              prop.type === "object"
+                                ? "Please enter a JSON object"
+                                : "Please enter a JSON array",
+                            ),
+                          );
+                        } catch {
+                          return Promise.reject(new Error("Invalid JSON"));
+                        }
                       },
-                    ]
-                  : []),
-              ]}
-            >
-              {prop.type === "string" && prop.enum ? (
-                <Select
-                  placeholder={`Select ${key}`}
-                  allowClear={!actualSchema.required?.includes(key)}
-                  options={prop.enum.map((v) => ({ value: v, label: v }))}
-                />
-              ) : prop.type === "string" && !prop.enum ? (
-                <Input
-                  placeholder={prop.description || `Enter ${key}`}
-                  allowClear
-                />
-              ) : prop.type === "number" || prop.type === "integer" ? (
-                <InputNumber
-                  step={prop.type === "integer" ? 1 : undefined}
-                  placeholder={prop.description || `Enter ${key}`}
-                  className="w-full"
-                  style={{ width: "100%" }}
-                />
-              ) : prop.type === "boolean" ? (
-                <Select
-                  placeholder={`Select ${key}`}
-                  allowClear={!actualSchema.required?.includes(key)}
-                  options={[
-                    { value: true, label: "True" },
-                    { value: false, label: "False" },
-                  ]}
-                />
-              ) : (prop.type === "object" || prop.type === "array") ? (
-                <Input.TextArea
-                  rows={prop.type === "object" ? 4 : 3}
-                  placeholder={
-                    prop.description ||
-                    (prop.type === "object"
-                      ? `Enter JSON object for ${key}`
-                      : `Enter JSON array for ${key}`)
-                  }
-                  spellCheck={false}
-                  className="font-mono"
-                />
-              ) : (
-                <Input
-                  placeholder={prop.description || `Enter ${key}`}
-                  allowClear
-                />
-              )}
-            </Form.Item>
-          );
-        })}
-      </Form>
-    );
-  },
-);
+                    },
+                  ]
+                : []),
+            ]}
+          >
+            {prop.type === "string" && prop.enum ? (
+              <Select
+                placeholder={`Select ${key}`}
+                allowClear={!actualSchema.required?.includes(key)}
+                options={prop.enum.map((v) => ({ value: v, label: v }))}
+              />
+            ) : prop.type === "string" && !prop.enum ? (
+              <Input
+                placeholder={prop.description || `Enter ${key}`}
+                allowClear
+              />
+            ) : prop.type === "number" || prop.type === "integer" ? (
+              <InputNumber
+                step={prop.type === "integer" ? 1 : undefined}
+                placeholder={prop.description || `Enter ${key}`}
+                className="w-full"
+                style={{ width: "100%" }}
+              />
+            ) : prop.type === "boolean" ? (
+              <Select
+                placeholder={`Select ${key}`}
+                allowClear={!actualSchema.required?.includes(key)}
+                options={[
+                  { value: true, label: "True" },
+                  { value: false, label: "False" },
+                ]}
+              />
+            ) : prop.type === "object" || prop.type === "array" ? (
+              <Input.TextArea
+                rows={prop.type === "object" ? 4 : 3}
+                placeholder={
+                  prop.description ||
+                  (prop.type === "object"
+                    ? `Enter JSON object for ${key}`
+                    : `Enter JSON array for ${key}`)
+                }
+                spellCheck={false}
+                className="font-mono"
+              />
+            ) : (
+              <Input
+                placeholder={prop.description || `Enter ${key}`}
+                allowClear
+              />
+            )}
+          </Form.Item>
+        );
+      })}
+    </Form>
+  );
+});
 
 MCPToolArgumentsForm.displayName = "MCPToolArgumentsForm";
 

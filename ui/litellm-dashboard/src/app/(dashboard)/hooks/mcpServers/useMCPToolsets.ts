@@ -1,7 +1,7 @@
+import type { MCPToolset } from "@/components/mcp_tools/types";
+import { fetchMCPToolsets } from "@/components/networking";
 import { useQuery } from "@tanstack/react-query";
 import { createQueryKeys } from "../common/queryKeysFactory";
-import { fetchMCPToolsets } from "@/components/networking";
-import { MCPToolset } from "@/components/mcp_tools/types";
 import useAuthorized from "../useAuthorized";
 
 const mcpToolsetKeys = createQueryKeys("mcpToolsets");

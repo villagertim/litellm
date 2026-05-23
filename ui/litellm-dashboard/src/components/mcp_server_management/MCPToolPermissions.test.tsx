@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../tests/test-utils";
-import MCPToolPermissions from "./MCPToolPermissions";
 import * as networking from "../networking";
+import MCPToolPermissions from "./MCPToolPermissions";
 
 vi.mock("../networking");
 
@@ -49,7 +49,13 @@ describe("MCPToolPermissions", () => {
       <MCPToolPermissions
         accessToken={mockAccessToken}
         selectedServers={[mockServerId]}
-        toolPermissions={{ [mockServerId]: ["read_wiki_structure", "read_wiki_contents", "ask_question"] }}
+        toolPermissions={{
+          [mockServerId]: [
+            "read_wiki_structure",
+            "read_wiki_contents",
+            "ask_question",
+          ],
+        }}
         onChange={mockOnChange}
       />,
     );
@@ -80,7 +86,10 @@ describe("MCPToolPermissions", () => {
     // Note: useMCPServers uses useAuthorized() internally, which returns "123" from global mock
     expect(networking.fetchMCPServers).toHaveBeenCalledWith("123", undefined);
     // listMCPTools uses the accessToken prop directly
-    expect(networking.listMCPTools).toHaveBeenCalledWith(mockAccessToken, mockServerId);
+    expect(networking.listMCPTools).toHaveBeenCalledWith(
+      mockAccessToken,
+      mockServerId,
+    );
   });
 
   it("should select all tools when Select All button is clicked", async () => {
@@ -130,7 +139,11 @@ describe("MCPToolPermissions", () => {
 
     // Verify onChange was called with all tools selected
     expect(mockOnChange).toHaveBeenCalledWith({
-      [mockServerId]: ["read_wiki_structure", "read_wiki_contents", "ask_question"],
+      [mockServerId]: [
+        "read_wiki_structure",
+        "read_wiki_contents",
+        "ask_question",
+      ],
     });
   });
 
@@ -161,7 +174,9 @@ describe("MCPToolPermissions", () => {
       <MCPToolPermissions
         accessToken={mockAccessToken}
         selectedServers={[mockServerId]}
-        toolPermissions={{ [mockServerId]: ["read_wiki_structure", "read_wiki_contents"] }}
+        toolPermissions={{
+          [mockServerId]: ["read_wiki_structure", "read_wiki_contents"],
+        }}
         onChange={mockOnChange}
       />,
     );
@@ -176,7 +191,9 @@ describe("MCPToolPermissions", () => {
     });
 
     // Click the Deselect All button
-    const deselectAllButton = screen.getByRole("button", { name: "Deselect All" });
+    const deselectAllButton = screen.getByRole("button", {
+      name: "Deselect All",
+    });
     await userEvent.click(deselectAllButton);
 
     // Verify onChange was called with no tools selected

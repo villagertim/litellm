@@ -1,4 +1,4 @@
-import { MessageType, MultimodalContent } from "./types";
+import type { MessageType, MultimodalContent } from "./types";
 
 export const convertImageToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -19,7 +19,11 @@ export const createMultimodalMessage = async (
   file: File,
 ): Promise<{ role: string; content: MultimodalContent[] }> => {
   const base64Data = await convertImageToBase64(file);
-  const mimeType = file.type || (file.name.toLowerCase().endsWith(".pdf") ? "application/pdf" : "image/jpeg");
+  const mimeType =
+    file.type ||
+    (file.name.toLowerCase().endsWith(".pdf")
+      ? "application/pdf"
+      : "image/jpeg");
 
   return {
     role: "user",
@@ -41,7 +45,9 @@ export const createDisplayMessage = (
 ): MessageType => {
   let attachmentText = "";
   if (hasFile && fileName) {
-    attachmentText = fileName.toLowerCase().endsWith(".pdf") ? "[PDF attached]" : "[Image attached]";
+    attachmentText = fileName.toLowerCase().endsWith(".pdf")
+      ? "[PDF attached]"
+      : "[Image attached]";
   }
 
   const displayMessage: MessageType = {
@@ -60,7 +66,8 @@ export const shouldShowAttachedImage = (message: MessageType): boolean => {
   return (
     message.role === "user" &&
     typeof message.content === "string" &&
-    (message.content.includes("[Image attached]") || message.content.includes("[PDF attached]")) &&
+    (message.content.includes("[Image attached]") ||
+      message.content.includes("[PDF attached]")) &&
     !!message.imagePreviewUrl
   );
 };

@@ -1,5 +1,5 @@
 import { useAccessGroupDetails } from "@/app/(dashboard)/hooks/accessGroups/useAccessGroupDetails";
-import { AccessGroupResponse } from "@/app/(dashboard)/hooks/accessGroups/useAccessGroups";
+import type { AccessGroupResponse } from "@/app/(dashboard)/hooks/accessGroups/useAccessGroups";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -51,7 +51,7 @@ const baseMockReturnValue = {
 } as unknown as ReturnType<typeof useAccessGroupDetails>;
 
 const createMockAccessGroup = (
-  overrides: Partial<AccessGroupResponse> = {}
+  overrides: Partial<AccessGroupResponse> = {},
 ): AccessGroupResponse => ({
   access_group_id: "ag-1",
   access_group_name: "Test Group",
@@ -82,9 +82,11 @@ describe("AccessGroupDetail", () => {
 
   it("should render the component", () => {
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
-    expect(screen.getByRole("heading", { name: "Test Group" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Test Group" }),
+    ).toBeInTheDocument();
   });
 
   it("should not show access group content when loading", () => {
@@ -95,10 +97,12 @@ describe("AccessGroupDetail", () => {
     } as ReturnType<typeof useAccessGroupDetails>);
 
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
 
-    expect(screen.queryByRole("heading", { name: "Test Group" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Test Group" }),
+    ).not.toBeInTheDocument();
   });
 
   it("should show empty state when access group is not found", () => {
@@ -109,7 +113,7 @@ describe("AccessGroupDetail", () => {
     } as ReturnType<typeof useAccessGroupDetails>);
 
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
 
     expect(screen.getByText("Access group not found")).toBeInTheDocument();
@@ -119,11 +123,13 @@ describe("AccessGroupDetail", () => {
   it("should call onBack when back button is clicked", async () => {
     const user = userEvent.setup();
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
 
     const buttons = screen.getAllByRole("button");
-    const backButton = buttons.find((btn) => !btn.textContent?.includes("Edit"));
+    const backButton = buttons.find(
+      (btn) => !btn.textContent?.includes("Edit"),
+    );
     await user.click(backButton!);
 
     expect(mockOnBack).toHaveBeenCalledTimes(1);
@@ -131,16 +137,18 @@ describe("AccessGroupDetail", () => {
 
   it("should display access group name and ID", () => {
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
 
-    expect(screen.getByRole("heading", { name: "Test Group" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Test Group" }),
+    ).toBeInTheDocument();
     expect(screen.getByText(/ID:/)).toBeInTheDocument();
   });
 
   it("should display description in Group Details", () => {
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
 
     expect(screen.getByText("Group Details")).toBeInTheDocument();
@@ -154,7 +162,7 @@ describe("AccessGroupDetail", () => {
     } as ReturnType<typeof useAccessGroupDetails>);
 
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
 
     expect(screen.getByText("—")).toBeInTheDocument();
@@ -163,33 +171,45 @@ describe("AccessGroupDetail", () => {
   it("should open edit modal when Edit Access Group button is clicked", async () => {
     const user = userEvent.setup();
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
 
-    expect(screen.queryByRole("dialog", { name: "Edit Access Group" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("dialog", { name: "Edit Access Group" }),
+    ).not.toBeInTheDocument();
 
-    const editButton = screen.getByRole("button", { name: /Edit Access Group/i });
+    const editButton = screen.getByRole("button", {
+      name: /Edit Access Group/i,
+    });
     await user.click(editButton);
 
-    expect(screen.getByRole("dialog", { name: "Edit Access Group" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("dialog", { name: "Edit Access Group" }),
+    ).toBeInTheDocument();
   });
 
   it("should close edit modal when Close Modal is clicked", async () => {
     const user = userEvent.setup();
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
 
-    await user.click(screen.getByRole("button", { name: /Edit Access Group/i }));
-    expect(screen.getByRole("dialog", { name: "Edit Access Group" })).toBeInTheDocument();
+    await user.click(
+      screen.getByRole("button", { name: /Edit Access Group/i }),
+    );
+    expect(
+      screen.getByRole("dialog", { name: "Edit Access Group" }),
+    ).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Close Modal" }));
-    expect(screen.queryByRole("dialog", { name: "Edit Access Group" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("dialog", { name: "Edit Access Group" }),
+    ).not.toBeInTheDocument();
   });
 
   it("should display attached keys", () => {
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
 
     expect(screen.getByText("Attached Keys")).toBeInTheDocument();
@@ -199,7 +219,7 @@ describe("AccessGroupDetail", () => {
 
   it("should display attached teams", () => {
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
 
     expect(screen.getByText("Attached Teams")).toBeInTheDocument();
@@ -215,10 +235,12 @@ describe("AccessGroupDetail", () => {
     } as ReturnType<typeof useAccessGroupDetails>);
 
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
 
-    expect(screen.getByRole("button", { name: "View All (6)" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "View All (6)" }),
+    ).toBeInTheDocument();
   });
 
   it("should toggle between View All and Show Less for keys", async () => {
@@ -231,14 +253,18 @@ describe("AccessGroupDetail", () => {
     } as ReturnType<typeof useAccessGroupDetails>);
 
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
 
     await user.click(screen.getByRole("button", { name: "View All (6)" }));
-    expect(screen.getByRole("button", { name: "Show Less" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Show Less" }),
+    ).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Show Less" }));
-    expect(screen.getByRole("button", { name: "View All (6)" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "View All (6)" }),
+    ).toBeInTheDocument();
   });
 
   it("should show View All button for teams when more than 5", () => {
@@ -250,10 +276,12 @@ describe("AccessGroupDetail", () => {
     } as ReturnType<typeof useAccessGroupDetails>);
 
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
 
-    expect(screen.getByRole("button", { name: "View All (6)" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "View All (6)" }),
+    ).toBeInTheDocument();
   });
 
   it("should show empty state when no keys attached", () => {
@@ -263,7 +291,7 @@ describe("AccessGroupDetail", () => {
     } as ReturnType<typeof useAccessGroupDetails>);
 
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
 
     expect(screen.getByText("No keys attached")).toBeInTheDocument();
@@ -276,7 +304,7 @@ describe("AccessGroupDetail", () => {
     } as ReturnType<typeof useAccessGroupDetails>);
 
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
 
     expect(screen.getByText("No teams attached")).toBeInTheDocument();
@@ -284,7 +312,7 @@ describe("AccessGroupDetail", () => {
 
   it("should display Models tab with model IDs", () => {
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
 
     expect(screen.getByRole("tab", { name: /Models/i })).toBeInTheDocument();
@@ -295,7 +323,7 @@ describe("AccessGroupDetail", () => {
   it("should display MCP Servers tab with server IDs", async () => {
     const user = userEvent.setup();
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
 
     const mcpTab = screen.getByRole("tab", { name: /MCP Servers/i });
@@ -307,7 +335,7 @@ describe("AccessGroupDetail", () => {
   it("should display Agents tab with agent IDs", async () => {
     const user = userEvent.setup();
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
 
     const agentsTab = screen.getByRole("tab", { name: /Agents/i });
@@ -323,10 +351,12 @@ describe("AccessGroupDetail", () => {
     } as ReturnType<typeof useAccessGroupDetails>);
 
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
 
-    expect(screen.getByText("No models assigned to this group")).toBeInTheDocument();
+    expect(
+      screen.getByText("No models assigned to this group"),
+    ).toBeInTheDocument();
   });
 
   it("should show empty state in MCP Servers tab when none assigned", async () => {
@@ -337,11 +367,13 @@ describe("AccessGroupDetail", () => {
     } as ReturnType<typeof useAccessGroupDetails>);
 
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
 
     await user.click(screen.getByRole("tab", { name: /MCP Servers/i }));
-    expect(screen.getByText("No MCP servers assigned to this group")).toBeInTheDocument();
+    expect(
+      screen.getByText("No MCP servers assigned to this group"),
+    ).toBeInTheDocument();
   });
 
   it("should show empty state in Agents tab when none assigned", async () => {
@@ -352,11 +384,13 @@ describe("AccessGroupDetail", () => {
     } as ReturnType<typeof useAccessGroupDetails>);
 
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
 
     await user.click(screen.getByRole("tab", { name: /Agents/i }));
-    expect(screen.getByText("No agents assigned to this group")).toBeInTheDocument();
+    expect(
+      screen.getByText("No agents assigned to this group"),
+    ).toBeInTheDocument();
   });
 
   it("should truncate long key IDs with ellipsis", () => {
@@ -367,7 +401,7 @@ describe("AccessGroupDetail", () => {
     } as ReturnType<typeof useAccessGroupDetails>);
 
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
 
     expect(screen.getByText(/a{10}\.\.\.a{6}/)).toBeInTheDocument();
@@ -375,7 +409,7 @@ describe("AccessGroupDetail", () => {
 
   it("should display created and last updated timestamps", () => {
     renderWithProviders(
-      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />
+      <AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />,
     );
 
     expect(screen.getByText("Created")).toBeInTheDocument();

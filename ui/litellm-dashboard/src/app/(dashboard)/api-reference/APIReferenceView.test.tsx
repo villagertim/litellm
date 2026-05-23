@@ -4,7 +4,9 @@ import APIReferenceView from "./APIReferenceView";
 
 vi.mock("./components/CodeBlock", () => ({
   __esModule: true,
-  default: ({ code }: { code: string }) => <pre data-testid="api-reference-code-block">{code}</pre>,
+  default: ({ code }: { code: string }) => (
+    <pre data-testid="api-reference-code-block">{code}</pre>
+  ),
 }));
 
 describe("APIReferenceView", () => {
@@ -12,7 +14,11 @@ describe("APIReferenceView", () => {
 
   it("uses the API doc base url when provided", () => {
     const apiDocUrl = "https://docs.litellm.test";
-    const { getAllByTestId } = render(<APIReferenceView proxySettings={{ LITELLM_UI_API_DOC_BASE_URL: apiDocUrl }} />);
+    const { getAllByTestId } = render(
+      <APIReferenceView
+        proxySettings={{ LITELLM_UI_API_DOC_BASE_URL: apiDocUrl }}
+      />,
+    );
 
     const codeBlocks = getAllByTestId(codeBlockTestId);
     expect(codeBlocks[0].textContent).toContain(apiDocUrl);
@@ -20,7 +26,9 @@ describe("APIReferenceView", () => {
 
   it("falls back to the proxy base url when the docs url is missing", () => {
     const proxyUrl = "https://proxy.litellm.test";
-    const { getAllByTestId } = render(<APIReferenceView proxySettings={{ PROXY_BASE_URL: proxyUrl }} />);
+    const { getAllByTestId } = render(
+      <APIReferenceView proxySettings={{ PROXY_BASE_URL: proxyUrl }} />,
+    );
 
     const codeBlocks = getAllByTestId(codeBlockTestId);
     expect(codeBlocks[0].textContent).toContain(proxyUrl);

@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
 import {
   Card,
-  Typography,
-  Select,
-  Switch,
   Form,
-  Space,
   InputNumber,
+  Select,
+  Space,
+  Switch,
+  Typography,
 } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { getMajorAirlines } from "../../networking";
 
 const { Title, Text } = Typography;
@@ -72,7 +73,11 @@ const CompetitorIntentConfiguration: React.FC<
         .catch(() => setAirlineOptions([]))
         .finally(() => setLoadingAirlines(false));
     }
-  }, [effectiveConfig.competitor_intent_type, accessToken, airlineOptions.length]);
+  }, [
+    effectiveConfig.competitor_intent_type,
+    accessToken,
+    airlineOptions.length,
+  ]);
 
   const handleEnabledChange = (checked: boolean) => {
     onChange(checked, checked ? { ...DEFAULT_CONFIG } : null);
@@ -89,7 +94,10 @@ const CompetitorIntentConfiguration: React.FC<
     });
   };
 
-  const handleNestedArrayChange = (field: "brand_self" | "locations" | "competitors", values: string[]) => {
+  const handleNestedArrayChange = (
+    field: "brand_self" | "locations" | "competitors",
+    values: string[],
+  ) => {
     onChange(enabled, { ...effectiveConfig, [field]: values.filter(Boolean) });
   };
 
@@ -103,7 +111,10 @@ const CompetitorIntentConfiguration: React.FC<
         return primary === v.toLowerCase();
       });
       if (airline) {
-        for (const variant of airline.match.split("|").map((s) => s.trim().toLowerCase()).filter(Boolean)) {
+        for (const variant of airline.match
+          .split("|")
+          .map((s) => s.trim().toLowerCase())
+          .filter(Boolean)) {
           if (!seen.has(variant)) {
             seen.add(variant);
             expanded.push(variant);
@@ -117,12 +128,17 @@ const CompetitorIntentConfiguration: React.FC<
     onChange(enabled, { ...effectiveConfig, brand_self: expanded });
   };
 
-
   if (!enabled) {
     return (
       <Card
         title={
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <Title level={5} style={{ margin: 0 }}>
               Competitor Intent Filter
             </Title>
@@ -132,8 +148,9 @@ const CompetitorIntentConfiguration: React.FC<
         size="small"
       >
         <Text type="secondary">
-          Block or reframe competitor comparison questions. When enabled, airline type
-          auto-loads competitors from IATA; generic type requires manual competitor list.
+          Block or reframe competitor comparison questions. When enabled,
+          airline type auto-loads competitors from IATA; generic type requires
+          manual competitor list.
         </Text>
       </Card>
     );
@@ -142,7 +159,13 @@ const CompetitorIntentConfiguration: React.FC<
   return (
     <Card
       title={
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Title level={5} style={{ margin: 0 }}>
             Competitor Intent Filter
           </Title>
@@ -152,8 +175,9 @@ const CompetitorIntentConfiguration: React.FC<
       size="small"
     >
       <Text type="secondary" style={{ display: "block", marginBottom: 16 }}>
-        Block or reframe competitor comparison questions. Airline type uses major airlines
-        (excluding your brand); generic requires manual competitor list.
+        Block or reframe competitor comparison questions. Airline type uses
+        major airlines (excluding your brand); generic requires manual
+        competitor list.
       </Text>
       <Form layout="vertical" size="small">
         <Form.Item label="Type">
@@ -162,8 +186,12 @@ const CompetitorIntentConfiguration: React.FC<
             onChange={(v) => handleConfigChange("competitor_intent_type", v)}
             style={{ width: "100%" }}
           >
-            <Option value="airline">Airline (auto-load competitors from IATA)</Option>
-            <Option value="generic">Generic (specify competitors manually)</Option>
+            <Option value="airline">
+              Airline (auto-load competitors from IATA)
+            </Option>
+            <Option value="generic">
+              Generic (specify competitors manually)
+            </Option>
           </Select>
         </Form.Item>
 
@@ -188,7 +216,8 @@ const CompetitorIntentConfiguration: React.FC<
             }
             value={effectiveConfig.brand_self}
             onChange={(v) =>
-              effectiveConfig.competitor_intent_type === "airline" && airlineOptions.length > 0
+              effectiveConfig.competitor_intent_type === "airline" &&
+              airlineOptions.length > 0
                 ? handleBrandSelfChange(v ?? [])
                 : handleNestedArrayChange("brand_self", v ?? [])
             }
@@ -197,12 +226,13 @@ const CompetitorIntentConfiguration: React.FC<
             showSearch
             filterOption={(input, option) =>
               (option?.label?.toString().toLowerCase() ?? "").includes(
-                input.toLowerCase()
+                input.toLowerCase(),
               )
             }
             optionFilterProp="label"
             options={
-              effectiveConfig.competitor_intent_type === "airline" && airlineOptions.length > 0
+              effectiveConfig.competitor_intent_type === "airline" &&
+              airlineOptions.length > 0
                 ? airlineOptions.map((a) => {
                     const primary = a.match.split("|")[0]?.trim() ?? a.id;
                     const variants = a.match
@@ -265,12 +295,19 @@ const CompetitorIntentConfiguration: React.FC<
 
         <Form.Item label="Policy: Possible competitor comparison">
           <Select
-            value={effectiveConfig.policy?.possible_competitor_comparison ?? "reframe"}
-            onChange={(v) => handlePolicyChange("possible_competitor_comparison", v)}
+            value={
+              effectiveConfig.policy?.possible_competitor_comparison ??
+              "reframe"
+            }
+            onChange={(v) =>
+              handlePolicyChange("possible_competitor_comparison", v)
+            }
             style={{ width: "100%" }}
           >
             <Option value="refuse">Refuse (block request)</Option>
-            <Option value="reframe">Reframe (suggest alternative to backend LLM)</Option>
+            <Option value="reframe">
+              Reframe (suggest alternative to backend LLM)
+            </Option>
           </Select>
         </Form.Item>
 
@@ -278,16 +315,20 @@ const CompetitorIntentConfiguration: React.FC<
           label="Confidence thresholds"
           help={
             <>
-              Classify competitor intent by confidence (0–1). Higher confidence → stronger intent.
+              Classify competitor intent by confidence (0–1). Higher confidence
+              → stronger intent.
               <ul style={{ marginBottom: 0, marginTop: 4, paddingLeft: 20 }}>
                 <li>
-                  <strong>High (≥)</strong>: Treat as full competitor comparison → uses &quot;Competitor comparison&quot; policy
+                  <strong>High (≥)</strong>: Treat as full competitor comparison
+                  → uses &quot;Competitor comparison&quot; policy
                 </li>
                 <li>
-                  <strong>Medium (≥)</strong>: Treat as possible comparison → uses &quot;Possible competitor comparison&quot; policy
+                  <strong>Medium (≥)</strong>: Treat as possible comparison →
+                  uses &quot;Possible competitor comparison&quot; policy
                 </li>
                 <li>
-                  <strong>Low (≥)</strong>: Log only; allow request. Below Low → allow with no action
+                  <strong>Low (≥)</strong>: Log only; allow request. Below Low →
+                  allow with no action
                 </li>
               </ul>
               Raise thresholds to be more permissive; lower them to be stricter.
@@ -305,13 +346,19 @@ const CompetitorIntentConfiguration: React.FC<
                 style={{ width: 80 }}
               />
             </Form.Item>
-            <Form.Item label="Medium" style={{ marginBottom: 0 }} help="e.g. 0.45">
+            <Form.Item
+              label="Medium"
+              style={{ marginBottom: 0 }}
+              help="e.g. 0.45"
+            >
               <InputNumber
                 min={0}
                 max={1}
                 step={0.05}
                 value={effectiveConfig.threshold_medium ?? 0.45}
-                onChange={(v) => handleConfigChange("threshold_medium", v ?? 0.45)}
+                onChange={(v) =>
+                  handleConfigChange("threshold_medium", v ?? 0.45)
+                }
                 style={{ width: 80 }}
               />
             </Form.Item>

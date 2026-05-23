@@ -35,11 +35,19 @@ describe("GuardrailSelector", () => {
     const mockGuardrails = [
       {
         guardrail_name: "pii-guard",
-        litellm_params: { guardrail: "presidio", mode: "pre_call", default_on: false },
+        litellm_params: {
+          guardrail: "presidio",
+          mode: "pre_call",
+          default_on: false,
+        },
       },
       {
         guardrail_name: "content-filter",
-        litellm_params: { guardrail: "lakera", mode: "post_call", default_on: true },
+        litellm_params: {
+          guardrail: "lakera",
+          mode: "post_call",
+          default_on: true,
+        },
       },
     ];
 
@@ -47,11 +55,19 @@ describe("GuardrailSelector", () => {
       guardrails: mockGuardrails,
     });
 
-    render(<GuardrailSelector accessToken={mockAccessToken} onChange={mockOnChange} value={[]} />);
+    render(
+      <GuardrailSelector
+        accessToken={mockAccessToken}
+        onChange={mockOnChange}
+        value={[]}
+      />,
+    );
 
     // Verify API was called with correct token
     await waitFor(() => {
-      expect(networking.getGuardrailsList).toHaveBeenCalledWith(mockAccessToken);
+      expect(networking.getGuardrailsList).toHaveBeenCalledWith(
+        mockAccessToken,
+      );
     });
   });
 });

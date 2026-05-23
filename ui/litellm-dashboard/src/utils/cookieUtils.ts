@@ -66,7 +66,6 @@ export function clearTokenCookies() {
   } catch {
     // sessionStorage may be unavailable
   }
-
 }
 
 /**

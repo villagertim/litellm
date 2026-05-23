@@ -1,10 +1,17 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, act } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import CreatedKeyDisplay from "./CreatedKeyDisplay";
 
 vi.mock("@/components/molecules/message_manager", () => ({
-  default: { success: vi.fn(), error: vi.fn(), warning: vi.fn(), info: vi.fn(), loading: vi.fn(), destroy: vi.fn() },
+  default: {
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn(),
+    info: vi.fn(),
+    loading: vi.fn(),
+    destroy: vi.fn(),
+  },
 }));
 
 import MessageManager from "@/components/molecules/message_manager";
@@ -25,12 +32,16 @@ describe("CreatedKeyDisplay", () => {
 
   it("should display the security warning", () => {
     render(<CreatedKeyDisplay apiKey="sk-test-123" />);
-    expect(screen.getByText(/you will not be able to view it again/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/you will not be able to view it again/i),
+    ).toBeInTheDocument();
   });
 
   it("should show the copy button with initial label", () => {
     render(<CreatedKeyDisplay apiKey="sk-test-123" />);
-    expect(screen.getByRole("button", { name: /copy virtual key/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /copy virtual key/i }),
+    ).toBeInTheDocument();
   });
 
   it("should change button text to Copied after clicking copy", async () => {
@@ -48,7 +59,9 @@ describe("CreatedKeyDisplay", () => {
 
     await user.click(screen.getByRole("button", { name: /copy virtual key/i }));
 
-    expect(MessageManager.success).toHaveBeenCalledWith("Key copied to clipboard");
+    expect(MessageManager.success).toHaveBeenCalledWith(
+      "Key copied to clipboard",
+    );
   });
 
   it("should revert button text back after 2 seconds", async () => {
@@ -62,6 +75,8 @@ describe("CreatedKeyDisplay", () => {
       vi.advanceTimersByTime(2000);
     });
 
-    expect(screen.getByRole("button", { name: /copy virtual key/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /copy virtual key/i }),
+    ).toBeInTheDocument();
   });
 });

@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { ReactNode } from "react";
-import { useUpdateUISettings } from "./useUpdateUISettings";
 import { updateUiSettings } from "@/components/networking";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { renderHook, waitFor } from "@testing-library/react";
+import React, { type ReactNode } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useUpdateUISettings } from "./useUpdateUISettings";
 
 vi.mock("@/components/networking", () => ({
   updateUiSettings: vi.fn(),
@@ -42,7 +42,10 @@ describe("useUpdateUISettings", () => {
   it("should render", () => {
     (updateUiSettings as any).mockResolvedValue(mockUpdateUiSettingsResponse);
 
-    const { result } = renderHook(() => useUpdateUISettings("test-access-token"), { wrapper });
+    const { result } = renderHook(
+      () => useUpdateUISettings("test-access-token"),
+      { wrapper },
+    );
 
     expect(result.current).toBeDefined();
   });
@@ -50,7 +53,10 @@ describe("useUpdateUISettings", () => {
   it("should update UI settings when mutation is successful", async () => {
     (updateUiSettings as any).mockResolvedValue(mockUpdateUiSettingsResponse);
 
-    const { result } = renderHook(() => useUpdateUISettings("test-access-token"), { wrapper });
+    const { result } = renderHook(
+      () => useUpdateUISettings("test-access-token"),
+      { wrapper },
+    );
 
     const settings = {
       disable_model_add_for_internal_users: true,
@@ -63,7 +69,10 @@ describe("useUpdateUISettings", () => {
     });
 
     expect(result.current.data).toEqual(mockUpdateUiSettingsResponse);
-    expect(updateUiSettings).toHaveBeenCalledWith("test-access-token", settings);
+    expect(updateUiSettings).toHaveBeenCalledWith(
+      "test-access-token",
+      settings,
+    );
     expect(updateUiSettings).toHaveBeenCalledTimes(1);
   });
 
@@ -73,7 +82,10 @@ describe("useUpdateUISettings", () => {
 
     (updateUiSettings as any).mockRejectedValue(testError);
 
-    const { result } = renderHook(() => useUpdateUISettings("test-access-token"), { wrapper });
+    const { result } = renderHook(
+      () => useUpdateUISettings("test-access-token"),
+      { wrapper },
+    );
 
     const settings = {
       disable_model_add_for_internal_users: true,
@@ -86,7 +98,10 @@ describe("useUpdateUISettings", () => {
     });
 
     expect(result.current.error).toEqual(testError);
-    expect(updateUiSettings).toHaveBeenCalledWith("test-access-token", settings);
+    expect(updateUiSettings).toHaveBeenCalledWith(
+      "test-access-token",
+      settings,
+    );
     expect(updateUiSettings).toHaveBeenCalledTimes(1);
   });
 
@@ -108,7 +123,9 @@ describe("useUpdateUISettings", () => {
   });
 
   it("should throw error when accessToken is null", async () => {
-    const { result } = renderHook(() => useUpdateUISettings(null as any), { wrapper });
+    const { result } = renderHook(() => useUpdateUISettings(null as any), {
+      wrapper,
+    });
 
     const settings = {
       disable_model_add_for_internal_users: true,
@@ -127,9 +144,14 @@ describe("useUpdateUISettings", () => {
   it("should invalidate uiSettings queries on success", async () => {
     (updateUiSettings as any).mockResolvedValue(mockUpdateUiSettingsResponse);
 
-    queryClient.setQueryData(["uiSettings", "detail", "settings"], { values: {} });
+    queryClient.setQueryData(["uiSettings", "detail", "settings"], {
+      values: {},
+    });
 
-    const { result } = renderHook(() => useUpdateUISettings("test-access-token"), { wrapper });
+    const { result } = renderHook(
+      () => useUpdateUISettings("test-access-token"),
+      { wrapper },
+    );
 
     const settings = {
       disable_model_add_for_internal_users: true,
@@ -149,7 +171,10 @@ describe("useUpdateUISettings", () => {
   it("should handle multiple settings updates", async () => {
     (updateUiSettings as any).mockResolvedValue(mockUpdateUiSettingsResponse);
 
-    const { result } = renderHook(() => useUpdateUISettings("test-access-token"), { wrapper });
+    const { result } = renderHook(
+      () => useUpdateUISettings("test-access-token"),
+      { wrapper },
+    );
 
     const settings1 = {
       disable_model_add_for_internal_users: true,
@@ -172,14 +197,25 @@ describe("useUpdateUISettings", () => {
     });
 
     expect(updateUiSettings).toHaveBeenCalledTimes(2);
-    expect(updateUiSettings).toHaveBeenNthCalledWith(1, "test-access-token", settings1);
-    expect(updateUiSettings).toHaveBeenNthCalledWith(2, "test-access-token", settings2);
+    expect(updateUiSettings).toHaveBeenNthCalledWith(
+      1,
+      "test-access-token",
+      settings1,
+    );
+    expect(updateUiSettings).toHaveBeenNthCalledWith(
+      2,
+      "test-access-token",
+      settings2,
+    );
   });
 
   it("should handle empty settings object", async () => {
     (updateUiSettings as any).mockResolvedValue(mockUpdateUiSettingsResponse);
 
-    const { result } = renderHook(() => useUpdateUISettings("test-access-token"), { wrapper });
+    const { result } = renderHook(
+      () => useUpdateUISettings("test-access-token"),
+      { wrapper },
+    );
 
     result.current.mutate({});
 
@@ -195,7 +231,10 @@ describe("useUpdateUISettings", () => {
 
     (updateUiSettings as any).mockRejectedValue(timeoutError);
 
-    const { result } = renderHook(() => useUpdateUISettings("test-access-token"), { wrapper });
+    const { result } = renderHook(
+      () => useUpdateUISettings("test-access-token"),
+      { wrapper },
+    );
 
     const settings = {
       disable_model_add_for_internal_users: true,
@@ -218,7 +257,10 @@ describe("useUpdateUISettings", () => {
 
     (updateUiSettings as any).mockReturnValue(promise);
 
-    const { result } = renderHook(() => useUpdateUISettings("test-access-token"), { wrapper });
+    const { result } = renderHook(
+      () => useUpdateUISettings("test-access-token"),
+      { wrapper },
+    );
 
     const settings = {
       disable_model_add_for_internal_users: true,

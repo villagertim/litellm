@@ -1,6 +1,6 @@
-import { Setter } from "@/types";
+import type { Setter } from "@/types";
 import { useEffect, useState } from "react";
-import { keyListCall, Member, Organization } from "../networking";
+import { type Member, type Organization, keyListCall } from "../networking";
 
 export interface Team {
   team_id: string;
@@ -96,7 +96,11 @@ export interface KeyResponse {
     agent_access_groups?: string[];
   };
   access_group_ids?: string[];
-  budget_limits?: Array<{ budget_duration: string; max_budget: number; reset_at?: string }>;
+  budget_limits?: Array<{
+    budget_duration: string;
+    max_budget: number;
+    reset_at?: string;
+  }>;
   auto_rotate?: boolean;
   rotation_interval?: string;
   last_rotation_at?: string;
@@ -162,7 +166,9 @@ const useKeyList = ({
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
 
-  const fetchKeys = async (params: Record<string, unknown> = {}): Promise<void> => {
+  const fetchKeys = async (
+    params: Record<string, unknown> = {},
+  ): Promise<void> => {
     try {
       console.log("calling fetchKeys");
       if (!accessToken) {
@@ -172,7 +178,8 @@ const useKeyList = ({
       setIsLoading(true);
 
       const page = typeof params.page === "number" ? params.page : 1;
-      const pageSize = typeof params.pageSize === "number" ? params.pageSize : 100;
+      const pageSize =
+        typeof params.pageSize === "number" ? params.pageSize : 100;
 
       const data = await keyListCall(
         accessToken,
@@ -211,9 +218,16 @@ const useKeyList = ({
     );
   }, [selectedTeam, currentOrg, accessToken, selectedKeyAlias, createClicked]);
 
-  const setKeys = (newKeysOrUpdater: KeyResponse[] | ((prevKeys: KeyResponse[]) => KeyResponse[])) => {
+  const setKeys = (
+    newKeysOrUpdater:
+      | KeyResponse[]
+      | ((prevKeys: KeyResponse[]) => KeyResponse[]),
+  ) => {
     setKeyData((prevData) => {
-      const newKeys = typeof newKeysOrUpdater === "function" ? newKeysOrUpdater(prevData.keys) : newKeysOrUpdater;
+      const newKeys =
+        typeof newKeysOrUpdater === "function"
+          ? newKeysOrUpdater(prevData.keys)
+          : newKeysOrUpdater;
 
       return {
         ...prevData,

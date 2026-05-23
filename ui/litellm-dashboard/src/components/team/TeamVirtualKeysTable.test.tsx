@@ -1,13 +1,23 @@
+import {
+  type KeysResponse,
+  useKeys,
+} from "@/app/(dashboard)/hooks/keys/useKeys";
+import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi, MockedFunction } from "vitest";
+import {
+  type MockedFunction,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import { renderWithProviders } from "../../../tests/test-utils";
-import { TeamVirtualKeysTable } from "./TeamVirtualKeysTable";
-import { KeysResponse, useKeys } from "@/app/(dashboard)/hooks/keys/useKeys";
 import { fetchTeamFilterOptions } from "../key_team_helpers/filter_helpers";
-import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { KeyResponse } from "../key_team_helpers/key_list";
-import { Organization } from "../networking";
+import type { KeyResponse } from "../key_team_helpers/key_list";
+import type { Organization } from "../networking";
+import { TeamVirtualKeysTable } from "./TeamVirtualKeysTable";
 
 vi.mock("@/app/(dashboard)/hooks/keys/useKeys", () => ({
   useKeys: vi.fn(),
@@ -56,7 +66,7 @@ const createMockKey = (overrides: Partial<KeyResponse> = {}): KeyResponse =>
     max_budget: 100,
     models: ["gpt-4"],
     ...overrides,
-  } as KeyResponse);
+  }) as KeyResponse;
 
 const mockOrganization: Organization = {
   organization_id: "org-123",
@@ -87,7 +97,12 @@ describe("TeamVirtualKeysTable", () => {
     vi.clearAllMocks();
     mockUseAuthorized.mockReturnValue({ accessToken: "test-token" } as any);
     mockUseKeys.mockReturnValue({
-      data: { keys: [], total_count: 0, current_page: 1, total_pages: 1 } as KeysResponse,
+      data: {
+        keys: [],
+        total_count: 0,
+        current_page: 1,
+        total_pages: 1,
+      } as KeysResponse,
       isPending: false,
       isFetching: false,
       refetch: vi.fn(),
@@ -104,7 +119,7 @@ describe("TeamVirtualKeysTable", () => {
         expect.objectContaining({
           teamID: "team-1",
           expand: "user",
-        })
+        }),
       );
     });
   });
@@ -124,7 +139,10 @@ describe("TeamVirtualKeysTable", () => {
     } as any);
 
     renderWithProviders(
-      <TeamVirtualKeysTable {...defaultProps} organization={mockOrganization} />
+      <TeamVirtualKeysTable
+        {...defaultProps}
+        organization={mockOrganization}
+      />,
     );
 
     // Key with org_id should display in table - org-123 from organization
@@ -146,7 +164,11 @@ describe("TeamVirtualKeysTable", () => {
       data: {
         keys: [
           createMockKey({ key_alias: "alice_key_team1" }),
-          createMockKey({ token: "sk-2", token_id: "key-2", key_alias: "bob_key_team1" }),
+          createMockKey({
+            token: "sk-2",
+            token_id: "key-2",
+            key_alias: "bob_key_team1",
+          }),
         ],
         total_count: 2,
         current_page: 1,
@@ -187,17 +209,28 @@ describe("TeamVirtualKeysTable", () => {
 
   it("should fetch page 2 when Next is clicked", async () => {
     const user = userEvent.setup();
-    mockUseKeys.mockImplementation((page: number) => ({
-      data: {
-        keys: page === 1 ? [createMockKey()] : [createMockKey({ token: "sk-page2", key_alias: "page2_key" })],
-        total_count: 100,
-        current_page: page,
-        total_pages: 3,
-      } as KeysResponse,
-      isPending: false,
-      isFetching: false,
-      refetch: vi.fn(),
-    } as any));
+    mockUseKeys.mockImplementation(
+      (page: number) =>
+        ({
+          data: {
+            keys:
+              page === 1
+                ? [createMockKey()]
+                : [
+                    createMockKey({
+                      token: "sk-page2",
+                      key_alias: "page2_key",
+                    }),
+                  ],
+            total_count: 100,
+            current_page: page,
+            total_pages: 3,
+          } as KeysResponse,
+          isPending: false,
+          isFetching: false,
+          refetch: vi.fn(),
+        }) as any,
+    );
 
     renderWithProviders(<TeamVirtualKeysTable {...defaultProps} />);
 
@@ -212,7 +245,7 @@ describe("TeamVirtualKeysTable", () => {
       expect(mockUseKeys).toHaveBeenLastCalledWith(
         2,
         50,
-        expect.objectContaining({ teamID: "team-1" })
+        expect.objectContaining({ teamID: "team-1" }),
       );
     });
   });
@@ -234,7 +267,12 @@ describe("TeamVirtualKeysTable", () => {
 
   it("should show No keys found when keys array is empty", async () => {
     mockUseKeys.mockReturnValue({
-      data: { keys: [], total_count: 0, current_page: 1, total_pages: 1 } as KeysResponse,
+      data: {
+        keys: [],
+        total_count: 0,
+        current_page: 1,
+        total_pages: 1,
+      } as KeysResponse,
       isPending: false,
       isFetching: false,
       refetch: vi.fn(),
@@ -260,13 +298,16 @@ describe("TeamVirtualKeysTable", () => {
 
     // Use unique teamId to avoid cache hit from previous tests (refetchOnMount: false)
     renderWithProviders(
-      <TeamVirtualKeysTable {...defaultProps} teamId="team-filter-options-test" />
+      <TeamVirtualKeysTable
+        {...defaultProps}
+        teamId="team-filter-options-test"
+      />,
     );
 
     await waitFor(() => {
       expect(mockFetchTeamFilterOptions).toHaveBeenCalledWith(
         "test-token",
-        "team-filter-options-test"
+        "team-filter-options-test",
       );
     });
   });
@@ -274,7 +315,9 @@ describe("TeamVirtualKeysTable", () => {
   it("should open Key Info View when key is clicked", async () => {
     mockUseKeys.mockReturnValue({
       data: {
-        keys: [createMockKey({ token: "sk-click-me", key_alias: "clickable_key" })],
+        keys: [
+          createMockKey({ token: "sk-click-me", key_alias: "clickable_key" }),
+        ],
         total_count: 1,
         current_page: 1,
         total_pages: 1,
@@ -290,7 +333,9 @@ describe("TeamVirtualKeysTable", () => {
       expect(screen.getByText("clickable_key")).toBeInTheDocument();
     });
 
-    const keyButton = screen.getByRole("button", { name: /sk-click-me|clickable_key/ });
+    const keyButton = screen.getByRole("button", {
+      name: /sk-click-me|clickable_key/,
+    });
     await userEvent.click(keyButton);
 
     await waitFor(() => {

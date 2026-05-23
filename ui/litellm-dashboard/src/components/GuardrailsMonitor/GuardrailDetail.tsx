@@ -1,4 +1,8 @@
 import {
+  getGuardrailsUsageDetail,
+  getGuardrailsUsageLogs,
+} from "@/components/networking";
+import {
   ArrowLeftOutlined,
   SafetyOutlined,
   SettingOutlined,
@@ -7,10 +11,6 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { Button, Col, Row, Spin, Tabs } from "antd";
 import React, { useMemo, useState } from "react";
-import {
-  getGuardrailsUsageDetail,
-  getGuardrailsUsageLogs,
-} from "@/components/networking";
 import { EvaluationSettingsModal } from "./EvaluationSettingsModal";
 import { LogViewer } from "./LogViewer";
 import { MetricCard } from "./MetricCard";
@@ -24,14 +24,12 @@ interface GuardrailDetailProps {
   endDate: string;
 }
 
-const statusColors: Record<
-  string,
-  { bg: string; text: string; dot: string }
-> = {
-  healthy: { bg: "bg-green-50", text: "text-green-700", dot: "bg-green-500" },
-  warning: { bg: "bg-amber-50", text: "text-amber-700", dot: "bg-amber-500" },
-  critical: { bg: "bg-red-50", text: "text-red-700", dot: "bg-red-500" },
-};
+const statusColors: Record<string, { bg: string; text: string; dot: string }> =
+  {
+    healthy: { bg: "bg-green-50", text: "text-green-700", dot: "bg-green-500" },
+    warning: { bg: "bg-amber-50", text: "text-amber-700", dot: "bg-amber-500" },
+    critical: { bg: "bg-red-50", text: "text-red-700", dot: "bg-red-500" },
+  };
 
 export function GuardrailDetail({
   guardrailId,
@@ -45,9 +43,14 @@ export function GuardrailDetail({
   const [logsPage, setLogsPage] = useState(1);
   const logsPageSize = 50;
 
-  const { data: detailData, isLoading: detailLoading, error: detailError } = useQuery({
+  const {
+    data: detailData,
+    isLoading: detailLoading,
+    error: detailError,
+  } = useQuery({
     queryKey: ["guardrails-usage-detail", guardrailId, startDate, endDate],
-    queryFn: () => getGuardrailsUsageDetail(accessToken!, guardrailId, startDate, endDate),
+    queryFn: () =>
+      getGuardrailsUsageDetail(accessToken!, guardrailId, startDate, endDate),
     enabled: !!accessToken && !!guardrailId,
   });
   const { data: logsData, isLoading: logsLoading } = useQuery({
@@ -112,7 +115,12 @@ export function GuardrailDetail({
   if (detailError && !detailData) {
     return (
       <div>
-        <Button type="link" icon={<ArrowLeftOutlined />} onClick={onBack} className="pl-0 mb-4">
+        <Button
+          type="link"
+          icon={<ArrowLeftOutlined />}
+          onClick={onBack}
+          className="pl-0 mb-4"
+        >
           Back to Overview
         </Button>
         <p className="text-red-600">Failed to load guardrail details.</p>
@@ -136,11 +144,15 @@ export function GuardrailDetail({
           <div>
             <div className="flex items-center gap-3 mb-1">
               <SafetyOutlined className="text-xl text-gray-400" />
-              <h1 className="text-xl font-semibold text-gray-900">{data.name}</h1>
+              <h1 className="text-xl font-semibold text-gray-900">
+                {data.name}
+              </h1>
               <span
                 className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-medium rounded-full ${statusStyle.bg} ${statusStyle.text}`}
               >
-                <span className={`w-1.5 h-1.5 rounded-full ${statusStyle.dot}`} />
+                <span
+                  className={`w-1.5 h-1.5 rounded-full ${statusStyle.dot}`}
+                />
                 {data.status.charAt(0).toUpperCase() + data.status.slice(1)}
               </span>
             </div>
@@ -173,23 +185,38 @@ export function GuardrailDetail({
         <div className="space-y-6 mt-4">
           <Row gutter={[16, 16]}>
             <Col xs={12} md={8}>
-              <MetricCard label="Requests Evaluated" value={data.requestsEvaluated.toLocaleString()} />
+              <MetricCard
+                label="Requests Evaluated"
+                value={data.requestsEvaluated.toLocaleString()}
+              />
             </Col>
             <Col xs={12} md={8}>
               <MetricCard
                 label="Fail Rate"
                 value={`${data.failRate}%`}
                 valueColor={
-                  data.failRate > 15 ? "text-red-600" : data.failRate > 5 ? "text-amber-600" : "text-green-600"
+                  data.failRate > 15
+                    ? "text-red-600"
+                    : data.failRate > 5
+                      ? "text-amber-600"
+                      : "text-green-600"
                 }
                 subtitle={`${Math.round((data.requestsEvaluated * data.failRate) / 100).toLocaleString()} blocked`}
-                icon={data.failRate > 15 ? <WarningOutlined className="text-red-400" /> : undefined}
+                icon={
+                  data.failRate > 15 ? (
+                    <WarningOutlined className="text-red-400" />
+                  ) : undefined
+                }
               />
             </Col>
             <Col xs={12} md={8}>
               <MetricCard
                 label="Avg. latency added"
-                value={data.avgLatency != null ? `${Math.round(data.avgLatency)}ms` : "—"}
+                value={
+                  data.avgLatency != null
+                    ? `${Math.round(data.avgLatency)}ms`
+                    : "—"
+                }
                 valueColor={
                   data.avgLatency != null
                     ? data.avgLatency > 150
@@ -199,7 +226,9 @@ export function GuardrailDetail({
                         : "text-green-600"
                     : "text-gray-500"
                 }
-                subtitle={data.avgLatency != null ? "Per request (avg)" : "No data"}
+                subtitle={
+                  data.avgLatency != null ? "Per request (avg)" : "No data"
+                }
               />
             </Col>
           </Row>

@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { Text, Badge } from "@tremor/react";
-import { ServerIcon, ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline";
+import {
+  ChevronDownIcon,
+  ChevronRightIcon,
+  ServerIcon,
+} from "@heroicons/react/outline";
+import { Badge, Text } from "@tremor/react";
 import { Tooltip } from "antd";
+import React, { useState, useEffect } from "react";
+import type { MCPServer, MCPToolset } from "../mcp_tools/types";
 import { fetchMCPServers, fetchMCPToolsets } from "../networking";
-import { MCPServer, MCPToolset } from "../mcp_tools/types";
 
 interface MCPServerPermissionsProps {
   mcpServers: string[];
@@ -18,12 +22,16 @@ export function MCPServerPermissions({
   mcpAccessGroups = [],
   mcpToolPermissions = {},
   mcpToolsets = [],
-  accessToken
+  accessToken,
 }: MCPServerPermissionsProps) {
   const [mcpServerDetails, setMCPServerDetails] = useState<MCPServer[]>([]);
   const [toolsetDetails, setToolsetDetails] = useState<MCPToolset[]>([]);
-  const [expandedServers, setExpandedServers] = useState<Set<string>>(new Set());
-  const [expandedToolsets, setExpandedToolsets] = useState<Set<string>>(new Set());
+  const [expandedServers, setExpandedServers] = useState<Set<string>>(
+    new Set(),
+  );
+  const [expandedToolsets, setExpandedToolsets] = useState<Set<string>>(
+    new Set(),
+  );
 
   const toggleServerExpansion = (serverId: string) => {
     setExpandedServers((prev) => {
@@ -88,9 +96,14 @@ export function MCPServerPermissions({
 
   // Function to get display name for MCP server
   const getMCPServerDisplayName = (serverId: string) => {
-    const serverDetail = mcpServerDetails.find((server) => server.server_id === serverId);
+    const serverDetail = mcpServerDetails.find(
+      (server) => server.server_id === serverId,
+    );
     if (serverDetail) {
-      const truncatedId = serverId.length > 7 ? `${serverId.slice(0, 3)}...${serverId.slice(-4)}` : serverId;
+      const truncatedId =
+        serverId.length > 7
+          ? `${serverId.slice(0, 3)}...${serverId.slice(-4)}`
+          : serverId;
       return `${serverDetail.alias} (${truncatedId})`;
     }
     return serverId;
@@ -116,18 +129,24 @@ export function MCPServerPermissions({
       {totalCount > 0 ? (
         <div className="max-h-[400px] overflow-y-auto space-y-2 pr-1">
           {mergedItems.map((item, index) => {
-            const toolsForServer = item.type === "server" ? mcpToolPermissions[item.value] : undefined;
-            const hasToolRestrictions = toolsForServer && toolsForServer.length > 0;
+            const toolsForServer =
+              item.type === "server"
+                ? mcpToolPermissions[item.value]
+                : undefined;
+            const hasToolRestrictions =
+              toolsForServer && toolsForServer.length > 0;
             const isExpanded = expandedServers.has(item.value);
 
             return (
               <div key={index} className="space-y-2">
                 <div
-                  onClick={() => hasToolRestrictions && toggleServerExpansion(item.value)}
+                  onClick={() =>
+                    hasToolRestrictions && toggleServerExpansion(item.value)
+                  }
                   className={`flex items-center gap-3 py-2 px-3 rounded-lg border border-gray-200 transition-all ${
                     hasToolRestrictions
-                      ? 'cursor-pointer hover:bg-gray-50 hover:border-gray-300'
-                      : 'bg-white'
+                      ? "cursor-pointer hover:bg-gray-50 hover:border-gray-300"
+                      : "bg-white"
                   }`}
                 >
                   <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -135,13 +154,17 @@ export function MCPServerPermissions({
                       <Tooltip title={`Full ID: ${item.value}`} placement="top">
                         <div className="inline-flex items-center gap-2 min-w-0">
                           <span className="inline-block w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0"></span>
-                          <span className="text-sm font-medium text-gray-900 truncate">{getMCPServerDisplayName(item.value)}</span>
+                          <span className="text-sm font-medium text-gray-900 truncate">
+                            {getMCPServerDisplayName(item.value)}
+                          </span>
                         </div>
                       </Tooltip>
                     ) : (
                       <div className="inline-flex items-center gap-2 min-w-0">
                         <span className="inline-block w-1.5 h-1.5 bg-green-500 rounded-full flex-shrink-0"></span>
-                        <span className="text-sm font-medium text-gray-900 truncate">{item.value}</span>
+                        <span className="text-sm font-medium text-gray-900 truncate">
+                          {item.value}
+                        </span>
                         <span className="ml-1 px-1.5 py-0.5 text-[9px] font-semibold text-green-600 bg-green-50 border border-green-200 rounded uppercase tracking-wide flex-shrink-0">
                           Group
                         </span>
@@ -151,8 +174,12 @@ export function MCPServerPermissions({
 
                   {hasToolRestrictions && (
                     <div className="flex items-center gap-1 flex-shrink-0 whitespace-nowrap">
-                      <span className="text-xs font-medium text-gray-600">{toolsForServer.length}</span>
-                      <span className="text-xs text-gray-500">{toolsForServer.length === 1 ? "tool" : "tools"}</span>
+                      <span className="text-xs font-medium text-gray-600">
+                        {toolsForServer.length}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {toolsForServer.length === 1 ? "tool" : "tools"}
+                      </span>
                       {isExpanded ? (
                         <ChevronDownIcon className="h-3.5 w-3.5 text-gray-400 ml-0.5" />
                       ) : (
@@ -182,64 +209,79 @@ export function MCPServerPermissions({
           })}
 
           {/* Toolsets section */}
-          {mcpToolsets.length > 0 && mcpToolsets.map((toolsetId, index) => {
-            const detail = toolsetDetails.find((t) => t.toolset_id === toolsetId);
-            const isExpanded = expandedToolsets.has(toolsetId);
-            const toolCount = detail?.tools.length ?? 0;
+          {mcpToolsets.length > 0 &&
+            mcpToolsets.map((toolsetId, index) => {
+              const detail = toolsetDetails.find(
+                (t) => t.toolset_id === toolsetId,
+              );
+              const isExpanded = expandedToolsets.has(toolsetId);
+              const toolCount = detail?.tools.length ?? 0;
 
-            return (
-              <div key={`toolset-${index}`} className="space-y-2">
-                <div
-                  onClick={() => toolCount > 0 && toggleToolsetExpansion(toolsetId)}
-                  className={`flex items-center gap-3 py-2 px-3 rounded-lg border border-purple-200 transition-all ${
-                    toolCount > 0 ? 'cursor-pointer hover:bg-purple-50 hover:border-purple-300' : 'bg-white'
-                  }`}
-                >
-                  <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <span className="inline-block w-1.5 h-1.5 bg-purple-500 rounded-full flex-shrink-0"></span>
-                    <span className="text-sm font-medium text-gray-900 truncate">
-                      {detail?.toolset_name ?? toolsetId}
-                    </span>
-                    <span className="ml-1 px-1.5 py-0.5 text-[9px] font-semibold text-purple-600 bg-purple-50 border border-purple-200 rounded uppercase tracking-wide flex-shrink-0">
-                      Toolset
-                    </span>
+              return (
+                <div key={`toolset-${index}`} className="space-y-2">
+                  <div
+                    onClick={() =>
+                      toolCount > 0 && toggleToolsetExpansion(toolsetId)
+                    }
+                    className={`flex items-center gap-3 py-2 px-3 rounded-lg border border-purple-200 transition-all ${
+                      toolCount > 0
+                        ? "cursor-pointer hover:bg-purple-50 hover:border-purple-300"
+                        : "bg-white"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <span className="inline-block w-1.5 h-1.5 bg-purple-500 rounded-full flex-shrink-0"></span>
+                      <span className="text-sm font-medium text-gray-900 truncate">
+                        {detail?.toolset_name ?? toolsetId}
+                      </span>
+                      <span className="ml-1 px-1.5 py-0.5 text-[9px] font-semibold text-purple-600 bg-purple-50 border border-purple-200 rounded uppercase tracking-wide flex-shrink-0">
+                        Toolset
+                      </span>
+                    </div>
+                    {toolCount > 0 && (
+                      <div className="flex items-center gap-1 flex-shrink-0 whitespace-nowrap">
+                        <span className="text-xs font-medium text-gray-600">
+                          {toolCount}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {toolCount === 1 ? "tool" : "tools"}
+                        </span>
+                        {isExpanded ? (
+                          <ChevronDownIcon className="h-3.5 w-3.5 text-gray-400 ml-0.5" />
+                        ) : (
+                          <ChevronRightIcon className="h-3.5 w-3.5 text-gray-400 ml-0.5" />
+                        )}
+                      </div>
+                    )}
                   </div>
-                  {toolCount > 0 && (
-                    <div className="flex items-center gap-1 flex-shrink-0 whitespace-nowrap">
-                      <span className="text-xs font-medium text-gray-600">{toolCount}</span>
-                      <span className="text-xs text-gray-500">{toolCount === 1 ? "tool" : "tools"}</span>
-                      {isExpanded ? (
-                        <ChevronDownIcon className="h-3.5 w-3.5 text-gray-400 ml-0.5" />
-                      ) : (
-                        <ChevronRightIcon className="h-3.5 w-3.5 text-gray-400 ml-0.5" />
-                      )}
+
+                  {toolCount > 0 && isExpanded && detail && (
+                    <div className="ml-4 pl-4 border-l-2 border-purple-200 pb-1">
+                      <div className="flex flex-wrap gap-1.5">
+                        {detail.tools.map((tool, toolIndex) => (
+                          <span
+                            key={toolIndex}
+                            className="inline-flex items-center px-2.5 py-1 rounded-lg bg-purple-50 border border-purple-200 text-purple-800 text-xs font-medium"
+                          >
+                            <span className="text-purple-400 mr-1 text-[10px]">
+                              {tool.server_id.slice(0, 6)}…
+                            </span>
+                            {tool.tool_name}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
-
-                {toolCount > 0 && isExpanded && detail && (
-                  <div className="ml-4 pl-4 border-l-2 border-purple-200 pb-1">
-                    <div className="flex flex-wrap gap-1.5">
-                      {detail.tools.map((tool, toolIndex) => (
-                        <span
-                          key={toolIndex}
-                          className="inline-flex items-center px-2.5 py-1 rounded-lg bg-purple-50 border border-purple-200 text-purple-800 text-xs font-medium"
-                        >
-                          <span className="text-purple-400 mr-1 text-[10px]">{tool.server_id.slice(0, 6)}…</span>
-                          {tool.tool_name}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       ) : (
         <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50 border border-gray-200">
           <ServerIcon className="h-4 w-4 text-gray-400" />
-          <Text className="text-gray-500 text-sm">No MCP servers, access groups, or toolsets configured</Text>
+          <Text className="text-gray-500 text-sm">
+            No MCP servers, access groups, or toolsets configured
+          </Text>
         </div>
       )}
     </div>

@@ -1,40 +1,45 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Button, TabGroup, TabList, Tab, TabPanels, TabPanel } from "@tremor/react";
+import {
+  Button,
+  Tab,
+  TabGroup,
+  TabList,
+  TabPanel,
+  TabPanels,
+} from "@tremor/react";
 import { Alert } from "antd";
+import type React from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import MessageManager from "@/components/molecules/message_manager";
-import { InfoCircleOutlined } from "@ant-design/icons";
-import { isAdminRole } from "@/utils/roles";
-import PolicyTable from "./policy_table";
-import PolicyInfoView from "./policy_info";
-import AddPolicyForm from "./add_policy_form";
-import { FlowBuilderPage } from "./pipeline_flow_builder";
-import AttachmentTable from "./attachment_table";
-import AddAttachmentForm from "./add_attachment_form";
-import PolicyTestPanel from "./policy_test_panel";
-import PolicyTemplates from "./policy_templates";
-import GuardrailSelectionModal from "./guardrail_selection_modal";
-import TemplateParameterModal from "./template_parameter_modal";
-import AiSuggestionModal from "./ai_suggestion_modal";
 import { useDeletePolicyAttachment } from "@/hooks/policies/useDeletePolicyAttachment";
-import {
-  getPoliciesList,
-  deletePolicyCall,
-  getPolicyAttachmentsList,
-  getGuardrailsList,
-  getPolicyInfo,
-  createPolicyCall,
-  updatePolicyCall,
-  createPolicyAttachmentCall,
-  createGuardrailCall,
-  enrichPolicyTemplate,
-} from "../networking";
-import {
-  Policy,
-  PolicyAttachment,
-} from "./types";
-import { Guardrail } from "../guardrails/types";
+import { isAdminRole } from "@/utils/roles";
+import { InfoCircleOutlined } from "@ant-design/icons";
 import DeleteResourceModal from "../common_components/DeleteResourceModal";
+import type { Guardrail } from "../guardrails/types";
+import {
+  createGuardrailCall,
+  createPolicyAttachmentCall,
+  createPolicyCall,
+  deletePolicyCall,
+  enrichPolicyTemplate,
+  getGuardrailsList,
+  getPoliciesList,
+  getPolicyAttachmentsList,
+  getPolicyInfo,
+  updatePolicyCall,
+} from "../networking";
+import AddAttachmentForm from "./add_attachment_form";
+import AddPolicyForm from "./add_policy_form";
+import AiSuggestionModal from "./ai_suggestion_modal";
+import AttachmentTable from "./attachment_table";
+import GuardrailSelectionModal from "./guardrail_selection_modal";
+import { FlowBuilderPage } from "./pipeline_flow_builder";
+import PolicyInfoView from "./policy_info";
+import PolicyTable from "./policy_table";
+import PolicyTemplates from "./policy_templates";
+import PolicyTestPanel from "./policy_test_panel";
+import TemplateParameterModal from "./template_parameter_modal";
+import type { Policy, PolicyAttachment } from "./types";
 
 interface PoliciesPanelProps {
   accessToken: string | null;
@@ -46,23 +51,31 @@ const PoliciesPanel: React.FC<PoliciesPanelProps> = ({
   userRole,
 }) => {
   const [policiesList, setPoliciesList] = useState<Policy[]>([]);
-  const [attachmentsList, setAttachmentsList] = useState<PolicyAttachment[]>([]);
+  const [attachmentsList, setAttachmentsList] = useState<PolicyAttachment[]>(
+    [],
+  );
   const [guardrailsList, setGuardrailsList] = useState<Guardrail[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isAttachmentsLoading, setIsAttachmentsLoading] = useState(false);
   const [isAddPolicyModalVisible, setIsAddPolicyModalVisible] = useState(false);
-  const [isAddAttachmentModalVisible, setIsAddAttachmentModalVisible] = useState(false);
+  const [isAddAttachmentModalVisible, setIsAddAttachmentModalVisible] =
+    useState(false);
   const [editingPolicy, setEditingPolicy] = useState<Policy | null>(null);
   const [selectedPolicyId, setSelectedPolicyId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<number>(0);
   const [isDeleting, setIsDeleting] = useState(false);
   const [policyToDelete, setPolicyToDelete] = useState<Policy | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [attachmentToDelete, setAttachmentToDelete] = useState<PolicyAttachment | null>(null);
-  const [isDeleteAttachmentModalOpen, setIsDeleteAttachmentModalOpen] = useState(false);
-  const [isGuardrailSelectionModalOpen, setIsGuardrailSelectionModalOpen] = useState(false);
+  const [attachmentToDelete, setAttachmentToDelete] =
+    useState<PolicyAttachment | null>(null);
+  const [isDeleteAttachmentModalOpen, setIsDeleteAttachmentModalOpen] =
+    useState(false);
+  const [isGuardrailSelectionModalOpen, setIsGuardrailSelectionModalOpen] =
+    useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
-  const [existingGuardrailNames, setExistingGuardrailNames] = useState<Set<string>>(new Set());
+  const [existingGuardrailNames, setExistingGuardrailNames] = useState<
+    Set<string>
+  >(new Set());
   const [isCreatingGuardrails, setIsCreatingGuardrails] = useState(false);
   const [showFlowBuilder, setShowFlowBuilder] = useState(false);
   const [isParameterModalOpen, setIsParameterModalOpen] = useState(false);
@@ -71,7 +84,10 @@ const PoliciesPanel: React.FC<PoliciesPanelProps> = ({
   const [isAiSuggestionModalOpen, setIsAiSuggestionModalOpen] = useState(false);
   const [loadedTemplates, setLoadedTemplates] = useState<any[]>([]);
   const [templateQueue, setTemplateQueue] = useState<any[]>([]);
-  const [templateQueueProgress, setTemplateQueueProgress] = useState<{ current: number; total: number } | null>(null);
+  const [templateQueueProgress, setTemplateQueueProgress] = useState<{
+    current: number;
+    total: number;
+  } | null>(null);
 
   const isAdmin = userRole ? isAdminRole(userRole) : false;
 
@@ -152,7 +168,9 @@ const PoliciesPanel: React.FC<PoliciesPanelProps> = ({
     setIsDeleting(true);
     try {
       await deletePolicyCall(accessToken, policyToDelete.policy_id);
-      MessageManager.success(`Policy "${policyToDelete.policy_name}" deleted successfully`);
+      MessageManager.success(
+        `Policy "${policyToDelete.policy_name}" deleted successfully`,
+      );
       await fetchPolicies();
     } catch (error) {
       console.error("Error deleting policy:", error);
@@ -175,7 +193,8 @@ const PoliciesPanel: React.FC<PoliciesPanelProps> = ({
   });
 
   const handleDeleteAttachmentClick = (attachmentId: string) => {
-    const attachment = attachmentsList.find((a) => a.attachment_id === attachmentId) || null;
+    const attachment =
+      attachmentsList.find((a) => a.attachment_id === attachmentId) || null;
     setAttachmentToDelete(attachment);
     setIsDeleteAttachmentModalOpen(true);
   };
@@ -221,7 +240,9 @@ const PoliciesPanel: React.FC<PoliciesPanelProps> = ({
     try {
       const existingGuardrailsResponse = await getGuardrailsList(accessToken);
       const existingNames = new Set<string>(
-        existingGuardrailsResponse.guardrails?.map((g: any) => g.guardrail_name as string) || []
+        existingGuardrailsResponse.guardrails?.map(
+          (g: any) => g.guardrail_name as string,
+        ) || [],
       );
 
       setExistingGuardrailNames(existingNames);
@@ -233,17 +254,23 @@ const PoliciesPanel: React.FC<PoliciesPanelProps> = ({
     }
   };
 
-  const substituteParameters = (template: any, parameters: Record<string, string>): any => {
+  const substituteParameters = (
+    template: any,
+    parameters: Record<string, string>,
+  ): any => {
     let templateStr = JSON.stringify(template);
     for (const [key, value] of Object.entries(parameters)) {
-      templateStr = templateStr.replace(new RegExp(`\\{\\{${key}\\}\\}`, "g"), value);
+      templateStr = templateStr.replace(
+        new RegExp(`\\{\\{${key}\\}\\}`, "g"),
+        value,
+      );
     }
     return JSON.parse(templateStr);
   };
 
   const handleParameterConfirm = async (
     parameters: Record<string, string>,
-    enrichmentOptions?: { model?: string; competitors?: string[] }
+    enrichmentOptions?: { model?: string; competitors?: string[] },
   ) => {
     if (!accessToken || !pendingTemplate) return;
 
@@ -259,7 +286,7 @@ const PoliciesPanel: React.FC<PoliciesPanelProps> = ({
           pendingTemplate.id,
           parameters,
           enrichmentOptions?.model,
-          enrichmentOptions?.competitors
+          enrichmentOptions?.competitors,
         );
         // The backend returns the enriched guardrailDefinitions + discovered competitors
         enrichedTemplate = {
@@ -289,7 +316,9 @@ const PoliciesPanel: React.FC<PoliciesPanelProps> = ({
     setPendingTemplate(null);
   };
 
-  const handleGuardrailSelectionConfirm = async (selectedGuardrailDefinitions: any[]) => {
+  const handleGuardrailSelectionConfirm = async (
+    selectedGuardrailDefinitions: any[],
+  ) => {
     if (!accessToken || !selectedTemplate) return;
 
     setIsCreatingGuardrails(true);
@@ -301,13 +330,16 @@ const PoliciesPanel: React.FC<PoliciesPanelProps> = ({
       // Create selected guardrails
       for (const guardrailDef of selectedGuardrailDefinitions) {
         const guardrailName = guardrailDef.guardrail_name;
-        
+
         try {
           await createGuardrailCall(accessToken, guardrailDef);
           createdGuardrails.push(guardrailName);
           console.log(`Successfully created guardrail: ${guardrailName}`);
         } catch (error) {
-          console.error(`Failed to create guardrail "${guardrailName}":`, error);
+          console.error(
+            `Failed to create guardrail "${guardrailName}":`,
+            error,
+          );
           failedGuardrails.push(guardrailName);
         }
       }
@@ -327,15 +359,17 @@ const PoliciesPanel: React.FC<PoliciesPanelProps> = ({
       // Show success message
       if (createdGuardrails.length > 0) {
         MessageManager.success(
-          `Created ${createdGuardrails.length} guardrail${createdGuardrails.length > 1 ? "s" : ""}! Complete the policy form to save.`
+          `Created ${createdGuardrails.length} guardrail${createdGuardrails.length > 1 ? "s" : ""}! Complete the policy form to save.`,
         );
       } else {
-        MessageManager.success("Template ready! Complete the policy form to save.");
+        MessageManager.success(
+          "Template ready! Complete the policy form to save.",
+        );
       }
 
       if (failedGuardrails.length > 0) {
         MessageManager.warning(
-          `Failed to create ${failedGuardrails.length} guardrail(s): ${failedGuardrails.join(", ")}. You may need to create them manually.`
+          `Failed to create ${failedGuardrails.length} guardrail(s): ${failedGuardrails.join(", ")}. You may need to create them manually.`,
         );
       }
 
@@ -344,7 +378,7 @@ const PoliciesPanel: React.FC<PoliciesPanelProps> = ({
         const [nextTemplate, ...remaining] = templateQueue;
         setTemplateQueue(remaining);
         setTemplateQueueProgress((prev) =>
-          prev ? { ...prev, current: prev.current + 1 } : null
+          prev ? { ...prev, current: prev.current + 1 } : null,
         );
         // Small delay so user can see the success message
         setTimeout(() => handleUseTemplate(nextTemplate), 500);
@@ -379,18 +413,24 @@ const PoliciesPanel: React.FC<PoliciesPanelProps> = ({
 
         <TabPanels>
           <TabPanel>
-          <Alert
+            <Alert
               message="About Policies"
               description={
                 <div>
                   <p className="mb-3">
-                    Use policies to group guardrails and control which ones run for specific teams, keys, or models.
+                    Use policies to group guardrails and control which ones run
+                    for specific teams, keys, or models.
                   </p>
                   <p className="mb-2 font-semibold">Why use policies?</p>
                   <ul className="list-disc list-inside mb-3 space-y-1 ml-2">
-                    <li>Enable/disable specific guardrails for teams, keys, or models</li>
+                    <li>
+                      Enable/disable specific guardrails for teams, keys, or
+                      models
+                    </li>
                     <li>Group guardrails into a single policy</li>
-                    <li>Inherit from existing policies and override what you need</li>
+                    <li>
+                      Inherit from existing policies and override what you need
+                    </li>
                   </ul>
                   <a
                     href="https://docs.litellm.ai/docs/proxy/guardrails/guardrail_policies"
@@ -422,13 +462,19 @@ const PoliciesPanel: React.FC<PoliciesPanelProps> = ({
               description={
                 <div>
                   <p className="mb-3">
-                    Use policies to group guardrails and control which ones run for specific teams, keys, or models.
+                    Use policies to group guardrails and control which ones run
+                    for specific teams, keys, or models.
                   </p>
                   <p className="mb-2 font-semibold">Why use policies?</p>
                   <ul className="list-disc list-inside mb-3 space-y-1 ml-2">
-                    <li>Enable/disable specific guardrails for teams, keys, or models</li>
+                    <li>
+                      Enable/disable specific guardrails for teams, keys, or
+                      models
+                    </li>
                     <li>Group guardrails into a single policy</li>
-                    <li>Inherit from existing policies and override what you need</li>
+                    <li>
+                      Inherit from existing policies and override what you need
+                    </li>
                   </ul>
                   <a
                     href="https://docs.litellm.ai/docs/proxy/guardrails/guardrail_policies"
@@ -504,8 +550,14 @@ const PoliciesPanel: React.FC<PoliciesPanelProps> = ({
               resourceInformation={[
                 { label: "Name", value: policyToDelete?.policy_name },
                 { label: "ID", value: policyToDelete?.policy_id, code: true },
-                { label: "Description", value: policyToDelete?.description || "-" },
-                { label: "Inherits From", value: policyToDelete?.inherit || "-" },
+                {
+                  label: "Description",
+                  value: policyToDelete?.description || "-",
+                },
+                {
+                  label: "Inherits From",
+                  value: policyToDelete?.inherit || "-",
+                },
               ]}
               onCancel={handleDeleteCancel}
               onOk={handleDeleteConfirm}
@@ -538,15 +590,34 @@ const PoliciesPanel: React.FC<PoliciesPanelProps> = ({
               description={
                 <div>
                   <p className="mb-3">
-                    Policy attachments control where your policies apply. Policies don&apos;t do anything until you attach them to specific teams, keys, models, tags, or globally.
+                    Policy attachments control where your policies apply.
+                    Policies don&apos;t do anything until you attach them to
+                    specific teams, keys, models, tags, or globally.
                   </p>
                   <p className="mb-2 font-semibold">Attachment Scopes:</p>
                   <ul className="list-disc list-inside mb-3 space-y-1 ml-2">
-                    <li><strong>Global (*)</strong> - Applies to all requests</li>
-                    <li><strong>Teams</strong> - Applies only to specific teams</li>
-                    <li><strong>Keys</strong> - Applies only to specific API keys (supports wildcards like dev-*)</li>
-                    <li><strong>Models</strong> - Applies only when specific models are used</li>
-                    <li><strong>Tags</strong> - Matches tags from key/team <code>metadata.tags</code> or tags passed dynamically in the request body (<code>metadata.tags</code>). Use this to enforce policies across groups, e.g. &quot;all keys tagged <code>healthcare</code> get HIPAA guardrails.&quot; Supports wildcards (<code>prod-*</code>).</li>
+                    <li>
+                      <strong>Global (*)</strong> - Applies to all requests
+                    </li>
+                    <li>
+                      <strong>Teams</strong> - Applies only to specific teams
+                    </li>
+                    <li>
+                      <strong>Keys</strong> - Applies only to specific API keys
+                      (supports wildcards like dev-*)
+                    </li>
+                    <li>
+                      <strong>Models</strong> - Applies only when specific
+                      models are used
+                    </li>
+                    <li>
+                      <strong>Tags</strong> - Matches tags from key/team{" "}
+                      <code>metadata.tags</code> or tags passed dynamically in
+                      the request body (<code>metadata.tags</code>). Use this to
+                      enforce policies across groups, e.g. &quot;all keys tagged{" "}
+                      <code>healthcare</code> get HIPAA guardrails.&quot;
+                      Supports wildcards (<code>prod-*</code>).
+                    </li>
                   </ul>
                   <a
                     href="https://docs.litellm.ai/docs/proxy/guardrails/guardrail_policies#attachments"
@@ -613,7 +684,11 @@ const PoliciesPanel: React.FC<PoliciesPanelProps> = ({
         message="Are you sure you want to delete this attachment? This action cannot be undone."
         resourceInformationTitle="Attachment Information"
         resourceInformation={[
-          { label: "Attachment ID", value: attachmentToDelete?.attachment_id, code: true },
+          {
+            label: "Attachment ID",
+            value: attachmentToDelete?.attachment_id,
+            code: true,
+          },
           { label: "Policy", value: attachmentToDelete?.policy_name ?? "-" },
           { label: "Scope", value: attachmentToDelete?.scope ?? "-" },
         ]}
@@ -633,7 +708,7 @@ const PoliciesPanel: React.FC<PoliciesPanelProps> = ({
             setTemplateQueueProgress(
               selectedTemplates.length > 1
                 ? { current: 1, total: selectedTemplates.length }
-                : null
+                : null,
             );
             handleUseTemplate(first);
           }

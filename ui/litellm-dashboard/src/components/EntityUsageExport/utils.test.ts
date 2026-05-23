@@ -15,7 +15,7 @@ import {
 } from "./utils";
 
 vi.mock("@/utils/dataUtils", () => ({
-  formatNumberWithCommas: vi.fn((value: number, decimals: number = 0) => {
+  formatNumberWithCommas: vi.fn((value: number, decimals = 0) => {
     if (value === null || value === undefined || !Number.isFinite(value)) {
       return "-";
     }
@@ -239,7 +239,10 @@ describe("EntityUsageExport utils", () => {
         metadata: mockSpendData.metadata,
       };
 
-      const result = getEntityBreakdown(spendDataWithoutAlias, mockTeamAliasMap);
+      const result = getEntityBreakdown(
+        spendDataWithoutAlias,
+        mockTeamAliasMap,
+      );
       const entity1 = result.find((e) => e.metadata.id === "team-1");
 
       expect(entity1?.metadata.alias).toBe("Team One");
@@ -378,7 +381,9 @@ describe("EntityUsageExport utils", () => {
 
     it("should use dash when team alias is not available", () => {
       const result = generateDailyData(mockSpendData, "Team");
-      const entryWithoutTeamId = result.find((r) => !r["Team ID"] || r["Team ID"] === "-");
+      const entryWithoutTeamId = result.find(
+        (r) => !r["Team ID"] || r["Team ID"] === "-",
+      );
 
       if (entryWithoutTeamId) {
         expect(entryWithoutTeamId["Team"]).toBe("-");
@@ -599,7 +604,11 @@ describe("EntityUsageExport utils", () => {
     };
 
     it("should generate daily breakdown with key data and correct structure", () => {
-      const result = generateDailyWithKeysData(mockSpendDataWithKeys, "Team", mockTeamAliasMap);
+      const result = generateDailyWithKeysData(
+        mockSpendDataWithKeys,
+        "Team",
+        mockTeamAliasMap,
+      );
 
       expect(result.length).toBeGreaterThan(0);
       expect(result[0]).toHaveProperty("Date");
@@ -719,7 +728,11 @@ describe("EntityUsageExport utils", () => {
     });
 
     it("should use team alias when available", () => {
-      const result = generateDailyWithKeysData(mockSpendDataWithKeys, "Team", mockTeamAliasMap);
+      const result = generateDailyWithKeysData(
+        mockSpendDataWithKeys,
+        "Team",
+        mockTeamAliasMap,
+      );
       const team1Entry = result.find((r) => r["Team ID"] === "team-1");
 
       expect(team1Entry?.["Team"]).toBe("Team One");
@@ -727,7 +740,9 @@ describe("EntityUsageExport utils", () => {
 
     it("should use dash when team alias is not available", () => {
       const result = generateDailyWithKeysData(mockSpendDataWithKeys, "Team");
-      const entryWithoutTeamAlias = result.find((r) => r["Team ID"] === "team-1" && !mockTeamAliasMap[r["Team ID"]]);
+      const entryWithoutTeamAlias = result.find(
+        (r) => r["Team ID"] === "team-1" && !mockTeamAliasMap[r["Team ID"]],
+      );
 
       if (entryWithoutTeamAlias) {
         expect(entryWithoutTeamAlias["Team"]).toBe("-");
@@ -783,7 +798,10 @@ describe("EntityUsageExport utils", () => {
         metadata: mockSpendDataWithKeys.metadata,
       };
 
-      const result = generateDailyWithKeysData(spendDataWithoutKeyAlias, "Team");
+      const result = generateDailyWithKeysData(
+        spendDataWithoutKeyAlias,
+        "Team",
+      );
       const key1Entry = result.find((r) => r["Key ID"] === "key1");
 
       expect(key1Entry?.["Key Alias"]).toBe("-");
@@ -930,7 +948,10 @@ describe("EntityUsageExport utils", () => {
         metadata: mockSpendDataWithKeys.metadata,
       };
 
-      const result = generateDailyWithKeysData(spendDataWithMissingTokens, "Team");
+      const result = generateDailyWithKeysData(
+        spendDataWithMissingTokens,
+        "Team",
+      );
       const key1Entry = result.find((r) => r["Key ID"] === "key1");
 
       expect(key1Entry?.["Prompt Tokens"]).toBe(0);
@@ -964,14 +985,19 @@ describe("EntityUsageExport utils", () => {
         metadata: mockSpendDataWithKeys.metadata,
       };
 
-      const result = generateDailyWithKeysData(spendDataWithEmptyBreakdown, "Team");
+      const result = generateDailyWithKeysData(
+        spendDataWithEmptyBreakdown,
+        "Team",
+      );
 
       expect(result).toHaveLength(0);
     });
 
     it("should handle multiple keys for same team on same date", () => {
       const result = generateDailyWithKeysData(mockSpendDataWithKeys, "Team");
-      const team1Entries = result.filter((r) => r["Team ID"] === "team-1" && r.Date === "2025-01-01");
+      const team1Entries = result.filter(
+        (r) => r["Team ID"] === "team-1" && r.Date === "2025-01-01",
+      );
 
       expect(team1Entries.length).toBeGreaterThanOrEqual(2);
       const keyIds = team1Entries.map((r) => r["Key ID"]);
@@ -1060,7 +1086,11 @@ describe("EntityUsageExport utils", () => {
     };
 
     it("should generate daily breakdown with model data", () => {
-      const result = generateDailyWithModelsData(mockSpendDataWithModels, "Team", mockTeamAliasMap);
+      const result = generateDailyWithModelsData(
+        mockSpendDataWithModels,
+        "Team",
+        mockTeamAliasMap,
+      );
 
       expect(result.length).toBeGreaterThan(0);
       expect(result[0]).toHaveProperty("Date");
@@ -1135,7 +1165,10 @@ describe("EntityUsageExport utils", () => {
     });
 
     it("should aggregate model metrics from api key breakdown", () => {
-      const result = generateDailyWithModelsData(mockSpendDataWithModels, "Team");
+      const result = generateDailyWithModelsData(
+        mockSpendDataWithModels,
+        "Team",
+      );
 
       const gpt4Entry = result.find((r) => r.Model === "gpt-4");
       expect(gpt4Entry).toBeDefined();
@@ -1143,15 +1176,24 @@ describe("EntityUsageExport utils", () => {
     });
 
     it("should use team alias when available", () => {
-      const result = generateDailyWithModelsData(mockSpendDataWithModels, "Team", mockTeamAliasMap);
+      const result = generateDailyWithModelsData(
+        mockSpendDataWithModels,
+        "Team",
+        mockTeamAliasMap,
+      );
       const team1Entry = result.find((r) => r["Team ID"] === "team-1");
 
       expect(team1Entry?.["Team"]).toBe("Team One");
     });
 
     it("should use dash when team alias is not available", () => {
-      const result = generateDailyWithModelsData(mockSpendDataWithModels, "Team");
-      const entryWithoutTeamId = result.find((r) => !r["Team ID"] || r["Team ID"] === "-");
+      const result = generateDailyWithModelsData(
+        mockSpendDataWithModels,
+        "Team",
+      );
+      const entryWithoutTeamId = result.find(
+        (r) => !r["Team ID"] || r["Team ID"] === "-",
+      );
 
       if (entryWithoutTeamId) {
         expect(entryWithoutTeamId["Team"]).toBe("-");
@@ -1201,7 +1243,10 @@ describe("EntityUsageExport utils", () => {
         metadata: mockSpendDataWithModels.metadata,
       };
 
-      const result = generateDailyWithModelsData(spendDataWithoutModels, "Team");
+      const result = generateDailyWithModelsData(
+        spendDataWithoutModels,
+        "Team",
+      );
 
       expect(result).toHaveLength(0);
     });
@@ -1209,7 +1254,12 @@ describe("EntityUsageExport utils", () => {
 
   describe("generateExportData", () => {
     it("should return daily data when scope is daily", () => {
-      const result = generateExportData(mockSpendData, "daily", "Team", mockTeamAliasMap);
+      const result = generateExportData(
+        mockSpendData,
+        "daily",
+        "Team",
+        mockTeamAliasMap,
+      );
 
       expect(result.length).toBeGreaterThan(0);
       expect(result[0]).toHaveProperty("Date");
@@ -1259,7 +1309,12 @@ describe("EntityUsageExport utils", () => {
         metadata: mockSpendData.metadata,
       };
 
-      const result = generateExportData(mockDataWithKeys, "daily_with_keys", "Team", mockTeamAliasMap);
+      const result = generateExportData(
+        mockDataWithKeys,
+        "daily_with_keys",
+        "Team",
+        mockTeamAliasMap,
+      );
 
       expect(result.length).toBeGreaterThan(0);
       expect(result[0]).toHaveProperty("Key Alias");
@@ -1320,14 +1375,24 @@ describe("EntityUsageExport utils", () => {
         metadata: mockSpendData.metadata,
       };
 
-      const result = generateExportData(mockDataWithModels, "daily_with_models", "Team", mockTeamAliasMap);
+      const result = generateExportData(
+        mockDataWithModels,
+        "daily_with_models",
+        "Team",
+        mockTeamAliasMap,
+      );
 
       expect(result.length).toBeGreaterThan(0);
       expect(result[0]).toHaveProperty("Model");
     });
 
     it("should default to daily data for unknown scope", () => {
-      const result = generateExportData(mockSpendData, "unknown" as ExportScope, "Team", mockTeamAliasMap);
+      const result = generateExportData(
+        mockSpendData,
+        "unknown" as ExportScope,
+        "Team",
+        mockTeamAliasMap,
+      );
 
       expect(result.length).toBeGreaterThan(0);
       expect(result[0]).not.toHaveProperty("Model");
@@ -1341,7 +1406,13 @@ describe("EntityUsageExport utils", () => {
     };
 
     it("should generate metadata with correct structure", () => {
-      const result = generateMetadata("team", mockDateRange, [], "daily", mockSpendData);
+      const result = generateMetadata(
+        "team",
+        mockDateRange,
+        [],
+        "daily",
+        mockSpendData,
+      );
 
       expect(result).toHaveProperty("export_date");
       expect(result).toHaveProperty("entity_type");
@@ -1352,19 +1423,39 @@ describe("EntityUsageExport utils", () => {
     });
 
     it("should include export date as ISO string", () => {
-      const result = generateMetadata("team", mockDateRange, [], "daily", mockSpendData);
+      const result = generateMetadata(
+        "team",
+        mockDateRange,
+        [],
+        "daily",
+        mockSpendData,
+      );
 
-      expect(result.export_date).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+      expect(result.export_date).toMatch(
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
+      );
     });
 
     it("should include entity type", () => {
-      const result = generateMetadata("team", mockDateRange, [], "daily", mockSpendData);
+      const result = generateMetadata(
+        "team",
+        mockDateRange,
+        [],
+        "daily",
+        mockSpendData,
+      );
 
       expect(result.entity_type).toBe("team");
     });
 
     it("should format date range correctly", () => {
-      const result = generateMetadata("team", mockDateRange, [], "daily", mockSpendData);
+      const result = generateMetadata(
+        "team",
+        mockDateRange,
+        [],
+        "daily",
+        mockSpendData,
+      );
 
       expect(result.date_range.from).toBe("2025-01-01T00:00:00.000Z");
       expect(result.date_range.to).toBe("2025-01-31T00:00:00.000Z");
@@ -1376,32 +1467,62 @@ describe("EntityUsageExport utils", () => {
         to: undefined,
       };
 
-      const result = generateMetadata("team", incompleteDateRange, [], "daily", mockSpendData);
+      const result = generateMetadata(
+        "team",
+        incompleteDateRange,
+        [],
+        "daily",
+        mockSpendData,
+      );
 
       expect(result.date_range.from).toBeUndefined();
       expect(result.date_range.to).toBeUndefined();
     });
 
     it("should set filters_applied to None when empty", () => {
-      const result = generateMetadata("team", mockDateRange, [], "daily", mockSpendData);
+      const result = generateMetadata(
+        "team",
+        mockDateRange,
+        [],
+        "daily",
+        mockSpendData,
+      );
 
       expect(result.filters_applied).toBe("None");
     });
 
     it("should include filters when provided", () => {
-      const result = generateMetadata("team", mockDateRange, ["filter1", "filter2"], "daily", mockSpendData);
+      const result = generateMetadata(
+        "team",
+        mockDateRange,
+        ["filter1", "filter2"],
+        "daily",
+        mockSpendData,
+      );
 
       expect(result.filters_applied).toEqual(["filter1", "filter2"]);
     });
 
     it("should include export scope", () => {
-      const result = generateMetadata("team", mockDateRange, [], "daily_with_models", mockSpendData);
+      const result = generateMetadata(
+        "team",
+        mockDateRange,
+        [],
+        "daily_with_models",
+        mockSpendData,
+      );
 
       expect(result.export_scope).toBe("daily_with_models");
     });
 
     it("should include summary metrics from spend data", () => {
-      const result = generateMetadata("team", mockDateRange, [], "daily", mockSpendData);
+      const result = generateMetadata(
+        "team",
+        mockDateRange,
+        [],
+        "daily",
+        mockSpendData,
+      );
 
       expect(result.summary.total_spend).toBe(46.0);
       expect(result.summary.total_requests).toBe(450);
@@ -1423,7 +1544,9 @@ describe("EntityUsageExport utils", () => {
     });
 
     it("should create CSV file and trigger download", () => {
-      const createObjectURLSpy = vi.spyOn(window.URL, "createObjectURL").mockReturnValue("blob:mock-url");
+      const createObjectURLSpy = vi
+        .spyOn(window.URL, "createObjectURL")
+        .mockReturnValue("blob:mock-url");
       const revokeObjectURLSpy = vi.spyOn(window.URL, "revokeObjectURL");
       const createElementSpy = vi.spyOn(document, "createElement");
       const appendChildSpy = vi.spyOn(document.body, "appendChild");
@@ -1440,7 +1563,9 @@ describe("EntityUsageExport utils", () => {
 
     it("should generate correct filename", () => {
       const anchorElement = document.createElement("a");
-      const createElementSpy = vi.spyOn(document, "createElement").mockReturnValue(anchorElement);
+      const createElementSpy = vi
+        .spyOn(document, "createElement")
+        .mockReturnValue(anchorElement);
 
       const today = new Date().toISOString().split("T")[0];
 
@@ -1454,7 +1579,10 @@ describe("EntityUsageExport utils", () => {
       const originalBlob = window.Blob;
 
       window.Blob = class extends Blob {
-        constructor(parts?: BlobPart[] | undefined, options?: BlobPropertyBag | undefined) {
+        constructor(
+          parts?: BlobPart[] | undefined,
+          options?: BlobPropertyBag | undefined,
+        ) {
           super(parts, options);
           if (options?.type) {
             blobType = options.type;
@@ -1482,7 +1610,9 @@ describe("EntityUsageExport utils", () => {
     });
 
     it("should create JSON file and trigger download", () => {
-      const createObjectURLSpy = vi.spyOn(window.URL, "createObjectURL").mockReturnValue("blob:mock-url");
+      const createObjectURLSpy = vi
+        .spyOn(window.URL, "createObjectURL")
+        .mockReturnValue("blob:mock-url");
       const revokeObjectURLSpy = vi.spyOn(window.URL, "revokeObjectURL");
       const createElementSpy = vi.spyOn(document, "createElement");
       const appendChildSpy = vi.spyOn(document.body, "appendChild");
@@ -1493,7 +1623,15 @@ describe("EntityUsageExport utils", () => {
         to: new Date("2025-01-31"),
       };
 
-      handleExportJSON(mockSpendData, "daily", "Team", "team", mockDateRange, [], mockTeamAliasMap);
+      handleExportJSON(
+        mockSpendData,
+        "daily",
+        "Team",
+        "team",
+        mockDateRange,
+        [],
+        mockTeamAliasMap,
+      );
 
       expect(createObjectURLSpy).toHaveBeenCalled();
       expect(createElementSpy).toHaveBeenCalledWith("a");
@@ -1503,7 +1641,9 @@ describe("EntityUsageExport utils", () => {
 
     it("should generate correct filename", () => {
       const anchorElement = document.createElement("a");
-      const createElementSpy = vi.spyOn(document, "createElement").mockReturnValue(anchorElement);
+      const createElementSpy = vi
+        .spyOn(document, "createElement")
+        .mockReturnValue(anchorElement);
 
       const today = new Date().toISOString().split("T")[0];
       const mockDateRange: DateRangePickerValue = {
@@ -1511,7 +1651,15 @@ describe("EntityUsageExport utils", () => {
         to: new Date("2025-01-31"),
       };
 
-      handleExportJSON(mockSpendData, "daily", "Team", "team", mockDateRange, [], mockTeamAliasMap);
+      handleExportJSON(
+        mockSpendData,
+        "daily",
+        "Team",
+        "team",
+        mockDateRange,
+        [],
+        mockTeamAliasMap,
+      );
 
       expect(anchorElement.download).toBe(`team_usage_daily_${today}.json`);
     });
@@ -1521,7 +1669,10 @@ describe("EntityUsageExport utils", () => {
       const originalBlob = window.Blob;
 
       window.Blob = class extends Blob {
-        constructor(parts?: BlobPart[] | undefined, options?: BlobPropertyBag | undefined) {
+        constructor(
+          parts?: BlobPart[] | undefined,
+          options?: BlobPropertyBag | undefined,
+        ) {
           super(parts, options);
           if (options?.type) {
             blobType = options.type;
@@ -1534,7 +1685,15 @@ describe("EntityUsageExport utils", () => {
         to: new Date("2025-01-31"),
       };
 
-      handleExportJSON(mockSpendData, "daily", "Team", "team", mockDateRange, [], mockTeamAliasMap);
+      handleExportJSON(
+        mockSpendData,
+        "daily",
+        "Team",
+        "team",
+        mockDateRange,
+        [],
+        mockTeamAliasMap,
+      );
 
       expect(blobType).toBe("application/json");
 
@@ -1546,7 +1705,10 @@ describe("EntityUsageExport utils", () => {
       const originalBlob = window.Blob;
 
       window.Blob = class extends Blob {
-        constructor(parts?: BlobPart[] | undefined, options?: BlobPropertyBag | undefined) {
+        constructor(
+          parts?: BlobPart[] | undefined,
+          options?: BlobPropertyBag | undefined,
+        ) {
           super(parts, options);
           if (parts && parts[0]) {
             jsonString = parts[0] as string;
@@ -1559,7 +1721,15 @@ describe("EntityUsageExport utils", () => {
         to: new Date("2025-01-31"),
       };
 
-      handleExportJSON(mockSpendData, "daily", "Team", "team", mockDateRange, ["filter1"], mockTeamAliasMap);
+      handleExportJSON(
+        mockSpendData,
+        "daily",
+        "Team",
+        "team",
+        mockDateRange,
+        ["filter1"],
+        mockTeamAliasMap,
+      );
 
       const exportObject = JSON.parse(jsonString);
       expect(exportObject).toHaveProperty("metadata");
@@ -1585,17 +1755,27 @@ describe("EntityUsageExport utils", () => {
           entities: {},
           api_keys: {
             ...Object.fromEntries(
-              Object.values(day.breakdown.entities as Record<string, any>).flatMap((e: any) =>
-                Object.entries(e.api_key_breakdown || {}),
-              ),
+              Object.values(
+                day.breakdown.entities as Record<string, any>,
+              ).flatMap((e: any) => Object.entries(e.api_key_breakdown || {})),
             ),
             // Extra key on team-1 to test multi-key-per-team aggregation
             key1b: {
-              metrics: { spend: 5, api_requests: 50, successful_requests: 48, failed_requests: 2, total_tokens: 500 },
+              metrics: {
+                spend: 5,
+                api_requests: 50,
+                successful_requests: 48,
+                failed_requests: 2,
+                total_tokens: 500,
+              },
               metadata: { team_id: "team-1", key_alias: "staging-key" },
             },
           },
-          models: { "gpt-4": { metrics: { spend: 35, api_requests: 350, total_tokens: 3500 } } },
+          models: {
+            "gpt-4": {
+              metrics: { spend: 35, api_requests: 350, total_tokens: 3500 },
+            },
+          },
         },
       })),
     };
@@ -1604,7 +1784,9 @@ describe("EntityUsageExport utils", () => {
       it("should return entities when populated", () => {
         const breakdown = {
           entities: { e1: { metrics: { spend: 1 } } },
-          api_keys: { k1: { metrics: { spend: 2 }, metadata: { team_id: "t1" } } },
+          api_keys: {
+            k1: { metrics: { spend: 2 }, metadata: { team_id: "t1" } },
+          },
         };
         const result = resolveEntities(breakdown);
         expect(result).toBe(breakdown.entities);
@@ -1634,7 +1816,13 @@ describe("EntityUsageExport utils", () => {
           entities: {},
           api_keys: {
             k1: {
-              metrics: { spend: 7, api_requests: 10, successful_requests: 10, failed_requests: 0, total_tokens: 100 },
+              metrics: {
+                spend: 7,
+                api_requests: 10,
+                successful_requests: 10,
+                failed_requests: 0,
+                total_tokens: 100,
+              },
               metadata: {},
             },
           },
@@ -1645,7 +1833,9 @@ describe("EntityUsageExport utils", () => {
       });
 
       it("should handle missing or empty api_keys gracefully", () => {
-        expect(Object.keys(resolveEntities({ entities: {}, api_keys: {} }))).toHaveLength(0);
+        expect(
+          Object.keys(resolveEntities({ entities: {}, api_keys: {} })),
+        ).toHaveLength(0);
         expect(Object.keys(resolveEntities({ entities: {} }))).toHaveLength(0);
       });
 
@@ -1654,9 +1844,14 @@ describe("EntityUsageExport utils", () => {
         const result = resolveEntities(breakdown);
 
         // team-1 should have key1 and key1b in api_key_breakdown
-        expect(Object.keys(result["team-1"].api_key_breakdown)).toEqual(["key1", "key1b"]);
+        expect(Object.keys(result["team-1"].api_key_breakdown)).toEqual([
+          "key1",
+          "key1b",
+        ]);
         // team-2 should have key2
-        expect(Object.keys(result["team-2"].api_key_breakdown)).toEqual(["key2"]);
+        expect(Object.keys(result["team-2"].api_key_breakdown)).toEqual([
+          "key2",
+        ]);
       });
     });
 
@@ -1669,7 +1864,6 @@ describe("EntityUsageExport utils", () => {
         expect(result[0].metrics.spend).toBe(20.3);
         expect(result[1].metrics.spend).toBe(15.5);
       });
-
     });
 
     describe("generateDailyData with aggregated data", () => {

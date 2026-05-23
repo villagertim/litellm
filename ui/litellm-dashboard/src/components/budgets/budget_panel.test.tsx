@@ -1,6 +1,6 @@
-import { fireEvent, render, waitFor, screen } from "@testing-library/react";
-import { act } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import BudgetPanel from "./budget_panel";
 
@@ -16,12 +16,19 @@ const mockBudgets = [
 
 vi.mock("@/app/(dashboard)/hooks/budgets/useBudgets", () => ({
   useBudgets: vi.fn().mockReturnValue({ data: [], isLoading: false }),
-  useDeleteBudget: vi.fn().mockReturnValue({ mutateAsync: vi.fn(), isPending: false }),
+  useDeleteBudget: vi
+    .fn()
+    .mockReturnValue({ mutateAsync: vi.fn(), isPending: false }),
   useCreateBudget: vi.fn().mockReturnValue({ mutateAsync: vi.fn() }),
   useUpdateBudget: vi.fn().mockReturnValue({ mutateAsync: vi.fn() }),
 }));
 
-import { useBudgets, useDeleteBudget, useCreateBudget, useUpdateBudget } from "@/app/(dashboard)/hooks/budgets/useBudgets";
+import {
+  useBudgets,
+  useCreateBudget,
+  useDeleteBudget,
+  useUpdateBudget,
+} from "@/app/(dashboard)/hooks/budgets/useBudgets";
 
 const createQueryClient = () =>
   new QueryClient({
@@ -47,7 +54,9 @@ describe("Budget Panel", () => {
     renderWithProviders(<BudgetPanel accessToken="token-123" />);
 
     await waitFor(() => {
-      expect(screen.getByText("Create a budget to assign to customers.")).toBeInTheDocument();
+      expect(
+        screen.getByText("Create a budget to assign to customers."),
+      ).toBeInTheDocument();
       expect(screen.getByText("budget-1")).toBeInTheDocument();
     });
   });
@@ -138,12 +147,16 @@ describe("Budget Panel", () => {
     renderWithProviders(<BudgetPanel accessToken="token-123" />);
 
     await waitFor(() => {
-      expect(screen.getByText("Create a budget to assign to customers.")).toBeInTheDocument();
+      expect(
+        screen.getByText("Create a budget to assign to customers."),
+      ).toBeInTheDocument();
     });
   });
 
   it("should handle delete error", async () => {
-    const deleteMutateAsync = vi.fn().mockRejectedValue(new Error("Delete failed"));
+    const deleteMutateAsync = vi
+      .fn()
+      .mockRejectedValue(new Error("Delete failed"));
     vi.mocked(useBudgets).mockReturnValue({
       data: [
         {

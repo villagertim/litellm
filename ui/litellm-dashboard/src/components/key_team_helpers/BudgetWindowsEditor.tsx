@@ -7,10 +7,18 @@ export interface BudgetWindowEntry {
 }
 
 export const BUDGET_WINDOW_OPTIONS = [
-  { value: "1h",  label: "Hourly",   resetHint: "Resets every hour" },
-  { value: "24h", label: "Daily",    resetHint: "Resets daily at midnight UTC" },
-  { value: "7d",  label: "Weekly",   resetHint: "Resets every Sunday at midnight UTC" },
-  { value: "30d", label: "Monthly",  resetHint: "Resets on the 1st of every month at midnight UTC" },
+  { value: "1h", label: "Hourly", resetHint: "Resets every hour" },
+  { value: "24h", label: "Daily", resetHint: "Resets daily at midnight UTC" },
+  {
+    value: "7d",
+    label: "Weekly",
+    resetHint: "Resets every Sunday at midnight UTC",
+  },
+  {
+    value: "30d",
+    label: "Monthly",
+    resetHint: "Resets on the 1st of every month at midnight UTC",
+  },
 ];
 
 interface BudgetWindowsEditorProps {
@@ -18,7 +26,10 @@ interface BudgetWindowsEditorProps {
   onChange: (v: BudgetWindowEntry[]) => void;
 }
 
-export function BudgetWindowsEditor({ value, onChange }: BudgetWindowsEditorProps) {
+export function BudgetWindowsEditor({
+  value,
+  onChange,
+}: BudgetWindowsEditorProps) {
   const addWindow = () => {
     onChange([...value, { budget_duration: "24h", max_budget: null }]);
   };
@@ -27,15 +38,23 @@ export function BudgetWindowsEditor({ value, onChange }: BudgetWindowsEditorProp
     onChange(value.filter((_, i) => i !== idx));
   };
 
-  const updateWindow = (idx: number, field: keyof BudgetWindowEntry, fieldValue: string | number | null) => {
-    const updated = value.map((w, i) => (i === idx ? { ...w, [field]: fieldValue } : w));
+  const updateWindow = (
+    idx: number,
+    field: keyof BudgetWindowEntry,
+    fieldValue: string | number | null,
+  ) => {
+    const updated = value.map((w, i) =>
+      i === idx ? { ...w, [field]: fieldValue } : w,
+    );
     onChange(updated);
   };
 
   return (
     <div>
       {value.map((window, idx) => {
-        const hint = BUDGET_WINDOW_OPTIONS.find((o) => o.value === window.budget_duration)?.resetHint;
+        const hint = BUDGET_WINDOW_OPTIONS.find(
+          (o) => o.value === window.budget_duration,
+        )?.resetHint;
         return (
           <div key={idx} style={{ marginBottom: 12 }}>
             <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -43,7 +62,10 @@ export function BudgetWindowsEditor({ value, onChange }: BudgetWindowsEditorProp
                 value={window.budget_duration}
                 onChange={(v) => updateWindow(idx, "budget_duration", v)}
                 style={{ width: 130 }}
-                options={BUDGET_WINDOW_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
+                options={BUDGET_WINDOW_OPTIONS.map((o) => ({
+                  value: o.value,
+                  label: o.label,
+                }))}
               />
               <InputNumber
                 step={0.01}
@@ -66,7 +88,14 @@ export function BudgetWindowsEditor({ value, onChange }: BudgetWindowsEditorProp
               </Button>
             </div>
             {hint && (
-              <div style={{ fontSize: 11, color: "#888", marginTop: 3, marginLeft: 2 }}>
+              <div
+                style={{
+                  fontSize: 11,
+                  color: "#888",
+                  marginTop: 3,
+                  marginLeft: 2,
+                }}
+              >
                 ↻ {hint}
               </div>
             )}
@@ -75,7 +104,10 @@ export function BudgetWindowsEditor({ value, onChange }: BudgetWindowsEditorProp
       })}
       <Button
         size="small"
-        onClick={(e) => { e.preventDefault(); addWindow(); }}
+        onClick={(e) => {
+          e.preventDefault();
+          addWindow();
+        }}
       >
         + Add Budget Window
       </Button>

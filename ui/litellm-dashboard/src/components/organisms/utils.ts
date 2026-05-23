@@ -14,7 +14,10 @@ export const simplifyKeyGenerateError = (error: any): string => {
   }
 
   // Check if this is a /key/generate team member permission error
-  if (!errorString.includes("/key/generate") && !errorString.includes("KeyManagementRoutes.KEY_GENERATE")) {
+  if (
+    !errorString.includes("/key/generate") &&
+    !errorString.includes("KeyManagementRoutes.KEY_GENERATE")
+  ) {
     return `Error creating the key: ${error}`;
   }
 

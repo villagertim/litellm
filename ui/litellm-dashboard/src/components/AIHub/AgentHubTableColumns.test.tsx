@@ -1,8 +1,15 @@
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
-import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { getAgentHubTableColumns, AgentHubData } from "./AgentHubTableColumns";
+import {
+  type AgentHubData,
+  getAgentHubTableColumns,
+} from "./AgentHubTableColumns";
 
 const mockAgent: AgentHubData = {
   agent_id: "agent-1",
@@ -33,8 +40,16 @@ function TestTable({
   showModal?: ReturnType<typeof vi.fn>;
   copyToClipboard?: ReturnType<typeof vi.fn>;
 }) {
-  const columns = getAgentHubTableColumns(showModal, copyToClipboard, publicPage);
-  const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
+  const columns = getAgentHubTableColumns(
+    showModal,
+    copyToClipboard,
+    publicPage,
+  );
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   return (
     <table>
@@ -42,7 +57,9 @@ function TestTable({
         {table.getHeaderGroups().map((hg) => (
           <tr key={hg.id}>
             {hg.headers.map((h) => (
-              <th key={h.id}>{flexRender(h.column.columnDef.header, h.getContext())}</th>
+              <th key={h.id}>
+                {flexRender(h.column.columnDef.header, h.getContext())}
+              </th>
             ))}
           </tr>
         ))}
@@ -51,7 +68,9 @@ function TestTable({
         {table.getRowModel().rows.map((row) => (
           <tr key={row.id}>
             {row.getVisibleCells().map((cell) => (
-              <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+              <td key={cell.id}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </td>
             ))}
           </tr>
         ))}
@@ -69,7 +88,9 @@ describe("AgentHubTableColumns", () => {
   it("should display the agent description", () => {
     render(<TestTable data={[mockAgent]} />);
     // Description appears in both the description column and the mobile view within agent name column
-    expect(screen.getAllByText("A test agent for unit testing").length).toBeGreaterThanOrEqual(1);
+    expect(
+      screen.getAllByText("A test agent for unit testing").length,
+    ).toBeGreaterThanOrEqual(1);
   });
 
   it("should display the version with a 'v' prefix", () => {
@@ -104,12 +125,16 @@ describe("AgentHubTableColumns", () => {
     render(<TestTable data={[mockAgent]} />);
     // "In:" and "Out:" are in <span> children; getByText with exact:false
     // matches against the element's full textContent across child nodes
-    expect(screen.getByText((_, el) =>
-      el?.tagName === "P" && el.textContent === "In: text"
-    )).toBeInTheDocument();
-    expect(screen.getByText((_, el) =>
-      el?.tagName === "P" && el.textContent === "Out: text, image"
-    )).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        (_, el) => el?.tagName === "P" && el.textContent === "In: text",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        (_, el) => el?.tagName === "P" && el.textContent === "Out: text, image",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("should display 'Yes' badge for public agents", () => {
@@ -125,7 +150,9 @@ describe("AgentHubTableColumns", () => {
 
   it("should display a Details button", () => {
     render(<TestTable data={[mockAgent]} />);
-    expect(screen.getByRole("button", { name: /details|info/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /details|info/i }),
+    ).toBeInTheDocument();
   });
 
   it("should show '-' when agent has no capabilities", () => {

@@ -1,14 +1,14 @@
-import React from "react";
-import { Modal, Form } from "antd";
+import {
+  type AccessGroupCreateParams,
+  useCreateAccessGroup,
+} from "@/app/(dashboard)/hooks/accessGroups/useCreateAccessGroup";
 import MessageManager from "@/components/molecules/message_manager";
+import { Form, Modal } from "antd";
+import React from "react";
 import {
   AccessGroupBaseForm,
-  AccessGroupFormValues,
+  type AccessGroupFormValues,
 } from "./AccessGroupBaseForm";
-import {
-  useCreateAccessGroup,
-  AccessGroupCreateParams,
-} from "@/app/(dashboard)/hooks/accessGroups/useCreateAccessGroup";
 
 interface AccessGroupCreateModalProps {
   visible: boolean;

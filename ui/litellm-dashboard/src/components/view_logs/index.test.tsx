@@ -1,12 +1,12 @@
+import type { Row } from "@tanstack/react-table";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import moment from "moment";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import SpendLogsTable, { RequestViewer } from "./index";
-import type { LogEntry } from "./columns";
-import type { Row } from "@tanstack/react-table";
 import { renderWithProviders } from "../../../tests/test-utils";
 import { uiSpendLogsCall } from "../networking";
+import type { LogEntry } from "./columns";
+import SpendLogsTable, { RequestViewer } from "./index";
 
 const mockHandleFilterResetFromHook = vi.fn();
 vi.mock("./log_filter_logic", async (importOriginal) => {
@@ -215,15 +215,21 @@ describe("SpendLogsTable", () => {
     renderWithProviders(<SpendLogsTable {...defaultProps} />);
 
     // Open the time range quick select dropdown (button shows current range like "Last 24 Hours")
-    const quickSelectButton = screen.getByRole("button", { name: /Last 24 Hours|Last 15 Minutes|Last Hour|Last 4 Hours|Last 7 Days/i });
+    const quickSelectButton = screen.getByRole("button", {
+      name: /Last 24 Hours|Last 15 Minutes|Last Hour|Last 4 Hours|Last 7 Days/i,
+    });
     await user.click(quickSelectButton);
 
     // Click "Custom Range" to enable custom date selection
-    const customRangeButton = await screen.findByRole("button", { name: "Custom Range" });
+    const customRangeButton = await screen.findByRole("button", {
+      name: "Custom Range",
+    });
     await user.click(customRangeButton);
 
     // Custom date inputs should now be visible (start and end datetime-local inputs)
-    const datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
+    const datetimeInputs = document.querySelectorAll(
+      'input[type="datetime-local"]',
+    );
     expect(datetimeInputs.length).toBeGreaterThanOrEqual(2);
 
     // Click Reset Filters - this should reset the custom date range and hide custom inputs
@@ -236,7 +242,9 @@ describe("SpendLogsTable", () => {
 
     // After reset, custom date inputs should be hidden (isCustomDate reset to false)
     await waitFor(() => {
-      const inputsAfterReset = document.querySelectorAll('input[type="datetime-local"]');
+      const inputsAfterReset = document.querySelectorAll(
+        'input[type="datetime-local"]',
+      );
       expect(inputsAfterReset.length).toBe(0);
     });
   });
@@ -249,7 +257,10 @@ describe("SpendLogsTable", () => {
         if (!lastCall) throw new Error("uiSpendLogsCall was not called");
         diff = moment
           .utc(lastCall.end_date, "YYYY-MM-DD HH:mm:ss")
-          .diff(moment.utc(lastCall.start_date, "YYYY-MM-DD HH:mm:ss"), "seconds");
+          .diff(
+            moment.utc(lastCall.start_date, "YYYY-MM-DD HH:mm:ss"),
+            "seconds",
+          );
         // start_date is rounded down to the minute boundary; end_date is current time
         expect(diff).toBeGreaterThanOrEqual(minMinutes * 60);
         expect(diff).toBeLessThan((minMinutes + 1) * 60);
@@ -262,7 +273,9 @@ describe("SpendLogsTable", () => {
       renderWithProviders(<SpendLogsTable {...defaultProps} />);
 
       await user.click(screen.getByRole("button", { name: /Last 24 Hours/i }));
-      await user.click(await screen.findByRole("button", { name: "Last Minute" }));
+      await user.click(
+        await screen.findByRole("button", { name: "Last Minute" }),
+      );
 
       await waitForWindowSeconds(1);
     });
@@ -272,7 +285,9 @@ describe("SpendLogsTable", () => {
       renderWithProviders(<SpendLogsTable {...defaultProps} />);
 
       await user.click(screen.getByRole("button", { name: /Last 24 Hours/i }));
-      await user.click(await screen.findByRole("button", { name: "Last 15 Minutes" }));
+      await user.click(
+        await screen.findByRole("button", { name: "Last 15 Minutes" }),
+      );
 
       await waitForWindowSeconds(15);
     });
@@ -282,10 +297,16 @@ describe("SpendLogsTable", () => {
       renderWithProviders(<SpendLogsTable {...defaultProps} />);
 
       await user.click(screen.getByRole("button", { name: /Last 24 Hours/i }));
-      await user.click(await screen.findByRole("button", { name: "Last Minute" }));
+      await user.click(
+        await screen.findByRole("button", { name: "Last Minute" }),
+      );
 
-      expect(screen.getByRole("button", { name: "Last Minute" })).toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: /Last 24 Hours/i })).not.toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Last Minute" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: /Last 24 Hours/i }),
+      ).not.toBeInTheDocument();
     });
   });
 });

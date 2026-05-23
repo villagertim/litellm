@@ -1,7 +1,12 @@
-import React from "react";
-import { Card, Badge, Tooltip, Button } from "antd";
-import { CopyOutlined, KeyOutlined, WarningOutlined, DeleteOutlined } from "@ant-design/icons";
-import { Agent, AgentKeyInfo } from "./types";
+import {
+  CopyOutlined,
+  DeleteOutlined,
+  KeyOutlined,
+  WarningOutlined,
+} from "@ant-design/icons";
+import { Badge, Button, Card, Tooltip } from "antd";
+import type React from "react";
+import type { Agent, AgentKeyInfo } from "./types";
 
 interface AgentCardProps {
   agent: Agent;
@@ -20,8 +25,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
   onDeleteClick,
   isAdmin,
 }) => {
-  const description =
-    agent.agent_card_params?.description || "No description";
+  const description = agent.agent_card_params?.description || "No description";
   const url = agent.agent_card_params?.url;
   const hasKey = keyInfo?.has_key ?? false;
   const statusBadge = hasKey ? (
@@ -87,7 +91,9 @@ const AgentCard: React.FC<AgentCardProps> = ({
         {hasKey ? (
           <div className="flex items-center gap-1.5 text-gray-600">
             <KeyOutlined />
-            <span>{keyInfo?.key_alias || keyInfo?.token_prefix || "Key assigned"}</span>
+            <span>
+              {keyInfo?.key_alias || keyInfo?.token_prefix || "Key assigned"}
+            </span>
           </div>
         ) : (
           <div className="flex items-center gap-1.5 text-amber-600">

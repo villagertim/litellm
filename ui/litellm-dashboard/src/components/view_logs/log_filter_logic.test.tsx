@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook, waitFor } from "@testing-library/react";
-import React, { ReactNode } from "react";
+import React, { type ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { PaginatedResponse } from ".";
 import type { LogEntry, LogsSortField } from "./columns";
@@ -17,26 +17,26 @@ vi.mock("@/components/key_team_helpers/filter_helpers", () => ({
 import { uiSpendLogsCall } from "../networking";
 
 const createLogEntry = (overrides: Partial<LogEntry> = {}): LogEntry =>
-({
-  request_id: "req-1",
-  api_key: "key-1",
-  team_id: "team-1",
-  model: "gpt-4",
-  model_id: "gpt-4",
-  call_type: "chat",
-  spend: 0,
-  total_tokens: 0,
-  prompt_tokens: 0,
-  completion_tokens: 0,
-  startTime: "2025-01-01T00:00:00Z",
-  endTime: "2025-01-01T00:01:00Z",
-  cache_hit: "miss",
-  messages: [],
-  response: {},
-  metadata: {},
-  request_tags: {},
-  ...overrides,
-} as LogEntry);
+  ({
+    request_id: "req-1",
+    api_key: "key-1",
+    team_id: "team-1",
+    model: "gpt-4",
+    model_id: "gpt-4",
+    call_type: "chat",
+    spend: 0,
+    total_tokens: 0,
+    prompt_tokens: 0,
+    completion_tokens: 0,
+    startTime: "2025-01-01T00:00:00Z",
+    endTime: "2025-01-01T00:01:00Z",
+    cache_hit: "miss",
+    messages: [],
+    response: {},
+    metadata: {},
+    request_tags: {},
+    ...overrides,
+  }) as LogEntry;
 
 const createPaginatedResponse = (data: LogEntry[]): PaginatedResponse => ({
   data,
@@ -99,7 +99,9 @@ describe("useLogFilterLogic", () => {
   });
 
   it("should initialize filters with all keys empty", () => {
-    const { result } = renderHook(() => useLogFilterLogic(defaultProps), { wrapper });
+    const { result } = renderHook(() => useLogFilterLogic(defaultProps), {
+      wrapper,
+    });
 
     const filters = result.current.filters;
     expect(filters["Team ID"]).toBe("");
@@ -120,7 +122,10 @@ describe("useLogFilterLogic", () => {
       createLogEntry({ request_id: "req-1" }),
       createLogEntry({ request_id: "req-2" }),
     ]);
-    const { result } = renderHook(() => useLogFilterLogic({ ...defaultProps, logs }), { wrapper });
+    const { result } = renderHook(
+      () => useLogFilterLogic({ ...defaultProps, logs }),
+      { wrapper },
+    );
 
     expect(result.current.filteredLogs.data).toHaveLength(2);
     expect(result.current.filteredLogs.data).toEqual(logs.data);
@@ -132,14 +137,19 @@ describe("useLogFilterLogic", () => {
       createLogEntry({ request_id: "req-2", team_id: "team-b" }),
       createLogEntry({ request_id: "req-3", team_id: "team-a" }),
     ]);
-    const { result } = renderHook(() => useLogFilterLogic({ ...defaultProps, logs }), { wrapper });
+    const { result } = renderHook(
+      () => useLogFilterLogic({ ...defaultProps, logs }),
+      { wrapper },
+    );
 
     act(() => {
       result.current.handleFilterChange({ "Team ID": "team-a" });
     });
 
     expect(result.current.filteredLogs.data).toHaveLength(2);
-    expect(result.current.filteredLogs.data.every((log) => log.team_id === "team-a")).toBe(true);
+    expect(
+      result.current.filteredLogs.data.every((log) => log.team_id === "team-a"),
+    ).toBe(true);
   });
 
   it("should filter logs by status when Status filter is set to success", () => {
@@ -148,14 +158,21 @@ describe("useLogFilterLogic", () => {
       createLogEntry({ request_id: "req-2" }),
       createLogEntry({ request_id: "req-3", status: "error" }),
     ]);
-    const { result } = renderHook(() => useLogFilterLogic({ ...defaultProps, logs }), { wrapper });
+    const { result } = renderHook(
+      () => useLogFilterLogic({ ...defaultProps, logs }),
+      { wrapper },
+    );
 
     act(() => {
       result.current.handleFilterChange({ Status: "success" });
     });
 
     expect(result.current.filteredLogs.data).toHaveLength(2);
-    expect(result.current.filteredLogs.data.every((log) => !log.status || log.status === "success")).toBe(true);
+    expect(
+      result.current.filteredLogs.data.every(
+        (log) => !log.status || log.status === "success",
+      ),
+    ).toBe(true);
   });
 
   it("should filter logs by status when Status filter is set to error", () => {
@@ -163,7 +180,10 @@ describe("useLogFilterLogic", () => {
       createLogEntry({ request_id: "req-1", status: "success" }),
       createLogEntry({ request_id: "req-2", status: "error" }),
     ]);
-    const { result } = renderHook(() => useLogFilterLogic({ ...defaultProps, logs }), { wrapper });
+    const { result } = renderHook(
+      () => useLogFilterLogic({ ...defaultProps, logs }),
+      { wrapper },
+    );
 
     act(() => {
       result.current.handleFilterChange({ Status: "error" });
@@ -186,7 +206,10 @@ describe("useLogFilterLogic", () => {
       createLogEntry({ request_id: "req-2", model_id: "gpt-3.5" }),
       createLogEntry({ request_id: "req-3", model_id: "gpt-4" }),
     ]);
-    const { result } = renderHook(() => useLogFilterLogic({ ...defaultProps, logs }), { wrapper });
+    const { result } = renderHook(
+      () => useLogFilterLogic({ ...defaultProps, logs }),
+      { wrapper },
+    );
 
     act(() => {
       result.current.handleFilterChange({ Model: "gpt-4" });
@@ -195,7 +218,11 @@ describe("useLogFilterLogic", () => {
     await waitFor(
       () => {
         expect(result.current.filteredLogs.data).toHaveLength(2);
-        expect(result.current.filteredLogs.data.every((log) => log.model_id === "gpt-4")).toBe(true);
+        expect(
+          result.current.filteredLogs.data.every(
+            (log) => log.model_id === "gpt-4",
+          ),
+        ).toBe(true);
       },
       { timeout: 500 },
     );
@@ -211,7 +238,9 @@ describe("useLogFilterLogic", () => {
         team_id: "team-x",
       }),
     ];
-    vi.mocked(uiSpendLogsCall).mockResolvedValue(createPaginatedResponse(searchRows));
+    vi.mocked(uiSpendLogsCall).mockResolvedValue(
+      createPaginatedResponse(searchRows),
+    );
     const logs = createPaginatedResponse([
       ...searchRows,
       createLogEntry({
@@ -222,16 +251,23 @@ describe("useLogFilterLogic", () => {
         team_id: "team-x",
       }),
     ]);
-    const { result } = renderHook(() => useLogFilterLogic({ ...defaultProps, logs }), { wrapper });
+    const { result } = renderHook(
+      () => useLogFilterLogic({ ...defaultProps, logs }),
+      { wrapper },
+    );
 
     act(() => {
-      result.current.handleFilterChange({ "Public model / search tool": "tavily-marketing" });
+      result.current.handleFilterChange({
+        "Public model / search tool": "tavily-marketing",
+      });
     });
 
     await waitFor(
       () => {
         expect(result.current.filteredLogs.data).toHaveLength(1);
-        expect(result.current.filteredLogs.data[0].model).toBe("tavily-marketing");
+        expect(result.current.filteredLogs.data[0].model).toBe(
+          "tavily-marketing",
+        );
         expect(result.current.filteredLogs.data[0].call_type).toBe("asearch");
       },
       { timeout: 500 },
@@ -247,7 +283,10 @@ describe("useLogFilterLogic", () => {
   });
 
   it("should filter logs by api_key when Key Hash filter is set", async () => {
-    const filteredLog = createLogEntry({ request_id: "req-1", api_key: "key-x" });
+    const filteredLog = createLogEntry({
+      request_id: "req-1",
+      api_key: "key-x",
+    });
     vi.mocked(uiSpendLogsCall).mockResolvedValue(
       createPaginatedResponse([filteredLog]),
     );
@@ -255,7 +294,10 @@ describe("useLogFilterLogic", () => {
       createLogEntry({ request_id: "req-1", api_key: "key-x" }),
       createLogEntry({ request_id: "req-2", api_key: "key-y" }),
     ]);
-    const { result } = renderHook(() => useLogFilterLogic({ ...defaultProps, logs }), { wrapper });
+    const { result } = renderHook(
+      () => useLogFilterLogic({ ...defaultProps, logs }),
+      { wrapper },
+    );
 
     act(() => {
       result.current.handleFilterChange({ "Key Hash": "key-x" });
@@ -271,7 +313,10 @@ describe("useLogFilterLogic", () => {
   });
 
   it("should filter logs by end_user when End User filter is set", async () => {
-    const filteredLog = createLogEntry({ request_id: "req-1", end_user: "user-a" });
+    const filteredLog = createLogEntry({
+      request_id: "req-1",
+      end_user: "user-a",
+    });
     vi.mocked(uiSpendLogsCall).mockResolvedValue(
       createPaginatedResponse([filteredLog]),
     );
@@ -279,7 +324,10 @@ describe("useLogFilterLogic", () => {
       createLogEntry({ request_id: "req-1", end_user: "user-a" }),
       createLogEntry({ request_id: "req-2", end_user: "user-b" }),
     ]);
-    const { result } = renderHook(() => useLogFilterLogic({ ...defaultProps, logs }), { wrapper });
+    const { result } = renderHook(
+      () => useLogFilterLogic({ ...defaultProps, logs }),
+      { wrapper },
+    );
 
     act(() => {
       result.current.handleFilterChange({ "End User": "user-a" });
@@ -312,7 +360,10 @@ describe("useLogFilterLogic", () => {
         metadata: { error_information: { error_code: "500" } },
       }),
     ]);
-    const { result } = renderHook(() => useLogFilterLogic({ ...defaultProps, logs }), { wrapper });
+    const { result } = renderHook(
+      () => useLogFilterLogic({ ...defaultProps, logs }),
+      { wrapper },
+    );
 
     act(() => {
       result.current.handleFilterChange({ "Error Code": "429" });
@@ -321,7 +372,10 @@ describe("useLogFilterLogic", () => {
     await waitFor(
       () => {
         expect(result.current.filteredLogs.data).toHaveLength(1);
-        expect(result.current.filteredLogs.data[0].metadata?.error_information?.error_code).toBe("429");
+        expect(
+          result.current.filteredLogs.data[0].metadata?.error_information
+            ?.error_code,
+        ).toBe("429");
       },
       { timeout: 500 },
     );
@@ -343,10 +397,16 @@ describe("useLogFilterLogic", () => {
 
   it("should reset filters when handleFilterReset is called", () => {
     const logs = createPaginatedResponse([createLogEntry()]);
-    const { result } = renderHook(() => useLogFilterLogic({ ...defaultProps, logs }), { wrapper });
+    const { result } = renderHook(
+      () => useLogFilterLogic({ ...defaultProps, logs }),
+      { wrapper },
+    );
 
     act(() => {
-      result.current.handleFilterChange({ "Team ID": "team-1", Status: "success" });
+      result.current.handleFilterChange({
+        "Team ID": "team-1",
+        Status: "success",
+      });
     });
 
     expect(result.current.filters["Team ID"]).toBe("team-1");
@@ -377,7 +437,10 @@ describe("useLogFilterLogic", () => {
 
   it("should call uiSpendLogsCall when backend filter is set and debounce elapses", async () => {
     const logs = createPaginatedResponse([createLogEntry()]);
-    const { result } = renderHook(() => useLogFilterLogic({ ...defaultProps, logs }), { wrapper });
+    const { result } = renderHook(
+      () => useLogFilterLogic({ ...defaultProps, logs }),
+      { wrapper },
+    );
 
     act(() => {
       result.current.handleFilterChange({ "Key Alias": "alias-1" });
@@ -412,8 +475,13 @@ describe("useLogFilterLogic", () => {
     vi.mocked(uiSpendLogsCall).mockResolvedValue(
       createPaginatedResponse([backendLog]),
     );
-    const logs = createPaginatedResponse([createLogEntry({ request_id: "client-req" })]);
-    const { result } = renderHook(() => useLogFilterLogic({ ...defaultProps, logs }), { wrapper });
+    const logs = createPaginatedResponse([
+      createLogEntry({ request_id: "client-req" }),
+    ]);
+    const { result } = renderHook(
+      () => useLogFilterLogic({ ...defaultProps, logs }),
+      { wrapper },
+    );
 
     act(() => {
       result.current.handleFilterChange({ "Key Alias": "alias-1" });
@@ -422,7 +490,9 @@ describe("useLogFilterLogic", () => {
     await waitFor(
       () => {
         expect(result.current.filteredLogs.data).toHaveLength(1);
-        expect(result.current.filteredLogs.data[0].request_id).toBe("backend-req");
+        expect(result.current.filteredLogs.data[0].request_id).toBe(
+          "backend-req",
+        );
       },
       { timeout: 500 },
     );
@@ -433,7 +503,10 @@ describe("useLogFilterLogic", () => {
       createPaginatedResponse([createLogEntry({ request_id: "req-xyz" })]),
     );
     const logs = createPaginatedResponse([createLogEntry()]);
-    const { result } = renderHook(() => useLogFilterLogic({ ...defaultProps, logs }), { wrapper });
+    const { result } = renderHook(
+      () => useLogFilterLogic({ ...defaultProps, logs }),
+      { wrapper },
+    );
 
     act(() => {
       result.current.handleFilterChange({ "Request ID": "req-xyz" });
@@ -456,7 +529,10 @@ describe("useLogFilterLogic", () => {
       createPaginatedResponse([createLogEntry()]),
     );
     const logs = createPaginatedResponse([createLogEntry()]);
-    const { result } = renderHook(() => useLogFilterLogic({ ...defaultProps, logs }), { wrapper });
+    const { result } = renderHook(
+      () => useLogFilterLogic({ ...defaultProps, logs }),
+      { wrapper },
+    );
 
     act(() => {
       result.current.handleFilterChange({ "User ID": "user-123" });
@@ -479,17 +555,24 @@ describe("useLogFilterLogic", () => {
       createPaginatedResponse([createLogEntry()]),
     );
     const logs = createPaginatedResponse([createLogEntry()]);
-    const { result } = renderHook(() => useLogFilterLogic({ ...defaultProps, logs }), { wrapper });
+    const { result } = renderHook(
+      () => useLogFilterLogic({ ...defaultProps, logs }),
+      { wrapper },
+    );
 
     act(() => {
-      result.current.handleFilterChange({ "Error Message": "rate limit exceeded" });
+      result.current.handleFilterChange({
+        "Error Message": "rate limit exceeded",
+      });
     });
 
     await waitFor(
       () => {
         expect(uiSpendLogsCall).toHaveBeenCalledWith(
           expect.objectContaining({
-            params: expect.objectContaining({ error_message: "rate limit exceeded" }),
+            params: expect.objectContaining({
+              error_message: "rate limit exceeded",
+            }),
           }),
         );
       },
@@ -507,7 +590,10 @@ describe("useLogFilterLogic", () => {
     });
     const clientLog = createLogEntry({ request_id: "client-req" });
     const logs = createPaginatedResponse([clientLog]);
-    const { result } = renderHook(() => useLogFilterLogic({ ...defaultProps, logs }), { wrapper });
+    const { result } = renderHook(
+      () => useLogFilterLogic({ ...defaultProps, logs }),
+      { wrapper },
+    );
 
     act(() => {
       result.current.handleFilterChange({ "Key Alias": "alias-1" });
@@ -699,7 +785,10 @@ describe("useLogFilterLogic", () => {
   it("should not crash when uiSpendLogsCall throws", async () => {
     vi.mocked(uiSpendLogsCall).mockRejectedValue(new Error("Network error"));
     const logs = createPaginatedResponse([createLogEntry()]);
-    const { result } = renderHook(() => useLogFilterLogic({ ...defaultProps, logs }), { wrapper });
+    const { result } = renderHook(
+      () => useLogFilterLogic({ ...defaultProps, logs }),
+      { wrapper },
+    );
 
     act(() => {
       result.current.handleFilterChange({ "Key Alias": "alias-1" });
@@ -718,8 +807,13 @@ describe("useLogFilterLogic", () => {
     vi.mocked(uiSpendLogsCall).mockResolvedValue(
       createPaginatedResponse([backendLog]),
     );
-    const logs = createPaginatedResponse([createLogEntry({ request_id: "client-req" })]);
-    const { result } = renderHook(() => useLogFilterLogic({ ...defaultProps, logs }), { wrapper });
+    const logs = createPaginatedResponse([
+      createLogEntry({ request_id: "client-req" }),
+    ]);
+    const { result } = renderHook(
+      () => useLogFilterLogic({ ...defaultProps, logs }),
+      { wrapper },
+    );
 
     act(() => {
       result.current.handleFilterChange({ "Key Alias": "alias-1" });
@@ -727,7 +821,9 @@ describe("useLogFilterLogic", () => {
 
     await waitFor(
       () => {
-        expect(result.current.filteredLogs.data[0].request_id).toBe("backend-req");
+        expect(result.current.filteredLogs.data[0].request_id).toBe(
+          "backend-req",
+        );
       },
       { timeout: 500 },
     );

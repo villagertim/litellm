@@ -1,8 +1,16 @@
 "use client";
-import React from "react";
-import { Text, Tab, TabGroup, TabList, TabPanel, TabPanels, Grid } from "@tremor/react";
-import CodeBlock from "./components/CodeBlock";
 import DocLink from "@/app/(dashboard)/api-reference/components/DocLink";
+import {
+  Grid,
+  Tab,
+  TabGroup,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Text,
+} from "@tremor/react";
+import type React from "react";
+import CodeBlock from "./components/CodeBlock";
 
 interface ApiRefProps {
   proxySettings: {
@@ -29,12 +37,16 @@ const APIReferenceView: React.FC<ApiRefProps> = ({ proxySettings }) => {
             <p className="text-2xl text-tremor-content-strong dark:text-dark-tremor-content-strong font-semibold">
               OpenAI Compatible Proxy: API Reference
             </p>
-            <DocLink className="ml-3 shrink-0" href="https://docs.litellm.ai/docs/proxy/user_keys" />
+            <DocLink
+              className="ml-3 shrink-0"
+              href="https://docs.litellm.ai/docs/proxy/user_keys"
+            />
           </div>
 
           <Text className="mt-2 mb-2">
-            LiteLLM is OpenAI Compatible. This means your API Key works with the OpenAI SDK. Just replace the base_url
-            to point to your litellm proxy. Example Below{" "}
+            LiteLLM is OpenAI Compatible. This means your API Key works with the
+            OpenAI SDK. Just replace the base_url to point to your litellm
+            proxy. Example Below{" "}
           </Text>
 
           <TabGroup>

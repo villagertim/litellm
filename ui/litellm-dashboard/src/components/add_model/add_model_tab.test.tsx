@@ -10,7 +10,10 @@ import { Providers } from "../provider_info_helpers";
 import AddModelTab from "./add_model_tab";
 
 vi.mock("../molecules/models/ProviderLogo", () => ({
-  ProviderLogo: ({ provider, className }: { provider: string; className?: string }) => (
+  ProviderLogo: ({
+    provider,
+    className,
+  }: { provider: string; className?: string }) => (
     <div className={className} data-testid={`provider-logo-${provider}`}>
       {provider}
     </div>
@@ -22,7 +25,10 @@ vi.mock("../networking", async () => {
   return {
     ...actual,
     getGuardrailsList: vi.fn().mockResolvedValue({
-      guardrails: [{ guardrail_name: "test-guardrail-1" }, { guardrail_name: "test-guardrail-2" }],
+      guardrails: [
+        { guardrail_name: "test-guardrail-1" },
+        { guardrail_name: "test-guardrail-2" },
+      ],
     }),
     tagListCall: vi.fn().mockResolvedValue({}),
     modelAvailableCall: vi.fn().mockResolvedValue({
@@ -75,8 +81,8 @@ const createQueryClient = () =>
     defaultOptions: {
       queries: {
         retry: false,
-        staleTime: Infinity,
-        gcTime: Infinity,
+        staleTime: Number.POSITIVE_INFINITY,
+        gcTime: Number.POSITIVE_INFINITY,
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
         refetchOnMount: false,
@@ -91,7 +97,9 @@ const createTestProps = () => {
   const handleOk = vi.fn();
   const setSelectedProvider = vi.fn();
   const setProviderModelsFn = vi.fn();
-  const getPlaceholder = vi.fn((provider: Providers) => `Enter ${provider} model name`);
+  const getPlaceholder = vi.fn(
+    (provider: Providers) => `Enter ${provider} model name`,
+  );
   const setShowAdvancedSettings = vi.fn();
 
   const selectedProvider = Providers.OpenAI;
@@ -174,7 +182,9 @@ describe("Add Model Tab", () => {
       </QueryClientProvider>,
     );
 
-    expect(await screen.findByRole("tab", { name: "Add Model" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("tab", { name: "Add Model" }),
+    ).toBeInTheDocument();
   });
 
   it("should display both Add Model and Add Auto Router tabs", async () => {
@@ -202,8 +212,12 @@ describe("Add Model Tab", () => {
       </QueryClientProvider>,
     );
 
-    expect(await screen.findByRole("tab", { name: "Add Model" })).toBeInTheDocument();
-    expect(await screen.findByRole("tab", { name: "Add Auto Router" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("tab", { name: "Add Model" }),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByRole("tab", { name: "Add Auto Router" }),
+    ).toBeInTheDocument();
   });
 
   it("should display provider selection field", async () => {
@@ -262,9 +276,13 @@ describe("Add Model Tab", () => {
     // Wait for async operations to complete and buttons to appear
     await waitFor(
       async () => {
-        const testConnectButtons = await screen.findAllByRole("button", { name: "Test Connect" });
+        const testConnectButtons = await screen.findAllByRole("button", {
+          name: "Test Connect",
+        });
         expect(testConnectButtons.length).toBeGreaterThan(0);
-        const addModelButton = await screen.findByRole("button", { name: "Add Model" });
+        const addModelButton = await screen.findByRole("button", {
+          name: "Add Model",
+        });
         expect(addModelButton).toBeInTheDocument();
       },
       { timeout: 10000 },

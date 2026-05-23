@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, act } from "@testing-library/react";
-import { useDiscountConfig } from "./use_discount_config";
 import NotificationsManager from "@/components/molecules/notifications_manager";
+import { act, renderHook } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useDiscountConfig } from "./use_discount_config";
 
 vi.mock("@/components/networking", () => ({
   getProxyBaseUrl: vi.fn(() => ""),
@@ -37,13 +37,18 @@ describe("useDiscountConfig", () => {
         json: async () => ({ values: { openai: 0.05, anthropic: 0.1 } }),
       } as Response);
 
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() =>
+        useDiscountConfig({ accessToken: "test-token" }),
+      );
 
       await act(async () => {
         await result.current.fetchDiscountConfig();
       });
 
-      expect(result.current.discountConfig).toEqual({ openai: 0.05, anthropic: 0.1 });
+      expect(result.current.discountConfig).toEqual({
+        openai: 0.05,
+        anthropic: 0.1,
+      });
     });
 
     it("should set an empty config when the response has no values", async () => {
@@ -52,7 +57,9 @@ describe("useDiscountConfig", () => {
         json: async () => ({ values: {} }),
       } as Response);
 
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() =>
+        useDiscountConfig({ accessToken: "test-token" }),
+      );
 
       await act(async () => {
         await result.current.fetchDiscountConfig();
@@ -62,23 +69,29 @@ describe("useDiscountConfig", () => {
     });
 
     it("should show an error notification when the fetch throws", async () => {
-      vi.spyOn(global, "fetch").mockRejectedValueOnce(new Error("Network error"));
+      vi.spyOn(global, "fetch").mockRejectedValueOnce(
+        new Error("Network error"),
+      );
 
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() =>
+        useDiscountConfig({ accessToken: "test-token" }),
+      );
 
       await act(async () => {
         await result.current.fetchDiscountConfig();
       });
 
       expect(NotificationsManager.fromBackend).toHaveBeenCalledWith(
-        expect.stringMatching(/failed to fetch/i)
+        expect.stringMatching(/failed to fetch/i),
       );
     });
   });
 
   describe("handleAddProvider", () => {
     it("should return false and notify when no provider is selected", async () => {
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() =>
+        useDiscountConfig({ accessToken: "test-token" }),
+      );
 
       let success: boolean;
       await act(async () => {
@@ -90,7 +103,9 @@ describe("useDiscountConfig", () => {
     });
 
     it("should return false and notify when no discount is provided", async () => {
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() =>
+        useDiscountConfig({ accessToken: "test-token" }),
+      );
 
       let success: boolean;
       await act(async () => {
@@ -102,7 +117,9 @@ describe("useDiscountConfig", () => {
     });
 
     it("should return false and notify when the discount exceeds 100", async () => {
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() =>
+        useDiscountConfig({ accessToken: "test-token" }),
+      );
 
       let success: boolean;
       await act(async () => {
@@ -111,7 +128,7 @@ describe("useDiscountConfig", () => {
 
       expect(success!).toBe(false);
       expect(NotificationsManager.fromBackend).toHaveBeenCalledWith(
-        expect.stringMatching(/0%.*100%/i)
+        expect.stringMatching(/0%.*100%/i),
       );
     });
 
@@ -123,7 +140,9 @@ describe("useDiscountConfig", () => {
         } as Response)
         .mockResolvedValue({ ok: true, json: async () => ({}) } as Response);
 
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() =>
+        useDiscountConfig({ accessToken: "test-token" }),
+      );
 
       await act(async () => {
         await result.current.fetchDiscountConfig();
@@ -136,17 +155,25 @@ describe("useDiscountConfig", () => {
 
       expect(success!).toBe(false);
       expect(NotificationsManager.fromBackend).toHaveBeenCalledWith(
-        expect.stringMatching(/already exists/i)
+        expect.stringMatching(/already exists/i),
       );
     });
 
     it("should save the config and return true on a valid new provider", async () => {
       vi.spyOn(global, "fetch")
-        .mockResolvedValueOnce({ ok: true, json: async () => ({ values: {} }) } as Response)
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ values: {} }),
+        } as Response)
         .mockResolvedValueOnce({ ok: true, json: async () => ({}) } as Response)
-        .mockResolvedValueOnce({ ok: true, json: async () => ({ values: { openai: 0.05 } }) } as Response);
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ values: { openai: 0.05 } }),
+        } as Response);
 
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() =>
+        useDiscountConfig({ accessToken: "test-token" }),
+      );
 
       await act(async () => {
         await result.current.fetchDiscountConfig();
@@ -175,7 +202,9 @@ describe("useDiscountConfig", () => {
           json: async () => ({ values: { anthropic: 0.1 } }),
         } as Response);
 
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() =>
+        useDiscountConfig({ accessToken: "test-token" }),
+      );
 
       await act(async () => {
         await result.current.fetchDiscountConfig();
@@ -205,7 +234,9 @@ describe("useDiscountConfig", () => {
           json: async () => ({ values: { openai: 0.1 } }),
         } as Response);
 
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() =>
+        useDiscountConfig({ accessToken: "test-token" }),
+      );
 
       await act(async () => {
         await result.current.fetchDiscountConfig();
@@ -225,7 +256,9 @@ describe("useDiscountConfig", () => {
         json: async () => ({ values: { openai: 0.05 } }),
       } as Response);
 
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() =>
+        useDiscountConfig({ accessToken: "test-token" }),
+      );
 
       await act(async () => {
         await result.current.fetchDiscountConfig();

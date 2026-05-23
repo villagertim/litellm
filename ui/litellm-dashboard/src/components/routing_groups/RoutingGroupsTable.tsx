@@ -1,9 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
-import { Flex, Table, Tabs, Tag, Tooltip, Typography, Button } from "antd";
+import {
+  BranchesOutlined,
+  CodeOutlined,
+  DeleteOutlined,
+  EditOutlined,
+} from "@ant-design/icons";
+import { Button, Flex, Table, Tabs, Tag, Tooltip, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { BranchesOutlined, DeleteOutlined, EditOutlined, CodeOutlined } from "@ant-design/icons";
+import type React from "react";
+import { useState } from "react";
 import type { RoutingGroup } from "./types";
 
 const { Text, Paragraph } = Typography;
@@ -33,11 +39,13 @@ const formatStrategyLabel = (strategy: string): string => {
 
 const resolveBaseUrl = (proxyBaseUrl?: string): string => {
   if (proxyBaseUrl && proxyBaseUrl.trim()) return proxyBaseUrl;
-  if (typeof window !== "undefined" && window.location?.origin) return window.location.origin;
+  if (typeof window !== "undefined" && window.location?.origin)
+    return window.location.origin;
   return "<your_proxy_base_url>";
 };
 
-const exampleModel = (group: RoutingGroup): string => group.models[0] ?? "<your-model>";
+const exampleModel = (group: RoutingGroup): string =>
+  group.models[0] ?? "<your-model>";
 
 const buildCurlSnippet = (group: RoutingGroup, baseUrl: string): string =>
   `curl -X POST '${baseUrl}/v1/chat/completions' \\
@@ -93,7 +101,10 @@ const SNIPPET_BLOCK_STYLE: React.CSSProperties = {
   overflowX: "auto",
 };
 
-const RoutingGroupSnippet: React.FC<RoutingGroupSnippetProps> = ({ group, baseUrl }) => {
+const RoutingGroupSnippet: React.FC<RoutingGroupSnippetProps> = ({
+  group,
+  baseUrl,
+}) => {
   const snippets = {
     curl: buildCurlSnippet(group, baseUrl),
     python: buildPythonSnippet(group, baseUrl),
@@ -226,9 +237,10 @@ const RoutingGroupsTable: React.FC<RoutingGroupsTableProps> = ({
               <Text strong>How routing works for this group</Text>
             </Flex>
             <Paragraph className="text-sm text-gray-600 mb-3">
-              Callers request any model in the group by name — LiteLLM picks a deployment behind the
-              scenes using the{" "}
-              <Text strong>{formatStrategyLabel(group.routing_strategy)}</Text> strategy.
+              Callers request any model in the group by name — LiteLLM picks a
+              deployment behind the scenes using the{" "}
+              <Text strong>{formatStrategyLabel(group.routing_strategy)}</Text>{" "}
+              strategy.
             </Paragraph>
             <RoutingGroupSnippet group={group} baseUrl={baseUrl} />
           </div>

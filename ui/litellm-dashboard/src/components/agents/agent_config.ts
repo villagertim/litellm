@@ -255,18 +255,27 @@ export const buildAgentDataFromForm = (values: any, existingAgent?: any) => {
       description: values.description || "",
       url: values.url || "",
       version: values.version || "1.0.0",
-      defaultInputModes: existingAgent?.agent_card_params?.defaultInputModes || ["text"],
-      defaultOutputModes: existingAgent?.agent_card_params?.defaultOutputModes || ["text"],
+      defaultInputModes: existingAgent?.agent_card_params
+        ?.defaultInputModes || ["text"],
+      defaultOutputModes: existingAgent?.agent_card_params
+        ?.defaultOutputModes || ["text"],
       capabilities: {
         streaming: values.streaming === true,
-        ...(values.pushNotifications !== undefined && { pushNotifications: values.pushNotifications }),
-        ...(values.stateTransitionHistory !== undefined && { stateTransitionHistory: values.stateTransitionHistory }),
+        ...(values.pushNotifications !== undefined && {
+          pushNotifications: values.pushNotifications,
+        }),
+        ...(values.stateTransitionHistory !== undefined && {
+          stateTransitionHistory: values.stateTransitionHistory,
+        }),
       },
       skills: values.skills || [],
       ...(values.iconUrl && { iconUrl: values.iconUrl }),
-      ...(values.documentationUrl && { documentationUrl: values.documentationUrl }),
+      ...(values.documentationUrl && {
+        documentationUrl: values.documentationUrl,
+      }),
       ...(values.supportsAuthenticatedExtendedCard !== undefined && {
-        supportsAuthenticatedExtendedCard: values.supportsAuthenticatedExtendedCard,
+        supportsAuthenticatedExtendedCard:
+          values.supportsAuthenticatedExtendedCard,
       }),
     },
   };
@@ -275,9 +284,16 @@ export const buildAgentDataFromForm = (values: any, existingAgent?: any) => {
 
   if (values.model) params.model = values.model;
   if (values.make_public !== undefined) params.make_public = values.make_public;
-  if (values.cost_per_query) params.cost_per_query = parseFloat(values.cost_per_query);
-  if (values.input_cost_per_token) params.input_cost_per_token = parseFloat(values.input_cost_per_token);
-  if (values.output_cost_per_token) params.output_cost_per_token = parseFloat(values.output_cost_per_token);
+  if (values.cost_per_query)
+    params.cost_per_query = Number.parseFloat(values.cost_per_query);
+  if (values.input_cost_per_token)
+    params.input_cost_per_token = Number.parseFloat(
+      values.input_cost_per_token,
+    );
+  if (values.output_cost_per_token)
+    params.output_cost_per_token = Number.parseFloat(
+      values.output_cost_per_token,
+    );
 
   if (Object.keys(params).length > 0) {
     agentData.litellm_params = params;
@@ -285,15 +301,22 @@ export const buildAgentDataFromForm = (values: any, existingAgent?: any) => {
 
   if (values.tpm_limit != null) agentData.tpm_limit = values.tpm_limit;
   if (values.rpm_limit != null) agentData.rpm_limit = values.rpm_limit;
-  if (values.session_tpm_limit != null) agentData.session_tpm_limit = values.session_tpm_limit;
-  if (values.session_rpm_limit != null) agentData.session_rpm_limit = values.session_rpm_limit;
+  if (values.session_tpm_limit != null)
+    agentData.session_tpm_limit = values.session_tpm_limit;
+  if (values.session_rpm_limit != null)
+    agentData.session_rpm_limit = values.session_rpm_limit;
   // static_headers: convert [{header, value}, ...] → {header: value, ...}
-  if (Array.isArray(values.static_headers) && values.static_headers.length > 0) {
+  if (
+    Array.isArray(values.static_headers) &&
+    values.static_headers.length > 0
+  ) {
     const staticHeaders: Record<string, string> = {};
-    values.static_headers.forEach((entry: { header?: string; value?: string }) => {
-      const key = entry?.header?.trim();
-      if (key) staticHeaders[key] = entry?.value ?? "";
-    });
+    values.static_headers.forEach(
+      (entry: { header?: string; value?: string }) => {
+        const key = entry?.header?.trim();
+        if (key) staticHeaders[key] = entry?.value ?? "";
+      },
+    );
     if (Object.keys(staticHeaders).length > 0) {
       agentData.static_headers = staticHeaders;
     }
@@ -327,11 +350,13 @@ export const parseAgentForForm = (agent: any) => {
     protocolVersion: agent.agent_card_params?.protocolVersion,
     streaming: agent.agent_card_params?.capabilities?.streaming,
     pushNotifications: agent.agent_card_params?.capabilities?.pushNotifications,
-    stateTransitionHistory: agent.agent_card_params?.capabilities?.stateTransitionHistory,
+    stateTransitionHistory:
+      agent.agent_card_params?.capabilities?.stateTransitionHistory,
     skills: skills,
     iconUrl: agent.agent_card_params?.iconUrl,
     documentationUrl: agent.agent_card_params?.documentationUrl,
-    supportsAuthenticatedExtendedCard: agent.agent_card_params?.supportsAuthenticatedExtendedCard,
+    supportsAuthenticatedExtendedCard:
+      agent.agent_card_params?.supportsAuthenticatedExtendedCard,
     model: agent.litellm_params?.model,
     make_public: agent.litellm_params?.make_public,
     cost_per_query: agent.litellm_params?.cost_per_query,
@@ -343,10 +368,12 @@ export const parseAgentForForm = (agent: any) => {
     session_rpm_limit: agent.session_rpm_limit,
     // static_headers: {key: value} → [{header, value}, ...]
     static_headers: agent.static_headers
-      ? Object.entries(agent.static_headers as Record<string, string>).map(([header, value]) => ({
-          header,
-          value,
-        }))
+      ? Object.entries(agent.static_headers as Record<string, string>).map(
+          ([header, value]) => ({
+            header,
+            value,
+          }),
+        )
       : [],
     // extra_headers: already an array of strings
     extra_headers: agent.extra_headers ?? [],

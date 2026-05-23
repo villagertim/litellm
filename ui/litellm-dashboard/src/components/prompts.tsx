@@ -1,14 +1,20 @@
-import React, { useState, useEffect } from "react";
+import type React from "react";
+import { useEffect, useState } from "react";
 
+import { isAdminRole, isProxyAdminRole } from "@/utils/roles";
 import { Button } from "@tremor/react";
 import { Modal, Select } from "antd";
-import { getPromptsList, PromptSpec, ListPromptsResponse, deletePromptCall } from "./networking";
-import PromptTable from "./prompts/prompt_table";
-import PromptInfoView from "./prompts/prompt_info";
+import NotificationsManager from "./molecules/notifications_manager";
+import {
+  type ListPromptsResponse,
+  type PromptSpec,
+  deletePromptCall,
+  getPromptsList,
+} from "./networking";
 import AddPromptForm from "./prompts/add_prompt_form";
 import PromptEditorView from "./prompts/prompt_editor_view";
-import NotificationsManager from "./molecules/notifications_manager";
-import { isAdminRole, isProxyAdminRole } from "@/utils/roles";
+import PromptInfoView from "./prompts/prompt_info";
+import PromptTable from "./prompts/prompt_table";
 
 interface PromptsProps {
   accessToken: string | null;
@@ -18,13 +24,18 @@ interface PromptsProps {
 const PromptsPanel: React.FC<PromptsProps> = ({ accessToken, userRole }) => {
   const [promptsList, setPromptsList] = useState<PromptSpec[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedEnvironment, setSelectedEnvironment] = useState<string | undefined>(undefined);
+  const [selectedEnvironment, setSelectedEnvironment] = useState<
+    string | undefined
+  >(undefined);
   const [selectedPromptId, setSelectedPromptId] = useState<string | null>(null);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [showEditorView, setShowEditorView] = useState(false);
   const [editPromptData, setEditPromptData] = useState<any>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [promptToDelete, setPromptToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [promptToDelete, setPromptToDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   const isAdmin = userRole ? isAdminRole(userRole) : false;
   // Admin Viewer follows the read-parity rule: see prompts, no writes.
@@ -37,7 +48,10 @@ const PromptsPanel: React.FC<PromptsProps> = ({ accessToken, userRole }) => {
 
     setIsLoading(true);
     try {
-      const response: ListPromptsResponse = await getPromptsList(accessToken, selectedEnvironment);
+      const response: ListPromptsResponse = await getPromptsList(
+        accessToken,
+        selectedEnvironment,
+      );
       console.log(`prompts: ${JSON.stringify(response)}`);
       setPromptsList(response.prompts);
     } catch (error) {
@@ -101,7 +115,9 @@ const PromptsPanel: React.FC<PromptsProps> = ({ accessToken, userRole }) => {
     setIsDeleting(true);
     try {
       await deletePromptCall(accessToken, promptToDelete.id);
-      NotificationsManager.success(`Prompt "${promptToDelete.name}" deleted successfully`);
+      NotificationsManager.success(
+        `Prompt "${promptToDelete.name}" deleted successfully`,
+      );
       fetchPrompts(); // Refresh the list
     } catch (error) {
       console.error("Error deleting prompt:", error);
@@ -143,7 +159,11 @@ const PromptsPanel: React.FC<PromptsProps> = ({ accessToken, userRole }) => {
                   <Button onClick={handleAddPrompt} disabled={!accessToken}>
                     + Add New Prompt
                   </Button>
-                  <Button onClick={handleAddPromptFromFile} disabled={!accessToken} variant="secondary">
+                  <Button
+                    onClick={handleAddPromptFromFile}
+                    disabled={!accessToken}
+                    variant="secondary"
+                  >
                     Upload .prompt File
                   </Button>
                 </>

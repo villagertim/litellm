@@ -26,9 +26,12 @@ export interface CodeInterpreterState {
  */
 export function handleCodeInterpreterCall(
   event: any,
-  state: CodeInterpreterState
+  state: CodeInterpreterState,
 ): CodeInterpreterState {
-  if (event.type === "response.output_item.done" && event.item?.type === "code_interpreter_call") {
+  if (
+    event.type === "response.output_item.done" &&
+    event.item?.type === "code_interpreter_call"
+  ) {
     console.log("Code interpreter call completed:", event.item);
     return {
       code: event.item.code || "",
@@ -45,7 +48,7 @@ export function handleCodeInterpreterCall(
 export function handleCodeInterpreterOutput(
   event: any,
   state: CodeInterpreterState,
-  onCodeInterpreterResult?: (result: CodeInterpreterResult) => void
+  onCodeInterpreterResult?: (result: CodeInterpreterResult) => void,
 ): void {
   if (
     event.type === "response.output_item.done" &&
@@ -57,7 +60,7 @@ export function handleCodeInterpreterOutput(
     for (const part of content) {
       if (part.type === "output_text" && part.annotations) {
         const fileAnnotations = part.annotations.filter(
-          (a: any) => a.type === "container_file_citation"
+          (a: any) => a.type === "container_file_citation",
         );
         if (fileAnnotations.length > 0 || state.code) {
           onCodeInterpreterResult({
@@ -80,4 +83,3 @@ export function isCodeInterpreterEvent(event: any): boolean {
     event.item?.type === "code_interpreter_call"
   );
 }
-

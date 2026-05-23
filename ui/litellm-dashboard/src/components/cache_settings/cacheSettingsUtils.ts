@@ -18,7 +18,9 @@ export const getFieldByName = (fields: any[], fieldName: string) => {
 export const groupFieldsByCategory = (fields: any[], redisType: string) => {
   // Basic fields that are always shown
   const basicFieldNames = ["host", "port", "password", "username"];
-  const basicFields = basicFieldNames.map((name) => getFieldByName(fields, name)).filter(Boolean);
+  const basicFields = basicFieldNames
+    .map((name) => getFieldByName(fields, name))
+    .filter(Boolean);
 
   // Advanced field groups
   const sslFields = ["ssl", "ssl_cert_reqs", "ssl_check_hostname"]
@@ -49,7 +51,10 @@ export const groupFieldsByCategory = (fields: any[], redisType: string) => {
   };
 };
 
-export const gatherFormValues = (fields: any[], redisType: string): { [key: string]: any } => {
+export const gatherFormValues = (
+  fields: any[],
+  redisType: string,
+): { [key: string]: any } => {
   const values: { [key: string]: any } = {
     type: "redis", // Cache class accepts 'type' parameter (LiteLLMCacheType enum)
   };
@@ -70,12 +75,16 @@ export const gatherFormValues = (fields: any[], redisType: string): { [key: stri
     let value: any = null;
 
     if (field.field_type === "Boolean") {
-      const checkboxEl = document.querySelector(`input[name="${fieldName}"]`) as HTMLInputElement | null;
+      const checkboxEl = document.querySelector(
+        `input[name="${fieldName}"]`,
+      ) as HTMLInputElement | null;
       if (checkboxEl?.checked !== undefined) {
         value = checkboxEl.checked;
       }
     } else if (field.field_type === "List") {
-      const textareaEl = document.querySelector(`textarea[name="${fieldName}"]`) as HTMLTextAreaElement | null;
+      const textareaEl = document.querySelector(
+        `textarea[name="${fieldName}"]`,
+      ) as HTMLTextAreaElement | null;
       if (textareaEl?.value) {
         try {
           value = JSON.parse(textareaEl.value);
@@ -84,7 +93,9 @@ export const gatherFormValues = (fields: any[], redisType: string): { [key: stri
         }
       }
     } else {
-      const inputEl = document.querySelector(`input[name="${fieldName}"]`) as HTMLInputElement | null;
+      const inputEl = document.querySelector(
+        `input[name="${fieldName}"]`,
+      ) as HTMLInputElement | null;
       if (inputEl?.value) {
         const trimmedValue = inputEl.value.trim();
         if (trimmedValue !== "") {

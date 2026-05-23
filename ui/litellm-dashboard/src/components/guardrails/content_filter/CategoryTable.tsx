@@ -1,6 +1,6 @@
-import React from "react";
-import { Typography, Select, Table, Tag, Button } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
+import { Button, Select, Table, Tag, Typography } from "antd";
+import type React from "react";
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -67,7 +67,9 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
         return (
           <Select
             value={severity}
-            onChange={(value) => onSeverityChange?.(record.id, value as "high" | "medium" | "low")}
+            onChange={(value) =>
+              onSeverityChange?.(record.id, value as "high" | "medium" | "low")
+            }
             style={{ width: 150 }}
             size="small"
           >
@@ -86,15 +88,15 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
       render: (action: string, record: ContentCategory) => {
         if (readOnly) {
           return (
-            <Tag color={action === "BLOCK" ? "red" : "blue"}>
-              {action}
-            </Tag>
+            <Tag color={action === "BLOCK" ? "red" : "blue"}>{action}</Tag>
           );
         }
         return (
           <Select
             value={action}
-            onChange={(value) => onActionChange?.(record.id, value as "BLOCK" | "MASK")}
+            onChange={(value) =>
+              onActionChange?.(record.id, value as "BLOCK" | "MASK")
+            }
             style={{ width: 120 }}
             size="small"
           >

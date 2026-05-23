@@ -1,9 +1,9 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect } from "vitest";
+import React from "react";
+import { describe, expect, it } from "vitest";
 import { HistoryTree } from "./HistoryTree";
-import { ParsedMessage } from "./prettyMessagesTypes";
+import type { ParsedMessage } from "./prettyMessagesTypes";
 
 describe("HistoryTree", () => {
   it("should return null when messages array is empty", () => {
@@ -18,19 +18,13 @@ describe("HistoryTree", () => {
       { role: "user", content: "How are you?" },
     ];
     render(<HistoryTree messages={messages} />);
-    expect(
-      screen.getByText("HISTORY (3 messages)")
-    ).toBeInTheDocument();
+    expect(screen.getByText("HISTORY (3 messages)")).toBeInTheDocument();
   });
 
   it('should render message count with singular "message" for one message', () => {
-    const messages: ParsedMessage[] = [
-      { role: "user", content: "Hello" },
-    ];
+    const messages: ParsedMessage[] = [{ role: "user", content: "Hello" }];
     render(<HistoryTree messages={messages} />);
-    expect(
-      screen.getByText("HISTORY (1 message)")
-    ).toBeInTheDocument();
+    expect(screen.getByText("HISTORY (1 message)")).toBeInTheDocument();
   });
 
   it("should expand and show messages when header is clicked", async () => {

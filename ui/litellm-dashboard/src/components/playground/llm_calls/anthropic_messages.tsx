@@ -1,8 +1,8 @@
-import Anthropic from "@anthropic-ai/sdk";
-import { MessageType } from "../chat_ui/types";
-import { TokenUsage } from "../chat_ui/ResponseMetrics";
-import { getProxyBaseUrl } from "@/components/networking";
 import NotificationManager from "@/components/molecules/notifications_manager";
+import { getProxyBaseUrl } from "@/components/networking";
+import Anthropic from "@anthropic-ai/sdk";
+import type { TokenUsage } from "../chat_ui/ResponseMetrics";
+import type { MessageType } from "../chat_ui/types";
 
 export async function makeAnthropicMessagesRequest(
   messages: MessageType[],
@@ -27,7 +27,7 @@ export async function makeAnthropicMessagesRequest(
 
   const isLocal = process.env.NODE_ENV === "development";
   if (isLocal !== true) {
-    console.log = function () {};
+    console.log = () => {};
   }
 
   const proxyBaseUrl = customBaseUrl || getProxyBaseUrl();
@@ -94,7 +94,11 @@ export async function makeAnthropicMessagesRequest(
       }
 
       // Process usage data from message_delta events
-      if (messageStreamEvent.type === "message_delta" && (messageStreamEvent as any).usage && onUsageData) {
+      if (
+        messageStreamEvent.type === "message_delta" &&
+        (messageStreamEvent as any).usage &&
+        onUsageData
+      ) {
         const usage = (messageStreamEvent as any).usage;
         console.log("Usage data found:", usage);
         const usageData: TokenUsage = {

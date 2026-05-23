@@ -1,14 +1,22 @@
-import React from "react";
-import { TextInput, Accordion, AccordionHeader, AccordionBody } from "@tremor/react";
-import { Button as Button2, Modal, Form, InputNumber, Select } from "antd";
 import { useCreateBudget } from "@/app/(dashboard)/hooks/budgets/useBudgets";
+import {
+  Accordion,
+  AccordionBody,
+  AccordionHeader,
+  TextInput,
+} from "@tremor/react";
+import { Button as Button2, Form, InputNumber, Modal, Select } from "antd";
+import type React from "react";
 import NotificationsManager from "../molecules/notifications_manager";
 
 interface BudgetModalProps {
   isModalVisible: boolean;
   setIsModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
-const BudgetModal: React.FC<BudgetModalProps> = ({ isModalVisible, setIsModalVisible }) => {
+const BudgetModal: React.FC<BudgetModalProps> = ({
+  isModalVisible,
+  setIsModalVisible,
+}) => {
   const [form] = Form.useForm();
   const createBudget = useCreateBudget();
 
@@ -44,7 +52,13 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isModalVisible, setIsModalVis
       onOk={handleOk}
       onCancel={handleCancel}
     >
-      <Form form={form} onFinish={handleCreate} labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} labelAlign="left">
+      <Form
+        form={form}
+        onFinish={handleCreate}
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 16 }}
+        labelAlign="left"
+      >
         <>
           <Form.Item
             label="Budget ID"
@@ -59,10 +73,18 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isModalVisible, setIsModalVis
           >
             <TextInput placeholder="" />
           </Form.Item>
-          <Form.Item label="Max Tokens per minute" name="tpm_limit" help="Default is model limit.">
+          <Form.Item
+            label="Max Tokens per minute"
+            name="tpm_limit"
+            help="Default is model limit."
+          >
             <InputNumber step={1} precision={2} width={200} />
           </Form.Item>
-          <Form.Item label="Max Requests per minute" name="rpm_limit" help="Default is model limit.">
+          <Form.Item
+            label="Max Requests per minute"
+            name="rpm_limit"
+            help="Default is model limit."
+          >
             <InputNumber step={1} precision={2} width={200} />
           </Form.Item>
 
@@ -74,7 +96,11 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isModalVisible, setIsModalVis
               <Form.Item label="Max Budget (USD)" name="max_budget">
                 <InputNumber step={0.01} precision={2} width={200} />
               </Form.Item>
-              <Form.Item className="mt-8" label="Reset Budget" name="budget_duration">
+              <Form.Item
+                className="mt-8"
+                label="Reset Budget"
+                name="budget_duration"
+              >
                 <Select defaultValue={null} placeholder="n/a">
                   <Select.Option value="24h">daily</Select.Option>
                   <Select.Option value="7d">weekly</Select.Option>

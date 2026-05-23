@@ -1,5 +1,5 @@
-import { renderWithProviders, screen } from "../../../tests/test-utils";
 import { vi } from "vitest";
+import { renderWithProviders, screen } from "../../../tests/test-utils";
 import ComplexityRouterConfig from "./ComplexityRouterConfig";
 
 const mockModelInfo = [
@@ -22,9 +22,11 @@ describe("ComplexityRouterConfig", () => {
         modelInfo={mockModelInfo}
         value={defaultTiers}
         onChange={vi.fn()}
-      />
+      />,
     );
-    expect(screen.getByText("Complexity Tier Configuration")).toBeInTheDocument();
+    expect(
+      screen.getByText("Complexity Tier Configuration"),
+    ).toBeInTheDocument();
   });
 
   it("should display all four tier labels", () => {
@@ -33,7 +35,7 @@ describe("ComplexityRouterConfig", () => {
         modelInfo={mockModelInfo}
         value={defaultTiers}
         onChange={vi.fn()}
-      />
+      />,
     );
     expect(screen.getByText("Simple Tier")).toBeInTheDocument();
     expect(screen.getByText("Medium Tier")).toBeInTheDocument();
@@ -47,11 +49,13 @@ describe("ComplexityRouterConfig", () => {
         modelInfo={mockModelInfo}
         value={defaultTiers}
         onChange={vi.fn()}
-      />
+      />,
     );
     expect(screen.getByText(/Hello!/)).toBeInTheDocument();
     expect(screen.getByText(/Explain how REST APIs work/)).toBeInTheDocument();
-    expect(screen.getByText(/Design a microservices architecture/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Design a microservices architecture/),
+    ).toBeInTheDocument();
     expect(screen.getByText(/Think step by step/)).toBeInTheDocument();
   });
 
@@ -61,7 +65,7 @@ describe("ComplexityRouterConfig", () => {
         modelInfo={mockModelInfo}
         value={defaultTiers}
         onChange={vi.fn()}
-      />
+      />,
     );
     expect(screen.getByText("How Classification Works")).toBeInTheDocument();
   });
@@ -72,7 +76,7 @@ describe("ComplexityRouterConfig", () => {
         modelInfo={mockModelInfo}
         value={defaultTiers}
         onChange={vi.fn()}
-      />
+      />,
     );
     expect(screen.getByText(/Score < 0.15/)).toBeInTheDocument();
     expect(screen.getByText(/Score 0.15 - 0.35/)).toBeInTheDocument();

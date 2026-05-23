@@ -1,18 +1,38 @@
-import React, { useState, useEffect } from "react";
-import { Form, Select, Button as AntdButton, Tooltip, Input, InputNumber } from "antd";
-import { InfoCircleOutlined } from "@ant-design/icons";
-import { Button, TabGroup, TabList, Tab, TabPanels, TabPanel } from "@tremor/react";
-import { AUTH_TYPE, OAUTH_FLOW, MCPServer, MCPServerCostInfo, TRANSPORT } from "./types";
-import { updateMCPServer, listMCPTools } from "../networking";
-import MCPServerCostConfig from "./mcp_server_cost_config";
-import MCPPermissionManagement from "./MCPPermissionManagement";
-import MCPToolConfiguration from "./mcp_tool_configuration";
-import StdioConfiguration from "./StdioConfiguration";
-import MCPLogoSelector from "./MCPLogoSelector";
-import { validateMCPServerUrl, validateMCPServerName } from "./utils";
-import NotificationsManager from "../molecules/notifications_manager";
 import { useMcpOAuthFlow } from "@/hooks/useMcpOAuthFlow";
 import { getSecureItem, setSecureItem } from "@/utils/secureStorage";
+import { InfoCircleOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Tab,
+  TabGroup,
+  TabList,
+  TabPanel,
+  TabPanels,
+} from "@tremor/react";
+import {
+  Button as AntdButton,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  Tooltip,
+} from "antd";
+import React, { useState, useEffect } from "react";
+import NotificationsManager from "../molecules/notifications_manager";
+import { listMCPTools, updateMCPServer } from "../networking";
+import MCPLogoSelector from "./MCPLogoSelector";
+import MCPPermissionManagement from "./MCPPermissionManagement";
+import StdioConfiguration from "./StdioConfiguration";
+import MCPServerCostConfig from "./mcp_server_cost_config";
+import MCPToolConfiguration from "./mcp_tool_configuration";
+import {
+  AUTH_TYPE,
+  type MCPServer,
+  type MCPServerCostInfo,
+  OAUTH_FLOW,
+  TRANSPORT,
+} from "./types";
+import { validateMCPServerName, validateMCPServerUrl } from "./utils";
 
 interface MCPServerEditProps {
   mcpServer: MCPServer;
@@ -22,8 +42,17 @@ interface MCPServerEditProps {
   availableAccessGroups: string[];
 }
 
-const AUTH_TYPES_REQUIRING_AUTH_VALUE = [AUTH_TYPE.API_KEY, AUTH_TYPE.BEARER_TOKEN, AUTH_TYPE.TOKEN, AUTH_TYPE.BASIC];
-const AUTH_TYPES_REQUIRING_CREDENTIALS = [...AUTH_TYPES_REQUIRING_AUTH_VALUE, AUTH_TYPE.OAUTH2, AUTH_TYPE.AWS_SIGV4];
+const AUTH_TYPES_REQUIRING_AUTH_VALUE = [
+  AUTH_TYPE.API_KEY,
+  AUTH_TYPE.BEARER_TOKEN,
+  AUTH_TYPE.TOKEN,
+  AUTH_TYPE.BASIC,
+];
+const AUTH_TYPES_REQUIRING_CREDENTIALS = [
+  ...AUTH_TYPES_REQUIRING_AUTH_VALUE,
+  AUTH_TYPE.OAUTH2,
+  AUTH_TYPE.AWS_SIGV4,
+];
 const EDIT_OAUTH_UI_STATE_KEY = "litellm-mcp-oauth-edit-state";
 
 const MCPServerEdit: React.FC<MCPServerEditProps> = ({
@@ -41,19 +70,32 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
   const [searchValue, setSearchValue] = useState<string>("");
   const [aliasManuallyEdited, setAliasManuallyEdited] = useState(false);
   const [allowedTools, setAllowedTools] = useState<string[]>([]);
-  const [toolNameToDisplayName, setToolNameToDisplayName] = useState<Record<string, string>>({});
-  const [toolNameToDescription, setToolNameToDescription] = useState<Record<string, string>>({});
-  const [pendingRestoredValues, setPendingRestoredValues] = useState<Record<string, any> | null>(null);
-  const [logoUrl, setLogoUrl] = useState<string | undefined>(mcpServer.mcp_info?.logo_url || undefined);
+  const [toolNameToDisplayName, setToolNameToDisplayName] = useState<
+    Record<string, string>
+  >({});
+  const [toolNameToDescription, setToolNameToDescription] = useState<
+    Record<string, string>
+  >({});
+  const [pendingRestoredValues, setPendingRestoredValues] = useState<Record<
+    string,
+    any
+  > | null>(null);
+  const [logoUrl, setLogoUrl] = useState<string | undefined>(
+    mcpServer.mcp_info?.logo_url || undefined,
+  );
   const authType = Form.useWatch("auth_type", form) as string | undefined;
   const transportType = Form.useWatch("transport", form) as string | undefined;
   const isStdioTransport = transportType === "stdio";
   const isOpenAPITransport = transportType === TRANSPORT.OPENAPI;
   const isMCPTransport = !isStdioTransport && !isOpenAPITransport;
-  const shouldShowAuthValueField = authType ? AUTH_TYPES_REQUIRING_AUTH_VALUE.includes(authType) : false;
+  const shouldShowAuthValueField = authType
+    ? AUTH_TYPES_REQUIRING_AUTH_VALUE.includes(authType)
+    : false;
   const isOAuthAuthType = authType === AUTH_TYPE.OAUTH2;
   const isAwsSigV4AuthType = authType === AUTH_TYPE.AWS_SIGV4;
-  const oauthFlowTypeValue = Form.useWatch("oauth_flow_type", form) as string | undefined;
+  const oauthFlowTypeValue = Form.useWatch("oauth_flow_type", form) as
+    | string
+    | undefined;
   const isM2MFlow = isOAuthAuthType && oauthFlowTypeValue === OAUTH_FLOW.M2M;
 
   const [oauthAccessToken, setOauthAccessToken] = useState<string | null>(null);
@@ -107,26 +149,31 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
         return null;
       }
       const staticHeaders = Array.isArray(values.static_headers)
-        ? values.static_headers.reduce((acc: Record<string, string>, entry: Record<string, string>) => {
-            const header = entry?.header?.trim();
-            if (!header) {
+        ? values.static_headers.reduce(
+            (acc: Record<string, string>, entry: Record<string, string>) => {
+              const header = entry?.header?.trim();
+              if (!header) {
+                return acc;
+              }
+              acc[header] = entry?.value ?? "";
               return acc;
-            }
-            acc[header] = entry?.value ?? "";
-            return acc;
-          }, {})
+            },
+            {},
+          )
         : ({} as Record<string, string>);
 
       return {
         server_id: mcpServer.server_id,
-        server_name: values.server_name || mcpServer.server_name || mcpServer.alias,
+        server_name:
+          values.server_name || mcpServer.server_name || mcpServer.alias,
         alias: values.alias || mcpServer.alias,
         description: values.description || mcpServer.description,
         url,
         transport,
         auth_type: AUTH_TYPE.OAUTH2,
         credentials: values.credentials,
-        mcp_access_groups: values.mcp_access_groups || mcpServer.mcp_access_groups,
+        mcp_access_groups:
+          values.mcp_access_groups || mcpServer.mcp_access_groups,
         static_headers: staticHeaders,
         command: values.command,
         args: values.args,
@@ -135,7 +182,7 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
     },
     onTokenReceived: (token) => {
       setOauthAccessToken(token?.access_token ?? null);
-      
+
       if (token?.access_token) {
         const credentials = {
           access_token: token.access_token,
@@ -143,11 +190,11 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
           ...(token.expires_in && { expires_in: token.expires_in }),
           ...(token.scope && { scope: token.scope }),
         };
-        
+
         form.setFieldsValue({ credentials });
-        
+
         NotificationsManager.success(
-          "OAuth authorization successful! Please click 'Update MCP Server' to save the credentials."
+          "OAuth authorization successful! Please click 'Update MCP Server' to save the credentials.",
         );
       }
     },
@@ -176,7 +223,6 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
     }
   }, [mcpServer.env]);
 
-
   // If server has spec_path, show it as "openapi" transport in the UI
   const effectiveTransport = React.useMemo(() => {
     if (mcpServer.spec_path && mcpServer.transport !== "stdio") {
@@ -191,7 +237,9 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
       transport: effectiveTransport,
       static_headers: initialStaticHeaders,
       extra_headers: mcpServer.extra_headers || [],
-      oauth_flow_type: mcpServer.token_url ? OAUTH_FLOW.M2M : OAUTH_FLOW.INTERACTIVE,
+      oauth_flow_type: mcpServer.token_url
+        ? OAUTH_FLOW.M2M
+        : OAUTH_FLOW.INTERACTIVE,
       token_validation_json: mcpServer.token_validation
         ? JSON.stringify(mcpServer.token_validation, null, 2)
         : undefined,
@@ -268,7 +316,9 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
   useEffect(() => {
     if (mcpServer.mcp_access_groups) {
       // If access groups are objects, extract the name property; if strings, use as is
-      const groupNames = mcpServer.mcp_access_groups.map((g: any) => (typeof g === "string" ? g : g.name || String(g)));
+      const groupNames = mcpServer.mcp_access_groups.map((g: any) =>
+        typeof g === "string" ? g : g.name || String(g),
+      );
       form.setFieldValue("mcp_access_groups", groupNames);
     }
   }, [mcpServer]);
@@ -290,7 +340,10 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
     try {
       // Use the GET endpoint which looks up stored credentials by server_id,
       // rather than POST /test/tools/list which requires inline credentials.
-      const toolsResponse = await listMCPTools(accessToken, mcpServer.server_id);
+      const toolsResponse = await listMCPTools(
+        accessToken,
+        mcpServer.server_id,
+      );
 
       if (toolsResponse.tools && !toolsResponse.error) {
         setTools(toolsResponse.tools);
@@ -302,7 +355,9 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
     } catch (error) {
       console.error("Tools fetch error:", error);
       setTools([]);
-      setToolsError(error instanceof Error ? error.message : "Failed to load tools");
+      setToolsError(
+        error instanceof Error ? error.message : "Failed to load tools",
+      );
     } finally {
       setIsLoadingTools(false);
     }
@@ -323,7 +378,9 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
     // If search value doesn't match any existing group and is not empty, add "create new group" option
     if (
       searchValue &&
-      !availableAccessGroups.some((group) => group.toLowerCase().includes(searchValue.toLowerCase()))
+      !availableAccessGroups.some((group) =>
+        group.toLowerCase().includes(searchValue.toLowerCase()),
+      )
     ) {
       existingOptions.push({
         value: searchValue,
@@ -394,34 +451,42 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
       );
 
       const staticHeaders = Array.isArray(staticHeadersList)
-        ? staticHeadersList.reduce((acc: Record<string, string>, entry: Record<string, string>) => {
-            const header = entry?.header?.trim();
-            if (!header) {
+        ? staticHeadersList.reduce(
+            (acc: Record<string, string>, entry: Record<string, string>) => {
+              const header = entry?.header?.trim();
+              if (!header) {
+                return acc;
+              }
+              acc[header] = entry?.value ?? "";
               return acc;
-            }
-            acc[header] = entry?.value ?? "";
-            return acc;
-          }, {})
+            },
+            {},
+          )
         : ({} as Record<string, string>);
 
       const credentialsPayload =
         credentialValues && typeof credentialValues === "object"
-          ? Object.entries(credentialValues).reduce((acc: Record<string, any>, [key, value]) => {
-              if (value === undefined || value === null || value === "") {
-                return acc;
-              }
-              if (key === "scopes") {
-                if (Array.isArray(value)) {
-                  const filteredScopes = value.filter((scope) => scope != null && scope !== "");
-                  if (filteredScopes.length > 0) {
-                    acc[key] = filteredScopes;
-                  }
+          ? Object.entries(credentialValues).reduce(
+              (acc: Record<string, any>, [key, value]) => {
+                if (value === undefined || value === null || value === "") {
+                  return acc;
                 }
-              } else {
-                acc[key] = value;
-              }
-              return acc;
-            }, {})
+                if (key === "scopes") {
+                  if (Array.isArray(value)) {
+                    const filteredScopes = value.filter(
+                      (scope) => scope != null && scope !== "",
+                    );
+                    if (filteredScopes.length > 0) {
+                      acc[key] = filteredScopes;
+                    }
+                  }
+                } else {
+                  acc[key] = value;
+                }
+                return acc;
+              },
+              {},
+            )
           : undefined;
 
       let stdioFields: Record<string, any> = {};
@@ -433,7 +498,10 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
             const stdioConfig = JSON.parse(rawStdioConfig);
 
             let actualConfig = stdioConfig;
-            if (stdioConfig?.mcpServers && typeof stdioConfig.mcpServers === "object") {
+            if (
+              stdioConfig?.mcpServers &&
+              typeof stdioConfig.mcpServers === "object"
+            ) {
               const serverNames = Object.keys(stdioConfig.mcpServers);
               if (serverNames.length > 0) {
                 actualConfig = stdioConfig.mcpServers[serverNames[0]];
@@ -441,30 +509,43 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
             }
 
             const parsedArgs = Array.isArray(actualConfig?.args)
-              ? actualConfig.args.map((v: any) => String(v)).filter((v: string) => v.trim() !== "")
+              ? actualConfig.args
+                  .map((v: any) => String(v))
+                  .filter((v: string) => v.trim() !== "")
               : [];
 
             const parsedEnv =
-              actualConfig?.env && typeof actualConfig.env === "object" && !Array.isArray(actualConfig.env)
-                ? Object.entries(actualConfig.env).reduce((acc: Record<string, string>, [k, v]) => {
-                    if (k == null || String(k).trim() === "") return acc;
-                    acc[String(k)] = v == null ? "" : String(v);
-                    return acc;
-                  }, {})
+              actualConfig?.env &&
+              typeof actualConfig.env === "object" &&
+              !Array.isArray(actualConfig.env)
+                ? Object.entries(actualConfig.env).reduce(
+                    (acc: Record<string, string>, [k, v]) => {
+                      if (k == null || String(k).trim() === "") return acc;
+                      acc[String(k)] = v == null ? "" : String(v);
+                      return acc;
+                    },
+                    {},
+                  )
                 : {};
 
             stdioFields = {
-              command: actualConfig?.command ? String(actualConfig.command) : undefined,
+              command: actualConfig?.command
+                ? String(actualConfig.command)
+                : undefined,
               args: parsedArgs,
               env: parsedEnv,
             };
 
             if (!stdioFields.command) {
-              NotificationsManager.fromBackend("Stdio configuration must include a command");
+              NotificationsManager.fromBackend(
+                "Stdio configuration must include a command",
+              );
               return;
             }
           } catch {
-            NotificationsManager.fromBackend("Invalid JSON in stdio configuration");
+            NotificationsManager.fromBackend(
+              "Invalid JSON in stdio configuration",
+            );
             return;
           }
         } else {
@@ -474,24 +555,33 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
             try {
               const env = JSON.parse(rawEnvJson);
               if (env && typeof env === "object" && !Array.isArray(env)) {
-                parsedEnv = Object.entries(env).reduce((acc: Record<string, string>, [k, v]) => {
-                  if (k == null || String(k).trim() === "") return acc;
-                  acc[String(k)] = v == null ? "" : String(v);
-                  return acc;
-                }, {});
+                parsedEnv = Object.entries(env).reduce(
+                  (acc: Record<string, string>, [k, v]) => {
+                    if (k == null || String(k).trim() === "") return acc;
+                    acc[String(k)] = v == null ? "" : String(v);
+                    return acc;
+                  },
+                  {},
+                );
               }
             } catch {
-              NotificationsManager.fromBackend("Invalid JSON in stdio env configuration");
+              NotificationsManager.fromBackend(
+                "Invalid JSON in stdio env configuration",
+              );
               return;
             }
           }
           const parsedArgs = Array.isArray(rawArgs)
-            ? rawArgs.map((v: any) => String(v)).filter((v: string) => v.trim() !== "")
+            ? rawArgs
+                .map((v: any) => String(v))
+                .filter((v: string) => v.trim() !== "")
             : [];
 
           const parsedCommand = rawCommand ? String(rawCommand).trim() : "";
           if (!parsedCommand) {
-            NotificationsManager.fromBackend("Stdio transport requires a command");
+            NotificationsManager.fromBackend(
+              "Stdio transport requires a command",
+            );
             return;
           }
 
@@ -514,7 +604,9 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
         try {
           tokenValidation = JSON.parse(rawTokenValidationJson);
         } catch {
-          NotificationsManager.fromBackend("Invalid JSON in Token Validation Rules");
+          NotificationsManager.fromBackend(
+            "Invalid JSON in Token Validation Rules",
+          );
           return;
         }
       }
@@ -540,19 +632,29 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
           server_name: mcpInfoServerName,
           description: restValues.description,
           logo_url: logoUrl || undefined,
-          mcp_server_cost_info: Object.keys(costConfig).length > 0 ? costConfig : null,
+          mcp_server_cost_info:
+            Object.keys(costConfig).length > 0 ? costConfig : null,
         },
         mcp_access_groups: accessGroups,
         alias: restValues.alias,
         // Include permission management fields
         extra_headers: restValues.extra_headers || [],
         allowed_tools: allowedTools.length > 0 ? allowedTools : null,
-        tool_name_to_display_name: Object.keys(toolNameToDisplayName).length > 0 ? toolNameToDisplayName : null,
-        tool_name_to_description: Object.keys(toolNameToDescription).length > 0 ? toolNameToDescription : null,
+        tool_name_to_display_name:
+          Object.keys(toolNameToDisplayName).length > 0
+            ? toolNameToDisplayName
+            : null,
+        tool_name_to_description:
+          Object.keys(toolNameToDescription).length > 0
+            ? toolNameToDescription
+            : null,
         disallowed_tools: restValues.disallowed_tools || [],
         static_headers: staticHeaders,
         allow_all_keys: Boolean(allowAllKeysRaw ?? mcpServer.allow_all_keys),
-        available_on_public_internet: Boolean(availableOnPublicInternetRaw ?? mcpServer.available_on_public_internet),
+        available_on_public_internet: Boolean(
+          availableOnPublicInternetRaw ??
+            mcpServer.available_on_public_internet,
+        ),
         // ``delegate_auth_to_upstream`` is only honored server-side for
         // ``auth_type=oauth2``. The Form.Item is conditionally rendered so the
         // value drops out of the form on auth_type change; force false for any
@@ -560,7 +662,10 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
         // silently re-activate if auth_type is later switched back to oauth2.
         delegate_auth_to_upstream:
           restValues.auth_type === AUTH_TYPE.OAUTH2
-            ? Boolean(delegateAuthToUpstreamRaw ?? mcpServer.delegate_auth_to_upstream)
+            ? Boolean(
+                delegateAuthToUpstreamRaw ??
+                  mcpServer.delegate_auth_to_upstream,
+              )
             : false,
         // Include token_validation when it is set (non-null) or when clearing an existing value
         ...(tokenValidation !== null || mcpServer.token_validation
@@ -568,9 +673,15 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
           : {}),
       };
 
-      const includeCredentials = restValues.auth_type && AUTH_TYPES_REQUIRING_CREDENTIALS.includes(restValues.auth_type);
+      const includeCredentials =
+        restValues.auth_type &&
+        AUTH_TYPES_REQUIRING_CREDENTIALS.includes(restValues.auth_type);
 
-      if (includeCredentials && credentialsPayload && Object.keys(credentialsPayload).length > 0) {
+      if (
+        includeCredentials &&
+        credentialsPayload &&
+        Object.keys(credentialsPayload).length > 0
+      ) {
         payload.credentials = credentialsPayload;
       }
 
@@ -578,7 +689,10 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
       NotificationsManager.success("MCP Server updated successfully");
       onSuccess(updated);
     } catch (error: any) {
-      NotificationsManager.fromBackend("Failed to update MCP Server" + (error?.message ? `: ${error.message}` : ""));
+      NotificationsManager.fromBackend(
+        "Failed to update MCP Server" +
+          (error?.message ? `: ${error.message}` : ""),
+      );
     }
   };
 
@@ -590,7 +704,12 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
       </TabList>
       <TabPanels className="mt-6">
         <TabPanel>
-          <Form form={form} onFinish={handleSave} initialValues={initialValues} layout="vertical">
+          <Form
+            form={form}
+            onFinish={handleSave}
+            initialValues={initialValues}
+            layout="vertical"
+          >
             <Form.Item
               label="MCP Server Name"
               name="server_name"
@@ -620,12 +739,24 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
               <Input className="rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500" />
             </Form.Item>
             <MCPLogoSelector value={logoUrl} onChange={setLogoUrl} />
-            <Form.Item label="Transport Type" name="transport" rules={[{ required: true }]}>
+            <Form.Item
+              label="Transport Type"
+              name="transport"
+              rules={[{ required: true }]}
+            >
               <Select onChange={handleTransportChange}>
-                <Select.Option value="http">Streamable HTTP (Recommended)</Select.Option>
-                <Select.Option value="sse">Server-Sent Events (SSE)</Select.Option>
-                <Select.Option value="stdio">Standard Input/Output (stdio)</Select.Option>
-                <Select.Option value={TRANSPORT.OPENAPI}>OpenAPI Spec</Select.Option>
+                <Select.Option value="http">
+                  Streamable HTTP (Recommended)
+                </Select.Option>
+                <Select.Option value="sse">
+                  Server-Sent Events (SSE)
+                </Select.Option>
+                <Select.Option value="stdio">
+                  Standard Input/Output (stdio)
+                </Select.Option>
+                <Select.Option value={TRANSPORT.OPENAPI}>
+                  OpenAPI Spec
+                </Select.Option>
               </Select>
             </Form.Item>
 
@@ -658,7 +789,12 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
                   </span>
                 }
                 name="spec_path"
-                rules={[{ required: true, message: "Please enter an OpenAPI spec URL" }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter an OpenAPI spec URL",
+                  },
+                ]}
               >
                 <Input
                   placeholder="https://petstore3.swagger.io/api/v3/openapi.json"
@@ -669,15 +805,23 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
 
             {/* Authentication - for HTTP, SSE, and OpenAPI */}
             {!isStdioTransport && (
-              <Form.Item label="Authentication" name="auth_type" rules={[{ required: true }]}>
+              <Form.Item
+                label="Authentication"
+                name="auth_type"
+                rules={[{ required: true }]}
+              >
                 <Select>
                   <Select.Option value="none">None</Select.Option>
                   <Select.Option value="api_key">API Key</Select.Option>
-                  <Select.Option value="bearer_token">Bearer Token</Select.Option>
+                  <Select.Option value="bearer_token">
+                    Bearer Token
+                  </Select.Option>
                   <Select.Option value="token">Token</Select.Option>
                   <Select.Option value="basic">Basic Auth</Select.Option>
                   <Select.Option value="oauth2">OAuth</Select.Option>
-                  <Select.Option value="aws_sigv4">AWS SigV4 (Bedrock AgentCore MCPs)</Select.Option>
+                  <Select.Option value="aws_sigv4">
+                    AWS SigV4 (Bedrock AgentCore MCPs)
+                  </Select.Option>
                 </Select>
               </Form.Item>
             )}
@@ -685,14 +829,20 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
             {isStdioTransport && (
               <div className="rounded-lg border border-gray-200 p-4 space-y-4">
                 <p className="text-sm text-gray-600">
-                  Configure the stdio transport used to launch the MCP server process. You can either fill in the fields
-                  below or paste a JSON configuration.
+                  Configure the stdio transport used to launch the MCP server
+                  process. You can either fill in the fields below or paste a
+                  JSON configuration.
                 </p>
 
                 <Form.Item
                   label="Command"
                   name="command"
-                  rules={[{ required: true, message: "Please enter a command for stdio transport" }]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please enter a command for stdio transport",
+                    },
+                  ]}
                 >
                   <Input
                     placeholder="e.g., npx"
@@ -700,10 +850,7 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
                   />
                 </Form.Item>
 
-                <Form.Item
-                  label="Args"
-                  name="args"
-                >
+                <Form.Item label="Args" name="args">
                   <Select
                     mode="tags"
                     size="large"
@@ -722,12 +869,20 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
                         if (!value) return Promise.resolve();
                         try {
                           const parsed = JSON.parse(value);
-                          if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+                          if (
+                            parsed &&
+                            typeof parsed === "object" &&
+                            !Array.isArray(parsed)
+                          ) {
                             return Promise.resolve();
                           }
-                          return Promise.reject(new Error("Env must be a JSON object"));
+                          return Promise.reject(
+                            new Error("Env must be a JSON object"),
+                          );
                         } catch {
-                          return Promise.reject(new Error("Please enter valid JSON"));
+                          return Promise.reject(
+                            new Error("Please enter valid JSON"),
+                          );
                         }
                       },
                     },
@@ -760,7 +915,9 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
                   {
                     validator: (_, value) =>
                       value && typeof value === "string" && value.trim() === ""
-                        ? Promise.reject(new Error("Authentication value cannot be empty"))
+                        ? Promise.reject(
+                            new Error("Authentication value cannot be empty"),
+                          )
                         : Promise.resolve(),
                   },
                 ]}
@@ -888,19 +1045,24 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
                       rules={[
                         {
                           validator: (_: any, value: string) => {
-                            if (!value || value.trim() === "") return Promise.resolve();
+                            if (!value || value.trim() === "")
+                              return Promise.resolve();
                             try {
                               JSON.parse(value);
                               return Promise.resolve();
                             } catch {
-                              return Promise.reject(new Error("Must be valid JSON"));
+                              return Promise.reject(
+                                new Error("Must be valid JSON"),
+                              );
                             }
                           },
                         },
                       ]}
                     >
                       <Input.TextArea
-                        placeholder={'{\n  "organization": "my-org",\n  "team.id": "123"\n}'}
+                        placeholder={
+                          '{\n  "organization": "my-org",\n  "team.id": "123"\n}'
+                        }
                         rows={4}
                         className="font-mono text-sm rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
@@ -926,11 +1088,17 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
                   </>
                 )}
                 <div className="rounded-lg border border-dashed border-gray-300 p-4 space-y-2">
-                  <p className="text-sm text-gray-600">Use OAuth to fetch a fresh access token and temporarily save it in the session as the authentication value.</p>
+                  <p className="text-sm text-gray-600">
+                    Use OAuth to fetch a fresh access token and temporarily save
+                    it in the session as the authentication value.
+                  </p>
                   <Button
                     variant="secondary"
                     onClick={startOAuthFlow}
-                    disabled={oauthStatus === "authorizing" || oauthStatus === "exchanging"}
+                    disabled={
+                      oauthStatus === "authorizing" ||
+                      oauthStatus === "exchanging"
+                    }
                   >
                     {oauthStatus === "authorizing"
                       ? "Waiting for authorization..."
@@ -938,12 +1106,16 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
                         ? "Exchanging authorization code..."
                         : "Authorize & Fetch Token"}
                   </Button>
-                  {oauthError && <p className="text-sm text-red-500">{oauthError}</p>}
-                  {oauthStatus === "success" && oauthTokenResponse?.access_token && (
-                    <p className="text-sm text-green-600">
-                      Token fetched. Expires in {oauthTokenResponse.expires_in ?? "?"} seconds.
-                    </p>
+                  {oauthError && (
+                    <p className="text-sm text-red-500">{oauthError}</p>
                   )}
+                  {oauthStatus === "success" &&
+                    oauthTokenResponse?.access_token && (
+                      <p className="text-sm text-green-600">
+                        Token fetched. Expires in{" "}
+                        {oauthTokenResponse.expires_in ?? "?"} seconds.
+                      </p>
+                    )}
                 </div>
               </>
             )}
@@ -952,7 +1124,12 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
               <>
                 <p className="text-sm text-gray-500 mb-2">
                   For MCP servers hosted on AWS Bedrock AgentCore.{" "}
-                  <a href="https://docs.litellm.ai/docs/mcp_aws_sigv4" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700">
+                  <a
+                    href="https://docs.litellm.ai/docs/mcp_aws_sigv4"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:text-blue-700"
+                  >
                     View docs &rarr;
                   </a>
                 </p>
@@ -1098,12 +1275,18 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
                   transport: transportType ?? mcpServer.transport,
                   auth_type: currentAuthType ?? mcpServer.auth_type,
                   mcp_info: mcpServer.mcp_info,
-                  oauth_flow_type: (currentTokenUrl ?? mcpServer.token_url) ? OAUTH_FLOW.M2M : OAUTH_FLOW.INTERACTIVE,
-                  static_headers: currentStaticHeaders ?? mcpServer.static_headers,
+                  oauth_flow_type:
+                    currentTokenUrl ?? mcpServer.token_url
+                      ? OAUTH_FLOW.M2M
+                      : OAUTH_FLOW.INTERACTIVE,
+                  static_headers:
+                    currentStaticHeaders ?? mcpServer.static_headers,
                   credentials: currentCredentials,
-                  authorization_url: currentAuthorizationUrl ?? mcpServer.authorization_url,
+                  authorization_url:
+                    currentAuthorizationUrl ?? mcpServer.authorization_url,
                   token_url: currentTokenUrl ?? mcpServer.token_url,
-                  registration_url: currentRegistrationUrl ?? mcpServer.registration_url,
+                  registration_url:
+                    currentRegistrationUrl ?? mcpServer.registration_url,
                 }}
                 allowedTools={allowedTools}
                 existingAllowedTools={mcpServer.allowed_tools || null}
@@ -1124,7 +1307,12 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
 
         <TabPanel>
           <div className="space-y-6">
-            <MCPServerCostConfig value={costConfig} onChange={setCostConfig} tools={tools} disabled={isLoadingTools} />
+            <MCPServerCostConfig
+              value={costConfig}
+              onChange={setCostConfig}
+              tools={tools}
+              disabled={isLoadingTools}
+            />
 
             <div className="flex justify-end gap-2">
               <AntdButton onClick={onCancel}>Cancel</AntdButton>

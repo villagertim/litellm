@@ -11,9 +11,18 @@ export const fetchAvailableModelsForTeamOrKey = async (
     }
 
     if (accessToken !== null) {
-      const model_available = await modelAvailableCall(accessToken, userID, userRole, true, null, true);
+      const model_available = await modelAvailableCall(
+        accessToken,
+        userID,
+        userRole,
+        true,
+        null,
+        true,
+      );
 
-      let available_model_names = model_available["data"].map((element: { id: string }) => element.id);
+      const available_model_names = model_available["data"].map(
+        (element: { id: string }) => element.id,
+      );
 
       // Group and sort models
       const providerModels: string[] = [];
@@ -46,7 +55,10 @@ export const getModelDisplayName = (model: string) => {
   return model;
 };
 
-export const unfurlWildcardModelsInList = (teamModels: string[], allModels: string[]): string[] => {
+export const unfurlWildcardModelsInList = (
+  teamModels: string[],
+  allModels: string[],
+): string[] => {
   const wildcardDisplayNames: string[] = [];
   const expandedModels: string[] = [];
   console.log("teamModels", teamModels);
@@ -58,7 +70,9 @@ export const unfurlWildcardModelsInList = (teamModels: string[], allModels: stri
       const provider = teamModel.replace("/*", "");
 
       // Find all models that start with this provider
-      const matchingModels = allModels.filter((model) => model.startsWith(provider + "/"));
+      const matchingModels = allModels.filter((model) =>
+        model.startsWith(provider + "/"),
+      );
       expandedModels.push(...matchingModels);
       wildcardDisplayNames.push(teamModel);
     } else {
@@ -67,5 +81,7 @@ export const unfurlWildcardModelsInList = (teamModels: string[], allModels: stri
   });
 
   // Combine arrays with wildcard display names first, then remove duplicates
-  return [...wildcardDisplayNames, ...expandedModels].filter((item, index, array) => array.indexOf(item) === index);
+  return [...wildcardDisplayNames, ...expandedModels].filter(
+    (item, index, array) => array.indexOf(item) === index,
+  );
 };

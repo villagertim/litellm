@@ -1,6 +1,6 @@
 import { useEditSSOSettings } from "@/app/(dashboard)/hooks/sso/useEditSSOSettings";
 import { useSSOSettings } from "@/app/(dashboard)/hooks/sso/useSSOSettings";
-import React from "react";
+import type React from "react";
 import DeleteResourceModal from "../../../../common_components/DeleteResourceModal";
 import NotificationsManager from "../../../../molecules/notifications_manager";
 import { parseErrorMessage } from "../../../../shared/errorUtils";
@@ -12,9 +12,14 @@ interface DeleteSSOSettingsModalProps {
   onSuccess: () => void;
 }
 
-const DeleteSSOSettingsModal: React.FC<DeleteSSOSettingsModalProps> = ({ isVisible, onCancel, onSuccess }) => {
+const DeleteSSOSettingsModal: React.FC<DeleteSSOSettingsModalProps> = ({
+  isVisible,
+  onCancel,
+  onSuccess,
+}) => {
   const { data: ssoSettings } = useSSOSettings();
-  const { mutateAsync: editSSOSettings, isPending: isEditingSSOSettings } = useEditSSOSettings();
+  const { mutateAsync: editSSOSettings, isPending: isEditingSSOSettings } =
+    useEditSSOSettings();
 
   // Handle clearing SSO settings
   const handleClearSSO = async () => {
@@ -43,7 +48,9 @@ const DeleteSSOSettingsModal: React.FC<DeleteSSOSettingsModalProps> = ({ isVisib
         onSuccess();
       },
       onError: (error) => {
-        NotificationsManager.fromBackend("Failed to clear SSO settings: " + parseErrorMessage(error));
+        NotificationsManager.fromBackend(
+          "Failed to clear SSO settings: " + parseErrorMessage(error),
+        );
       },
     });
   };
@@ -56,7 +63,12 @@ const DeleteSSOSettingsModal: React.FC<DeleteSSOSettingsModalProps> = ({ isVisib
       message="Are you sure you want to clear all SSO settings? Users will no longer be able to login using SSO after this change."
       resourceInformationTitle="SSO Settings"
       resourceInformation={[
-        { label: "Provider", value: (ssoSettings?.values && detectSSOProvider(ssoSettings?.values)) || "Generic" },
+        {
+          label: "Provider",
+          value:
+            (ssoSettings?.values && detectSSOProvider(ssoSettings?.values)) ||
+            "Generic",
+        },
       ]}
       onCancel={onCancel}
       onOk={handleClearSSO}

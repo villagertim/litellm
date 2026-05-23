@@ -2,8 +2,8 @@
 // A2A Protocol (JSON-RPC 2.0) implementation for sending messages to agents
 
 import { v4 as uuidv4 } from "uuid";
-import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "../../networking";
-import { A2ATaskMetadata } from "../chat_ui/types";
+import { getGlobalLitellmHeaderName, getProxyBaseUrl } from "../../networking";
+import type { A2ATaskMetadata } from "../chat_ui/types";
 
 interface A2AMessagePart {
   kind: "text";
@@ -59,7 +59,9 @@ interface A2AJsonRpcResponse {
 /**
  * Extracts A2A task metadata from the response result.
  */
-const extractA2AMetadata = (result: A2AJsonRpcResponse["result"]): A2ATaskMetadata | undefined => {
+const extractA2AMetadata = (
+  result: A2AJsonRpcResponse["result"],
+): A2ATaskMetadata | undefined => {
   if (!result) return undefined;
 
   const metadata: A2ATaskMetadata = {};
@@ -163,7 +165,11 @@ export const makeA2ASendMessageRequest = async (
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error?.message || errorData.detail || `HTTP ${response.status}`);
+      throw new Error(
+        errorData.error?.message ||
+          errorData.detail ||
+          `HTTP ${response.status}`,
+      );
     }
 
     const jsonRpcResponse: A2AJsonRpcResponse = await response.json();
@@ -222,7 +228,10 @@ export const makeA2ASendMessageRequest = async (
         onTextUpdate(responseText, `a2a_agent/${agentId}`);
       } else {
         // Fallback: show raw result if we couldn't parse it
-        console.warn("Could not extract text from A2A response, showing raw JSON:", result);
+        console.warn(
+          "Could not extract text from A2A response, showing raw JSON:",
+          result,
+        );
         onTextUpdate(JSON.stringify(result, null, 2), `a2a_agent/${agentId}`);
       }
     }
@@ -291,7 +300,11 @@ export const makeA2AStreamMessageRequest = async (
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error?.message || errorData.detail || `HTTP ${response.status}`);
+      throw new Error(
+        errorData.error?.message ||
+          errorData.detail ||
+          `HTTP ${response.status}`,
+      );
     }
 
     const reader = response.body?.getReader();
@@ -389,12 +402,20 @@ export const makeA2AStreamMessageRequest = async (
           }
         } catch (parseError) {
           // Re-throw if it's an actual error we threw (not a parse error)
-          if (parseError instanceof Error && parseError.message && !parseError.message.includes("JSON")) {
+          if (
+            parseError instanceof Error &&
+            parseError.message &&
+            !parseError.message.includes("JSON")
+          ) {
             throw parseError;
           }
           // Only warn if it's not a JSON parse error on an empty/partial line
           if (line.trim().length > 0) {
-            console.warn("Failed to parse A2A streaming chunk:", line, parseError);
+            console.warn(
+              "Failed to parse A2A streaming chunk:",
+              line,
+              parseError,
+            );
           }
         }
       }

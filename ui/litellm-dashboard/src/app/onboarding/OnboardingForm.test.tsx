@@ -19,7 +19,8 @@ vi.mock("jwt-decode", () => ({
 }));
 
 vi.mock("@/app/(dashboard)/hooks/onboarding/useOnboarding", () => ({
-  useOnboardingCredentials: (...args: unknown[]) => mockUseOnboardingCredentials(...args),
+  useOnboardingCredentials: (...args: unknown[]) =>
+    mockUseOnboardingCredentials(...args),
   useClaimOnboardingToken: () => ({ mutate: mockClaimToken, isPending: false }),
 }));
 
@@ -49,7 +50,10 @@ vi.mock("./OnboardingFormBody", () => ({
   }) => (
     <div data-testid="form-body" data-variant={variant} data-email={userEmail}>
       Form Body
-      <button type="button" onClick={() => onSubmit({ password: "NewP@ssw0rd" })}>
+      <button
+        type="button"
+        onClick={() => onSubmit({ password: "NewP@ssw0rd" })}
+      >
         Submit
       </button>
       {claimError ? <div data-testid="claim-error">{claimError}</div> : null}
@@ -99,7 +103,10 @@ describe("OnboardingForm", () => {
     render(<OnboardingForm variant="signup" />);
 
     expect(screen.getByTestId("form-body")).toBeInTheDocument();
-    expect(screen.getByTestId("form-body")).toHaveAttribute("data-email", "alice@example.com");
+    expect(screen.getByTestId("form-body")).toHaveAttribute(
+      "data-email",
+      "alice@example.com",
+    );
   });
 
   it("should pass variant prop to OnboardingFormBody", () => {
@@ -111,7 +118,10 @@ describe("OnboardingForm", () => {
 
     render(<OnboardingForm variant="reset_password" />);
 
-    expect(screen.getByTestId("form-body")).toHaveAttribute("data-variant", "reset_password");
+    expect(screen.getByTestId("form-body")).toHaveAttribute(
+      "data-variant",
+      "reset_password",
+    );
   });
 
   it("should overwrite a prior admin sessionStorage token after successful claim", async () => {
@@ -182,7 +192,9 @@ describe("OnboardingForm", () => {
       fireEvent.click(screen.getByRole("button", { name: "Submit" }));
     });
 
-    expect(screen.getByTestId("claim-error")).toHaveTextContent("Failed to start session");
+    expect(screen.getByTestId("claim-error")).toHaveTextContent(
+      "Failed to start session",
+    );
     expect(document.cookie).not.toContain("fake-jwt-token");
   });
 });

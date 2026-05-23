@@ -1,5 +1,5 @@
-import { renderHook, act } from "@testing-library/react";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { act, renderHook } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useChatHistory } from "./useChatHistory";
 
 describe("useChatHistory", () => {
@@ -9,7 +9,9 @@ describe("useChatHistory", () => {
 
   describe("updateTextUI", () => {
     it("should create a new assistant message when chat is empty", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.updateTextUI("assistant", "Hello", "gpt-4");
@@ -21,7 +23,9 @@ describe("useChatHistory", () => {
     });
 
     it("should append to the last assistant message", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.updateTextUI("assistant", "Hello", "gpt-4");
@@ -36,7 +40,9 @@ describe("useChatHistory", () => {
     });
 
     it("should not overwrite model on subsequent chunks", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.updateTextUI("assistant", "Hello", "gpt-4");
@@ -49,7 +55,9 @@ describe("useChatHistory", () => {
     });
 
     it("should create a new message when role changes", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.updateTextUI("user", "Hi");
@@ -64,7 +72,9 @@ describe("useChatHistory", () => {
     });
 
     it("should not append to image messages", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.updateImageUI("http://img.png", "dall-e");
@@ -77,7 +87,9 @@ describe("useChatHistory", () => {
     });
 
     it("should not append to audio messages", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.updateAudioUI("http://audio.mp3", "tts-1");
@@ -92,7 +104,9 @@ describe("useChatHistory", () => {
 
   describe("updateReasoningContent", () => {
     it("should add reasoning content to existing assistant message", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.updateTextUI("assistant", "Answer", "gpt-4");
@@ -101,11 +115,15 @@ describe("useChatHistory", () => {
         result.current.updateReasoningContent("thinking...");
       });
 
-      expect(result.current.chatHistory[0].reasoningContent).toBe("thinking...");
+      expect(result.current.chatHistory[0].reasoningContent).toBe(
+        "thinking...",
+      );
     });
 
     it("should append reasoning content across chunks", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.updateTextUI("assistant", "", "gpt-4");
@@ -117,11 +135,15 @@ describe("useChatHistory", () => {
         result.current.updateReasoningContent(" step 2");
       });
 
-      expect(result.current.chatHistory[0].reasoningContent).toBe("step 1 step 2");
+      expect(result.current.chatHistory[0].reasoningContent).toBe(
+        "step 1 step 2",
+      );
     });
 
     it("should create assistant message with reasoning when last message is user", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.setChatHistory([{ role: "user", content: "question" }]);
@@ -139,7 +161,9 @@ describe("useChatHistory", () => {
     });
 
     it("should not update when chat is empty", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.updateReasoningContent("thinking...");
@@ -151,7 +175,9 @@ describe("useChatHistory", () => {
 
   describe("updateTimingData", () => {
     it("should add timeToFirstToken to existing assistant message", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.updateTextUI("assistant", "Hello", "gpt-4");
@@ -164,7 +190,9 @@ describe("useChatHistory", () => {
     });
 
     it("should create assistant message when last is user", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.setChatHistory([{ role: "user", content: "hi" }]);
@@ -180,7 +208,9 @@ describe("useChatHistory", () => {
 
   describe("updateUsageData", () => {
     it("should add usage data to assistant message", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.updateTextUI("assistant", "Hello", "gpt-4");
@@ -195,7 +225,9 @@ describe("useChatHistory", () => {
     });
 
     it("should add toolName when provided", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.updateTextUI("assistant", "Hello", "gpt-4");
@@ -212,7 +244,9 @@ describe("useChatHistory", () => {
 
   describe("updateTotalLatency", () => {
     it("should add totalLatency to assistant message", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.updateTextUI("assistant", "Hello", "gpt-4");
@@ -227,7 +261,9 @@ describe("useChatHistory", () => {
 
   describe("updateA2AMetadata", () => {
     it("should add A2A metadata to assistant message", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.updateTextUI("assistant", "Hello", "gpt-4");
@@ -244,41 +280,59 @@ describe("useChatHistory", () => {
 
   describe("updateSearchResults", () => {
     it("should add search results to assistant message", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.updateTextUI("assistant", "Hello", "gpt-4");
       });
 
-      const searchResults = [{ object: "search", search_query: "test", data: [] }];
+      const searchResults = [
+        { object: "search", search_query: "test", data: [] },
+      ];
       act(() => {
         result.current.updateSearchResults(searchResults);
       });
 
-      expect(result.current.chatHistory[0].searchResults).toEqual(searchResults);
+      expect(result.current.chatHistory[0].searchResults).toEqual(
+        searchResults,
+      );
     });
   });
 
   describe("updateImageUI", () => {
     it("should add image message to history", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.updateImageUI("http://img.png", "dall-e-3");
       });
 
       expect(result.current.chatHistory).toEqual([
-        { role: "assistant", content: "http://img.png", model: "dall-e-3", isImage: true },
+        {
+          role: "assistant",
+          content: "http://img.png",
+          model: "dall-e-3",
+          isImage: true,
+        },
       ]);
     });
   });
 
   describe("updateEmbeddingsUI", () => {
     it("should add truncated embeddings message", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
-        result.current.updateEmbeddingsUI("[0.1, 0.2, 0.3]", "text-embedding-ada");
+        result.current.updateEmbeddingsUI(
+          "[0.1, 0.2, 0.3]",
+          "text-embedding-ada",
+        );
       });
 
       expect(result.current.chatHistory[0].isEmbeddings).toBe(true);
@@ -288,21 +342,30 @@ describe("useChatHistory", () => {
 
   describe("updateAudioUI", () => {
     it("should add audio message to history", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.updateAudioUI("http://audio.mp3", "tts-1");
       });
 
       expect(result.current.chatHistory).toEqual([
-        { role: "assistant", content: "http://audio.mp3", model: "tts-1", isAudio: true },
+        {
+          role: "assistant",
+          content: "http://audio.mp3",
+          model: "tts-1",
+          isAudio: true,
+        },
       ]);
     });
   });
 
   describe("updateChatImageUI", () => {
     it("should add image to existing assistant message", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.updateTextUI("assistant", "Here is the image", "gpt-4");
@@ -318,7 +381,9 @@ describe("useChatHistory", () => {
     });
 
     it("should create new assistant message with image when no assistant message exists", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.updateChatImageUI("http://img.png", "gpt-4");
@@ -335,7 +400,9 @@ describe("useChatHistory", () => {
 
   describe("handleMCPEvent", () => {
     it("should add MCP event", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.handleMCPEvent({ type: "tool_call", item_id: "1" });
@@ -345,7 +412,9 @@ describe("useChatHistory", () => {
     });
 
     it("should deduplicate events by item_id and type", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       const event = { type: "tool_call", item_id: "1" };
       act(() => {
@@ -359,7 +428,9 @@ describe("useChatHistory", () => {
     });
 
     it("should allow events without item_id (no dedup)", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.handleMCPEvent({ type: "tool_call" });
@@ -372,13 +443,23 @@ describe("useChatHistory", () => {
     });
 
     it("should allow events with same item_id/type but different sequence_number", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
-        result.current.handleMCPEvent({ type: "tool_call", item_id: "1", sequence_number: 1 });
+        result.current.handleMCPEvent({
+          type: "tool_call",
+          item_id: "1",
+          sequence_number: 1,
+        });
       });
       act(() => {
-        result.current.handleMCPEvent({ type: "tool_call", item_id: "1", sequence_number: 2 });
+        result.current.handleMCPEvent({
+          type: "tool_call",
+          item_id: "1",
+          sequence_number: 2,
+        });
       });
 
       expect(result.current.mcpEvents).toHaveLength(2);
@@ -387,7 +468,9 @@ describe("useChatHistory", () => {
 
   describe("clearMCPEvents", () => {
     it("should clear MCP events without affecting chat history", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.updateTextUI("assistant", "Hello", "gpt-4");
@@ -404,7 +487,9 @@ describe("useChatHistory", () => {
 
   describe("clearChatHistory", () => {
     it("should clear all state", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.updateTextUI("assistant", "Hello", "gpt-4");
@@ -421,8 +506,12 @@ describe("useChatHistory", () => {
     });
 
     it("should revoke audio object URLs when clearing", () => {
-      const revokeSpy = vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const revokeSpy = vi
+        .spyOn(URL, "revokeObjectURL")
+        .mockImplementation(() => {});
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.updateAudioUI("blob:http://localhost/audio-1", "tts-1");
@@ -437,7 +526,9 @@ describe("useChatHistory", () => {
 
     it("should clear sessionStorage when not simplified", () => {
       vi.useFakeTimers();
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       sessionStorage.setItem("chatHistory", "[]");
       sessionStorage.setItem("messageTraceId", "trace-1");
@@ -469,12 +560,16 @@ describe("useChatHistory", () => {
       });
 
       // simplified mode should not touch sessionStorage
-      expect(sessionStorage.getItem("chatHistory")).toBe('[{"role":"user","content":"hi"}]');
+      expect(sessionStorage.getItem("chatHistory")).toBe(
+        '[{"role":"user","content":"hi"}]',
+      );
     });
 
     it("should not re-write chatHistory to sessionStorage after clear via debounce", () => {
       vi.useFakeTimers();
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       // Add a message so the debounce has something to persist
       act(() => {
@@ -552,7 +647,9 @@ describe("useChatHistory", () => {
 
   describe("session management", () => {
     it("handleResponseId should set responsesSessionId when useApiSessionManagement is true", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.handleResponseId("resp-123");
@@ -562,7 +659,9 @@ describe("useChatHistory", () => {
     });
 
     it("handleResponseId should NOT set responsesSessionId when useApiSessionManagement is false", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.handleToggleSessionManagement(false);
@@ -575,7 +674,9 @@ describe("useChatHistory", () => {
     });
 
     it("handleToggleSessionManagement should clear session when switching to UI mode", () => {
-      const { result } = renderHook(() => useChatHistory({ simplified: false }));
+      const { result } = renderHook(() =>
+        useChatHistory({ simplified: false }),
+      );
 
       act(() => {
         result.current.handleResponseId("resp-123");

@@ -1,7 +1,7 @@
 "use client";
 
-import PromptsPanel from "@/components/prompts";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import PromptsPanel from "@/components/prompts";
 
 const PromptsPage = () => {
   const { accessToken } = useAuthorized();

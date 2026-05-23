@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { columns } from "./columns";
 import { UserDataTable } from "./table";
-import { UserInfo } from "./types";
+import type { UserInfo } from "./types";
 
 const defaultFilters = {
   email: "",
@@ -30,7 +30,13 @@ const getDefaultProps = () => ({
   handleEdit: vi.fn(),
   handleDelete: vi.fn(),
   handleResetPassword: vi.fn(),
-  userListResponse: { users: [], total: 0, page: 1, page_size: 25, total_pages: 1 },
+  userListResponse: {
+    users: [],
+    total: 0,
+    page: 1,
+    page_size: 25,
+    total_pages: 1,
+  },
   currentPage: 1,
   handlePageChange: vi.fn(),
 });
@@ -79,15 +85,21 @@ describe("UserDataTable", () => {
     render(<UserDataTable {...getDefaultProps()} isLoading={true} />);
 
     expect(screen.queryByText(/Showing/i)).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Previous/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Next/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /Previous/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /Next/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("should show actual content when isLoading is false", () => {
     render(<UserDataTable {...getDefaultProps()} isLoading={false} />);
 
     expect(screen.getByText(/Showing/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Previous/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Previous/i }),
+    ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Next/i })).toBeInTheDocument();
   });
 
@@ -97,7 +109,12 @@ describe("UserDataTable", () => {
       user: { ui_label: "User" },
     };
 
-    render(<UserDataTable {...getDefaultProps()} possibleUIRoles={possibleUIRoles} />);
+    render(
+      <UserDataTable
+        {...getDefaultProps()}
+        possibleUIRoles={possibleUIRoles}
+      />,
+    );
 
     [
       "User ID",
@@ -113,13 +130,20 @@ describe("UserDataTable", () => {
       "Updated At",
       "Actions",
     ].forEach((header) => {
-      expect(screen.getByRole("columnheader", { name: header })).toBeInTheDocument();
+      expect(
+        screen.getByRole("columnheader", { name: header }),
+      ).toBeInTheDocument();
     });
   });
 
   it("should render the user-row Status cell as Active when scim_active is not set to false", () => {
     const possibleUIRoles = { admin: { ui_label: "Admin" } };
-    const handlers = { edit: vi.fn(), del: vi.fn(), reset: vi.fn(), click: vi.fn() };
+    const handlers = {
+      edit: vi.fn(),
+      del: vi.fn(),
+      reset: vi.fn(),
+      click: vi.fn(),
+    };
     const cols = columns(
       possibleUIRoles,
       handlers.edit,
@@ -145,7 +169,9 @@ describe("UserDataTable", () => {
       budget_duration: null,
     };
 
-    const cellNoMetadata = (statusCol as any).cell({ row: { original: baseUser } });
+    const cellNoMetadata = (statusCol as any).cell({
+      row: { original: baseUser },
+    });
     render(<>{cellNoMetadata}</>);
     expect(screen.getByText("Active")).toBeInTheDocument();
     expect(screen.queryByText("Inactive")).not.toBeInTheDocument();

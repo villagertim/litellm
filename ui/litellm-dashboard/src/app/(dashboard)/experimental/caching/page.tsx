@@ -1,7 +1,7 @@
 "use client";
 
-import CacheDashboard from "@/components/cache_dashboard";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import CacheDashboard from "@/components/cache_dashboard";
 
 const CachingPage = () => {
   const { token, accessToken, userRole, userId, premiumUser } = useAuthorized();

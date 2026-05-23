@@ -3,7 +3,10 @@ interface CallbackConfig {
   displayName: string;
   logo: string;
   supports_key_team_logging: boolean;
-  dynamic_params: Record<string, "text" | "password" | "select" | "upload" | "number">;
+  dynamic_params: Record<
+    string,
+    "text" | "password" | "select" | "upload" | "number"
+  >;
   description: string;
 }
 
@@ -153,13 +156,14 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
 ];
 
 // Create callbackInfo object mapping display names to config objects
-export const callbackInfo: Record<string, CallbackConfig> = CALLBACK_CONFIGS.reduce(
-  (acc, config) => {
-    acc[config.displayName] = config;
-    return acc;
-  },
-  {} as Record<string, CallbackConfig>,
-);
+export const callbackInfo: Record<string, CallbackConfig> =
+  CALLBACK_CONFIGS.reduce(
+    (acc, config) => {
+      acc[config.displayName] = config;
+      return acc;
+    },
+    {} as Record<string, CallbackConfig>,
+  );
 
 // Create callback_map mapping display names to internal IDs
 export const callback_map: Record<string, string> = CALLBACK_CONFIGS.reduce(
@@ -171,13 +175,14 @@ export const callback_map: Record<string, string> = CALLBACK_CONFIGS.reduce(
 );
 
 // create reverse_callback_map to map internal IDs to display names
-export const reverse_callback_map: Record<string, string> = CALLBACK_CONFIGS.reduce(
-  (acc, config) => {
-    acc[config.id] = config.displayName;
-    return acc;
-  },
-  {} as Record<string, string>,
-);
+export const reverse_callback_map: Record<string, string> =
+  CALLBACK_CONFIGS.reduce(
+    (acc, config) => {
+      acc[config.id] = config.displayName;
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
 
 // Function to map display names to internal names
 export const mapDisplayToInternalNames = (displayNames: string[]): string[] => {
@@ -185,7 +190,9 @@ export const mapDisplayToInternalNames = (displayNames: string[]): string[] => {
 };
 
 // Function to map internal names to display names
-export const mapInternalToDisplayNames = (internalNames: string[]): string[] => {
+export const mapInternalToDisplayNames = (
+  internalNames: string[],
+): string[] => {
   return internalNames.map((name) => reverse_callback_map[name] || name);
 };
 
@@ -194,6 +201,10 @@ export const getCallbackById = (id: string): CallbackConfig | undefined => {
   return CALLBACK_CONFIGS.find((callback) => callback.id === id);
 };
 
-export const getCallbackByDisplayName = (displayName: string): CallbackConfig | undefined => {
-  return CALLBACK_CONFIGS.find((callback) => callback.displayName === displayName);
+export const getCallbackByDisplayName = (
+  displayName: string,
+): CallbackConfig | undefined => {
+  return CALLBACK_CONFIGS.find(
+    (callback) => callback.displayName === displayName,
+  );
 };

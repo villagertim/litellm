@@ -1,5 +1,5 @@
-import { deleteHashicorpVaultConfig } from "./hashicorpVaultApi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteHashicorpVaultConfig } from "./hashicorpVaultApi";
 import { hashicorpVaultKeys } from "./useHashicorpVaultConfig";
 
 export const useDeleteHashicorpVaultConfig = (accessToken: string | null) => {

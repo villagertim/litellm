@@ -1,5 +1,5 @@
-import React from "react";
 import { Select } from "antd";
+import type React from "react";
 import type { ExportFormat } from "./types";
 
 interface ExportFormatSelectorProps {
@@ -7,10 +7,15 @@ interface ExportFormatSelectorProps {
   onChange: (value: ExportFormat) => void;
 }
 
-const ExportFormatSelector: React.FC<ExportFormatSelectorProps> = ({ value, onChange }) => {
+const ExportFormatSelector: React.FC<ExportFormatSelectorProps> = ({
+  value,
+  onChange,
+}) => {
   return (
     <div>
-      <label className="text-sm font-medium text-gray-700 block mb-2">Format</label>
+      <label className="text-sm font-medium text-gray-700 block mb-2">
+        Format
+      </label>
       <Select
         value={value}
         onChange={onChange}
@@ -31,4 +36,3 @@ const ExportFormatSelector: React.FC<ExportFormatSelectorProps> = ({ value, onCh
 };
 
 export default ExportFormatSelector;
-

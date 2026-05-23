@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
-import { CustomLegend, CustomTooltip } from "./chartUtils";
 import type { CustomTooltipProps } from "@tremor/react";
-import { SpendMetrics } from "../UsagePage/types";
+import { describe, expect, it } from "vitest";
+import type { SpendMetrics } from "../UsagePage/types";
+import { CustomLegend, CustomTooltip } from "./chartUtils";
 
 describe("CustomTooltip", () => {
   const mockPayload = [
@@ -228,7 +228,9 @@ describe("CustomTooltip", () => {
       label: "2024-01-15",
     };
     const { container } = render(<CustomTooltip {...props} />);
-    const colorIndicator = container.querySelector('span[style*="background-color"]');
+    const colorIndicator = container.querySelector(
+      'span[style*="background-color"]',
+    );
     expect(colorIndicator).toHaveStyle({ backgroundColor: "#3b82f6" });
   });
 
@@ -260,7 +262,9 @@ describe("CustomTooltip", () => {
       label: "2024-01-15",
     };
     const { container } = render(<CustomTooltip {...props} />);
-    const colorIndicator = container.querySelector('span[style*="background-color"]');
+    const colorIndicator = container.querySelector(
+      'span[style*="background-color"]',
+    );
     expect(colorIndicator).toHaveStyle({ backgroundColor: "#ff0000" });
   });
 
@@ -316,14 +320,20 @@ describe("CustomTooltip", () => {
 
 describe("CustomLegend", () => {
   it("should render", () => {
-    render(<CustomLegend categories={["metrics.total_tokens"]} colors={["blue"]} />);
+    render(
+      <CustomLegend categories={["metrics.total_tokens"]} colors={["blue"]} />,
+    );
     expect(screen.getByText("Total Tokens")).toBeInTheDocument();
   });
 
   it("should display multiple categories", () => {
     render(
       <CustomLegend
-        categories={["metrics.total_tokens", "metrics.spend", "metrics.prompt_tokens"]}
+        categories={[
+          "metrics.total_tokens",
+          "metrics.spend",
+          "metrics.prompt_tokens",
+        ]}
         colors={["blue", "green", "red"]}
       />,
     );
@@ -333,29 +343,55 @@ describe("CustomLegend", () => {
   });
 
   it("should format category names by removing metrics prefix and replacing underscores", () => {
-    render(<CustomLegend categories={["metrics.api_requests"]} colors={["blue"]} />);
+    render(
+      <CustomLegend categories={["metrics.api_requests"]} colors={["blue"]} />,
+    );
     expect(screen.getByText("Api Requests")).toBeInTheDocument();
   });
 
   it("should capitalize first letter of each word", () => {
-    render(<CustomLegend categories={["metrics.successful_requests"]} colors={["green"]} />);
+    render(
+      <CustomLegend
+        categories={["metrics.successful_requests"]}
+        colors={["green"]}
+      />,
+    );
     expect(screen.getByText("Successful Requests")).toBeInTheDocument();
   });
 
   it("should convert color names to hex values", () => {
-    const { container } = render(<CustomLegend categories={["metrics.total_tokens"]} colors={["cyan"]} />);
-    const colorIndicator = container.querySelector('span[style*="background-color"]');
+    const { container } = render(
+      <CustomLegend categories={["metrics.total_tokens"]} colors={["cyan"]} />,
+    );
+    const colorIndicator = container.querySelector(
+      'span[style*="background-color"]',
+    );
     expect(colorIndicator).toHaveStyle({ backgroundColor: "#06b6d4" });
   });
 
   it("should use hex color directly when color is not a known color name", () => {
-    const { container } = render(<CustomLegend categories={["metrics.total_tokens"]} colors={["#ff00ff"]} />);
-    const colorIndicator = container.querySelector('span[style*="background-color"]');
+    const { container } = render(
+      <CustomLegend
+        categories={["metrics.total_tokens"]}
+        colors={["#ff00ff"]}
+      />,
+    );
+    const colorIndicator = container.querySelector(
+      'span[style*="background-color"]',
+    );
     expect(colorIndicator).toHaveStyle({ backgroundColor: "#ff00ff" });
   });
 
   it("should handle all supported color names", () => {
-    const colors = ["blue", "cyan", "indigo", "green", "red", "purple", "emerald"];
+    const colors = [
+      "blue",
+      "cyan",
+      "indigo",
+      "green",
+      "red",
+      "purple",
+      "emerald",
+    ];
     const categories = colors.map((_, idx) => `metrics.category_${idx}`);
     render(<CustomLegend categories={categories} colors={colors} />);
     expect(screen.getByText("Category 0")).toBeInTheDocument();
@@ -374,7 +410,9 @@ describe("CustomLegend", () => {
         colors={["blue", "green", "red"]}
       />,
     );
-    const colorIndicators = container.querySelectorAll('span[style*="background-color"]');
+    const colorIndicators = container.querySelectorAll(
+      'span[style*="background-color"]',
+    );
     expect(colorIndicators[0]).toHaveStyle({ backgroundColor: "#3b82f6" });
     expect(colorIndicators[1]).toHaveStyle({ backgroundColor: "#22c55e" });
     expect(colorIndicators[2]).toHaveStyle({ backgroundColor: "#ef4444" });

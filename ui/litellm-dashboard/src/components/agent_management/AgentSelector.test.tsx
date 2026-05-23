@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock networking module
 const mockGetAgentsList = vi.fn();
@@ -10,14 +10,30 @@ vi.mock("../networking", () => ({
 
 // Mock antd Select
 vi.mock("antd", () => {
-  const SelectComponent = ({ children, onChange, value, mode, placeholder, loading, disabled, ...props }: any) => (
-    <div data-testid="agent-select" data-loading={loading} data-disabled={disabled}>
+  const SelectComponent = ({
+    children,
+    onChange,
+    value,
+    mode,
+    placeholder,
+    loading,
+    disabled,
+    ...props
+  }: any) => (
+    <div
+      data-testid="agent-select"
+      data-loading={loading}
+      data-disabled={disabled}
+    >
       <select
         data-testid="select-input"
         multiple={mode === "multiple"}
         value={value || []}
         onChange={(e) => {
-          const selected = Array.from(e.target.selectedOptions, (opt: any) => opt.value);
+          const selected = Array.from(
+            e.target.selectedOptions,
+            (opt: any) => opt.value,
+          );
           onChange?.(selected);
         }}
         disabled={disabled}
@@ -50,7 +66,11 @@ describe("AgentSelector", () => {
     mockGetAgentsList.mockResolvedValue({
       agents: [
         { agent_id: "agent-1", agent_name: "Agent One" },
-        { agent_id: "agent-2", agent_name: "Agent Two", agent_access_groups: ["group-a", "group-b"] },
+        {
+          agent_id: "agent-2",
+          agent_name: "Agent Two",
+          agent_access_groups: ["group-a", "group-b"],
+        },
       ],
     });
   });
@@ -75,15 +95,25 @@ describe("AgentSelector", () => {
   it("shows loading state while fetching", async () => {
     // Keep the promise pending
     let resolve: any;
-    mockGetAgentsList.mockReturnValue(new Promise((r) => { resolve = r; }));
+    mockGetAgentsList.mockReturnValue(
+      new Promise((r) => {
+        resolve = r;
+      }),
+    );
 
     render(<AgentSelector {...defaultProps} />);
-    expect(screen.getByTestId("agent-select")).toHaveAttribute("data-loading", "true");
+    expect(screen.getByTestId("agent-select")).toHaveAttribute(
+      "data-loading",
+      "true",
+    );
 
     // Resolve to clean up
     resolve({ agents: [] });
     await waitFor(() => {
-      expect(screen.getByTestId("agent-select")).toHaveAttribute("data-loading", "false");
+      expect(screen.getByTestId("agent-select")).toHaveAttribute(
+        "data-loading",
+        "false",
+      );
     });
   });
 
@@ -105,7 +135,10 @@ describe("AgentSelector", () => {
 
   it("respects disabled prop", () => {
     render(<AgentSelector {...defaultProps} disabled />);
-    expect(screen.getByTestId("agent-select")).toHaveAttribute("data-disabled", "true");
+    expect(screen.getByTestId("agent-select")).toHaveAttribute(
+      "data-disabled",
+      "true",
+    );
   });
 
   it("handles API error gracefully", async () => {
@@ -114,7 +147,10 @@ describe("AgentSelector", () => {
 
     render(<AgentSelector {...defaultProps} />);
     await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith("Error fetching agents:", expect.any(Error));
+      expect(consoleSpy).toHaveBeenCalledWith(
+        "Error fetching agents:",
+        expect.any(Error),
+      );
     });
 
     consoleSpy.mockRestore();
@@ -125,7 +161,7 @@ describe("AgentSelector", () => {
       <AgentSelector
         {...defaultProps}
         value={{ agents: ["agent-1"], accessGroups: ["group-a"] }}
-      />
+      />,
     );
     await waitFor(() => {
       const select = screen.getByTestId("select-input");
@@ -138,7 +174,10 @@ describe("AgentSelector", () => {
     mockGetAgentsList.mockResolvedValue(null);
     render(<AgentSelector {...defaultProps} />);
     await waitFor(() => {
-      expect(screen.getByTestId("agent-select")).toHaveAttribute("data-loading", "false");
+      expect(screen.getByTestId("agent-select")).toHaveAttribute(
+        "data-loading",
+        "false",
+      );
     });
   });
 });

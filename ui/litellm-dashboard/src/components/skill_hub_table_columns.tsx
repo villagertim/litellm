@@ -1,13 +1,13 @@
-import { ColumnDef } from "@tanstack/react-table";
+import { CopyOutlined, LinkOutlined } from "@ant-design/icons";
+import type { ColumnDef } from "@tanstack/react-table";
 import { Badge, Text } from "@tremor/react";
 import { Tooltip } from "antd";
-import { CopyOutlined, LinkOutlined } from "@ant-design/icons";
-import { Plugin } from "./claude_code_plugins/types";
+import type { Plugin } from "./claude_code_plugins/types";
 
 export const skillHubColumns = (
   showModal: (skill: Plugin) => void,
   copyToClipboard: (text: string) => void,
-  publicPage: boolean = false,
+  publicPage = false,
 ): ColumnDef<Plugin>[] => [
   {
     header: "Skill Name",
@@ -47,7 +47,9 @@ export const skillHubColumns = (
     accessorKey: "description",
     enableSorting: false,
     cell: ({ row }) => (
-      <Text className="text-xs line-clamp-2">{row.original.description || "-"}</Text>
+      <Text className="text-xs line-clamp-2">
+        {row.original.description || "-"}
+      </Text>
     ),
   },
   {
@@ -57,7 +59,11 @@ export const skillHubColumns = (
     cell: ({ row }) => {
       const cat = row.original.category;
       if (!cat) return <Text className="text-xs text-gray-400">-</Text>;
-      return <Badge color="blue" size="xs">{cat}</Badge>;
+      return (
+        <Badge color="blue" size="xs">
+          {cat}
+        </Badge>
+      );
     },
   },
   {

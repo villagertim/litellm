@@ -1,8 +1,12 @@
 import NotificationManager from "../molecules/notifications_manager";
-import { Model, modelCreateCall } from "../networking";
+import { type Model, modelCreateCall } from "../networking";
 import { provider_map } from "../provider_info_helpers";
 
-export const prepareModelAddRequest = async (formValues: Record<string, any>, accessToken: string, form: any) => {
+export const prepareModelAddRequest = async (
+  formValues: Record<string, any>,
+  accessToken: string,
+  form: any,
+) => {
   try {
     console.log("handling submit for formValues:", formValues);
 
@@ -16,7 +20,8 @@ export const prepareModelAddRequest = async (formValues: Record<string, any>, ac
     if (formValues["model"] && formValues["model"].includes("all-wildcard")) {
       const customProviderKey = formValues["custom_llm_provider"] as string;
       const mappedProvider =
-        provider_map[customProviderKey as keyof typeof provider_map] ?? customProviderKey.toLowerCase();
+        provider_map[customProviderKey as keyof typeof provider_map] ??
+        customProviderKey.toLowerCase();
       const litellm_custom_provider = mappedProvider;
       const wildcardModel = litellm_custom_provider + "/*";
       formValues["model_name"] = wildcardModel;
@@ -39,11 +44,21 @@ export const prepareModelAddRequest = async (formValues: Record<string, any>, ac
 
       // Handle pricing conversion before processing other fields
       // Use explicit checks to allow 0 (zero cost models for budget bypass)
-      if (formValues.input_cost_per_token !== undefined && formValues.input_cost_per_token !== null && formValues.input_cost_per_token !== "") {
-        formValues.input_cost_per_token = Number(formValues.input_cost_per_token) / 1000000;
+      if (
+        formValues.input_cost_per_token !== undefined &&
+        formValues.input_cost_per_token !== null &&
+        formValues.input_cost_per_token !== ""
+      ) {
+        formValues.input_cost_per_token =
+          Number(formValues.input_cost_per_token) / 1000000;
       }
-      if (formValues.output_cost_per_token !== undefined && formValues.output_cost_per_token !== null && formValues.output_cost_per_token !== "") {
-        formValues.output_cost_per_token = Number(formValues.output_cost_per_token) / 1000000;
+      if (
+        formValues.output_cost_per_token !== undefined &&
+        formValues.output_cost_per_token !== null &&
+        formValues.output_cost_per_token !== ""
+      ) {
+        formValues.output_cost_per_token =
+          Number(formValues.output_cost_per_token) / 1000000;
       }
       // Keep input_cost_per_second as is, no conversion needed
 
@@ -55,7 +70,11 @@ export const prepareModelAddRequest = async (formValues: Record<string, any>, ac
           continue;
         }
         // Skip the custom_pricing and pricing_model fields as they're only used for UI control
-        if (key === "custom_pricing" || key === "pricing_model" || key === "cache_control") {
+        if (
+          key === "custom_pricing" ||
+          key === "pricing_model" ||
+          key === "cache_control"
+        ) {
           continue;
         }
         if (key == "model_name") {
@@ -63,7 +82,9 @@ export const prepareModelAddRequest = async (formValues: Record<string, any>, ac
         } else if (key == "custom_llm_provider") {
           console.log("custom_llm_provider:", value);
           const providerKey = value as string;
-          const mappingResult = provider_map[providerKey as keyof typeof provider_map] ?? providerKey.toLowerCase();
+          const mappingResult =
+            provider_map[providerKey as keyof typeof provider_map] ??
+            providerKey.toLowerCase();
           litellmParamsObj["custom_llm_provider"] = mappingResult;
           console.log("custom_llm_provider mappingResult:", mappingResult);
         } else if (key == "model") {
@@ -95,7 +116,9 @@ export const prepareModelAddRequest = async (formValues: Record<string, any>, ac
                 delete litellmExtraParams.litellm_credential_name;
               }
             } catch (error) {
-              NotificationManager.fromBackend("Failed to parse LiteLLM Extra Params: " + error);
+              NotificationManager.fromBackend(
+                "Failed to parse LiteLLM Extra Params: " + error,
+              );
               throw new Error("Failed to parse litellm_extra_params: " + error);
             }
             for (const [key, value] of Object.entries(litellmExtraParams)) {
@@ -109,7 +132,9 @@ export const prepareModelAddRequest = async (formValues: Record<string, any>, ac
             try {
               modelInfoParams = JSON.parse(value);
             } catch (error) {
-              NotificationManager.fromBackend("Failed to parse LiteLLM Extra Params: " + error);
+              NotificationManager.fromBackend(
+                "Failed to parse LiteLLM Extra Params: " + error,
+              );
               throw new Error("Failed to parse litellm_extra_params: " + error);
             }
             for (const [key, value] of Object.entries(modelInfoParams)) {
@@ -119,7 +144,11 @@ export const prepareModelAddRequest = async (formValues: Record<string, any>, ac
         }
 
         // Handle the pricing fields
-        else if (key === "input_cost_per_token" || key === "output_cost_per_token" || key === "input_cost_per_second") {
+        else if (
+          key === "input_cost_per_token" ||
+          key === "output_cost_per_token" ||
+          key === "input_cost_per_second"
+        ) {
           if (value !== undefined && value !== null && value !== "") {
             litellmParamsObj[key] = Number(value);
           }
@@ -142,7 +171,12 @@ export const prepareModelAddRequest = async (formValues: Record<string, any>, ac
   }
 };
 
-export const handleAddModelSubmit = async (values: any, accessToken: string, form: any, callback?: () => void) => {
+export const handleAddModelSubmit = async (
+  values: any,
+  accessToken: string,
+  form: any,
+  callback?: () => void,
+) => {
   try {
     const deployments = await prepareModelAddRequest(values, accessToken, form);
 

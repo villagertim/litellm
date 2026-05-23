@@ -17,7 +17,10 @@
     "e2e": "playwright test --config e2e_tests/playwright.config.ts",
     "e2e:ui": "playwright test --ui --config e2e_tests/playwright.config.ts",
     "knip": "knip",
-    "knip:fix": "knip --fix"
+    "knip:fix": "knip --fix",
+    "biome:format": "biome format --write .",
+    "biome:lint": "biome lint --write .",
+    "biome:check": "biome check --write ."
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.92.0",
@@ -78,7 +81,8 @@
     "tailwindcss": "3.4.19",
     "typescript": "5.9.3",
     "vite": "7.3.2",
-    "vitest": "3.2.4"
+    "vitest": "3.2.4",
+    "@biomejs/biome": "1.8.3"
   },
   "overrides": {
     "prismjs": "1.30.0",

@@ -1,7 +1,7 @@
 "use client";
 
-import BudgetPanel from "@/components/budgets/budget_panel";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import BudgetPanel from "@/components/budgets/budget_panel";
 
 const BudgetsPage = () => {
   const { accessToken } = useAuthorized();

@@ -1,25 +1,29 @@
-import React, { useState } from "react";
 import {
-  Card,
-  Title,
-  Text,
-  Grid,
   Badge,
-  Button as TremorButton,
+  Card,
+  Grid,
   Tab,
   TabGroup,
   TabList,
   TabPanel,
   TabPanels,
+  Text,
   TextInput,
+  Title,
+  Button as TremorButton,
 } from "@tremor/react";
-import { Button, Form, Input, Switch, InputNumber, Select } from "antd";
-import { updatePassThroughEndpoint, deletePassThroughEndpointsCall } from "./networking";
+import { Button, Form, Input, InputNumber, Select, Switch } from "antd";
 import { Eye, EyeOff } from "lucide-react";
-import RoutePreview from "./route_preview";
-import NotificationsManager from "./molecules/notifications_manager";
-import PassThroughSecuritySection from "./common_components/PassThroughSecuritySection";
+import type React from "react";
+import { useState } from "react";
 import PassThroughGuardrailsSection from "./common_components/PassThroughGuardrailsSection";
+import PassThroughSecuritySection from "./common_components/PassThroughSecuritySection";
+import NotificationsManager from "./molecules/notifications_manager";
+import {
+  deletePassThroughEndpointsCall,
+  updatePassThroughEndpoint,
+} from "./networking";
+import RoutePreview from "./route_preview";
 
 const HTTP_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"];
 const { Option } = Select;
@@ -42,7 +46,10 @@ interface PassThroughEndpoint {
   cost_per_request?: number;
   auth?: boolean;
   methods?: string[];
-  guardrails?: Record<string, { request_fields?: string[]; response_fields?: string[] } | null>;
+  guardrails?: Record<
+    string,
+    { request_fields?: string[]; response_fields?: string[] } | null
+  >;
 }
 
 // Password field component for headers
@@ -55,8 +62,16 @@ const PasswordField: React.FC<{ value: Record<string, any> }> = ({ value }) => {
       <pre className="font-mono text-xs bg-gray-50 p-2 rounded max-w-md overflow-auto">
         {showPassword ? headerString : "••••••••"}
       </pre>
-      <button onClick={() => setShowPassword(!showPassword)} className="p-1 hover:bg-gray-100 rounded" type="button">
-        {showPassword ? <EyeOff className="w-4 h-4 text-gray-500" /> : <Eye className="w-4 h-4 text-gray-500" />}
+      <button
+        onClick={() => setShowPassword(!showPassword)}
+        className="p-1 hover:bg-gray-100 rounded"
+        type="button"
+      >
+        {showPassword ? (
+          <EyeOff className="w-4 h-4 text-gray-500" />
+        ) : (
+          <Eye className="w-4 h-4 text-gray-500" />
+        )}
       </button>
     </div>
   );
@@ -70,14 +85,23 @@ const PassThroughInfoView: React.FC<PassThroughInfoProps> = ({
   premiumUser = false,
   onEndpointUpdated,
 }) => {
-  const [endpointData, setEndpointData] = useState<PassThroughEndpoint | null>(initialEndpointData);
+  const [endpointData, setEndpointData] = useState<PassThroughEndpoint | null>(
+    initialEndpointData,
+  );
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [authEnabled, setAuthEnabled] = useState(initialEndpointData?.auth || false);
-  const [selectedMethods, setSelectedMethods] = useState<string[]>(initialEndpointData?.methods || []);
-  const [guardrails, setGuardrails] = useState<Record<string, { request_fields?: string[]; response_fields?: string[] } | null>>(
-    initialEndpointData?.guardrails || {}
+  const [authEnabled, setAuthEnabled] = useState(
+    initialEndpointData?.auth || false,
   );
+  const [selectedMethods, setSelectedMethods] = useState<string[]>(
+    initialEndpointData?.methods || [],
+  );
+  const [guardrails, setGuardrails] = useState<
+    Record<
+      string,
+      { request_fields?: string[]; response_fields?: string[] } | null
+    >
+  >(initialEndpointData?.guardrails || {});
   const [form] = Form.useForm();
 
   const handleEndpointUpdate = async (values: any) => {
@@ -88,7 +112,10 @@ const PassThroughInfoView: React.FC<PassThroughInfoProps> = ({
       let headers = {};
       if (values.headers) {
         try {
-          headers = typeof values.headers === "string" ? JSON.parse(values.headers) : values.headers;
+          headers =
+            typeof values.headers === "string"
+              ? JSON.parse(values.headers)
+              : values.headers;
         } catch (e) {
           NotificationsManager.fromBackend("Invalid JSON format for headers");
           return;
@@ -102,8 +129,14 @@ const PassThroughInfoView: React.FC<PassThroughInfoProps> = ({
         include_subpath: values.include_subpath,
         cost_per_request: values.cost_per_request,
         auth: premiumUser ? values.auth : undefined,
-        methods: selectedMethods && selectedMethods.length > 0 ? selectedMethods : undefined,
-        guardrails: guardrails && Object.keys(guardrails).length > 0 ? guardrails : undefined,
+        methods:
+          selectedMethods && selectedMethods.length > 0
+            ? selectedMethods
+            : undefined,
+        guardrails:
+          guardrails && Object.keys(guardrails).length > 0
+            ? guardrails
+            : undefined,
       };
 
       await updatePassThroughEndpoint(accessToken, endpointData.id, updateData);
@@ -120,7 +153,9 @@ const PassThroughInfoView: React.FC<PassThroughInfoProps> = ({
       }
     } catch (error) {
       console.error("Error updating endpoint:", error);
-      NotificationsManager.fromBackend("Failed to update pass through endpoint");
+      NotificationsManager.fromBackend(
+        "Failed to update pass through endpoint",
+      );
     }
   };
 
@@ -129,14 +164,18 @@ const PassThroughInfoView: React.FC<PassThroughInfoProps> = ({
       if (!accessToken || !endpointData?.id) return;
 
       await deletePassThroughEndpointsCall(accessToken, endpointData.id);
-      NotificationsManager.success("Pass through endpoint deleted successfully");
+      NotificationsManager.success(
+        "Pass through endpoint deleted successfully",
+      );
       onClose();
       if (onEndpointUpdated) {
         onEndpointUpdated();
       }
     } catch (error) {
       console.error("Error deleting endpoint:", error);
-      NotificationsManager.fromBackend("Failed to delete pass through endpoint");
+      NotificationsManager.fromBackend(
+        "Failed to delete pass through endpoint",
+      );
     }
   };
 
@@ -188,8 +227,12 @@ const PassThroughInfoView: React.FC<PassThroughInfoProps> = ({
                 <Text>Configuration</Text>
                 <div className="mt-2 space-y-2">
                   <div>
-                    <Badge color={endpointData.include_subpath ? "green" : "gray"}>
-                      {endpointData.include_subpath ? "Include Subpath" : "Exact Path"}
+                    <Badge
+                      color={endpointData.include_subpath ? "green" : "gray"}
+                    >
+                      {endpointData.include_subpath
+                        ? "Include Subpath"
+                        : "Exact Path"}
                     </Badge>
                   </div>
                   <div>
@@ -199,7 +242,9 @@ const PassThroughInfoView: React.FC<PassThroughInfoProps> = ({
                   </div>
                   {endpointData.methods && endpointData.methods.length > 0 && (
                     <div>
-                      <Text className="text-xs text-gray-500">HTTP Methods:</Text>
+                      <Text className="text-xs text-gray-500">
+                        HTTP Methods:
+                      </Text>
                       <div className="flex flex-wrap gap-1 mt-1">
                         {endpointData.methods.map((method) => (
                           <Badge key={method} color="indigo" size="sm">
@@ -209,14 +254,19 @@ const PassThroughInfoView: React.FC<PassThroughInfoProps> = ({
                       </div>
                     </div>
                   )}
-                  {(!endpointData.methods || endpointData.methods.length === 0) && (
+                  {(!endpointData.methods ||
+                    endpointData.methods.length === 0) && (
                     <div>
-                      <Text className="text-xs text-gray-500">All HTTP methods supported</Text>
+                      <Text className="text-xs text-gray-500">
+                        All HTTP methods supported
+                      </Text>
                     </div>
                   )}
                   {endpointData.cost_per_request !== undefined && (
                     <div>
-                      <Text>Cost per request: ${endpointData.cost_per_request}</Text>
+                      <Text>
+                        Cost per request: ${endpointData.cost_per_request}
+                      </Text>
                     </div>
                   )}
                 </div>
@@ -232,44 +282,66 @@ const PassThroughInfoView: React.FC<PassThroughInfoProps> = ({
               />
             </div>
 
-            {endpointData.headers && Object.keys(endpointData.headers).length > 0 && (
-              <Card className="mt-6">
-                <div className="flex justify-between items-center">
-                  <Text className="font-medium">Headers</Text>
-                  <Badge color="blue">{Object.keys(endpointData.headers).length} headers configured</Badge>
-                </div>
-                <div className="mt-4">
-                  <PasswordField value={endpointData.headers} />
-                </div>
-              </Card>
-            )}
+            {endpointData.headers &&
+              Object.keys(endpointData.headers).length > 0 && (
+                <Card className="mt-6">
+                  <div className="flex justify-between items-center">
+                    <Text className="font-medium">Headers</Text>
+                    <Badge color="blue">
+                      {Object.keys(endpointData.headers).length} headers
+                      configured
+                    </Badge>
+                  </div>
+                  <div className="mt-4">
+                    <PasswordField value={endpointData.headers} />
+                  </div>
+                </Card>
+              )}
 
-            {endpointData.guardrails && Object.keys(endpointData.guardrails).length > 0 && (
-              <Card className="mt-6">
-                <div className="flex justify-between items-center">
-                  <Text className="font-medium">Guardrails</Text>
-                  <Badge color="purple">{Object.keys(endpointData.guardrails).length} guardrails configured</Badge>
-                </div>
-                <div className="mt-4 space-y-2">
-                  {Object.entries(endpointData.guardrails).map(([name, settings]) => (
-                    <div key={name} className="p-3 bg-gray-50 rounded">
-                      <div className="font-medium text-sm">{name}</div>
-                      {settings && (settings.request_fields || settings.response_fields) && (
-                        <div className="mt-2 text-xs text-gray-600 space-y-1">
-                          {settings.request_fields && (
-                            <div>Request fields: {settings.request_fields.join(", ")}</div>
-                          )}
-                          {settings.response_fields && (
-                            <div>Response fields: {settings.response_fields.join(", ")}</div>
+            {endpointData.guardrails &&
+              Object.keys(endpointData.guardrails).length > 0 && (
+                <Card className="mt-6">
+                  <div className="flex justify-between items-center">
+                    <Text className="font-medium">Guardrails</Text>
+                    <Badge color="purple">
+                      {Object.keys(endpointData.guardrails).length} guardrails
+                      configured
+                    </Badge>
+                  </div>
+                  <div className="mt-4 space-y-2">
+                    {Object.entries(endpointData.guardrails).map(
+                      ([name, settings]) => (
+                        <div key={name} className="p-3 bg-gray-50 rounded">
+                          <div className="font-medium text-sm">{name}</div>
+                          {settings &&
+                            (settings.request_fields ||
+                              settings.response_fields) && (
+                              <div className="mt-2 text-xs text-gray-600 space-y-1">
+                                {settings.request_fields && (
+                                  <div>
+                                    Request fields:{" "}
+                                    {settings.request_fields.join(", ")}
+                                  </div>
+                                )}
+                                {settings.response_fields && (
+                                  <div>
+                                    Response fields:{" "}
+                                    {settings.response_fields.join(", ")}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          {!settings && (
+                            <div className="text-xs text-gray-600 mt-1">
+                              Uses entire payload
+                            </div>
                           )}
                         </div>
-                      )}
-                      {!settings && <div className="text-xs text-gray-600 mt-1">Uses entire payload</div>}
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            )}
+                      ),
+                    )}
+                  </div>
+                </Card>
+              )}
           </TabPanel>
 
           {/* Settings Panel (only for admins) */}
@@ -281,8 +353,14 @@ const PassThroughInfoView: React.FC<PassThroughInfoProps> = ({
                   <div className="space-x-2">
                     {!isEditing && (
                       <>
-                        <TremorButton onClick={() => setIsEditing(true)}>Edit Settings</TremorButton>
-                        <TremorButton onClick={handleDeleteEndpoint} variant="secondary" color="red">
+                        <TremorButton onClick={() => setIsEditing(true)}>
+                          Edit Settings
+                        </TremorButton>
+                        <TremorButton
+                          onClick={handleDeleteEndpoint}
+                          variant="secondary"
+                          color="red"
+                        >
                           Delete Endpoint
                         </TremorButton>
                       </>
@@ -296,7 +374,9 @@ const PassThroughInfoView: React.FC<PassThroughInfoProps> = ({
                     onFinish={handleEndpointUpdate}
                     initialValues={{
                       target: endpointData.target,
-                      headers: endpointData.headers ? JSON.stringify(endpointData.headers, null, 2) : "",
+                      headers: endpointData.headers
+                        ? JSON.stringify(endpointData.headers, null, 2)
+                        : "",
                       include_subpath: endpointData.include_subpath || false,
                       cost_per_request: endpointData.cost_per_request,
                       auth: endpointData.auth || false,
@@ -307,7 +387,12 @@ const PassThroughInfoView: React.FC<PassThroughInfoProps> = ({
                     <Form.Item
                       label="Target URL"
                       name="target"
-                      rules={[{ required: true, message: "Please input a target URL" }]}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input a target URL",
+                        },
+                      ]}
                     >
                       <TextInput placeholder="https://api.example.com" />
                     </Form.Item>
@@ -319,12 +404,12 @@ const PassThroughInfoView: React.FC<PassThroughInfoProps> = ({
                       />
                     </Form.Item>
 
-                    <Form.Item 
+                    <Form.Item
                       label="HTTP Methods (Optional)"
                       name="methods"
                       extra={
-                        selectedMethods.length === 0 
-                          ? "All HTTP methods supported (default)" 
+                        selectedMethods.length === 0
+                          ? "All HTTP methods supported (default)"
                           : `Only ${selectedMethods.join(", ")} requests will be routed to this endpoint`
                       }
                     >
@@ -344,12 +429,22 @@ const PassThroughInfoView: React.FC<PassThroughInfoProps> = ({
                       </Select>
                     </Form.Item>
 
-                    <Form.Item label="Include Subpath" name="include_subpath" valuePropName="checked">
+                    <Form.Item
+                      label="Include Subpath"
+                      name="include_subpath"
+                      valuePropName="checked"
+                    >
                       <Switch />
                     </Form.Item>
 
                     <Form.Item label="Cost per Request" name="cost_per_request">
-                      <InputNumber min={0} step={0.01} precision={2} placeholder="0.00" addonBefore="$" />
+                      <InputNumber
+                        min={0}
+                        step={0.01}
+                        precision={2}
+                        placeholder="0.00"
+                        addonBefore="$"
+                      />
                     </Form.Item>
 
                     <PassThroughSecuritySection
@@ -370,7 +465,9 @@ const PassThroughInfoView: React.FC<PassThroughInfoProps> = ({
                     </div>
 
                     <div className="flex justify-end gap-2 mt-6">
-                      <Button onClick={() => setIsEditing(false)}>Cancel</Button>
+                      <Button onClick={() => setIsEditing(false)}>
+                        Cancel
+                      </Button>
                       <TremorButton>Save Changes</TremorButton>
                     </div>
                   </Form>
@@ -386,7 +483,9 @@ const PassThroughInfoView: React.FC<PassThroughInfoProps> = ({
                     </div>
                     <div>
                       <Text className="font-medium">Include Subpath</Text>
-                      <Badge color={endpointData.include_subpath ? "green" : "gray"}>
+                      <Badge
+                        color={endpointData.include_subpath ? "green" : "gray"}
+                      >
                         {endpointData.include_subpath ? "Yes" : "No"}
                       </Badge>
                     </div>
@@ -397,19 +496,24 @@ const PassThroughInfoView: React.FC<PassThroughInfoProps> = ({
                       </div>
                     )}
                     <div>
-                      <Text className="font-medium">Authentication Required</Text>
+                      <Text className="font-medium">
+                        Authentication Required
+                      </Text>
                       <Badge color={endpointData.auth ? "green" : "gray"}>
                         {endpointData.auth ? "Yes" : "No"}
                       </Badge>
                     </div>
                     <div>
                       <Text className="font-medium">Headers</Text>
-                      {endpointData.headers && Object.keys(endpointData.headers).length > 0 ? (
+                      {endpointData.headers &&
+                      Object.keys(endpointData.headers).length > 0 ? (
                         <div className="mt-2">
                           <PasswordField value={endpointData.headers} />
                         </div>
                       ) : (
-                        <div className="text-gray-500">No headers configured</div>
+                        <div className="text-gray-500">
+                          No headers configured
+                        </div>
                       )}
                     </div>
                   </div>

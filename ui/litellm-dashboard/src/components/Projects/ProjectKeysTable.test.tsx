@@ -1,10 +1,12 @@
-import { describe, it, expect, vi } from "vitest";
+import type { KeyResponse } from "@/components/key_team_helpers/key_list";
+import { describe, expect, it, vi } from "vitest";
 import { renderWithProviders, screen } from "../../../tests/test-utils";
 import { ProjectKeysTable } from "./ProjectKeysTable";
-import { KeyResponse } from "@/components/key_team_helpers/key_list";
 
 vi.mock("@/components/common_components/DefaultProxyAdminTag", () => ({
-  default: ({ userId }: { userId: string }) => <span data-testid="owner-tag">{userId}</span>,
+  default: ({ userId }: { userId: string }) => (
+    <span data-testid="owner-tag">{userId}</span>
+  ),
 }));
 
 function makeKey(overrides: Partial<KeyResponse> = {}): KeyResponse {
@@ -80,22 +82,30 @@ describe("ProjectKeysTable", () => {
   });
 
   it("should display the key alias when provided", () => {
-    renderWithProviders(<ProjectKeysTable keys={[makeKey({ key_alias: "My API Key" })]} />);
+    renderWithProviders(
+      <ProjectKeysTable keys={[makeKey({ key_alias: "My API Key" })]} />,
+    );
     expect(screen.getByText("My API Key")).toBeInTheDocument();
   });
 
   it("should display '—' when the key alias is null", () => {
     // Provide a user_id so only the alias column shows "—" (not the owner column too)
     renderWithProviders(
-      <ProjectKeysTable keys={[makeKey({ key_alias: null as any, user_id: "owner-1" })]} />
+      <ProjectKeysTable
+        keys={[makeKey({ key_alias: null as any, user_id: "owner-1" })]}
+      />,
     );
     expect(screen.getByText("—")).toBeInTheDocument();
   });
 
   it("should display the owner using user.user_email when available", () => {
-    const key = makeKey({ user: { user_id: "u1", user_email: "alice@example.com" } });
+    const key = makeKey({
+      user: { user_id: "u1", user_email: "alice@example.com" },
+    });
     renderWithProviders(<ProjectKeysTable keys={[key]} />);
-    expect(screen.getByTestId("owner-tag")).toHaveTextContent("alice@example.com");
+    expect(screen.getByTestId("owner-tag")).toHaveTextContent(
+      "alice@example.com",
+    );
   });
 
   it("should fall back to user_id when user.user_email is absent", () => {
@@ -105,13 +115,17 @@ describe("ProjectKeysTable", () => {
   });
 
   it("should display 'Never' in the Last Active column when last_active is null", () => {
-    renderWithProviders(<ProjectKeysTable keys={[makeKey({ last_active: null })]} />);
+    renderWithProviders(
+      <ProjectKeysTable keys={[makeKey({ last_active: null })]} />,
+    );
     expect(screen.getByText("Never")).toBeInTheDocument();
   });
 
   it("should display a formatted date in the Last Active column when last_active is provided", () => {
     renderWithProviders(
-      <ProjectKeysTable keys={[makeKey({ last_active: "2024-06-15T10:00:00Z" })]} />
+      <ProjectKeysTable
+        keys={[makeKey({ last_active: "2024-06-15T10:00:00Z" })]}
+      />,
     );
     expect(screen.queryByText("Never")).not.toBeInTheDocument();
   });

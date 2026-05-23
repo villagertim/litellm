@@ -1,14 +1,21 @@
-import React, { useState, useRef, useEffect } from "react";
+import {
+  DownloadOutlined,
+  FileExcelOutlined,
+  FilePdfOutlined,
+} from "@ant-design/icons";
 import { Button } from "@tremor/react";
-import { DownloadOutlined, FilePdfOutlined, FileExcelOutlined } from "@ant-design/icons";
-import { MultiModelResult } from "./types";
-import { exportMultiToPDF, exportMultiToCSV } from "./multi_export_utils";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
+import { exportMultiToCSV, exportMultiToPDF } from "./multi_export_utils";
+import type { MultiModelResult } from "./types";
 
 interface MultiExportDropdownProps {
   multiResult: MultiModelResult;
 }
 
-const MultiExportDropdown: React.FC<MultiExportDropdownProps> = ({ multiResult }) => {
+const MultiExportDropdown: React.FC<MultiExportDropdownProps> = ({
+  multiResult,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -74,4 +81,3 @@ const MultiExportDropdown: React.FC<MultiExportDropdownProps> = ({ multiResult }
 };
 
 export default MultiExportDropdown;
-

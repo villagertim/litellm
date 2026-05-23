@@ -1,5 +1,5 @@
+import { describe, expect, it } from "vitest";
 import { processSSOSettingsPayload } from "./utils";
-import { describe, it, expect } from "vitest";
 
 describe("processSSOSettingsPayload", () => {
   describe("without role mappings", () => {
@@ -176,7 +176,11 @@ describe("processSSOSettingsPayload", () => {
 
       const result = processSSOSettingsPayload(formValues);
 
-      expect(result.role_mappings.roles.proxy_admin).toEqual(["admin1", "admin2", "admin3"]);
+      expect(result.role_mappings.roles.proxy_admin).toEqual([
+        "admin1",
+        "admin2",
+        "admin3",
+      ]);
     });
   });
 

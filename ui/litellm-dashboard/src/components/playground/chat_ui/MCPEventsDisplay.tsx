@@ -1,5 +1,5 @@
-import React from "react";
-import { Typography, Collapse } from "antd";
+import { Collapse, Typography } from "antd";
+import type React from "react";
 import type { MCPEvent } from "../../mcp_tools/types";
 
 const { Text } = Typography;
@@ -10,7 +10,10 @@ interface MCPEventsDisplayProps {
   className?: string;
 }
 
-const MCPEventsDisplay: React.FC<MCPEventsDisplayProps> = ({ events, className }) => {
+const MCPEventsDisplay: React.FC<MCPEventsDisplayProps> = ({
+  events,
+  className,
+}) => {
   console.log("MCPEventsDisplay: Received events:", events);
 
   if (!events || events.length === 0) {
@@ -29,7 +32,9 @@ const MCPEventsDisplay: React.FC<MCPEventsDisplayProps> = ({ events, className }
 
   // Find MCP call events
   const mcpCallEvents = events.filter(
-    (event) => event.type === "response.output_item.done" && event.item?.type === "mcp_call",
+    (event) =>
+      event.type === "response.output_item.done" &&
+      event.item?.type === "mcp_call",
   );
 
   console.log("MCPEventsDisplay: toolsEvent:", toolsEvent);
@@ -169,7 +174,11 @@ const MCPEventsDisplay: React.FC<MCPEventsDisplayProps> = ({ events, className }
           ghost
           size="small"
           expandIconPosition="start"
-          defaultActiveKey={toolsEvent ? ["list-tools"] : mcpCallEvents.map((_, index) => `mcp-call-${index}`)}
+          defaultActiveKey={
+            toolsEvent
+              ? ["list-tools"]
+              : mcpCallEvents.map((_, index) => `mcp-call-${index}`)
+          }
         >
           {/* List Tools Panel */}
           {toolsEvent && (
@@ -186,7 +195,10 @@ const MCPEventsDisplay: React.FC<MCPEventsDisplayProps> = ({ events, className }
 
           {/* MCP Call Panels */}
           {mcpCallEvents.map((callEvent, index) => (
-            <Panel header={callEvent.item?.name || "Tool call"} key={`mcp-call-${index}`}>
+            <Panel
+              header={callEvent.item?.name || "Tool call"}
+              key={`mcp-call-${index}`}
+            >
               <div>
                 {/* Request section */}
                 <div className="mcp-section">
@@ -196,7 +208,11 @@ const MCPEventsDisplay: React.FC<MCPEventsDisplayProps> = ({ events, className }
                       <pre className="mcp-json">
                         {(() => {
                           try {
-                            return JSON.stringify(JSON.parse(callEvent.item.arguments), null, 2);
+                            return JSON.stringify(
+                              JSON.parse(callEvent.item.arguments),
+                              null,
+                              2,
+                            );
                           } catch (e) {
                             return callEvent.item.arguments;
                           }
@@ -217,7 +233,9 @@ const MCPEventsDisplay: React.FC<MCPEventsDisplayProps> = ({ events, className }
                 {callEvent.item?.output && (
                   <div className="mcp-section">
                     <div className="mcp-section-header">Response</div>
-                    <div className="mcp-response-content">{callEvent.item.output}</div>
+                    <div className="mcp-response-content">
+                      {callEvent.item.output}
+                    </div>
                   </div>
                 )}
               </div>

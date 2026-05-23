@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { ReactNode } from "react";
+import { renderHook, waitFor } from "@testing-library/react";
+import React, { type ReactNode } from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useCloudZeroCreate } from "./useCloudZeroCreate";
 
 const {
@@ -61,19 +61,26 @@ describe("useCloudZeroCreate", () => {
     React.createElement(QueryClientProvider, { client: queryClient }, children);
 
   it("should render", () => {
-    const { result } = renderHook(() => useCloudZeroCreate(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroCreate(mockAccessToken), {
+      wrapper,
+    });
 
     expect(result.current).toBeDefined();
   });
 
   it("should successfully create CloudZero integration with all parameters", async () => {
-    const mockResponse = { message: "Integration created successfully", status: "success" };
+    const mockResponse = {
+      message: "Integration created successfully",
+      status: "success",
+    };
     (fetchSpy as any).mockResolvedValue({
       ok: true,
       json: async () => mockResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroCreate(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroCreate(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({
       connection_id: "test-connection-id",
@@ -86,28 +93,36 @@ describe("useCloudZeroCreate", () => {
     });
 
     expect(result.current.data).toEqual(mockResponse);
-    expect(fetchSpy).toHaveBeenCalledWith(`${mockProxyBaseUrl}/cloudzero/init`, {
-      method: "POST",
-      headers: {
-        [mockHeaderName]: `Bearer ${mockAccessToken}`,
-        "Content-Type": "application/json",
+    expect(fetchSpy).toHaveBeenCalledWith(
+      `${mockProxyBaseUrl}/cloudzero/init`,
+      {
+        method: "POST",
+        headers: {
+          [mockHeaderName]: `Bearer ${mockAccessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          connection_id: "test-connection-id",
+          timezone: "America/New_York",
+          api_key: "test-api-key",
+        }),
       },
-      body: JSON.stringify({
-        connection_id: "test-connection-id",
-        timezone: "America/New_York",
-        api_key: "test-api-key",
-      }),
-    });
+    );
   });
 
   it("should successfully create CloudZero integration with minimal parameters", async () => {
-    const mockResponse = { message: "Integration created successfully", status: "success" };
+    const mockResponse = {
+      message: "Integration created successfully",
+      status: "success",
+    };
     (fetchSpy as any).mockResolvedValue({
       ok: true,
       json: async () => mockResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroCreate(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroCreate(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({
       connection_id: "test-connection-id",
@@ -118,17 +133,20 @@ describe("useCloudZeroCreate", () => {
     });
 
     expect(result.current.data).toEqual(mockResponse);
-    expect(fetchSpy).toHaveBeenCalledWith(`${mockProxyBaseUrl}/cloudzero/init`, {
-      method: "POST",
-      headers: {
-        [mockHeaderName]: `Bearer ${mockAccessToken}`,
-        "Content-Type": "application/json",
+    expect(fetchSpy).toHaveBeenCalledWith(
+      `${mockProxyBaseUrl}/cloudzero/init`,
+      {
+        method: "POST",
+        headers: {
+          [mockHeaderName]: `Bearer ${mockAccessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          connection_id: "test-connection-id",
+          timezone: "UTC",
+        }),
       },
-      body: JSON.stringify({
-        connection_id: "test-connection-id",
-        timezone: "UTC",
-      }),
-    });
+    );
   });
 
   it("should use default timezone when not provided", async () => {
@@ -138,7 +156,9 @@ describe("useCloudZeroCreate", () => {
       json: async () => mockResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroCreate(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroCreate(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({
       connection_id: "test-connection-id",
@@ -159,7 +179,9 @@ describe("useCloudZeroCreate", () => {
       json: async () => mockResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroCreate(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroCreate(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({
       connection_id: "test-connection-id",
@@ -175,13 +197,17 @@ describe("useCloudZeroCreate", () => {
   });
 
   it("should handle error response with error.message", async () => {
-    const errorResponse = { error: { message: "Connection ID already exists" } };
+    const errorResponse = {
+      error: { message: "Connection ID already exists" },
+    };
     (fetchSpy as any).mockResolvedValue({
       ok: false,
       json: async () => errorResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroCreate(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroCreate(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({
       connection_id: "test-connection-id",
@@ -201,7 +227,9 @@ describe("useCloudZeroCreate", () => {
       json: async () => errorResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroCreate(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroCreate(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({
       connection_id: "test-connection-id",
@@ -221,7 +249,9 @@ describe("useCloudZeroCreate", () => {
       json: async () => errorResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroCreate(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroCreate(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({
       connection_id: "test-connection-id",
@@ -242,7 +272,9 @@ describe("useCloudZeroCreate", () => {
       },
     });
 
-    const { result } = renderHook(() => useCloudZeroCreate(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroCreate(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({
       connection_id: "test-connection-id",
@@ -252,14 +284,18 @@ describe("useCloudZeroCreate", () => {
       expect(result.current.isError).toBe(true);
     });
 
-    expect(result.current.error?.message).toBe("Failed to create CloudZero integration");
+    expect(result.current.error?.message).toBe(
+      "Failed to create CloudZero integration",
+    );
   });
 
   it("should handle network error", async () => {
     const networkError = new Error("Network request failed");
     (fetchSpy as any).mockRejectedValue(networkError);
 
-    const { result } = renderHook(() => useCloudZeroCreate(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroCreate(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({
       connection_id: "test-connection-id",
@@ -288,7 +324,9 @@ describe("useCloudZeroCreate", () => {
   });
 
   it("should throw error when accessToken is null", async () => {
-    const { result } = renderHook(() => useCloudZeroCreate(null as any), { wrapper });
+    const { result } = renderHook(() => useCloudZeroCreate(null as any), {
+      wrapper,
+    });
 
     result.current.mutate({
       connection_id: "test-connection-id",
@@ -310,7 +348,9 @@ describe("useCloudZeroCreate", () => {
       json: async () => mockResponse,
     });
 
-    const { result } = renderHook(() => useCloudZeroCreate(mockAccessToken), { wrapper });
+    const { result } = renderHook(() => useCloudZeroCreate(mockAccessToken), {
+      wrapper,
+    });
 
     result.current.mutate({
       connection_id: "test-connection-id",
@@ -320,6 +360,9 @@ describe("useCloudZeroCreate", () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(fetchSpy).toHaveBeenCalledWith("/cloudzero/init", expect.any(Object));
+    expect(fetchSpy).toHaveBeenCalledWith(
+      "/cloudzero/init",
+      expect.any(Object),
+    );
   });
 });

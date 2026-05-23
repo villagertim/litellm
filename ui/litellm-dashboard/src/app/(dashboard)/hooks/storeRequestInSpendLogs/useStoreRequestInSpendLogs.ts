@@ -1,7 +1,14 @@
-import { useMutation, UseMutationResult, useQueryClient } from "@tanstack/react-query";
-import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "@/components/networking";
-import useAuthorized from "../useAuthorized";
+import {
+  getGlobalLitellmHeaderName,
+  getProxyBaseUrl,
+} from "@/components/networking";
+import {
+  type UseMutationResult,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { proxyConfigKeys } from "../proxyConfig/useProxyConfig";
+import useAuthorized from "../useAuthorized";
 
 export interface StoreRequestInSpendLogsParams {
   store_prompts_in_spend_logs: boolean;
@@ -14,7 +21,7 @@ export interface StoreRequestInSpendLogsResponse {
 
 const performStoreRequestInSpendLogs = async (
   accessToken: string,
-  params: StoreRequestInSpendLogsParams
+  params: StoreRequestInSpendLogsParams,
 ): Promise<StoreRequestInSpendLogsResponse> => {
   const proxyBaseUrl = getProxyBaseUrl();
   const url = proxyBaseUrl ? `${proxyBaseUrl}/config/update` : `/config/update`;
@@ -29,7 +36,8 @@ const performStoreRequestInSpendLogs = async (
       general_settings: {
         store_prompts_in_spend_logs: params.store_prompts_in_spend_logs,
         ...(params.maximum_spend_logs_retention_period && {
-          maximum_spend_logs_retention_period: params.maximum_spend_logs_retention_period,
+          maximum_spend_logs_retention_period:
+            params.maximum_spend_logs_retention_period,
         }),
       },
     }),
@@ -38,7 +46,10 @@ const performStoreRequestInSpendLogs = async (
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     const errorMessage =
-      errorData?.error?.message || errorData?.message || errorData?.detail || "Failed to update spend logs settings";
+      errorData?.error?.message ||
+      errorData?.message ||
+      errorData?.detail ||
+      "Failed to update spend logs settings";
     throw new Error(errorMessage);
   }
 
@@ -54,7 +65,11 @@ export const useStoreRequestInSpendLogs = (): UseMutationResult<
   const { accessToken } = useAuthorized();
   const queryClient = useQueryClient();
 
-  return useMutation<StoreRequestInSpendLogsResponse, Error, StoreRequestInSpendLogsParams>({
+  return useMutation<
+    StoreRequestInSpendLogsResponse,
+    Error,
+    StoreRequestInSpendLogsParams
+  >({
     mutationFn: async (params: StoreRequestInSpendLogsParams) => {
       if (!accessToken) {
         throw new Error("Access token is required");

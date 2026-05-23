@@ -1,6 +1,6 @@
-import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 import { cleanup } from "@testing-library/react";
 import React from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../tests/test-utils";
 
 // Track addEventListener/removeEventListener calls for "beforeunload"
@@ -114,12 +114,16 @@ describe("UserDashboard beforeunload listener", () => {
   });
 
   it("does not add duplicate listeners on re-render", () => {
-    const { rerender } = renderWithProviders(<UserDashboard {...defaultProps} />);
+    const { rerender } = renderWithProviders(
+      <UserDashboard {...defaultProps} />,
+    );
 
     addEventListenerSpy.mockClear();
 
     // Re-render with different props to trigger a render cycle
-    rerender(<UserDashboard {...defaultProps} userEmail="updated@example.com" />);
+    rerender(
+      <UserDashboard {...defaultProps} userEmail="updated@example.com" />,
+    );
 
     const beforeUnloadCalls = addEventListenerSpy.mock.calls.filter(
       ([event]) => event === "beforeunload",

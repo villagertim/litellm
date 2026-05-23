@@ -1,13 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
-import { createQueryKeys } from "../common/queryKeysFactory";
+import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import {
-  getProxyBaseUrl,
-  getGlobalLitellmHeaderName,
   deriveErrorMessage,
+  getGlobalLitellmHeaderName,
+  getProxyBaseUrl,
   handleError,
 } from "@/components/networking";
 import { all_admin_roles } from "@/utils/roles";
-import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { useQuery } from "@tanstack/react-query";
+import { createQueryKeys } from "../common/queryKeysFactory";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -64,7 +64,6 @@ export const useAccessGroups = () => {
   return useQuery<AccessGroupResponse[]>({
     queryKey: accessGroupKeys.list({}),
     queryFn: async () => fetchAccessGroups(accessToken!),
-    enabled:
-      Boolean(accessToken) && all_admin_roles.includes(userRole || ""),
+    enabled: Boolean(accessToken) && all_admin_roles.includes(userRole || ""),
   });
 };

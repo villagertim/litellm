@@ -1,7 +1,7 @@
 import * as networking from "@/components/networking";
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
-import { renderWithProviders } from "../../../tests/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "../../../tests/test-utils";
 import MemberPermissions from "./member_permissions";
 
 vi.mock("@/components/networking", () => ({
@@ -20,7 +20,13 @@ describe("MemberPermissions", () => {
       team_member_permissions: ["/key/generate"],
     });
 
-    renderWithProviders(<MemberPermissions teamId="team-123" accessToken="token-123" canEditTeam={true} />);
+    renderWithProviders(
+      <MemberPermissions
+        teamId="team-123"
+        accessToken="token-123"
+        canEditTeam={true}
+      />,
+    );
 
     await waitFor(() => {
       expect(screen.getByText("Member Permissions")).toBeInTheDocument();
@@ -33,7 +39,13 @@ describe("MemberPermissions", () => {
       team_member_permissions: ["/key/generate"],
     });
 
-    renderWithProviders(<MemberPermissions teamId="team-123" accessToken="token-123" canEditTeam={true} />);
+    renderWithProviders(
+      <MemberPermissions
+        teamId="team-123"
+        accessToken="token-123"
+        canEditTeam={true}
+      />,
+    );
 
     await waitFor(() => {
       expect(screen.getByText("Method")).toBeInTheDocument();
@@ -49,7 +61,13 @@ describe("MemberPermissions", () => {
       team_member_permissions: [],
     });
 
-    renderWithProviders(<MemberPermissions teamId="team-123" accessToken="token-123" canEditTeam={true} />);
+    renderWithProviders(
+      <MemberPermissions
+        teamId="team-123"
+        accessToken="token-123"
+        canEditTeam={true}
+      />,
+    );
 
     await waitFor(() => {
       expect(screen.getByText("No permissions available")).toBeInTheDocument();
@@ -63,14 +81,22 @@ describe("MemberPermissions", () => {
     });
     vi.mocked(networking.teamPermissionsUpdateCall).mockResolvedValue({});
 
-    renderWithProviders(<MemberPermissions teamId="team-123" accessToken="token-123" canEditTeam={true} />);
+    renderWithProviders(
+      <MemberPermissions
+        teamId="team-123"
+        accessToken="token-123"
+        canEditTeam={true}
+      />,
+    );
 
     await waitFor(() => {
       expect(screen.getByText("Member Permissions")).toBeInTheDocument();
     });
 
     const checkboxes = screen.getAllByRole("checkbox");
-    const unselectedCheckbox = checkboxes.find((cb) => !(cb as HTMLInputElement).checked);
+    const unselectedCheckbox = checkboxes.find(
+      (cb) => !(cb as HTMLInputElement).checked,
+    );
 
     if (unselectedCheckbox) {
       await act(async () => {
@@ -78,7 +104,9 @@ describe("MemberPermissions", () => {
       });
 
       await waitFor(() => {
-        const saveButton = screen.getByRole("button", { name: /save changes/i });
+        const saveButton = screen.getByRole("button", {
+          name: /save changes/i,
+        });
         expect(saveButton).toBeInTheDocument();
       });
 
@@ -103,11 +131,21 @@ describe("MemberPermissions", () => {
       team_member_permissions: [],
     });
 
-    renderWithProviders(<MemberPermissions teamId="team-123" accessToken="token-123" canEditTeam={true} />);
+    renderWithProviders(
+      <MemberPermissions
+        teamId="team-123"
+        accessToken="token-123"
+        canEditTeam={true}
+      />,
+    );
 
     await waitFor(() => {
       expect(screen.getByText("/team/daily/activity")).toBeInTheDocument();
-      expect(screen.getByText("Member can view all team usage data (not just their own)")).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "Member can view all team usage data (not just their own)",
+        ),
+      ).toBeInTheDocument();
     });
   });
 
@@ -117,7 +155,13 @@ describe("MemberPermissions", () => {
       team_member_permissions: ["/key/generate"],
     });
 
-    renderWithProviders(<MemberPermissions teamId="team-123" accessToken="token-123" canEditTeam={false} />);
+    renderWithProviders(
+      <MemberPermissions
+        teamId="team-123"
+        accessToken="token-123"
+        canEditTeam={false}
+      />,
+    );
 
     await waitFor(() => {
       expect(screen.getByText("Member Permissions")).toBeInTheDocument();
@@ -128,7 +172,9 @@ describe("MemberPermissions", () => {
       expect(checkbox).toBeDisabled();
     });
 
-    expect(screen.queryByRole("button", { name: /save changes/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /save changes/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("should handle reset button click", async () => {
@@ -137,14 +183,22 @@ describe("MemberPermissions", () => {
       team_member_permissions: ["/key/generate"],
     });
 
-    renderWithProviders(<MemberPermissions teamId="team-123" accessToken="token-123" canEditTeam={true} />);
+    renderWithProviders(
+      <MemberPermissions
+        teamId="team-123"
+        accessToken="token-123"
+        canEditTeam={true}
+      />,
+    );
 
     await waitFor(() => {
       expect(screen.getByText("Member Permissions")).toBeInTheDocument();
     });
 
     const checkboxes = screen.getAllByRole("checkbox");
-    const unselectedCheckbox = checkboxes.find((cb) => !(cb as HTMLInputElement).checked);
+    const unselectedCheckbox = checkboxes.find(
+      (cb) => !(cb as HTMLInputElement).checked,
+    );
 
     if (unselectedCheckbox) {
       await act(async () => {

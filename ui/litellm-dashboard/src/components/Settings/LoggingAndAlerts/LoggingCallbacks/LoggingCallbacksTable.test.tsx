@@ -4,7 +4,9 @@ import { LoggingCallbacksTable } from "./LoggingCallbacksTable";
 
 describe("LoggingCallbacksTable", () => {
   it("should render", () => {
-    const { getByText } = render(<LoggingCallbacksTable callbacks={[]} availableCallbacks={{}} />);
+    const { getByText } = render(
+      <LoggingCallbacksTable callbacks={[]} availableCallbacks={{}} />,
+    );
     expect(getByText("Active Logging Callbacks")).toBeInTheDocument();
   });
 

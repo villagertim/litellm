@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { ProjectResponse } from "@/app/(dashboard)/hooks/projects/useProjects";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders, screen } from "../../../../tests/test-utils";
 import { EditProjectModal } from "./EditProjectModal";
-import { ProjectResponse } from "@/app/(dashboard)/hooks/projects/useProjects";
 
 const mockMutate = vi.fn();
 vi.mock("@/app/(dashboard)/hooks/projects/useUpdateProject", () => ({
@@ -43,28 +43,46 @@ describe("EditProjectModal", () => {
 
   it("should not render modal content when closed", () => {
     renderWithProviders(
-      <EditProjectModal isOpen={false} project={mockProject} onClose={onClose} />
+      <EditProjectModal
+        isOpen={false}
+        project={mockProject}
+        onClose={onClose}
+      />,
     );
     expect(screen.queryByText("Edit Project")).not.toBeInTheDocument();
   });
 
   it("should render the modal when open", () => {
     renderWithProviders(
-      <EditProjectModal isOpen={true} project={mockProject} onClose={onClose} />
+      <EditProjectModal
+        isOpen={true}
+        project={mockProject}
+        onClose={onClose}
+      />,
     );
     expect(screen.getByText("Edit Project")).toBeInTheDocument();
   });
 
   it("should show a 'Save Changes' submit button", () => {
     renderWithProviders(
-      <EditProjectModal isOpen={true} project={mockProject} onClose={onClose} />
+      <EditProjectModal
+        isOpen={true}
+        project={mockProject}
+        onClose={onClose}
+      />,
     );
-    expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /save changes/i }),
+    ).toBeInTheDocument();
   });
 
   it("should show a 'Cancel' button", () => {
     renderWithProviders(
-      <EditProjectModal isOpen={true} project={mockProject} onClose={onClose} />
+      <EditProjectModal
+        isOpen={true}
+        project={mockProject}
+        onClose={onClose}
+      />,
     );
     expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
   });
@@ -72,7 +90,11 @@ describe("EditProjectModal", () => {
   it("should call onClose when the Cancel button is clicked", async () => {
     const user = userEvent.setup();
     renderWithProviders(
-      <EditProjectModal isOpen={true} project={mockProject} onClose={onClose} />
+      <EditProjectModal
+        isOpen={true}
+        project={mockProject}
+        onClose={onClose}
+      />,
     );
     await user.click(screen.getByRole("button", { name: /cancel/i }));
     expect(onClose).toHaveBeenCalledOnce();
@@ -80,7 +102,11 @@ describe("EditProjectModal", () => {
 
   it("should render the project form inside the modal", () => {
     renderWithProviders(
-      <EditProjectModal isOpen={true} project={mockProject} onClose={onClose} />
+      <EditProjectModal
+        isOpen={true}
+        project={mockProject}
+        onClose={onClose}
+      />,
     );
     expect(screen.getByTestId("project-base-form")).toBeInTheDocument();
   });

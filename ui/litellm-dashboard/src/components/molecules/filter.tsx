@@ -1,7 +1,8 @@
 import { FilterIcon } from "@heroicons/react/outline";
 import { Button, Input, Select } from "antd";
 import debounce from "lodash/debounce";
-import React, { useCallback, useEffect, useState } from "react";
+import type React from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export interface FilterOptionCustomComponentProps {
   value?: string;
@@ -14,7 +15,9 @@ export interface FilterOption {
   name: string;
   label?: string;
   isSearchable?: boolean;
-  searchFn?: (searchText: string) => Promise<Array<{ label: string; value: string }>>;
+  searchFn?: (
+    searchText: string,
+  ) => Promise<Array<{ label: string; value: string }>>;
   options?: Array<{ label: string; value: string }>;
   customComponent?: React.ComponentType<FilterOptionCustomComponentProps>;
 }
@@ -74,7 +77,12 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
   // Load initial options for searchable filters
   const loadInitialOptions = useCallback(
     async (option: FilterOption) => {
-      if (!option.isSearchable || !option.searchFn || initialOptionsLoaded[option.name]) return;
+      if (
+        !option.isSearchable ||
+        !option.searchFn ||
+        initialOptionsLoaded[option.name]
+      )
+        return;
 
       setSearchLoadingMap((prev) => ({ ...prev, [option.name]: true }));
       setInitialOptionsLoaded((prev) => ({ ...prev, [option.name]: true }));
@@ -160,12 +168,16 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
       {showFilters && (
         <div className="grid grid-cols-3 gap-x-6 gap-y-4 mb-6">
           {orderedFilters.map((filterName) => {
-            const option = options.find((opt) => opt.label === filterName || opt.name === filterName);
+            const option = options.find(
+              (opt) => opt.label === filterName || opt.name === filterName,
+            );
             if (!option) return null;
 
             return (
               <div key={option.name} className="flex flex-col gap-2">
-                <label className="text-sm text-gray-600">{option.label || option.name}</label>
+                <label className="text-sm text-gray-600">
+                  {option.label || option.name}
+                </label>
                 {option.isSearchable ? (
                   <Select
                     showSearch
@@ -173,7 +185,9 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
                     placeholder={`Search ${option.label || option.name}...`}
                     value={tempValues[option.name] || undefined}
                     onChange={(value) => handleFilterChange(option.name, value)}
-                    onOpenChange={(open) => handleDropdownVisibleChange(open, option)}
+                    onOpenChange={(open) =>
+                      handleDropdownVisibleChange(open, option)
+                    }
                     onSearch={(value) => {
                       setSearchInputValueMap((prev) => ({
                         ...prev,
@@ -187,7 +201,11 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
                     loading={searchLoadingMap[option.name]}
                     options={searchOptionsMap[option.name] || []}
                     allowClear
-                    notFoundContent={searchLoadingMap[option.name] ? "Loading..." : "No results found"}
+                    notFoundContent={
+                      searchLoadingMap[option.name]
+                        ? "Loading..."
+                        : "No results found"
+                    }
                   />
                 ) : option.options ? (
                   <Select
@@ -209,7 +227,9 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
                     return (
                       <CustomComponent
                         value={tempValues[option.name] || undefined}
-                        onChange={(value) => handleFilterChange(option.name, value ?? "")}
+                        onChange={(value) =>
+                          handleFilterChange(option.name, value ?? "")
+                        }
                         placeholder={`Select ${option.label || option.name}...`}
                         allFilters={tempValues}
                       />
@@ -220,7 +240,9 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
                     className="w-full"
                     placeholder={`Enter ${option.label || option.name}...`}
                     value={tempValues[option.name] || ""}
-                    onChange={(e) => handleFilterChange(option.name, e.target.value)}
+                    onChange={(e) =>
+                      handleFilterChange(option.name, e.target.value)
+                    }
                     allowClear
                   />
                 )}

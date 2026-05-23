@@ -1,7 +1,7 @@
-import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import MCPLogoSelector from "./MCPLogoSelector";
 
 describe("MCPLogoSelector", () => {
@@ -11,7 +11,9 @@ describe("MCPLogoSelector", () => {
 
   it("should render the logo grid and custom URL input", () => {
     render(<MCPLogoSelector />);
-    expect(screen.getByPlaceholderText(/paste a custom logo URL/i)).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText(/paste a custom logo URL/i),
+    ).toBeInTheDocument();
   });
 
   it("should show a preview when a value is provided", () => {
@@ -27,7 +29,12 @@ describe("MCPLogoSelector", () => {
   it("should call onChange with undefined when the clear button is clicked", async () => {
     const onChange = vi.fn();
     const user = userEvent.setup();
-    render(<MCPLogoSelector value="/ui/assets/logos/github.svg" onChange={onChange} />);
+    render(
+      <MCPLogoSelector
+        value="/ui/assets/logos/github.svg"
+        onChange={onChange}
+      />,
+    );
 
     await user.click(screen.getByRole("button", { name: /✕/ }));
     expect(onChange).toHaveBeenCalledWith(undefined);
@@ -46,7 +53,12 @@ describe("MCPLogoSelector", () => {
   it("should deselect a logo when clicking the already-selected logo", async () => {
     const onChange = vi.fn();
     const user = userEvent.setup();
-    render(<MCPLogoSelector value="/ui/assets/logos/github.svg" onChange={onChange} />);
+    render(
+      <MCPLogoSelector
+        value="/ui/assets/logos/github.svg"
+        onChange={onChange}
+      />,
+    );
 
     const githubButton = screen.getByRole("button", { name: /GitHub/i });
     await user.click(githubButton);

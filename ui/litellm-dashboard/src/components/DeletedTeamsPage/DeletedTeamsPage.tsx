@@ -1,7 +1,7 @@
 "use client";
-import { Alert } from "antd";
 import { useDeletedTeams } from "@/app/(dashboard)/hooks/teams/useTeams";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { Alert } from "antd";
 import { DeletedTeamsTable } from "./DeletedTeamsTable/DeletedTeamsTable";
 
 export default function DeletedTeamsPage() {

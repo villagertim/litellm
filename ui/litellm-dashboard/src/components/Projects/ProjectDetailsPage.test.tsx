@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { ProjectResponse } from "@/app/(dashboard)/hooks/projects/useProjects";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders, screen } from "../../../tests/test-utils";
 import { ProjectDetail } from "./ProjectDetailsPage";
-import { ProjectResponse } from "@/app/(dashboard)/hooks/projects/useProjects";
 
 const mockUseProjectDetails = vi.fn();
 vi.mock("@/app/(dashboard)/hooks/projects/useProjectDetails", () => ({
@@ -54,7 +54,10 @@ describe("ProjectDetail", () => {
 
   describe("when loading", () => {
     it("should show a loading spinner", () => {
-      mockUseProjectDetails.mockReturnValue({ data: undefined, isLoading: true });
+      mockUseProjectDetails.mockReturnValue({
+        data: undefined,
+        isLoading: true,
+      });
       renderWithProviders(<ProjectDetail projectId="proj-1" onBack={onBack} />);
       expect(screen.getByRole("img", { hidden: true })).toBeInTheDocument();
     });
@@ -62,14 +65,20 @@ describe("ProjectDetail", () => {
 
   describe("when the project is not found", () => {
     it("should display 'Project not found'", () => {
-      mockUseProjectDetails.mockReturnValue({ data: undefined, isLoading: false });
+      mockUseProjectDetails.mockReturnValue({
+        data: undefined,
+        isLoading: false,
+      });
       renderWithProviders(<ProjectDetail projectId="proj-1" onBack={onBack} />);
       expect(screen.getByText("Project not found")).toBeInTheDocument();
     });
 
     it("should call onBack when the back button is clicked in the not-found state", async () => {
       const user = userEvent.setup();
-      mockUseProjectDetails.mockReturnValue({ data: undefined, isLoading: false });
+      mockUseProjectDetails.mockReturnValue({
+        data: undefined,
+        isLoading: false,
+      });
       renderWithProviders(<ProjectDetail projectId="proj-1" onBack={onBack} />);
       await user.click(screen.getByRole("button"));
       expect(onBack).toHaveBeenCalledOnce();
@@ -78,7 +87,10 @@ describe("ProjectDetail", () => {
 
   describe("when the project loads successfully", () => {
     beforeEach(() => {
-      mockUseProjectDetails.mockReturnValue({ data: mockProject, isLoading: false });
+      mockUseProjectDetails.mockReturnValue({
+        data: mockProject,
+        isLoading: false,
+      });
     });
 
     it("should render", () => {
@@ -88,7 +100,9 @@ describe("ProjectDetail", () => {
 
     it("should display the project alias as the page title", () => {
       renderWithProviders(<ProjectDetail projectId="proj-1" onBack={onBack} />);
-      expect(screen.getByRole("heading", { name: "My Project" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: "My Project" }),
+      ).toBeInTheDocument();
     });
 
     it("should display 'Active' for a non-blocked project", () => {
@@ -141,7 +155,9 @@ describe("ProjectDetail", () => {
 
     it("should show an 'Edit Project' button", () => {
       renderWithProviders(<ProjectDetail projectId="proj-1" onBack={onBack} />);
-      expect(screen.getByRole("button", { name: /edit project/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /edit project/i }),
+      ).toBeInTheDocument();
     });
 
     it("should open the edit modal when 'Edit Project' is clicked", async () => {

@@ -1,35 +1,57 @@
-import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
-import moment from "moment";
-import { useCallback, useDeferredValue, useEffect, useRef, useState } from "react";
 import GuardrailViewer from "@/components/view_logs/GuardrailViewer/GuardrailViewer";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
 import { truncateString } from "@/utils/textUtils";
 import { SyncOutlined } from "@ant-design/icons";
-import { Row } from "@tanstack/react-table";
-import { Switch, Tab, TabGroup, TabList, TabPanel, TabPanels } from "@tremor/react";
+import {
+  keepPreviousData,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import type { Row } from "@tanstack/react-table";
+import {
+  Switch,
+  Tab,
+  TabGroup,
+  TabList,
+  TabPanel,
+  TabPanels,
+} from "@tremor/react";
 import { Button, Tag, Tooltip } from "antd";
+import moment from "moment";
+import {
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { internalUserRoles } from "../../utils/roles";
 import DeletedKeysPage from "../DeletedKeysPage/DeletedKeysPage";
 import DeletedTeamsPage from "../DeletedTeamsPage/DeletedTeamsPage";
-import FilterTeamDropdown from "../common_components/FilterTeamDropdown";
-import { KeyResponse } from "../key_team_helpers/key_list";
 import { PaginatedKeyAliasSelect } from "../KeyAliasSelect/PaginatedKeyAliasSelect/PaginatedKeyAliasSelect";
 import { PaginatedModelSelect } from "../ModelSelect/PaginatedModelSelect/PaginatedModelSelect";
-import FilterComponent, { FilterOption } from "../molecules/filter";
+import FilterTeamDropdown from "../common_components/FilterTeamDropdown";
+import type { KeyResponse } from "../key_team_helpers/key_list";
+import FilterComponent, { type FilterOption } from "../molecules/filter";
 import { allEndUsersCall, keyInfoV1Call, uiSpendLogsCall } from "../networking";
 import KeyInfoView from "../templates/key_info_view";
-import AuditLogs from "./audit_logs";
-import { createColumns, LogEntry, type LogsSortField } from "./columns";
 import { ConfigInfoMessage } from "./ConfigInfoMessage";
-import { AGENT_CALL_TYPES, ERROR_CODE_OPTIONS, MCP_CALL_TYPES, QUICK_SELECT_OPTIONS } from "./constants";
 import { CostBreakdownViewer } from "./CostBreakdownViewer";
 import { ErrorViewer } from "./ErrorViewer";
-import { FILTER_KEYS, useLogFilterLogic } from "./log_filter_logic";
 import { LogDetailsDrawer } from "./LogDetailsDrawer";
-import { getTimeRangeDisplay } from "./logs_utils";
 import { RequestResponsePanel } from "./RequestResponsePanel";
-import { DataTable } from "./table";
 import { VectorStoreViewer } from "./VectorStoreViewer";
+import AuditLogs from "./audit_logs";
+import { type LogEntry, type LogsSortField, createColumns } from "./columns";
+import {
+  AGENT_CALL_TYPES,
+  ERROR_CODE_OPTIONS,
+  MCP_CALL_TYPES,
+  QUICK_SELECT_OPTIONS,
+} from "./constants";
+import { FILTER_KEYS, useLogFilterLogic } from "./log_filter_logic";
+import { getTimeRangeDisplay } from "./logs_utils";
+import { DataTable } from "./table";
 
 interface SpendLogsTableProps {
   accessToken: string | null;
@@ -64,8 +86,12 @@ export default function SpendLogsTable({
   const quickSelectRef = useRef<HTMLDivElement>(null);
 
   // New state variables for Start and End Time
-  const [startTime, setStartTime] = useState<string>(moment().subtract(24, "hours").format("YYYY-MM-DDTHH:mm"));
-  const [endTime, setEndTime] = useState<string>(moment().format("YYYY-MM-DDTHH:mm"));
+  const [startTime, setStartTime] = useState<string>(
+    moment().subtract(24, "hours").format("YYYY-MM-DDTHH:mm"),
+  );
+  const [endTime, setEndTime] = useState<string>(
+    moment().format("YYYY-MM-DDTHH:mm"),
+  );
 
   const [isCustomDate, setIsCustomDate] = useState(false);
   const [quickSelectOpen, setQuickSelectOpen] = useState(false);
@@ -74,16 +100,24 @@ export default function SpendLogsTable({
   const [selectedTeamId, setSelectedTeamId] = useState("");
   const [selectedKeyHash, setSelectedKeyHash] = useState("");
   const [selectedModelId, setSelectedModelId] = useState("");
-  const [selectedKeyInfo, setSelectedKeyInfo] = useState<KeyResponse | null>(null);
-  const [selectedKeyIdInfoView, setSelectedKeyIdInfoView] = useState<string | null>(null);
+  const [selectedKeyInfo, setSelectedKeyInfo] = useState<KeyResponse | null>(
+    null,
+  );
+  const [selectedKeyIdInfoView, setSelectedKeyIdInfoView] = useState<
+    string | null
+  >(null);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedEndUser, setSelectedEndUser] = useState("");
-  const [filterByCurrentUser, setFilterByCurrentUser] = useState(userRole && internalUserRoles.includes(userRole));
+  const [filterByCurrentUser, setFilterByCurrentUser] = useState(
+    userRole && internalUserRoles.includes(userRole),
+  );
   const [activeTab, setActiveTab] = useState("request logs");
 
   const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(
+    null,
+  );
 
   const [sortBy, setSortBy] = useState<LogsSortField>("startTime");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
@@ -105,7 +139,10 @@ export default function SpendLogsTable({
     sessionStorage.setItem("isLiveTail", JSON.stringify(isLiveTail));
   }, [isLiveTail]);
 
-  const [selectedTimeInterval, setSelectedTimeInterval] = useState<{ value: number; unit: string }>({
+  const [selectedTimeInterval, setSelectedTimeInterval] = useState<{
+    value: number;
+    unit: string;
+  }>({
     value: 24,
     unit: "hours",
   });
@@ -129,13 +166,22 @@ export default function SpendLogsTable({
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setShowColumnDropdown(false);
       }
-      if (filtersRef.current && !filtersRef.current.contains(event.target as Node)) {
+      if (
+        filtersRef.current &&
+        !filtersRef.current.contains(event.target as Node)
+      ) {
         setShowFilters(false);
       }
-      if (quickSelectRef.current && !quickSelectRef.current.contains(event.target as Node)) {
+      if (
+        quickSelectRef.current &&
+        !quickSelectRef.current.contains(event.target as Node)
+      ) {
         setQuickSelectOpen(false);
       }
     }
@@ -154,7 +200,12 @@ export default function SpendLogsTable({
     return (
       <div className="flex items-center gap-2">
         <span className="text-sm font-medium text-gray-900">Live Tail</span>
-        <Switch color="green" checked={isLiveTail} defaultChecked={true} onChange={setIsLiveTail} />
+        <Switch
+          color="green"
+          checked={isLiveTail}
+          defaultChecked={true}
+          onChange={setIsLiveTail}
+        />
       </div>
     );
   };
@@ -186,7 +237,9 @@ export default function SpendLogsTable({
         };
       }
 
-      const formattedStartTime = moment(startTime).utc().format("YYYY-MM-DD HH:mm:ss");
+      const formattedStartTime = moment(startTime)
+        .utc()
+        .format("YYYY-MM-DD HH:mm:ss");
       const formattedEndTime = isCustomDate
         ? moment(endTime).utc().format("YYYY-MM-DD HH:mm:ss")
         : moment().utc().format("YYYY-MM-DD HH:mm:ss");
@@ -214,7 +267,13 @@ export default function SpendLogsTable({
 
       return response;
     },
-    enabled: !!accessToken && !!token && !!userRole && !!userID && activeTab === "request logs" && isMainQueryEnabled,
+    enabled:
+      !!accessToken &&
+      !!token &&
+      !!userRole &&
+      !!userID &&
+      activeTab === "request logs" &&
+      isMainQueryEnabled,
     refetchInterval: isLiveTail && currentPage === 1 ? 15000 : false,
     placeholderData: keepPreviousData,
     refetchIntervalInBackground: true,
@@ -307,7 +366,9 @@ export default function SpendLogsTable({
     return matchesSearch;
   });
 
-  const sessionCompositionById = searchedLogs.reduce<Record<string, { llm: number; agent: number; mcp: number }>>((acc, log) => {
+  const sessionCompositionById = searchedLogs.reduce<
+    Record<string, { llm: number; agent: number; mcp: number }>
+  >((acc, log) => {
     if (!log.session_id) return acc;
     if (!acc[log.session_id]) {
       acc[log.session_id] = { llm: 0, agent: 0, mcp: 0 };
@@ -324,27 +385,36 @@ export default function SpendLogsTable({
 
   // Build a single-pass map of session_id → representative request_id.
   // Prefers an LLM row over an MCP row as the representative.
-  const sessionRepresentativeMap = new Map<string, { requestId: string; isMcp: boolean }>();
+  const sessionRepresentativeMap = new Map<
+    string,
+    { requestId: string; isMcp: boolean }
+  >();
   for (const log of searchedLogs) {
     if (!log.session_id || (log.session_total_count || 1) <= 1) continue;
     const isMcp = MCP_CALL_TYPES.includes(log.call_type);
     const existing = sessionRepresentativeMap.get(log.session_id);
     if (!existing || (existing.isMcp && !isMcp)) {
-      sessionRepresentativeMap.set(log.session_id, { requestId: log.request_id, isMcp });
+      sessionRepresentativeMap.set(log.session_id, {
+        requestId: log.request_id,
+        isMcp,
+      });
     }
   }
 
   const filteredData =
     searchedLogs
       .map((log) => {
-        const sessionComposition = log.session_id ? sessionCompositionById[log.session_id] : undefined;
+        const sessionComposition = log.session_id
+          ? sessionCompositionById[log.session_id]
+          : undefined;
         return {
           ...log,
           request_duration_ms: log.request_duration_ms,
           session_llm_count: sessionComposition?.llm ?? undefined,
           session_mcp_count: sessionComposition?.mcp ?? undefined,
           session_agent_count: sessionComposition?.agent ?? undefined,
-          onKeyHashClick: (keyHash: string) => setSelectedKeyIdInfoView(keyHash),
+          onKeyHashClick: (keyHash: string) =>
+            setSelectedKeyIdInfoView(keyHash),
           onSessionClick: (sessionId: string) => {
             if (sessionId) {
               setSelectedSessionId(sessionId);
@@ -357,7 +427,10 @@ export default function SpendLogsTable({
       // Deduplicate multi-call sessions using the pre-built map (O(1) per row).
       .filter((log) => {
         if (!log.session_id || (log.session_total_count || 1) <= 1) return true;
-        return sessionRepresentativeMap.get(log.session_id)?.requestId === log.request_id;
+        return (
+          sessionRepresentativeMap.get(log.session_id)?.requestId ===
+          log.request_id
+        );
       }) || [];
 
   // Add this function to handle manual refresh
@@ -434,7 +507,9 @@ export default function SpendLogsTable({
         const data = await allEndUsersCall(accessToken);
         // data if set, is a list of objects, with key = user_id
         const users = data?.map((u: any) => u.user_id) || [];
-        const filtered = users.filter((u: string) => u.toLowerCase().includes(searchText.toLowerCase()));
+        const filtered = users.filter((u: string) =>
+          u.toLowerCase().includes(searchText.toLowerCase()),
+        );
         return filtered.map((u: string) => ({ label: u, value: u }));
       },
     },
@@ -445,10 +520,17 @@ export default function SpendLogsTable({
       searchFn: async (searchText: string) => {
         if (!searchText) return ERROR_CODE_OPTIONS;
         const lower = searchText.toLowerCase();
-        const filtered = ERROR_CODE_OPTIONS.filter((opt) => opt.label.toLowerCase().includes(lower));
-        const isExactValue = ERROR_CODE_OPTIONS.some((opt) => opt.value === searchText.trim());
+        const filtered = ERROR_CODE_OPTIONS.filter((opt) =>
+          opt.label.toLowerCase().includes(lower),
+        );
+        const isExactValue = ERROR_CODE_OPTIONS.some(
+          (opt) => opt.value === searchText.trim(),
+        );
         if (!isExactValue && searchText.trim()) {
-          filtered.push({ label: `Use custom code: ${searchText.trim()}`, value: searchText.trim() });
+          filtered.push({
+            label: `Use custom code: ${searchText.trim()}`,
+            value: searchText.trim(),
+          });
         }
         return filtered;
       },
@@ -475,14 +557,23 @@ export default function SpendLogsTable({
   };
 
   const selectedOption = QUICK_SELECT_OPTIONS.find(
-    (option) => option.value === selectedTimeInterval.value && option.unit === selectedTimeInterval.unit,
+    (option) =>
+      option.value === selectedTimeInterval.value &&
+      option.unit === selectedTimeInterval.unit,
   );
 
-  const displayLabel = isCustomDate ? getTimeRangeDisplay(isCustomDate, startTime, endTime) : selectedOption?.label;
+  const displayLabel = isCustomDate
+    ? getTimeRangeDisplay(isCustomDate, startTime, endTime)
+    : selectedOption?.label;
 
   return (
     <div className="w-full max-w-screen p-6 overflow-x-hidden box-border">
-      <TabGroup defaultIndex={0} onIndexChange={(index) => setActiveTab(index === 0 ? "request logs" : "audit logs")}>
+      <TabGroup
+        defaultIndex={0}
+        onIndexChange={(index) =>
+          setActiveTab(index === 0 ? "request logs" : "audit logs")
+        }
+      >
         <TabList>
           <Tab>Request Logs</Tab>
           <Tab>Audit Logs</Tab>
@@ -494,7 +585,9 @@ export default function SpendLogsTable({
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-xl font-semibold">Request Logs</h1>
             </div>
-            {selectedKeyInfo && selectedKeyIdInfoView && selectedKeyInfo.api_key === selectedKeyIdInfoView ? (
+            {selectedKeyInfo &&
+            selectedKeyIdInfoView &&
+            selectedKeyInfo.api_key === selectedKeyIdInfoView ? (
               <KeyInfoView
                 keyId={selectedKeyIdInfoView}
                 keyData={selectedKeyInfo}
@@ -539,10 +632,17 @@ export default function SpendLogsTable({
                         <div className="flex items-center gap-2 min-w-0 flex-shrink">
                           <div className="relative z-50" ref={quickSelectRef}>
                             <button
-                              onClick={() => setQuickSelectOpen(!quickSelectOpen)}
+                              onClick={() =>
+                                setQuickSelectOpen(!quickSelectOpen)
+                              }
                               className="px-3 py-2 text-sm border rounded-md hover:bg-gray-50 flex items-center gap-2"
                             >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
                                 <path
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
@@ -559,17 +659,28 @@ export default function SpendLogsTable({
                                   {QUICK_SELECT_OPTIONS.map((option) => (
                                     <button
                                       key={option.label}
-                                      className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 rounded-md ${displayLabel === option.label ? "bg-blue-50 text-blue-600" : ""
-                                        }`}
+                                      className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 rounded-md ${
+                                        displayLabel === option.label
+                                          ? "bg-blue-50 text-blue-600"
+                                          : ""
+                                      }`}
                                       onClick={() => {
                                         setCurrentPage(1);
-                                        setEndTime(moment().format("YYYY-MM-DDTHH:mm"));
+                                        setEndTime(
+                                          moment().format("YYYY-MM-DDTHH:mm"),
+                                        );
                                         setStartTime(
                                           moment()
-                                            .subtract(option.value, option.unit as any)
+                                            .subtract(
+                                              option.value,
+                                              option.unit as any,
+                                            )
                                             .format("YYYY-MM-DDTHH:mm"),
                                         );
-                                        setSelectedTimeInterval({ value: option.value, unit: option.unit });
+                                        setSelectedTimeInterval({
+                                          value: option.value,
+                                          unit: option.unit,
+                                        });
                                         setIsCustomDate(false);
                                         setQuickSelectOpen(false);
                                       }}
@@ -579,9 +690,14 @@ export default function SpendLogsTable({
                                   ))}
                                   <div className="border-t my-2" />
                                   <button
-                                    className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 rounded-md ${isCustomDate ? "bg-blue-50 text-blue-600" : ""
-                                      }`}
-                                    onClick={() => setIsCustomDate(!isCustomDate)}
+                                    className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 rounded-md ${
+                                      isCustomDate
+                                        ? "bg-blue-50 text-blue-600"
+                                        : ""
+                                    }`}
+                                    onClick={() =>
+                                      setIsCustomDate(!isCustomDate)
+                                    }
                                   >
                                     Custom Range
                                   </button>
@@ -634,29 +750,57 @@ export default function SpendLogsTable({
 
                       <div className="flex items-center space-x-4">
                         <span className="text-sm text-gray-700 whitespace-nowrap">
-                          Showing {logs.isLoading ? "..." : filteredLogs ? (currentPage - 1) * pageSize + 1 : 0} -{" "}
+                          Showing{" "}
                           {logs.isLoading
                             ? "..."
                             : filteredLogs
-                              ? Math.min(currentPage * pageSize, filteredLogs.total)
+                              ? (currentPage - 1) * pageSize + 1
                               : 0}{" "}
-                          of {logs.isLoading ? "..." : filteredLogs ? filteredLogs.total : 0} results
+                          -{" "}
+                          {logs.isLoading
+                            ? "..."
+                            : filteredLogs
+                              ? Math.min(
+                                  currentPage * pageSize,
+                                  filteredLogs.total,
+                                )
+                              : 0}{" "}
+                          of{" "}
+                          {logs.isLoading
+                            ? "..."
+                            : filteredLogs
+                              ? filteredLogs.total
+                              : 0}{" "}
+                          results
                         </span>
                         <div className="flex items-center space-x-2">
                           <span className="text-sm text-gray-700 min-w-[90px]">
                             Page {logs.isLoading ? "..." : currentPage} of{" "}
-                            {logs.isLoading ? "..." : filteredLogs ? filteredLogs.total_pages : 1}
+                            {logs.isLoading
+                              ? "..."
+                              : filteredLogs
+                                ? filteredLogs.total_pages
+                                : 1}
                           </span>
                           <button
-                            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                            onClick={() =>
+                              setCurrentPage((p) => Math.max(1, p - 1))
+                            }
                             disabled={logs.isLoading || currentPage === 1}
                             className="px-3 py-1 text-sm border rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Previous
                           </button>
                           <button
-                            onClick={() => setCurrentPage((p) => Math.min(filteredLogs.total_pages || 1, p + 1))}
-                            disabled={logs.isLoading || currentPage === (filteredLogs.total_pages || 1)}
+                            onClick={() =>
+                              setCurrentPage((p) =>
+                                Math.min(filteredLogs.total_pages || 1, p + 1),
+                              )
+                            }
+                            disabled={
+                              logs.isLoading ||
+                              currentPage === (filteredLogs.total_pages || 1)
+                            }
                             className="px-3 py-1 text-sm border rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Next
@@ -668,7 +812,9 @@ export default function SpendLogsTable({
                   {isLiveTail && currentPage === 1 && isMainQueryEnabled && (
                     <div className="mb-4 px-4 py-2 bg-green-50 border border-greem-200 rounded-md flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-green-700">Auto-refreshing every 15 seconds</span>
+                        <span className="text-sm text-green-700">
+                          Auto-refreshing every 15 seconds
+                        </span>
                       </div>
                       <button
                         onClick={() => setIsLiveTail(false)}
@@ -706,8 +852,12 @@ export default function SpendLogsTable({
               premiumUser={premiumUser}
             />
           </TabPanel>
-          <TabPanel><DeletedKeysPage /></TabPanel>
-          <TabPanel><DeletedTeamsPage /></TabPanel>
+          <TabPanel>
+            <DeletedKeysPage />
+          </TabPanel>
+          <TabPanel>
+            <DeletedTeamsPage />
+          </TabPanel>
         </TabPanels>
       </TabGroup>
 
@@ -760,7 +910,9 @@ export function RequestViewer({ row }: { row: Row<LogEntry> }) {
     (Array.isArray(row.original.messages)
       ? row.original.messages.length > 0
       : Object.keys(row.original.messages).length > 0);
-  const hasResponse = row.original.response && Object.keys(formatData(row.original.response)).length > 0;
+  const hasResponse =
+    row.original.response &&
+    Object.keys(formatData(row.original.response)).length > 0;
   const missingData = !hasMessages && !hasResponse && !hasError;
 
   // Format the response with error details if present
@@ -786,7 +938,11 @@ export function RequestViewer({ row }: { row: Row<LogEntry> }) {
 
   // Extract guardrail information from metadata if available
   const guardrailInfo = row.original.metadata?.guardrail_information;
-  const guardrailEntries = Array.isArray(guardrailInfo) ? guardrailInfo : guardrailInfo ? [guardrailInfo] : [];
+  const guardrailEntries = Array.isArray(guardrailInfo)
+    ? guardrailInfo
+    : guardrailInfo
+      ? [guardrailInfo]
+      : [];
   const hasGuardrailData = guardrailEntries.length > 0;
 
   // Calculate total masked entities if guardrail data exists
@@ -797,7 +953,10 @@ export function RequestViewer({ row }: { row: Row<LogEntry> }) {
     }
     return (
       sum +
-      Object.values(maskedCounts).reduce<number>((acc, count) => (typeof count === "number" ? acc + count : acc), 0)
+      Object.values(maskedCounts).reduce<number>(
+        (acc, count) => (typeof count === "number" ? acc + count : acc),
+        0,
+      )
     );
   }, 0);
 
@@ -823,10 +982,14 @@ export function RequestViewer({ row }: { row: Row<LogEntry> }) {
               <span className="font-medium w-1/3">Request ID:</span>
               {row.original.request_id.length > 64 ? (
                 <Tooltip title={row.original.request_id}>
-                  <span className="font-mono text-sm">{truncatedRequestId}</span>
+                  <span className="font-mono text-sm">
+                    {truncatedRequestId}
+                  </span>
                 </Tooltip>
               ) : (
-                <span className="font-mono text-sm">{row.original.request_id}</span>
+                <span className="font-mono text-sm">
+                  {row.original.request_id}
+                </span>
               )}
             </div>
             <div className="flex">
@@ -848,7 +1011,9 @@ export function RequestViewer({ row }: { row: Row<LogEntry> }) {
             <div className="flex">
               <span className="font-medium w-1/3">API Base:</span>
               <Tooltip title={row.original.api_base || "-"}>
-                <span className="max-w-[15ch] truncate block">{row.original.api_base || "-"}</span>
+                <span className="max-w-[15ch] truncate block">
+                  {row.original.api_base || "-"}
+                </span>
               </Tooltip>
             </div>
             {row?.original?.requester_ip_address && (
@@ -875,20 +1040,26 @@ export function RequestViewer({ row }: { row: Row<LogEntry> }) {
             <div className="flex">
               <span className="font-medium w-1/3">Tokens:</span>
               <span>
-                {row.original.total_tokens} ({row.original.prompt_tokens} prompt tokens +{" "}
-                {row.original.completion_tokens} completion tokens)
+                {row.original.total_tokens} ({row.original.prompt_tokens} prompt
+                tokens + {row.original.completion_tokens} completion tokens)
               </span>
             </div>
             <div className="flex">
               <span className="font-medium w-1/3">Cache Read Tokens:</span>
               <span>
-                {formatNumberWithCommas(row.original.metadata?.additional_usage_values?.cache_read_input_tokens || 0)}
+                {formatNumberWithCommas(
+                  row.original.metadata?.additional_usage_values
+                    ?.cache_read_input_tokens || 0,
+                )}
               </span>
             </div>
             <div className="flex">
               <span className="font-medium w-1/3">Cache Creation Tokens:</span>
               <span>
-                {formatNumberWithCommas(row.original.metadata?.additional_usage_values.cache_creation_input_tokens)}
+                {formatNumberWithCommas(
+                  row.original.metadata?.additional_usage_values
+                    .cache_creation_input_tokens,
+                )}
               </span>
             </div>
             <div className="flex">
@@ -903,12 +1074,17 @@ export function RequestViewer({ row }: { row: Row<LogEntry> }) {
             <div className="flex">
               <span className="font-medium w-1/3">Status:</span>
               <span
-                className={`px-2 py-1 rounded-md text-xs font-medium inline-block text-center w-16 ${(row.original.metadata?.status || "Success").toLowerCase() !== "failure"
-                  ? "bg-green-100 text-green-800"
-                  : "bg-red-100 text-red-800"
-                  }`}
+                className={`px-2 py-1 rounded-md text-xs font-medium inline-block text-center w-16 ${
+                  (row.original.metadata?.status || "Success").toLowerCase() !==
+                  "failure"
+                    ? "bg-green-100 text-green-800"
+                    : "bg-red-100 text-red-800"
+                }`}
               >
-                {(row.original.metadata?.status || "Success").toLowerCase() !== "failure" ? "Success" : "Failure"}
+                {(row.original.metadata?.status || "Success").toLowerCase() !==
+                "failure"
+                  ? "Success"
+                  : "Failure"}
               </span>
             </div>
             <div className="flex">
@@ -921,7 +1097,12 @@ export function RequestViewer({ row }: { row: Row<LogEntry> }) {
             </div>
             <div className="flex">
               <span className="font-medium w-1/3">Duration:</span>
-              <span>{row.original.request_duration_ms != null ? (row.original.request_duration_ms / 1000).toFixed(3) : "-"} s.</span>
+              <span>
+                {row.original.request_duration_ms != null
+                  ? (row.original.request_duration_ms / 1000).toFixed(3)
+                  : "-"}{" "}
+                s.
+              </span>
             </div>
             {row.original.metadata?.litellm_overhead_time_ms !== undefined && (
               <div className="flex">
@@ -932,11 +1113,16 @@ export function RequestViewer({ row }: { row: Row<LogEntry> }) {
             <div className="flex">
               <span className="font-medium w-1/3">Retries:</span>
               <span>
-                {row.original.metadata?.attempted_retries !== undefined && row.original.metadata?.attempted_retries !== null
-                  ? row.original.metadata.attempted_retries > 0
-                    ? `${row.original.metadata.attempted_retries}${row.original.metadata.max_retries !== undefined && row.original.metadata.max_retries !== null ? ` / ${row.original.metadata.max_retries}` : ''}`
-                    : <Tag color="green">None</Tag>
-                  : '-'}
+                {row.original.metadata?.attempted_retries !== undefined &&
+                row.original.metadata?.attempted_retries !== null ? (
+                  row.original.metadata.attempted_retries > 0 ? (
+                    `${row.original.metadata.attempted_retries}${row.original.metadata.max_retries !== undefined && row.original.metadata.max_retries !== null ? ` / ${row.original.metadata.max_retries}` : ""}`
+                  ) : (
+                    <Tag color="green">None</Tag>
+                  )
+                ) : (
+                  "-"
+                )}
               </span>
             </div>
           </div>
@@ -972,64 +1158,75 @@ export function RequestViewer({ row }: { row: Row<LogEntry> }) {
       {hasGuardrailData && <GuardrailViewer data={guardrailInfo} />}
 
       {/* Vector Store Request Data - Show only if present */}
-      {hasVectorStoreData && <VectorStoreViewer data={metadata.vector_store_request_metadata} />}
+      {hasVectorStoreData && (
+        <VectorStoreViewer data={metadata.vector_store_request_metadata} />
+      )}
 
       {/* Error Card - Only show for failures */}
       {hasError && errorInfo && <ErrorViewer errorInfo={errorInfo} />}
 
       {/* Tags Card - Only show if there are tags */}
-      {row.original.request_tags && Object.keys(row.original.request_tags).length > 0 && (
-        <div className="bg-white rounded-lg shadow">
-          <div className="flex justify-between items-center p-4 border-b">
-            <h3 className="text-lg font-medium">Request Tags</h3>
-          </div>
-          <div className="p-4">
-            <div className="flex flex-wrap gap-2">
-              {Object.entries(row.original.request_tags).map(([key, value]) => (
-                <span key={key} className="px-2 py-1 bg-gray-100 rounded-full text-xs">
-                  {key}: {String(value)}
-                </span>
-              ))}
+      {row.original.request_tags &&
+        Object.keys(row.original.request_tags).length > 0 && (
+          <div className="bg-white rounded-lg shadow">
+            <div className="flex justify-between items-center p-4 border-b">
+              <h3 className="text-lg font-medium">Request Tags</h3>
+            </div>
+            <div className="p-4">
+              <div className="flex flex-wrap gap-2">
+                {Object.entries(row.original.request_tags).map(
+                  ([key, value]) => (
+                    <span
+                      key={key}
+                      className="px-2 py-1 bg-gray-100 rounded-full text-xs"
+                    >
+                      {key}: {String(value)}
+                    </span>
+                  ),
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* Metadata Card - Only show if there's metadata */}
-      {row.original.metadata && Object.keys(row.original.metadata).length > 0 && (
-        <div className="bg-white rounded-lg shadow">
-          <div className="flex justify-between items-center p-4 border-b">
-            <h3 className="text-lg font-medium">Metadata</h3>
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(JSON.stringify(row.original.metadata, null, 2));
-              }}
-              className="p-1 hover:bg-gray-200 rounded"
-              title="Copy metadata"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+      {row.original.metadata &&
+        Object.keys(row.original.metadata).length > 0 && (
+          <div className="bg-white rounded-lg shadow">
+            <div className="flex justify-between items-center p-4 border-b">
+              <h3 className="text-lg font-medium">Metadata</h3>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(
+                    JSON.stringify(row.original.metadata, null, 2),
+                  );
+                }}
+                className="p-1 hover:bg-gray-200 rounded"
+                title="Copy metadata"
               >
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-              </svg>
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </button>
+            </div>
+            <div className="p-4 overflow-auto max-h-64">
+              <pre className="text-xs font-mono whitespace-pre-wrap break-all">
+                {JSON.stringify(row.original.metadata, null, 2)}
+              </pre>
+            </div>
           </div>
-          <div className="p-4 overflow-auto max-h-64">
-            <pre className="text-xs font-mono whitespace-pre-wrap break-all">
-              {JSON.stringify(row.original.metadata, null, 2)}
-            </pre>
-          </div>
-        </div>
-      )}
+        )}
     </div>
   );
 }

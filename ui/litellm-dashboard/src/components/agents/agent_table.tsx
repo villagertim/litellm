@@ -1,17 +1,31 @@
-import React, { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, Button } from "@tremor/react";
-import { SwitchVerticalIcon, ChevronUpIcon, ChevronDownIcon, TrashIcon } from "@heroicons/react/outline";
-import { Tooltip } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
-import { Agent } from "./types";
 import {
-  ColumnDef,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  SwitchVerticalIcon,
+  TrashIcon,
+} from "@heroicons/react/outline";
+import {
+  type ColumnDef,
+  type SortingState,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+} from "@tremor/react";
+import { Tooltip } from "antd";
+import type React from "react";
+import { useState } from "react";
+import type { Agent } from "./types";
 
 interface AgentTableProps {
   agentsList: Agent[];
@@ -32,7 +46,9 @@ const AgentTable: React.FC<AgentTableProps> = ({
   isAdmin,
   onAgentClick,
 }) => {
-  const [sorting, setSorting] = useState<SortingState>([{ id: "created_at", desc: true }]);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "created_at", desc: true },
+  ]);
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "-";
@@ -51,18 +67,18 @@ const AgentTable: React.FC<AgentTableProps> = ({
       cell: ({ row }) => {
         const agent = row.original;
         const name = agent.agent_name || "";
-  return (
+        return (
           <div className="flex items-center gap-2">
             <Tooltip title={name}>
-                <Button
-                  size="xs"
-                  variant="light"
+              <Button
+                size="xs"
+                variant="light"
                 className="font-mono text-blue-500 bg-blue-50 hover:bg-blue-100 text-xs font-normal px-2 py-0.5 text-left overflow-hidden truncate min-w-[200px] justify-start"
-                  onClick={() => onAgentClick(agent.agent_id)}
-                >
+                onClick={() => onAgentClick(agent.agent_id)}
+              >
                 {name}
-                </Button>
-              </Tooltip>
+              </Button>
+            </Tooltip>
             <Tooltip title="Copy Agent ID">
               <CopyOutlined
                 onClick={(e) => {
@@ -80,7 +96,8 @@ const AgentTable: React.FC<AgentTableProps> = ({
       header: "Description",
       accessorKey: "agent_card_params.description",
       cell: ({ row }) => {
-        const description = row.original.agent_card_params?.description || "No description";
+        const description =
+          row.original.agent_card_params?.description || "No description";
         return (
           <span className="text-xs text-gray-600 block max-w-[300px] truncate">
             {description}
@@ -108,7 +125,7 @@ const AgentTable: React.FC<AgentTableProps> = ({
             enableSorting: false,
             cell: ({ row }: any) => {
               const agent = row.original;
-              
+
               return (
                 <div className="flex items-center gap-1">
                   <Tooltip title="Delete agent">
@@ -159,13 +176,22 @@ const AgentTable: React.FC<AgentTableProps> = ({
                   >
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center">
-                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                       </div>
                       <div className="w-4">
                         {header.column.getIsSorted() ? (
                           {
-                            asc: <ChevronUpIcon className="h-4 w-4 text-blue-500" />,
-                            desc: <ChevronDownIcon className="h-4 w-4 text-blue-500" />,
+                            asc: (
+                              <ChevronUpIcon className="h-4 w-4 text-blue-500" />
+                            ),
+                            desc: (
+                              <ChevronDownIcon className="h-4 w-4 text-blue-500" />
+                            ),
                           }[header.column.getIsSorted() as string]
                         ) : (
                           <SwitchVerticalIcon className="h-4 w-4 text-gray-400" />
@@ -190,8 +216,14 @@ const AgentTable: React.FC<AgentTableProps> = ({
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} className="h-8">
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="py-0.5 max-h-8 overflow-hidden text-ellipsis whitespace-nowrap">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    <TableCell
+                      key={cell.id}
+                      className="py-0.5 max-h-8 overflow-hidden text-ellipsis whitespace-nowrap"
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -201,12 +233,12 @@ const AgentTable: React.FC<AgentTableProps> = ({
                 <TableCell colSpan={columns.length} className="h-8 text-center">
                   <div className="text-center text-gray-500">
                     <p>No agents found. Create one to get started.</p>
-                </div>
-              </TableCell>
+                  </div>
+                </TableCell>
               </TableRow>
             )}
-      </TableBody>
-    </Table>
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

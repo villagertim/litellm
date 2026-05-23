@@ -2,14 +2,17 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SearchToolView } from "./SearchToolView";
-import { AvailableSearchProvider, SearchTool } from "./types";
+import type { AvailableSearchProvider, SearchTool } from "./types";
 
 vi.mock("@/utils/dataUtils", () => ({
   copyToClipboard: vi.fn().mockResolvedValue(true),
 }));
 
 vi.mock("./SearchToolTester", () => ({
-  SearchToolTester: ({ searchToolName, accessToken }: { searchToolName: string; accessToken: string }) => (
+  SearchToolTester: ({
+    searchToolName,
+    accessToken,
+  }: { searchToolName: string; accessToken: string }) => (
     <div data-testid="search-tool-tester">
       <span>Search Tool Tester for {searchToolName}</span>
       <span>Access Token: {accessToken}</span>
@@ -107,10 +110,7 @@ describe("SearchToolView", () => {
     };
 
     render(
-      <SearchToolView
-        {...defaultProps}
-        searchTool={searchToolWithoutApiKey}
-      />,
+      <SearchToolView {...defaultProps} searchTool={searchToolWithoutApiKey} />,
     );
     expect(screen.getByText("Not set")).toBeInTheDocument();
   });
@@ -128,10 +128,7 @@ describe("SearchToolView", () => {
     };
 
     render(
-      <SearchToolView
-        {...defaultProps}
-        searchTool={searchToolWithoutDate}
-      />,
+      <SearchToolView {...defaultProps} searchTool={searchToolWithoutDate} />,
     );
     expect(screen.getByText("Unknown")).toBeInTheDocument();
   });
@@ -161,7 +158,9 @@ describe("SearchToolView", () => {
     const onBack = vi.fn();
     render(<SearchToolView {...defaultProps} onBack={onBack} />);
 
-    const backButton = screen.getByRole("button", { name: /back to all search tools/i });
+    const backButton = screen.getByRole("button", {
+      name: /back to all search tools/i,
+    });
     await user.click(backButton);
 
     expect(onBack).toHaveBeenCalledTimes(1);
@@ -172,7 +171,9 @@ describe("SearchToolView", () => {
     const { copyToClipboard } = await import("@/utils/dataUtils");
     render(<SearchToolView {...defaultProps} />);
 
-    const toolNameContainer = screen.getByText("Test Search Tool").closest("div");
+    const toolNameContainer = screen
+      .getByText("Test Search Tool")
+      .closest("div");
     expect(toolNameContainer).toBeInTheDocument();
 
     const copyButtons = within(toolNameContainer!).getAllByRole("button");
@@ -216,7 +217,9 @@ describe("SearchToolView", () => {
 
     render(<SearchToolView {...defaultProps} />);
 
-    const toolNameContainer = screen.getByText("Test Search Tool").closest("div");
+    const toolNameContainer = screen
+      .getByText("Test Search Tool")
+      .closest("div");
     const copyButtons = within(toolNameContainer!).getAllByRole("button");
     const nameCopyButton = copyButtons.find((button) => {
       return button.querySelector("svg") !== null;
@@ -236,7 +239,6 @@ describe("SearchToolView", () => {
     });
   });
 
-
   it("should not show check icon when copy fails", async () => {
     const user = userEvent.setup({ delay: null });
     const { copyToClipboard } = await import("@/utils/dataUtils");
@@ -244,7 +246,9 @@ describe("SearchToolView", () => {
 
     render(<SearchToolView {...defaultProps} />);
 
-    const toolNameContainer = screen.getByText("Test Search Tool").closest("div");
+    const toolNameContainer = screen
+      .getByText("Test Search Tool")
+      .closest("div");
     const copyButtons = within(toolNameContainer!).getAllByRole("button");
     const nameCopyButton = copyButtons.find((button) => {
       return button.querySelector("svg") !== null;
@@ -253,9 +257,12 @@ describe("SearchToolView", () => {
     expect(nameCopyButton).toBeInTheDocument();
     await user.click(nameCopyButton!);
 
-    await waitFor(() => {
-      expect(copyToClipboard).toHaveBeenCalledWith("Test Search Tool");
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(copyToClipboard).toHaveBeenCalledWith("Test Search Tool");
+      },
+      { timeout: 3000 },
+    );
 
     expect(nameCopyButton).not.toHaveClass("text-green-600");
   });
@@ -263,7 +270,9 @@ describe("SearchToolView", () => {
   it("should render SearchToolTester when accessToken is provided", () => {
     render(<SearchToolView {...defaultProps} />);
     expect(screen.getByTestId("search-tool-tester")).toBeInTheDocument();
-    expect(screen.getByText(/Search Tool Tester for Test Search Tool/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Search Tool Tester for Test Search Tool/),
+    ).toBeInTheDocument();
   });
 
   it("should not render SearchToolTester when accessToken is null", () => {

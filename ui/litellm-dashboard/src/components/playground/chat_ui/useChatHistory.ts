@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { MessageType, A2ATaskMetadata } from "./types";
-import { TokenUsage } from "./ResponseMetrics";
-import { MCPEvent } from "../../mcp_tools/types";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { truncateString } from "../../../utils/textUtils";
+import type { MCPEvent } from "../../mcp_tools/types";
+import type { TokenUsage } from "./ResponseMetrics";
+import type { A2ATaskMetadata, MessageType } from "./types";
 
 export interface UseChatHistoryReturn {
   // State
@@ -36,7 +37,9 @@ export interface UseChatHistoryReturn {
   clearMCPEvents: () => void;
 }
 
-export function useChatHistory({ simplified }: { simplified: boolean }): UseChatHistoryReturn {
+export function useChatHistory({
+  simplified,
+}: { simplified: boolean }): UseChatHistoryReturn {
   const [chatHistory, setChatHistory] = useState<MessageType[]>(() => {
     if (simplified) return [];
     try {
@@ -50,19 +53,21 @@ export function useChatHistory({ simplified }: { simplified: boolean }): UseChat
 
   const [mcpEvents, setMCPEvents] = useState<MCPEvent[]>([]);
 
-  const [messageTraceId, setMessageTraceId] = useState<string | null>(
-    () => (simplified ? null : sessionStorage.getItem("messageTraceId") || null),
+  const [messageTraceId, setMessageTraceId] = useState<string | null>(() =>
+    simplified ? null : sessionStorage.getItem("messageTraceId") || null,
   );
 
   const [responsesSessionId, setResponsesSessionId] = useState<string | null>(
-    () => (simplified ? null : sessionStorage.getItem("responsesSessionId") || null),
+    () =>
+      simplified ? null : sessionStorage.getItem("responsesSessionId") || null,
   );
 
-  const [useApiSessionManagement, setUseApiSessionManagement] = useState<boolean>(() => {
-    if (simplified) return true;
-    const saved = sessionStorage.getItem("useApiSessionManagement");
-    return saved ? JSON.parse(saved) : true; // Default to API session management
-  });
+  const [useApiSessionManagement, setUseApiSessionManagement] =
+    useState<boolean>(() => {
+      if (simplified) return true;
+      const saved = sessionStorage.getItem("useApiSessionManagement");
+      return saved ? JSON.parse(saved) : true; // Default to API session management
+    });
 
   // Debounced chatHistory persistence
   useEffect(() => {
@@ -92,7 +97,10 @@ export function useChatHistory({ simplified }: { simplified: boolean }): UseChat
     } else {
       sessionStorage.removeItem("responsesSessionId");
     }
-    sessionStorage.setItem("useApiSessionManagement", JSON.stringify(useApiSessionManagement));
+    sessionStorage.setItem(
+      "useApiSessionManagement",
+      JSON.stringify(useApiSessionManagement),
+    );
   }, [messageTraceId, responsesSessionId, useApiSessionManagement, simplified]);
 
   const updateTextUI = (role: string, chunk: string, model?: string) => {
@@ -125,7 +133,12 @@ export function useChatHistory({ simplified }: { simplified: boolean }): UseChat
     setChatHistory((prevHistory) => {
       const lastMessage = prevHistory[prevHistory.length - 1];
 
-      if (lastMessage && lastMessage.role === "assistant" && !lastMessage.isImage && !lastMessage.isAudio) {
+      if (
+        lastMessage &&
+        lastMessage.role === "assistant" &&
+        !lastMessage.isImage &&
+        !lastMessage.isAudio
+      ) {
         return [
           ...prevHistory.slice(0, prevHistory.length - 1),
           {
@@ -136,7 +149,10 @@ export function useChatHistory({ simplified }: { simplified: boolean }): UseChat
       } else {
         // If there's no assistant message yet, we'll create one with empty content
         // but with reasoning content
-        if (prevHistory.length > 0 && prevHistory[prevHistory.length - 1].role === "user") {
+        if (
+          prevHistory.length > 0 &&
+          prevHistory[prevHistory.length - 1].role === "user"
+        ) {
           return [
             ...prevHistory,
             {
@@ -193,7 +209,10 @@ export function useChatHistory({ simplified }: { simplified: boolean }): UseChat
           toolName,
         };
 
-        return [...prevHistory.slice(0, prevHistory.length - 1), updatedMessage];
+        return [
+          ...prevHistory.slice(0, prevHistory.length - 1),
+          updatedMessage,
+        ];
       }
 
       return prevHistory;
@@ -209,7 +228,10 @@ export function useChatHistory({ simplified }: { simplified: boolean }): UseChat
           ...lastMessage,
           a2aMetadata,
         };
-        return [...prevHistory.slice(0, prevHistory.length - 1), updatedMessage];
+        return [
+          ...prevHistory.slice(0, prevHistory.length - 1),
+          updatedMessage,
+        ];
       }
 
       return prevHistory;
@@ -244,7 +266,10 @@ export function useChatHistory({ simplified }: { simplified: boolean }): UseChat
           searchResults,
         };
 
-        return [...prevHistory.slice(0, prevHistory.length - 1), updatedMessage];
+        return [
+          ...prevHistory.slice(0, prevHistory.length - 1),
+          updatedMessage,
+        ];
       }
 
       return prevHistory;
@@ -275,7 +300,8 @@ export function useChatHistory({ simplified }: { simplified: boolean }): UseChat
               existingEvent.item_id === event.item_id &&
               existingEvent.type === event.type &&
               (existingEvent.sequence_number === event.sequence_number ||
-                (existingEvent.sequence_number === undefined && event.sequence_number === undefined)),
+                (existingEvent.sequence_number === undefined &&
+                  event.sequence_number === undefined)),
           )
         : false;
 
@@ -288,18 +314,29 @@ export function useChatHistory({ simplified }: { simplified: boolean }): UseChat
   };
 
   const updateImageUI = (imageUrl: string, model: string) => {
-    setChatHistory((prevHistory) => [...prevHistory, { role: "assistant", content: imageUrl, model, isImage: true }]);
+    setChatHistory((prevHistory) => [
+      ...prevHistory,
+      { role: "assistant", content: imageUrl, model, isImage: true },
+    ]);
   };
 
   const updateEmbeddingsUI = (embeddings: string, model?: string) => {
     setChatHistory((prevHistory) => [
       ...prevHistory,
-      { role: "assistant", content: truncateString(embeddings, 100), model, isEmbeddings: true },
+      {
+        role: "assistant",
+        content: truncateString(embeddings, 100),
+        model,
+        isEmbeddings: true,
+      },
     ]);
   };
 
   const updateAudioUI = (audioUrl: string, model: string) => {
-    setChatHistory((prevHistory) => [...prevHistory, { role: "assistant", content: audioUrl, model, isAudio: true }]);
+    setChatHistory((prevHistory) => [
+      ...prevHistory,
+      { role: "assistant", content: audioUrl, model, isAudio: true },
+    ]);
   };
 
   const updateChatImageUI = (imageUrl: string, model?: string) => {

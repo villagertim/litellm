@@ -1,7 +1,12 @@
-import React from "react";
-import { Button, Spin, Alert, Collapse } from "antd";
-import { CheckCircleOutlined, ExclamationCircleOutlined, ReloadOutlined, ToolOutlined } from "@ant-design/icons";
-import { Card, Title, Text } from "@tremor/react";
+import {
+  CheckCircleOutlined,
+  ExclamationCircleOutlined,
+  ReloadOutlined,
+  ToolOutlined,
+} from "@ant-design/icons";
+import { Card, Text, Title } from "@tremor/react";
+import { Alert, Button, Collapse, Spin } from "antd";
+import type React from "react";
 
 interface MCPConnectionStatusProps {
   formValues: Record<string, any>;
@@ -22,7 +27,6 @@ const MCPConnectionStatus: React.FC<MCPConnectionStatusProps> = ({
   canFetchTools,
   fetchTools,
 }) => {
-
   // Don't show anything if required fields aren't filled
   if (!canFetchTools && !formValues.url && !formValues.spec_path) {
     return null;
@@ -41,7 +45,10 @@ const MCPConnectionStatus: React.FC<MCPConnectionStatusProps> = ({
             <ToolOutlined className="text-2xl mb-2" />
             <Text>Complete required fields to test connection</Text>
             <br />
-            <Text className="text-sm">Fill in URL, Transport, and Authentication to test MCP server connection</Text>
+            <Text className="text-sm">
+              Fill in URL, Transport, and Authentication to test MCP server
+              connection
+            </Text>
           </div>
         )}
 
@@ -59,7 +66,9 @@ const MCPConnectionStatus: React.FC<MCPConnectionStatusProps> = ({
                         : "Ready to test connection"}
                 </Text>
                 <br />
-                <Text className="text-gray-500 text-sm">Server: {formValues.url || formValues.spec_path}</Text>
+                <Text className="text-gray-500 text-sm">
+                  Server: {formValues.url || formValues.spec_path}
+                </Text>
               </div>
 
               {isLoadingTools && (
@@ -87,7 +96,9 @@ const MCPConnectionStatus: React.FC<MCPConnectionStatusProps> = ({
             {isLoadingTools && (
               <div className="flex items-center justify-center py-6">
                 <Spin size="large" />
-                <Text className="ml-3">Testing connection and loading tools...</Text>
+                <Text className="ml-3">
+                  Testing connection and loading tools...
+                </Text>
               </div>
             )}
 
@@ -104,18 +115,20 @@ const MCPConnectionStatus: React.FC<MCPConnectionStatusProps> = ({
                             key: "stack-trace",
                             label: "Stack Trace",
                             children: (
-                              <pre style={{ 
-                                whiteSpace: "pre-wrap", 
-                                wordBreak: "break-word",
-                                fontSize: "12px",
-                                fontFamily: "monospace",
-                                margin: 0,
-                                padding: "8px",
-                                backgroundColor: "#f5f5f5",
-                                borderRadius: "4px",
-                                maxHeight: "400px",
-                                overflow: "auto"
-                              }}>
+                              <pre
+                                style={{
+                                  whiteSpace: "pre-wrap",
+                                  wordBreak: "break-word",
+                                  fontSize: "12px",
+                                  fontFamily: "monospace",
+                                  margin: 0,
+                                  padding: "8px",
+                                  backgroundColor: "#f5f5f5",
+                                  borderRadius: "4px",
+                                  maxHeight: "400px",
+                                  overflow: "auto",
+                                }}
+                              >
                                 {toolsErrorStackTrace}
                               </pre>
                             ),
@@ -129,7 +142,11 @@ const MCPConnectionStatus: React.FC<MCPConnectionStatusProps> = ({
                 type="error"
                 showIcon
                 action={
-                  <Button icon={<ReloadOutlined />} onClick={fetchTools} size="small">
+                  <Button
+                    icon={<ReloadOutlined />}
+                    onClick={fetchTools}
+                    size="small"
+                  >
                     Retry
                   </Button>
                 }
@@ -139,9 +156,13 @@ const MCPConnectionStatus: React.FC<MCPConnectionStatusProps> = ({
             {!isLoadingTools && tools.length === 0 && !toolsError && (
               <div className="text-center py-6 text-gray-500 border rounded-lg border-dashed">
                 <CheckCircleOutlined className="text-2xl mb-2 text-green-500" />
-                <Text className="text-green-600 font-medium">Connection successful!</Text>
+                <Text className="text-green-600 font-medium">
+                  Connection successful!
+                </Text>
                 <br />
-                <Text className="text-gray-500">No tools found for this MCP server</Text>
+                <Text className="text-gray-500">
+                  No tools found for this MCP server
+                </Text>
               </div>
             )}
           </div>

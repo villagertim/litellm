@@ -1,16 +1,21 @@
-import React, { useState } from "react";
 import { Card, Text } from "@tremor/react";
 import { Select } from "antd";
-import { PlusIcon, TrashIcon, GripVerticalIcon } from "lucide-react";
+import { GripVerticalIcon, PlusIcon, TrashIcon } from "lucide-react";
+import type React from "react";
+import { useState } from "react";
 import VariableTextArea from "../variable_textarea";
-import { Message } from "./types";
+import type { Message } from "./types";
 
 const { Option } = Select;
 
 interface PromptMessagesCardProps {
   messages: Message[];
   onAddMessage: () => void;
-  onUpdateMessage: (index: number, field: "role" | "content", value: string) => void;
+  onUpdateMessage: (
+    index: number,
+    field: "role" | "content",
+    value: string,
+  ) => void;
   onRemoveMessage: (index: number) => void;
   onMoveMessage: (fromIndex: number, toIndex: number) => void;
 }
@@ -53,7 +58,11 @@ const PromptMessagesCard: React.FC<PromptMessagesCardProps> = ({
       <div className="mb-2">
         <Text className="text-sm font-medium">Prompt messages</Text>
         <Text className="text-gray-500 text-xs mt-1">
-          Use <code className="bg-gray-100 px-1 rounded text-xs">{'{{variable}}'}</code> syntax for template variables
+          Use{" "}
+          <code className="bg-gray-100 px-1 rounded text-xs">
+            {"{{variable}}"}
+          </code>{" "}
+          syntax for template variables
         </Text>
       </div>
       <div className="space-y-2">
@@ -118,4 +127,3 @@ const PromptMessagesCard: React.FC<PromptMessagesCardProps> = ({
 };
 
 export default PromptMessagesCard;
-

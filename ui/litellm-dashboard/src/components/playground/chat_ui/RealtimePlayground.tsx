@@ -8,7 +8,8 @@ import {
   SoundOutlined,
 } from "@ant-design/icons";
 import { Button, Input, Select, Typography } from "antd";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import type React from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getProxyBaseUrl } from "../../networking";
 import { OPEN_AI_VOICE_SELECT_OPTIONS } from "./chatConstants";
 
@@ -58,18 +59,27 @@ const RealtimePlayground: React.FC<RealtimePlaygroundProps> = ({
 
   const addMessage = useCallback(
     (role: RealtimeMessage["role"], content: string) => {
-      setMessages((prev) => [...prev, { role, content, timestamp: new Date() }]);
+      setMessages((prev) => [
+        ...prev,
+        { role, content, timestamp: new Date() },
+      ]);
     },
-    []
+    [],
   );
 
   const appendAssistantText = useCallback((text: string) => {
     setMessages((prev) => {
       const last = prev[prev.length - 1];
       if (last && last.role === "assistant") {
-        return [...prev.slice(0, -1), { ...last, content: last.content + text }];
+        return [
+          ...prev.slice(0, -1),
+          { ...last, content: last.content + text },
+        ];
       }
-      return [...prev, { role: "assistant", content: text, timestamp: new Date() }];
+      return [
+        ...prev,
+        { role: "assistant", content: text, timestamp: new Date() },
+      ];
     });
   }, []);
 
@@ -114,7 +124,10 @@ const RealtimePlayground: React.FC<RealtimePlaygroundProps> = ({
         url += `&guardrails=${encodeURIComponent(selectedGuardrails.join(","))}`;
       }
 
-      const ws = new WebSocket(url, ["realtime", `openai-insecure-api-key.${accessToken}`]);
+      const ws = new WebSocket(url, [
+        "realtime",
+        `openai-insecure-api-key.${accessToken}`,
+      ]);
 
       ws.onopen = () => {
         setIsConnected(true);
@@ -144,16 +157,19 @@ const RealtimePlayground: React.FC<RealtimePlaygroundProps> = ({
                   voice: selectedVoice,
                   input_audio_format: "pcm16",
                   output_audio_format: "pcm16",
-                  input_audio_transcription: { model: "gpt-4o-mini-transcribe" },
+                  input_audio_transcription: {
+                    model: "gpt-4o-mini-transcribe",
+                  },
                   turn_detection: null,
                 },
-              })
+              }),
             );
           } else if (type === "session.updated") {
             // session configured
           } else if (
             // GA: response.output_audio.delta  |  beta: response.audio.delta
-            type === "response.output_audio.delta" || type === "response.audio.delta"
+            type === "response.output_audio.delta" ||
+            type === "response.audio.delta"
           ) {
             if (data.delta) playAudioChunk(data.delta);
           } else if (
@@ -174,7 +190,8 @@ const RealtimePlayground: React.FC<RealtimePlaygroundProps> = ({
             // Accept both beta (type=text/audio) and GA (type=output_text/output_audio) content.
             setMessages((prev) => {
               const last = prev[prev.length - 1];
-              if (last && last.role === "assistant" && last.content) return prev;
+              if (last && last.role === "assistant" && last.content)
+                return prev;
               const output = data.response?.output || [];
               const texts: string[] = [];
               for (const item of output) {
@@ -186,12 +203,22 @@ const RealtimePlayground: React.FC<RealtimePlaygroundProps> = ({
                 }
               }
               if (texts.length > 0) {
-                return [...prev, { role: "assistant" as const, content: texts.join(""), timestamp: new Date() }];
+                return [
+                  ...prev,
+                  {
+                    role: "assistant" as const,
+                    content: texts.join(""),
+                    timestamp: new Date(),
+                  },
+                ];
               }
               return prev;
             });
           } else if (type === "error") {
-            addMessage("status", `Error: ${data.error?.message || JSON.stringify(data.error)}`);
+            addMessage(
+              "status",
+              `Error: ${data.error?.message || JSON.stringify(data.error)}`,
+            );
           }
         } catch {
           // ignore parse errors
@@ -216,7 +243,16 @@ const RealtimePlayground: React.FC<RealtimePlaygroundProps> = ({
       addMessage("status", `Connection failed: ${err.message}`);
       setIsConnecting(false);
     }
-  }, [accessToken, selectedModel, selectedVoice, customProxyBaseUrl, selectedGuardrails, addMessage, appendAssistantText, playAudioChunk]);
+  }, [
+    accessToken,
+    selectedModel,
+    selectedVoice,
+    customProxyBaseUrl,
+    selectedGuardrails,
+    addMessage,
+    appendAssistantText,
+    playAudioChunk,
+  ]);
 
   const disconnect = useCallback(() => {
     stopRecording();
@@ -246,14 +282,15 @@ const RealtimePlayground: React.FC<RealtimePlaygroundProps> = ({
           input_audio_transcription: { model: "gpt-4o-mini-transcribe" },
           turn_detection: { type: "server_vad" },
         },
-      })
+      }),
     );
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaStreamRef.current = stream;
 
-      const ctx = audioContextRef.current || new AudioContext({ sampleRate: 24000 });
+      const ctx =
+        audioContextRef.current || new AudioContext({ sampleRate: 24000 });
       audioContextRef.current = ctx;
 
       const source = ctx.createMediaStreamSource(stream);
@@ -261,7 +298,8 @@ const RealtimePlayground: React.FC<RealtimePlaygroundProps> = ({
       processorRef.current = processor;
 
       processor.onaudioprocess = (e) => {
-        if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+        if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN)
+          return;
         const input = e.inputBuffer.getChannelData(0);
 
         // Resample to 24kHz if needed
@@ -289,11 +327,12 @@ const RealtimePlayground: React.FC<RealtimePlaygroundProps> = ({
         // Base64 encode and send
         const bytes = new Uint8Array(pcm16.buffer);
         let binary = "";
-        for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+        for (let i = 0; i < bytes.length; i++)
+          binary += String.fromCharCode(bytes[i]);
         const b64 = btoa(binary);
 
         wsRef.current!.send(
-          JSON.stringify({ type: "input_audio_buffer.append", audio: b64 })
+          JSON.stringify({ type: "input_audio_buffer.append", audio: b64 }),
         );
       };
 
@@ -333,12 +372,17 @@ const RealtimePlayground: React.FC<RealtimePlaygroundProps> = ({
           input_audio_transcription: { model: "gpt-4o-mini-transcribe" },
           turn_detection: null,
         },
-      })
+      }),
     );
   }, [selectedVoice]);
 
   const sendTextMessage = useCallback(() => {
-    if (!inputText.trim() || !wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+    if (
+      !inputText.trim() ||
+      !wsRef.current ||
+      wsRef.current.readyState !== WebSocket.OPEN
+    )
+      return;
     const text = inputText.trim();
     addMessage("user", text);
     setInputText("");
@@ -351,7 +395,7 @@ const RealtimePlayground: React.FC<RealtimePlaygroundProps> = ({
           role: "user",
           content: [{ type: "input_text", text }],
         },
-      })
+      }),
     );
     wsRef.current.send(JSON.stringify({ type: "response.create" }));
   }, [inputText, addMessage, ensureTextSession]);
@@ -370,12 +414,18 @@ const RealtimePlayground: React.FC<RealtimePlaygroundProps> = ({
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gray-50">
         <div className="flex items-center gap-3">
           <SoundOutlined className="text-lg text-blue-500" />
-          <Text className="font-semibold text-gray-800">Realtime Voice Chat</Text>
+          <Text className="font-semibold text-gray-800">
+            Realtime Voice Chat
+          </Text>
           <span
             className={`inline-block w-2 h-2 rounded-full ${isConnected ? "bg-green-500" : "bg-gray-300"}`}
           />
           <Text className="text-xs text-gray-500">
-            {isConnected ? "Connected" : isConnecting ? "Connecting..." : "Disconnected"}
+            {isConnected
+              ? "Connected"
+              : isConnecting
+                ? "Connecting..."
+                : "Disconnected"}
           </Text>
         </div>
         <div className="flex items-center gap-2">
@@ -388,11 +438,21 @@ const RealtimePlayground: React.FC<RealtimePlaygroundProps> = ({
             disabled={isConnected}
           />
           {!isConnected ? (
-            <Button type="primary" onClick={connect} loading={isConnecting} size="small">
+            <Button
+              type="primary"
+              onClick={connect}
+              loading={isConnecting}
+              size="small"
+            >
               Connect
             </Button>
           ) : (
-            <Button danger onClick={disconnect} size="small" icon={<CloseCircleOutlined />}>
+            <Button
+              danger
+              onClick={disconnect}
+              size="small"
+              icon={<CloseCircleOutlined />}
+            >
               Disconnect
             </Button>
           )}
@@ -404,10 +464,13 @@ const RealtimePlayground: React.FC<RealtimePlaygroundProps> = ({
         {messages.length === 0 && !isConnected && (
           <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-3">
             <SoundOutlined style={{ fontSize: 48 }} />
-            <Text className="text-lg text-gray-500">Realtime Voice Playground</Text>
+            <Text className="text-lg text-gray-500">
+              Realtime Voice Playground
+            </Text>
             <Text className="text-sm text-gray-400 text-center max-w-md">
-              Click <b>Connect</b> to start a realtime session. You can speak using your microphone
-              or type messages. The AI will respond with voice and text.
+              Click <b>Connect</b> to start a realtime session. You can speak
+              using your microphone or type messages. The AI will respond with
+              voice and text.
             </Text>
           </div>
         )}
@@ -417,7 +480,9 @@ const RealtimePlayground: React.FC<RealtimePlaygroundProps> = ({
             className={`flex ${msg.role === "user" ? "justify-end" : msg.role === "status" ? "justify-center" : "justify-start"}`}
           >
             {msg.role === "status" ? (
-              <div className="text-xs text-gray-400 italic px-3 py-1">{msg.content}</div>
+              <div className="text-xs text-gray-400 italic px-3 py-1">
+                {msg.content}
+              </div>
             ) : (
               <div
                 className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${
@@ -470,7 +535,8 @@ const RealtimePlayground: React.FC<RealtimePlaygroundProps> = ({
           {isRecording && (
             <div className="mt-2 flex items-center gap-2 text-red-500 text-xs">
               <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              Listening — speak into your microphone. Server VAD will detect when you stop.
+              Listening — speak into your microphone. Server VAD will detect
+              when you stop.
             </div>
           )}
         </div>

@@ -1,13 +1,11 @@
-import type { DateRangePickerValue } from "@tremor/react";
-import React, { useCallback, useMemo, useState } from "react";
 import { formatDate } from "@/components/networking";
 import AdvancedDatePicker from "@/components/shared/advanced_date_picker";
+import type { DateRangePickerValue } from "@tremor/react";
+import React, { useCallback, useMemo, useState } from "react";
 import { GuardrailDetail } from "./GuardrailDetail";
 import { GuardrailsOverview } from "./GuardrailsOverview";
 
-type View =
-  | { type: "overview" }
-  | { type: "detail"; guardrailId: string };
+type View = { type: "overview" } | { type: "detail"; guardrailId: string };
 
 interface GuardrailsMonitorViewProps {
   accessToken?: string | null;
@@ -17,7 +15,9 @@ const defaultEnd = new Date();
 const defaultStart = new Date();
 defaultStart.setDate(defaultStart.getDate() - 7);
 
-export default function GuardrailsMonitorView({ accessToken = null }: GuardrailsMonitorViewProps) {
+export default function GuardrailsMonitorView({
+  accessToken = null,
+}: GuardrailsMonitorViewProps) {
   const [view, setView] = useState<View>({ type: "overview" });
 
   const initialFrom = useMemo(() => new Date(defaultStart), []);

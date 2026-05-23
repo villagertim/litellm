@@ -1,7 +1,7 @@
-import React from "react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import UsageIndicator from "./UsageIndicator";
 
 vi.mock("./networking", () => ({
@@ -128,8 +128,12 @@ describe("UsageIndicator", () => {
   });
 
   it("should render nothing when disableUsageIndicator is true", async () => {
-    const { useDisableUsageIndicator } = await import("@/app/(dashboard)/hooks/useDisableUsageIndicator");
-    (useDisableUsageIndicator as ReturnType<typeof vi.fn>).mockReturnValue(true);
+    const { useDisableUsageIndicator } = await import(
+      "@/app/(dashboard)/hooks/useDisableUsageIndicator"
+    );
+    (useDisableUsageIndicator as ReturnType<typeof vi.fn>).mockReturnValue(
+      true,
+    );
 
     render(<UsageIndicator accessToken="token" width={220} />);
 
@@ -137,7 +141,9 @@ describe("UsageIndicator", () => {
       expect(screen.queryByText("Usage")).not.toBeInTheDocument();
     });
 
-    (useDisableUsageIndicator as ReturnType<typeof vi.fn>).mockReturnValue(false);
+    (useDisableUsageIndicator as ReturnType<typeof vi.fn>).mockReturnValue(
+      false,
+    );
   });
 
   it("should show Loading while fetching", () => {
@@ -154,7 +160,9 @@ describe("UsageIndicator", () => {
 
     render(<UsageIndicator accessToken="token" width={220} />);
 
-    expect(await screen.findByText("Failed to load usage data")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Failed to load usage data"),
+    ).toBeInTheDocument();
 
     consoleSpy.mockRestore();
   });

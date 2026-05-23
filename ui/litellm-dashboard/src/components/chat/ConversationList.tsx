@@ -1,25 +1,26 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
+  DeleteOutlined,
+  EditOutlined,
+  MessageOutlined,
+  PlusOutlined,
+  SearchOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import {
+  Avatar,
   Button,
   Input,
   Modal,
   Popconfirm,
   Tooltip,
-  Avatar,
   Typography,
 } from "antd";
-import {
-  EditOutlined,
-  DeleteOutlined,
-  PlusOutlined,
-  SearchOutlined,
-  UserOutlined,
-  MessageOutlined,
-} from "@ant-design/icons";
 import dayjs from "dayjs";
-import { Conversation } from "./types";
+import type React from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { Conversation } from "./types";
 
 const { Text } = Typography;
 
@@ -46,14 +47,21 @@ const getDateGroup = (timestamp: number): DateGroup => {
   return "Older";
 };
 
-const DATE_GROUP_ORDER: DateGroup[] = ["Today", "Yesterday", "Last 7 Days", "Older"];
+const DATE_GROUP_ORDER: DateGroup[] = [
+  "Today",
+  "Yesterday",
+  "Last 7 Days",
+  "Older",
+];
 
 interface GroupedConversations {
   group: DateGroup;
   items: Conversation[];
 }
 
-const groupConversations = (conversations: Conversation[]): GroupedConversations[] => {
+const groupConversations = (
+  conversations: Conversation[],
+): GroupedConversations[] => {
   const map = new Map<DateGroup, Conversation[]>();
 
   for (const conv of conversations) {
@@ -150,7 +158,8 @@ const ConversationRow: React.FC<ConversationRowProps> = ({
       }}
       onMouseLeave={(e) => {
         if (!isActive) {
-          (e.currentTarget as HTMLDivElement).style.backgroundColor = "transparent";
+          (e.currentTarget as HTMLDivElement).style.backgroundColor =
+            "transparent";
         }
       }}
     >
@@ -252,7 +261,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
 
   const filtered = query.trim()
     ? conversations.filter((c) =>
-        c.title.toLowerCase().includes(query.trim().toLowerCase())
+        c.title.toLowerCase().includes(query.trim().toLowerCase()),
       )
     : conversations;
 
@@ -282,13 +291,17 @@ const SearchModal: React.FC<SearchModalProps> = ({
 
       <div style={{ maxHeight: 320, overflowY: "auto" }}>
         {filtered.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "24px 0", color: "#999" }}>
+          <div
+            style={{ textAlign: "center", padding: "24px 0", color: "#999" }}
+          >
             No conversations found
           </div>
         ) : (
           filtered.map((conv) => {
             const truncated =
-              conv.title.length > 55 ? conv.title.slice(0, 55) + "…" : conv.title;
+              conv.title.length > 55
+                ? conv.title.slice(0, 55) + "…"
+                : conv.title;
             return (
               <div
                 key={conv.id}
@@ -303,10 +316,12 @@ const SearchModal: React.FC<SearchModalProps> = ({
                   transition: "background-color 0.1s",
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLDivElement).style.backgroundColor = "#f0f5ff";
+                  (e.currentTarget as HTMLDivElement).style.backgroundColor =
+                    "#f0f5ff";
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLDivElement).style.backgroundColor = "transparent";
+                  (e.currentTarget as HTMLDivElement).style.backgroundColor =
+                    "transparent";
                 }}
               >
                 <MessageOutlined style={{ color: "#999", flexShrink: 0 }} />
@@ -453,7 +468,11 @@ const ConversationList: React.FC<Props> = ({
           <Avatar
             size={28}
             icon={<UserOutlined />}
-            style={{ backgroundColor: "#e0e7ff", color: "#4f46e5", flexShrink: 0 }}
+            style={{
+              backgroundColor: "#e0e7ff",
+              color: "#4f46e5",
+              flexShrink: 0,
+            }}
           />
           <Text
             style={{

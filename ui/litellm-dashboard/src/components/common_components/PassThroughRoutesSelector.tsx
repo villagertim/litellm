@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
 import { Select } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { getPassThroughEndpointsCall } from "../networking";
 
 interface PassThroughRoutesSelectorProps {
@@ -26,7 +27,9 @@ const PassThroughRoutesSelector: React.FC<PassThroughRoutesSelectorProps> = ({
   disabled = false,
   teamId,
 }) => {
-  const [passThroughRoutes, setPassThroughRoutes] = useState<Array<{ label: string; value: string }>>([]);
+  const [passThroughRoutes, setPassThroughRoutes] = useState<
+    Array<{ label: string; value: string }>
+  >([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -37,24 +40,28 @@ const PassThroughRoutesSelector: React.FC<PassThroughRoutesSelectorProps> = ({
       try {
         const response = await getPassThroughEndpointsCall(accessToken, teamId);
         if (response.endpoints) {
-          const routes = response.endpoints.flatMap((endpoint: PassThroughEndpoint) => {
-            const path = endpoint.path;
-            const methods = endpoint.methods;
-            
-            // If methods are specified, create one entry per method
-            if (methods && methods.length > 0) {
-              return methods.map((method) => ({
-                label: `${method} ${path}`,
-                value: path, // Keep value as path for backward compatibility
-              }));
-            }
-            
-            // If no methods specified, show just the path (all methods supported)
-            return [{
-              label: path,
-              value: path,
-            }];
-          });
+          const routes = response.endpoints.flatMap(
+            (endpoint: PassThroughEndpoint) => {
+              const path = endpoint.path;
+              const methods = endpoint.methods;
+
+              // If methods are specified, create one entry per method
+              if (methods && methods.length > 0) {
+                return methods.map((method) => ({
+                  label: `${method} ${path}`,
+                  value: path, // Keep value as path for backward compatibility
+                }));
+              }
+
+              // If no methods specified, show just the path (all methods supported)
+              return [
+                {
+                  label: path,
+                  value: path,
+                },
+              ];
+            },
+          );
           setPassThroughRoutes(routes);
         }
       } catch (error) {
@@ -86,4 +93,3 @@ const PassThroughRoutesSelector: React.FC<PassThroughRoutesSelectorProps> = ({
 };
 
 export default PassThroughRoutesSelector;
-

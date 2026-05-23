@@ -2,8 +2,8 @@ import { useOrganizations } from "@/app/(dashboard)/hooks/organizations/useOrgan
 import { useTeams } from "@/app/(dashboard)/hooks/teams/useTeams";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import {
-  ApiOutlined,
   ApartmentOutlined,
+  ApiOutlined,
   AppstoreOutlined,
   AuditOutlined,
   BankOutlined,
@@ -40,9 +40,9 @@ import {
   rolesAllowedToViewWriteScopedPages,
   rolesWithWriteAccess,
 } from "../utils/roles";
+import UsageIndicator from "./UsageIndicator";
 import NewBadge from "./common_components/NewBadge";
 import type { Organization } from "./networking";
-import UsageIndicator from "./UsageIndicator";
 import { serverRootPath } from "./networking";
 const { Sider } = Layout;
 
@@ -180,11 +180,7 @@ const menuGroups: MenuGroup[] = [
       {
         key: "policies",
         page: "policies",
-        label: (
-          <span className="flex items-center gap-4">
-            Policies
-          </span>
-        ),
+        label: <span className="flex items-center gap-4">Policies</span>,
         icon: <AuditOutlined />,
         roles: all_admin_roles,
       },
@@ -353,7 +349,7 @@ const menuGroups: MenuGroup[] = [
             page: "usage",
             label: "Old Usage",
             icon: <BarChartOutlined />,
-          }
+          },
         ],
       },
     ],
@@ -392,7 +388,10 @@ const menuGroups: MenuGroup[] = [
             page: "admin-panel",
             label: (
               <span className="flex items-center gap-2">
-                Admin Settings <NewBadge dot><span /></NewBadge>
+                Admin Settings{" "}
+                <NewBadge dot>
+                  <span />
+                </NewBadge>
               </span>
             ),
             icon: <SettingOutlined />,
@@ -418,7 +417,17 @@ const menuGroups: MenuGroup[] = [
   },
 ];
 
-const Sidebar: React.FC<SidebarProps> = ({ setPage, defaultSelectedKey, collapsed = false, enabledPagesInternalUsers, enableProjectsUI, disableAgentsForInternalUsers, allowAgentsForTeamAdmins, disableVectorStoresForInternalUsers, allowVectorStoresForTeamAdmins }) => {
+const Sidebar: React.FC<SidebarProps> = ({
+  setPage,
+  defaultSelectedKey,
+  collapsed = false,
+  enabledPagesInternalUsers,
+  enableProjectsUI,
+  disableAgentsForInternalUsers,
+  allowAgentsForTeamAdmins,
+  disableVectorStoresForInternalUsers,
+  allowVectorStoresForTeamAdmins,
+}) => {
   const { userId, accessToken, userRole } = useAuthorized();
   const { data: organizations } = useOrganizations();
   const { data: teams } = useTeams();
@@ -427,12 +436,18 @@ const Sidebar: React.FC<SidebarProps> = ({ setPage, defaultSelectedKey, collapse
   const isOrgAdmin = useMemo(() => {
     if (!userId || !organizations) return false;
     return organizations.some((org: Organization) =>
-      org.members?.some((member) => member.user_id === userId && member.user_role === "org_admin"),
+      org.members?.some(
+        (member) =>
+          member.user_id === userId && member.user_role === "org_admin",
+      ),
     );
   }, [userId, organizations]);
 
   // Check if user is a team admin for any team
-  const isTeamAdmin = useMemo(() => isUserTeamAdminForAnyTeam(teams ?? null, userId ?? ""), [teams, userId]);
+  const isTeamAdmin = useMemo(
+    () => isUserTeamAdminForAnyTeam(teams ?? null, userId ?? ""),
+    [teams, userId],
+  );
 
   // Navigate to page helper
   const navigateToPage = (page: string) => {
@@ -471,7 +486,11 @@ const Sidebar: React.FC<SidebarProps> = ({ setPage, defaultSelectedKey, collapse
     const migratedRoute = MIGRATED_PAGES[page];
     const href = migratedRoute
       ? migratedHref(migratedRoute)
-      : (() => { const params = new URLSearchParams(window.location.search); params.set("page", page); return `?${params.toString()}`; })();
+      : (() => {
+          const params = new URLSearchParams(window.location.search);
+          params.set("page", page);
+          return `?${params.toString()}`;
+        })();
     return (
       <a
         href={href}
@@ -494,7 +513,10 @@ const Sidebar: React.FC<SidebarProps> = ({ setPage, defaultSelectedKey, collapse
     const isAdmin = isAdminRole(userRole);
 
     // Debug logging
-    if (enabledPagesInternalUsers !== null && enabledPagesInternalUsers !== undefined) {
+    if (
+      enabledPagesInternalUsers !== null &&
+      enabledPagesInternalUsers !== undefined
+    ) {
       console.log("[LeftNav] Filtering with enabled pages:", {
         userRole,
         isAdmin,
@@ -510,13 +532,20 @@ const Sidebar: React.FC<SidebarProps> = ({ setPage, defaultSelectedKey, collapse
       .filter((item) => {
         // Special handling for organizations and users menu items - allow org_admins
         if (item.key === "organizations" || item.key === "users") {
-          const hasRoleAccess = !item.roles || item.roles.includes(userRole) || isOrgAdmin;
+          const hasRoleAccess =
+            !item.roles || item.roles.includes(userRole) || isOrgAdmin;
           if (!hasRoleAccess) return false;
 
           // Check enabled pages for internal users (non-admins)
-          if (!isAdmin && enabledPagesInternalUsers !== null && enabledPagesInternalUsers !== undefined) {
+          if (
+            !isAdmin &&
+            enabledPagesInternalUsers !== null &&
+            enabledPagesInternalUsers !== undefined
+          ) {
             const isIncluded = enabledPagesInternalUsers.includes(item.page);
-            console.log(`[LeftNav] Page "${item.page}" (${item.key}): ${isIncluded ? "VISIBLE" : "HIDDEN"}`);
+            console.log(
+              `[LeftNav] Page "${item.page}" (${item.key}): ${isIncluded ? "VISIBLE" : "HIDDEN"}`,
+            );
             return isIncluded;
           }
           return true;
@@ -527,27 +556,47 @@ const Sidebar: React.FC<SidebarProps> = ({ setPage, defaultSelectedKey, collapse
 
         // Hide agents and vector-stores pages for non-admin users when disabled,
         // unless allow_*_for_team_admins is on and the user is a team admin.
-        if (!isAdmin && item.key === "agents" && disableAgentsForInternalUsers && !(allowAgentsForTeamAdmins && isTeamAdmin)) return false;
-        if (!isAdmin && item.key === "vector-stores" && disableVectorStoresForInternalUsers && !(allowVectorStoresForTeamAdmins && isTeamAdmin)) return false;
+        if (
+          !isAdmin &&
+          item.key === "agents" &&
+          disableAgentsForInternalUsers &&
+          !(allowAgentsForTeamAdmins && isTeamAdmin)
+        )
+          return false;
+        if (
+          !isAdmin &&
+          item.key === "vector-stores" &&
+          disableVectorStoresForInternalUsers &&
+          !(allowVectorStoresForTeamAdmins && isTeamAdmin)
+        )
+          return false;
 
         // Existing role check
         if (item.roles && !item.roles.includes(userRole)) return false;
 
         // Check enabled pages for internal users (non-admins)
-        if (!isAdmin && enabledPagesInternalUsers !== null && enabledPagesInternalUsers !== undefined) {
+        if (
+          !isAdmin &&
+          enabledPagesInternalUsers !== null &&
+          enabledPagesInternalUsers !== undefined
+        ) {
           // If item has children, check if any children are visible
           if (item.children && item.children.length > 0) {
             const hasVisibleChildren = item.children.some((child) =>
-              enabledPagesInternalUsers.includes(child.page)
+              enabledPagesInternalUsers.includes(child.page),
             );
             if (hasVisibleChildren) {
-              console.log(`[LeftNav] Parent "${item.page}" (${item.key}): VISIBLE (has visible children)`);
+              console.log(
+                `[LeftNav] Parent "${item.page}" (${item.key}): VISIBLE (has visible children)`,
+              );
               return true;
             }
           }
 
           const isIncluded = enabledPagesInternalUsers.includes(item.page);
-          console.log(`[LeftNav] Page "${item.page}" (${item.key}): ${isIncluded ? "VISIBLE" : "HIDDEN"}`);
+          console.log(
+            `[LeftNav] Page "${item.page}" (${item.key}): ${isIncluded ? "VISIBLE" : "HIDDEN"}`,
+          );
           return isIncluded;
         }
 
@@ -604,12 +653,12 @@ const Sidebar: React.FC<SidebarProps> = ({ setPage, defaultSelectedKey, collapse
           })),
           onClick: !item.children
             ? () => {
-              if (item.external_url) {
-                window.open(item.external_url, "_blank");
-              } else {
-                navigateToPage(item.page);
+                if (item.external_url) {
+                  window.open(item.external_url, "_blank");
+                } else {
+                  navigateToPage(item.page);
+                }
               }
-            }
             : undefined,
         })),
       });
@@ -680,7 +729,9 @@ const Sidebar: React.FC<SidebarProps> = ({ setPage, defaultSelectedKey, collapse
             items={buildMenuItems()}
           />
         </ConfigProvider>
-        {isAdminRole(userRole) && !collapsed && <UsageIndicator accessToken={accessToken} width={220} />}
+        {isAdminRole(userRole) && !collapsed && (
+          <UsageIndicator accessToken={accessToken} width={220} />
+        )}
       </Sider>
     </Layout>
   );

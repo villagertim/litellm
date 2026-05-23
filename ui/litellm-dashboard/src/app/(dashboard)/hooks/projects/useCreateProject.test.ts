@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { ReactNode } from "react";
-import { useCreateProject, ProjectCreateParams } from "./useCreateProject";
-import { projectKeys, ProjectResponse } from "./useProjects";
+import { renderHook, waitFor } from "@testing-library/react";
+import React, { type ReactNode } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { type ProjectCreateParams, useCreateProject } from "./useCreateProject";
+import { type ProjectResponse, projectKeys } from "./useProjects";
 
 vi.mock("@/components/networking", () => ({
   getProxyBaseUrl: vi.fn(() => ""),
@@ -48,11 +48,17 @@ describe("useCreateProject", () => {
 
   beforeEach(() => {
     queryClient = new QueryClient({
-      defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
     });
     vi.clearAllMocks();
     global.fetch = vi.fn();
-    mockUseAuthorized.mockReturnValue({ accessToken: "test-token", userRole: "Admin" });
+    mockUseAuthorized.mockReturnValue({
+      accessToken: "test-token",
+      userRole: "Admin",
+    });
   });
 
   it("should render", () => {
@@ -63,11 +69,17 @@ describe("useCreateProject", () => {
   });
 
   it("should POST to /project/new and return the created project", async () => {
-    (global.fetch as any).mockResolvedValue({ ok: true, json: async () => mockProject });
+    (global.fetch as any).mockResolvedValue({
+      ok: true,
+      json: async () => mockProject,
+    });
     const { result } = renderHook(() => useCreateProject(), {
       wrapper: makeWrapper(queryClient),
     });
-    const params: ProjectCreateParams = { team_id: "team-1", project_alias: "New Project" };
+    const params: ProjectCreateParams = {
+      team_id: "team-1",
+      project_alias: "New Project",
+    };
     const data = await result.current.mutateAsync(params);
     expect(data).toEqual(mockProject);
     const [url, init] = (global.fetch as any).mock.calls[0];
@@ -77,7 +89,10 @@ describe("useCreateProject", () => {
   });
 
   it("should invalidate project queries on success", async () => {
-    (global.fetch as any).mockResolvedValue({ ok: true, json: async () => mockProject });
+    (global.fetch as any).mockResolvedValue({
+      ok: true,
+      json: async () => mockProject,
+    });
     const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
     const { result } = renderHook(() => useCreateProject(), {
       wrapper: makeWrapper(queryClient),
@@ -103,9 +118,9 @@ describe("useCreateProject", () => {
     const { result } = renderHook(() => useCreateProject(), {
       wrapper: makeWrapper(queryClient),
     });
-    await expect(result.current.mutateAsync({ team_id: "team-1" })).rejects.toThrow(
-      "Access token is required"
-    );
+    await expect(
+      result.current.mutateAsync({ team_id: "team-1" }),
+    ).rejects.toThrow("Access token is required");
     expect(global.fetch).not.toHaveBeenCalled();
   });
 });

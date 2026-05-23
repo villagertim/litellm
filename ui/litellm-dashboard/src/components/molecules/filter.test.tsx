@@ -2,7 +2,7 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../tests/test-utils";
-import FilterComponent, { FilterOption } from "./filter";
+import FilterComponent, { type FilterOption } from "./filter";
 
 describe("FilterComponent", () => {
   const mockOnApplyFilters = vi.fn();
@@ -55,7 +55,9 @@ describe("FilterComponent", () => {
         buttonLabel="Custom Filters"
       />,
     );
-    expect(screen.getByRole("button", { name: "Custom Filters" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Custom Filters" }),
+    ).toBeInTheDocument();
   });
 
   it("should toggle filters visibility when filter button is clicked", async () => {
@@ -69,18 +71,24 @@ describe("FilterComponent", () => {
     );
 
     const filterButton = screen.getByRole("button", { name: "Filters" });
-    expect(screen.queryByPlaceholderText("Enter User ID...")).not.toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText("Enter User ID..."),
+    ).not.toBeInTheDocument();
 
     await user.click(filterButton);
 
     await waitFor(() => {
-      expect(screen.getByPlaceholderText("Enter User ID...")).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText("Enter User ID..."),
+      ).toBeInTheDocument();
     });
 
     await user.click(filterButton);
 
     await waitFor(() => {
-      expect(screen.queryByPlaceholderText("Enter User ID...")).not.toBeInTheDocument();
+      expect(
+        screen.queryByPlaceholderText("Enter User ID..."),
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -166,7 +174,9 @@ describe("FilterComponent", () => {
     await user.click(filterButton);
 
     await waitFor(() => {
-      const userIdInput = screen.getByPlaceholderText("Enter User ID...") as HTMLInputElement;
+      const userIdInput = screen.getByPlaceholderText(
+        "Enter User ID...",
+      ) as HTMLInputElement;
       expect(userIdInput.value).toBe("user123");
     });
   });
@@ -245,9 +255,9 @@ describe("FilterComponent", () => {
 
   it("should debounce search input for searchable filters", async () => {
     const user = userEvent.setup({ delay: null });
-    const mockSearchFn = vi.fn().mockResolvedValue([
-      { label: "Result", value: "result" },
-    ]);
+    const mockSearchFn = vi
+      .fn()
+      .mockResolvedValue([{ label: "Result", value: "result" }]);
 
     const options: FilterOption[] = [
       {
@@ -347,7 +357,9 @@ describe("FilterComponent", () => {
 
   it("should handle search errors gracefully", async () => {
     const user = userEvent.setup({ delay: null });
-    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const consoleErrorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
     const mockSearchFn = vi.fn().mockRejectedValue(new Error("Search failed"));
 
     const options: FilterOption[] = [
@@ -382,7 +394,10 @@ describe("FilterComponent", () => {
 
     await waitFor(
       () => {
-        expect(consoleErrorSpy).toHaveBeenCalledWith("Error searching:", expect.any(Error));
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          "Error searching:",
+          expect.any(Error),
+        );
         expect(screen.getByText("No results found")).toBeInTheDocument();
       },
       { timeout: 500 },
@@ -393,9 +408,9 @@ describe("FilterComponent", () => {
 
   it("should load initial options when dropdown opens for searchable filter", async () => {
     const user = userEvent.setup({ delay: null });
-    const mockSearchFn = vi.fn().mockResolvedValue([
-      { label: "Initial Result", value: "initial" },
-    ]);
+    const mockSearchFn = vi
+      .fn()
+      .mockResolvedValue([{ label: "Initial Result", value: "initial" }]);
 
     const options: FilterOption[] = [
       {
@@ -512,7 +527,9 @@ describe("FilterComponent", () => {
     await user.click(filterButton);
 
     await waitFor(() => {
-      const userIdInput = screen.getByPlaceholderText("Enter User ID...") as HTMLInputElement;
+      const userIdInput = screen.getByPlaceholderText(
+        "Enter User ID...",
+      ) as HTMLInputElement;
       expect(userIdInput.value).toBe("user123");
     });
 
@@ -520,7 +537,9 @@ describe("FilterComponent", () => {
     await user.click(resetButton);
 
     await waitFor(() => {
-      const userIdInput = screen.getByPlaceholderText("Enter User ID...") as HTMLInputElement;
+      const userIdInput = screen.getByPlaceholderText(
+        "Enter User ID...",
+      ) as HTMLInputElement;
       expect(userIdInput.value).toBe("");
     });
   });

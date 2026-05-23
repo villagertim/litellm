@@ -1,6 +1,9 @@
 import NotificationsManager from "@/components/molecules/notifications_manager";
 
-export function updateExistingKeys<Source extends object>(target: Source, source: object): Source {
+export function updateExistingKeys<Source extends object>(
+  target: Source,
+  source: object,
+): Source {
   const clonedTarget = structuredClone(target);
 
   for (const [key, value] of Object.entries(source)) {
@@ -14,11 +17,16 @@ export function updateExistingKeys<Source extends object>(target: Source, source
 
 export const formatNumberWithCommas = (
   value: number | null | undefined,
-  decimals: number = 0,
-  abbreviate: boolean = false,
-  showZero: boolean = true,
+  decimals = 0,
+  abbreviate = false,
+  showZero = true,
 ): string => {
-  if (value === null || value === undefined || !Number.isFinite(value) || (value === 0 && !showZero)) {
+  if (
+    value === null ||
+    value === undefined ||
+    !Number.isFinite(value) ||
+    (value === 0 && !showZero)
+  ) {
     return "-";
   }
 
@@ -47,8 +55,16 @@ export const formatNumberWithCommas = (
   return `${sign}${scaled.toLocaleString("en-US", opts)}${suffix}`;
 };
 
-export const getSpendString = (value: number | null | undefined, decimals: number = 6): string => {
-  if (value === null || value === undefined || !Number.isFinite(value) || value === 0) {
+export const getSpendString = (
+  value: number | null | undefined,
+  decimals = 6,
+): string => {
+  if (
+    value === null ||
+    value === undefined ||
+    !Number.isFinite(value) ||
+    value === 0
+  ) {
     return "-";
   }
 
@@ -65,7 +81,7 @@ export const getSpendString = (value: number | null | undefined, decimals: numbe
 
 export const copyToClipboard = async (
   text: string | null | undefined,
-  messageText: string = "Copied to clipboard",
+  messageText = "Copied to clipboard",
 ): Promise<boolean> => {
   if (!text) return false;
 
@@ -87,7 +103,10 @@ export const copyToClipboard = async (
 };
 
 // Fallback method using document.execCommand (deprecated but widely supported)
-const fallbackCopyToClipboard = (text: string, messageText: string): boolean => {
+const fallbackCopyToClipboard = (
+  text: string,
+  messageText: string,
+): boolean => {
   try {
     const textArea = document.createElement("textarea");
     textArea.value = text;

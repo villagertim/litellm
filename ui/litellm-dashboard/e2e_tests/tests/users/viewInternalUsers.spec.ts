@@ -1,4 +1,4 @@
-import { test, expect, Page } from "@playwright/test";
+import { type Page, expect, test } from "@playwright/test";
 import { ADMIN_STORAGE_PATH } from "../../constants";
 
 test.skip("Internal Users Page", () => {
@@ -7,7 +7,9 @@ test.skip("Internal Users Page", () => {
   async function goToInternalUsers(page: Page) {
     await page.goto("/ui");
 
-    const internalUserTab = page.getByRole("menuitem", { name: "Internal User" });
+    const internalUserTab = page.getByRole("menuitem", {
+      name: "Internal User",
+    });
     await expect(internalUserTab).toBeVisible();
     await internalUserTab.click();
 
@@ -26,7 +28,9 @@ test.skip("Internal Users Page", () => {
     const userIdHeader = page.getByRole("columnheader", { name: "User ID" });
     await expect(userIdHeader).toBeVisible();
 
-    const virtualKeysHeader = page.getByRole("columnheader", { name: "Virtual Keys" });
+    const virtualKeysHeader = page.getByRole("columnheader", {
+      name: "Virtual Keys",
+    });
     await expect(virtualKeysHeader).toBeVisible();
   });
 
@@ -46,7 +50,8 @@ test.skip("Internal Users Page", () => {
 
     await page.waitForTimeout(1000);
     // Check if there are more pages
-    const hasMorePages = infoText.includes("of") && !infoText.endsWith("25 of 25");
+    const hasMorePages =
+      infoText.includes("of") && !infoText.endsWith("25 of 25");
     if (hasMorePages) {
       await expect(nextButton).toBeEnabled();
     }

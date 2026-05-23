@@ -1,8 +1,8 @@
-import React from "react";
 import { notification as staticNotification } from "antd";
+import type { ArgsProps } from "antd/es/notification";
 import type { NotificationInstance } from "antd/es/notification/interface";
+import React from "react";
 import { parseErrorMessage } from "../shared/errorUtils";
-import { ArgsProps } from "antd/es/notification";
 
 let notificationInstance: NotificationInstance | null = null;
 
@@ -13,7 +13,13 @@ export const setNotificationInstance = (instance: NotificationInstance) => {
 // Helper to get the best available notification instance
 const getNotification = () => notificationInstance || staticNotification;
 
-type Placement = "top" | "topLeft" | "topRight" | "bottom" | "bottomLeft" | "bottomRight";
+type Placement =
+  | "top"
+  | "topLeft"
+  | "topRight"
+  | "bottom"
+  | "bottomLeft"
+  | "bottomRight";
 
 type NotificationConfig = {
   message?: string | React.ReactNode;
@@ -23,20 +29,27 @@ type NotificationConfig = {
   key?: string;
 };
 
-type NotificationConfigResolved = Omit<NotificationConfig, "message"> & { message: string | React.ReactNode };
+type NotificationConfigResolved = Omit<NotificationConfig, "message"> & {
+  message: string | React.ReactNode;
+};
 
 function defaultPlacement(): Placement {
   return "topRight";
 }
 
-function normalize(input: string | NotificationConfig, fallbackTitle: string): NotificationConfigResolved {
-  if (typeof input === "string") return { message: fallbackTitle, description: input };
+function normalize(
+  input: string | NotificationConfig,
+  fallbackTitle: string,
+): NotificationConfigResolved {
+  if (typeof input === "string")
+    return { message: fallbackTitle, description: input };
   return { message: input.message ?? fallbackTitle, ...input };
 }
 
 function toIntMaybe(val: any): number | undefined {
   if (typeof val === "number") return val;
-  if (typeof val === "string" && /^\d+$/.test(val)) return parseInt(val, 10);
+  if (typeof val === "string" && /^\d+$/.test(val))
+    return Number.parseInt(val, 10);
   return undefined;
 }
 
@@ -117,7 +130,11 @@ const NOT_FOUND_MATCH = [
   "tool '", // will combine with “not found” in message
 ];
 
-const EXISTS_MATCH = ["already exists", "team member is already in team", "user already exists"];
+const EXISTS_MATCH = [
+  "already exists",
+  "team member is already in team",
+  "user already exists",
+];
 
 const GUARDRAIL_MATCH = [
   "violated openai moderation policy",
@@ -151,10 +168,14 @@ function titleFor(status?: number, desc?: string): string {
 
   if (AUTH_MATCH.some((s) => d.includes(s))) return "Authentication Error";
   if (FORBIDDEN_MATCH.some((s) => d.includes(s))) return "Access Denied";
-  if (DB_MATCH?.some?.((s: string) => d.includes(s)) || status === 503) return "Service Unavailable";
-  if (BUDGET_MATCH?.some?.((s: string) => d.includes(s))) return "Budget Exceeded";
-  if (ENTERPRISE_MATCH?.some?.((s: string) => d.includes(s))) return "Feature Unavailable";
-  if (ROUTER_MATCH?.some?.((s: string) => d.includes(s))) return "Routing Error";
+  if (DB_MATCH?.some?.((s: string) => d.includes(s)) || status === 503)
+    return "Service Unavailable";
+  if (BUDGET_MATCH?.some?.((s: string) => d.includes(s)))
+    return "Budget Exceeded";
+  if (ENTERPRISE_MATCH?.some?.((s: string) => d.includes(s)))
+    return "Feature Unavailable";
+  if (ROUTER_MATCH?.some?.((s: string) => d.includes(s)))
+    return "Routing Error";
 
   if (EXISTS_MATCH.some((s) => d.includes(s))) return "Already Exists";
   if (GUARDRAIL_MATCH.some((s) => d.includes(s))) return "Content Blocked";
@@ -163,7 +184,12 @@ function titleFor(status?: number, desc?: string): string {
   if (CLOUDZERO_MATCH.some((s) => d.includes(s))) return "Integration Error";
 
   if (VALIDATION_MATCH.some((s) => d.includes(s))) return "Validation Error";
-  if (status === 404 || d.includes("not found") || NOT_FOUND_MATCH.some((s) => d.includes(s))) return "Not Found";
+  if (
+    status === 404 ||
+    d.includes("not found") ||
+    NOT_FOUND_MATCH.some((s) => d.includes(s))
+  )
+    return "Not Found";
   if (
     status === 429 ||
     d.includes("rate limit") ||
@@ -203,7 +229,10 @@ const SUCCESS_MATCH = [
   "deleted successfully",
 ];
 
-const INFO_MATCH = ["rate limit reached for deployment", "deployment cooldown period active"];
+const INFO_MATCH = [
+  "rate limit reached for deployment",
+  "deployment cooldown period active",
+];
 
 const DEPRECATION_FEATURE_WARN_MATCH = [
   "this feature is only available for litellm enterprise users",
@@ -218,19 +247,29 @@ const CONFIG_WARN_MATCH = [
   "failed to save health check to database",
 ];
 
-function classifyGeneralMessage(desc?: string): { kind: "success" | "info" | "warning"; title: string } | null {
+function classifyGeneralMessage(
+  desc?: string,
+): { kind: "success" | "info" | "warning"; title: string } | null {
   const d = (desc || "").toLowerCase();
 
-  if (SUCCESS_MATCH.some((s) => d.includes(s))) return { kind: "success", title: "Success" };
-  if (DEPRECATION_FEATURE_WARN_MATCH.some((s) => d.includes(s))) return { kind: "warning", title: "Feature Notice" };
-  if (CONFIG_WARN_MATCH.some((s) => d.includes(s))) return { kind: "warning", title: "Configuration Warning" };
-  if (INFO_MATCH.some((s) => d.includes(s))) return { kind: "warning", title: "Rate Limit" }; // show as warning for visibility
+  if (SUCCESS_MATCH.some((s) => d.includes(s)))
+    return { kind: "success", title: "Success" };
+  if (DEPRECATION_FEATURE_WARN_MATCH.some((s) => d.includes(s)))
+    return { kind: "warning", title: "Feature Notice" };
+  if (CONFIG_WARN_MATCH.some((s) => d.includes(s)))
+    return { kind: "warning", title: "Configuration Warning" };
+  if (INFO_MATCH.some((s) => d.includes(s)))
+    return { kind: "warning", title: "Rate Limit" }; // show as warning for visibility
 
   return null;
 }
 
 function extractStatus(input: any): number | undefined {
-  return toIntMaybe(input?.response?.status) ?? toIntMaybe(input?.status_code) ?? toIntMaybe(input?.code);
+  return (
+    toIntMaybe(input?.response?.status) ??
+    toIntMaybe(input?.status_code) ??
+    toIntMaybe(input?.code)
+  );
 }
 
 function extractDescription(input: any): string {
@@ -254,7 +293,12 @@ function looksErrorPayload(input: any, status?: number): boolean {
   if (status !== undefined) return true;
   if (input instanceof Error) return true;
   if (typeof input === "string") return true; // treat raw strings passed to fromBackend as errors
-  if (input && typeof input === "object" && ("error" in input || "detail" in input)) return true;
+  if (
+    input &&
+    typeof input === "object" &&
+    ("error" in input || "detail" in input)
+  )
+    return true;
   return false;
 }
 
@@ -309,10 +353,17 @@ const NotificationManager = {
     });
   },
 
-  fromBackend(input: any, extra?: Omit<NotificationConfig, "message" | "description">) {
+  fromBackend(
+    input: any,
+    extra?: Omit<NotificationConfig, "message" | "description">,
+  ) {
     const status = extractStatus(input);
     const description = extractDescription(input);
-    const base = { ...(extra ?? {}), description, placement: extra?.placement ?? defaultPlacement() };
+    const base = {
+      ...(extra ?? {}),
+      description,
+      placement: extra?.placement ?? defaultPlacement(),
+    };
 
     if (looksErrorPayload(input, status)) {
       const title = titleFor(status, description);
@@ -326,11 +377,19 @@ const NotificationManager = {
         title === "Content Blocked" ||
         title === "Integration Error"
       ) {
-        getNotification().warning({ ...COMMON_NOTIFICATION_PROPS, ...payload, duration: extra?.duration ?? 7 });
+        getNotification().warning({
+          ...COMMON_NOTIFICATION_PROPS,
+          ...payload,
+          duration: extra?.duration ?? 7,
+        });
         return;
       }
       if (title === "Server Error") {
-        getNotification().error({ ...COMMON_NOTIFICATION_PROPS, ...payload, duration: extra?.duration ?? 8 });
+        getNotification().error({
+          ...COMMON_NOTIFICATION_PROPS,
+          ...payload,
+          duration: extra?.duration ?? 8,
+        });
         return;
       }
       if (
@@ -341,10 +400,18 @@ const NotificationManager = {
         title === "Error" ||
         title === "Already Exists"
       ) {
-        getNotification().error({ ...COMMON_NOTIFICATION_PROPS, ...payload, duration: extra?.duration ?? 6 });
+        getNotification().error({
+          ...COMMON_NOTIFICATION_PROPS,
+          ...payload,
+          duration: extra?.duration ?? 6,
+        });
         return;
       }
-      getNotification().info({ ...COMMON_NOTIFICATION_PROPS, ...payload, duration: extra?.duration ?? 4 });
+      getNotification().info({
+        ...COMMON_NOTIFICATION_PROPS,
+        ...payload,
+        duration: extra?.duration ?? 4,
+      });
       return;
     }
 
@@ -353,14 +420,26 @@ const NotificationManager = {
     const payload = { ...base, message: cls?.title ?? "Info" };
 
     if (cls?.kind === "success") {
-      getNotification().success({ ...COMMON_NOTIFICATION_PROPS, ...payload, duration: extra?.duration ?? 3.5 });
+      getNotification().success({
+        ...COMMON_NOTIFICATION_PROPS,
+        ...payload,
+        duration: extra?.duration ?? 3.5,
+      });
       return;
     }
     if (cls?.kind === "warning") {
-      getNotification().warning({ ...COMMON_NOTIFICATION_PROPS, ...payload, duration: extra?.duration ?? 6 });
+      getNotification().warning({
+        ...COMMON_NOTIFICATION_PROPS,
+        ...payload,
+        duration: extra?.duration ?? 6,
+      });
       return;
     }
-    getNotification().info({ ...COMMON_NOTIFICATION_PROPS, ...payload, duration: extra?.duration ?? 4 });
+    getNotification().info({
+      ...COMMON_NOTIFICATION_PROPS,
+      ...payload,
+      duration: extra?.duration ?? 4,
+    });
   },
 
   clear() {

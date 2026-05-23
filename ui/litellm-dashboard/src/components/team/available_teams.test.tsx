@@ -1,7 +1,7 @@
 import * as networking from "@/components/networking";
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
-import { renderWithProviders } from "../../../tests/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "../../../tests/test-utils";
 import AvailableTeamsPanel from "./available_teams";
 
 vi.mock("@/components/networking", () => ({
@@ -17,7 +17,9 @@ describe("AvailableTeamsPanel", () => {
   it("should render", async () => {
     vi.mocked(networking.availableTeamListCall).mockResolvedValue([]);
 
-    renderWithProviders(<AvailableTeamsPanel accessToken="token-123" userID="user-123" />);
+    renderWithProviders(
+      <AvailableTeamsPanel accessToken="token-123" userID="user-123" />,
+    );
 
     await waitFor(() => {
       expect(screen.getByText("Team Name")).toBeInTheDocument();
@@ -31,20 +33,26 @@ describe("AvailableTeamsPanel", () => {
         team_alias: "Test Team 1",
         description: "Test Description 1",
         models: ["gpt-4"],
-        members_with_roles: [{ user_id: "user-1", user_email: "user1@test.com", role: "admin" }],
+        members_with_roles: [
+          { user_id: "user-1", user_email: "user1@test.com", role: "admin" },
+        ],
       },
       {
         team_id: "team-2",
         team_alias: "Test Team 2",
         description: "Test Description 2",
         models: [],
-        members_with_roles: [{ user_id: "user-2", user_email: "user2@test.com", role: "user" }],
+        members_with_roles: [
+          { user_id: "user-2", user_email: "user2@test.com", role: "user" },
+        ],
       },
     ];
 
     vi.mocked(networking.availableTeamListCall).mockResolvedValue(mockTeams);
 
-    renderWithProviders(<AvailableTeamsPanel accessToken="token-123" userID="user-123" />);
+    renderWithProviders(
+      <AvailableTeamsPanel accessToken="token-123" userID="user-123" />,
+    );
 
     await waitFor(() => {
       expect(screen.getByText("Test Team 1")).toBeInTheDocument();
@@ -55,11 +63,17 @@ describe("AvailableTeamsPanel", () => {
   it("should display empty state when no teams are available", async () => {
     vi.mocked(networking.availableTeamListCall).mockResolvedValue([]);
 
-    renderWithProviders(<AvailableTeamsPanel accessToken="token-123" userID="user-123" />);
+    renderWithProviders(
+      <AvailableTeamsPanel accessToken="token-123" userID="user-123" />,
+    );
 
     await waitFor(() => {
-      expect(screen.getByText(/No available teams to join/i)).toBeInTheDocument();
-      expect(screen.getByText(/See how to set available teams/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/No available teams to join/i),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/See how to set available teams/i),
+      ).toBeInTheDocument();
     });
   });
 
@@ -70,14 +84,18 @@ describe("AvailableTeamsPanel", () => {
         team_alias: "Test Team 1",
         description: "Test Description 1",
         models: ["gpt-4"],
-        members_with_roles: [{ user_id: "user-1", user_email: "user1@test.com", role: "admin" }],
+        members_with_roles: [
+          { user_id: "user-1", user_email: "user1@test.com", role: "admin" },
+        ],
       },
     ];
 
     vi.mocked(networking.availableTeamListCall).mockResolvedValue(mockTeams);
     vi.mocked(networking.teamMemberAddCall).mockResolvedValue({});
 
-    renderWithProviders(<AvailableTeamsPanel accessToken="token-123" userID="user-123" />);
+    renderWithProviders(
+      <AvailableTeamsPanel accessToken="token-123" userID="user-123" />,
+    );
 
     await waitFor(() => {
       expect(screen.getByText("Test Team 1")).toBeInTheDocument();
@@ -89,10 +107,14 @@ describe("AvailableTeamsPanel", () => {
     });
 
     await waitFor(() => {
-      expect(networking.teamMemberAddCall).toHaveBeenCalledWith("token-123", "team-1", {
-        user_id: "user-123",
-        role: "user",
-      });
+      expect(networking.teamMemberAddCall).toHaveBeenCalledWith(
+        "token-123",
+        "team-1",
+        {
+          user_id: "user-123",
+          role: "user",
+        },
+      );
     });
   });
 
@@ -103,13 +125,17 @@ describe("AvailableTeamsPanel", () => {
         team_alias: "Test Team 1",
         description: "Test Description 1",
         models: [],
-        members_with_roles: [{ user_id: "user-1", user_email: "user1@test.com", role: "admin" }],
+        members_with_roles: [
+          { user_id: "user-1", user_email: "user1@test.com", role: "admin" },
+        ],
       },
     ];
 
     vi.mocked(networking.availableTeamListCall).mockResolvedValue(mockTeams);
 
-    renderWithProviders(<AvailableTeamsPanel accessToken="token-123" userID="user-123" />);
+    renderWithProviders(
+      <AvailableTeamsPanel accessToken="token-123" userID="user-123" />,
+    );
 
     await waitFor(() => {
       expect(screen.getByText("All Proxy Models")).toBeInTheDocument();
@@ -123,13 +149,17 @@ describe("AvailableTeamsPanel", () => {
         team_alias: "Test Team 1",
         description: "Test Description 1",
         models: ["gpt-4", "gpt-3.5-turbo"],
-        members_with_roles: [{ user_id: "user-1", user_email: "user1@test.com", role: "admin" }],
+        members_with_roles: [
+          { user_id: "user-1", user_email: "user1@test.com", role: "admin" },
+        ],
       },
     ];
 
     vi.mocked(networking.availableTeamListCall).mockResolvedValue(mockTeams);
 
-    renderWithProviders(<AvailableTeamsPanel accessToken="token-123" userID="user-123" />);
+    renderWithProviders(
+      <AvailableTeamsPanel accessToken="token-123" userID="user-123" />,
+    );
 
     await waitFor(() => {
       expect(screen.getByText("gpt-4")).toBeInTheDocument();

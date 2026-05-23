@@ -1,4 +1,7 @@
-import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "@/components/networking";
+import {
+  getGlobalLitellmHeaderName,
+  getProxyBaseUrl,
+} from "@/components/networking";
 import { useMutation } from "@tanstack/react-query";
 
 interface ExportParams {
@@ -9,9 +12,14 @@ interface ExportResponse {
   [key: string]: any;
 }
 
-const performCloudZeroExport = async (accessToken: string, params: ExportParams = {}): Promise<ExportResponse> => {
+const performCloudZeroExport = async (
+  accessToken: string,
+  params: ExportParams = {},
+): Promise<ExportResponse> => {
   const proxyBaseUrl = getProxyBaseUrl();
-  const url = proxyBaseUrl ? `${proxyBaseUrl}/cloudzero/export` : `/cloudzero/export`;
+  const url = proxyBaseUrl
+    ? `${proxyBaseUrl}/cloudzero/export`
+    : `/cloudzero/export`;
 
   const response = await fetch(url, {
     method: "POST",
@@ -27,7 +35,10 @@ const performCloudZeroExport = async (accessToken: string, params: ExportParams 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     const errorMessage =
-      errorData?.error?.message || errorData?.message || errorData?.detail || "Failed to export data";
+      errorData?.error?.message ||
+      errorData?.message ||
+      errorData?.detail ||
+      "Failed to export data";
     throw new Error(errorMessage);
   }
 

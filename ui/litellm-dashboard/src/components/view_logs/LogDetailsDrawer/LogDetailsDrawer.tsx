@@ -1,24 +1,24 @@
-import { useEffect, useMemo, useState } from "react";
-import { Button, Drawer } from "antd";
+import { useLogDetails } from "@/app/(dashboard)/hooks/logDetails/useLogDetails";
+import { getSpendString } from "@/utils/dataUtils";
 import {
   CheckOutlined,
   CopyOutlined,
   LeftOutlined,
   RightOutlined,
 } from "@ant-design/icons";
+import { useQuery } from "@tanstack/react-query";
+import { Button, Drawer } from "antd";
 import { Bot, Sparkles, Wrench } from "lucide-react";
-import { LogEntry } from "../columns";
+import { useEffect, useMemo, useState } from "react";
+import { sessionSpendLogsCall } from "../../networking";
+import type { LogEntry } from "../columns";
 import { AGENT_CALL_TYPES, MCP_CALL_TYPES } from "../constants";
 import { getEventDisplayName } from "../utils";
 import { DrawerHeader } from "./DrawerHeader";
-import { useKeyboardNavigation } from "./useKeyboardNavigation";
-import { LogDetailContent, GuardrailJumpLink } from "./LogDetailContent";
-import { sessionSpendLogsCall } from "../../networking";
-import { useQuery } from "@tanstack/react-query";
-import { getSpendString } from "@/utils/dataUtils";
-import { normalizeGuardrailEntries } from "./utils";
+import { GuardrailJumpLink, LogDetailContent } from "./LogDetailContent";
 import { DRAWER_WIDTH } from "./constants";
-import { useLogDetails } from "@/app/(dashboard)/hooks/logDetails/useLogDetails";
+import { useKeyboardNavigation } from "./useKeyboardNavigation";
+import { normalizeGuardrailEntries } from "./utils";
 
 export interface LogDetailsDrawerProps {
   open: boolean;
@@ -50,7 +50,10 @@ function TraceEventRow({ row, isSelected, onClick }: TraceEventRowProps) {
     row.request_duration_ms != null
       ? (row.request_duration_ms / 1000).toFixed(3)
       : row.startTime && row.endTime
-        ? ((Date.parse(row.endTime) - Date.parse(row.startTime)) / 1000).toFixed(3)
+        ? (
+            (Date.parse(row.endTime) - Date.parse(row.startTime)) /
+            1000
+          ).toFixed(3)
         : "-";
 
   return (
@@ -113,7 +116,9 @@ export function LogDetailsDrawer({
   startTime,
 }: LogDetailsDrawerProps) {
   const isSessionMode = Boolean(sessionId);
-  const [selectedSessionRequestId, setSelectedSessionRequestId] = useState<string | null>(null);
+  const [selectedSessionRequestId, setSelectedSessionRequestId] = useState<
+    string | null
+  >(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [copiedLeftPanelId, setCopiedLeftPanelId] = useState(false);
 
@@ -126,13 +131,17 @@ export function LogDetailsDrawer({
       return allSessionLogs
         .map((row) => ({
           ...row,
-          request_duration_ms: row.request_duration_ms ?? (Date.parse(row.endTime) - Date.parse(row.startTime)),
+          request_duration_ms:
+            row.request_duration_ms ??
+            Date.parse(row.endTime) - Date.parse(row.startTime),
         }))
         .sort((a, b) => {
           const aIsMcp = MCP_CALL_TYPES.includes(a.call_type) ? 1 : 0;
           const bIsMcp = MCP_CALL_TYPES.includes(b.call_type) ? 1 : 0;
           if (aIsMcp !== bIsMcp) return aIsMcp - bIsMcp;
-          return new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
+          return (
+            new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+          );
         });
     },
     enabled: Boolean(open && isSessionMode && sessionId && accessToken),
@@ -142,10 +151,16 @@ export function LogDetailsDrawer({
     if (!isSessionMode) return logEntry;
     if (!sessionLogs.length) return null;
     if (selectedSessionRequestId) {
-      return sessionLogs.find((row) => row.request_id === selectedSessionRequestId) || sessionLogs[0];
+      return (
+        sessionLogs.find(
+          (row) => row.request_id === selectedSessionRequestId,
+        ) || sessionLogs[0]
+      );
     }
     if (logEntry?.request_id) {
-      const clickedLog = sessionLogs.find((row) => row.request_id === logEntry.request_id);
+      const clickedLog = sessionLogs.find(
+        (row) => row.request_id === logEntry.request_id,
+      );
       return clickedLog || sessionLogs[0];
     }
     return sessionLogs[0];
@@ -153,10 +168,15 @@ export function LogDetailsDrawer({
 
   useEffect(() => {
     if (!isSessionMode || !sessionLogs.length) return;
-    if (!selectedSessionRequestId || !sessionLogs.some((row) => row.request_id === selectedSessionRequestId)) {
-      const fallbackRequestId = logEntry?.request_id && sessionLogs.some((row) => row.request_id === logEntry.request_id)
-        ? logEntry.request_id
-        : sessionLogs[0].request_id;
+    if (
+      !selectedSessionRequestId ||
+      !sessionLogs.some((row) => row.request_id === selectedSessionRequestId)
+    ) {
+      const fallbackRequestId =
+        logEntry?.request_id &&
+        sessionLogs.some((row) => row.request_id === logEntry.request_id)
+          ? logEntry.request_id
+          : sessionLogs[0].request_id;
       setSelectedSessionRequestId(fallbackRequestId);
     }
   }, [isSessionMode, logEntry, selectedSessionRequestId, sessionLogs]);
@@ -187,7 +207,11 @@ export function LogDetailsDrawer({
 
   // Lazy-load log details (messages/response) only when drawer is open.
   // This fetches data for a single log on-demand instead of prefetching all 50.
-  const logDetails = useLogDetails(currentLog?.request_id, startTime, open && !!currentLog?.request_id);
+  const logDetails = useLogDetails(
+    currentLog?.request_id,
+    startTime,
+    open && !!currentLog?.request_id,
+  );
   const detailsData = logDetails.data as any;
   const isLoadingDetails = logDetails.isLoading;
 
@@ -200,7 +224,8 @@ export function LogDetailsDrawer({
       ...currentLog,
       messages: detailsData?.messages || currentLog.messages,
       response: detailsData?.response || currentLog.response,
-      proxy_server_request: detailsData?.proxy_server_request || currentLog.proxy_server_request,
+      proxy_server_request:
+        detailsData?.proxy_server_request || currentLog.proxy_server_request,
     };
   }, [currentLog, detailsData]);
 
@@ -208,25 +233,49 @@ export function LogDetailsDrawer({
 
   // Status display values
   const statusLabel = metadata.status === "failure" ? "Failure" : "Success";
-  const statusColor = metadata.status === "failure" ? ("error" as const) : ("success" as const);
+  const statusColor =
+    metadata.status === "failure" ? ("error" as const) : ("success" as const);
   const environment = metadata?.user_api_key_team_alias || "default";
 
-  const totalSessionCost = sessionLogs.reduce((sum, row) => sum + (row.spend || 0), 0);
-  const sessionStart = sessionLogs.length > 0
-    ? new Date(Math.min(...sessionLogs.map((r) => new Date(r.startTime).getTime())))
-    : null;
-  const sessionEnd = sessionLogs.length > 0
-    ? new Date(Math.max(...sessionLogs.map((r) => new Date(r.endTime).getTime())))
-    : null;
+  const totalSessionCost = sessionLogs.reduce(
+    (sum, row) => sum + (row.spend || 0),
+    0,
+  );
+  const sessionStart =
+    sessionLogs.length > 0
+      ? new Date(
+          Math.min(...sessionLogs.map((r) => new Date(r.startTime).getTime())),
+        )
+      : null;
+  const sessionEnd =
+    sessionLogs.length > 0
+      ? new Date(
+          Math.max(...sessionLogs.map((r) => new Date(r.endTime).getTime())),
+        )
+      : null;
   const sessionDurationSeconds =
-    sessionStart && sessionEnd ? ((sessionEnd.getTime() - sessionStart.getTime()) / 1000).toFixed(2) : "0.00";
+    sessionStart && sessionEnd
+      ? ((sessionEnd.getTime() - sessionStart.getTime()) / 1000).toFixed(2)
+      : "0.00";
   const llmCount = sessionLogs.filter(
-    (row) => !MCP_CALL_TYPES.includes(row.call_type) && !AGENT_CALL_TYPES.includes(row.call_type),
+    (row) =>
+      !MCP_CALL_TYPES.includes(row.call_type) &&
+      !AGENT_CALL_TYPES.includes(row.call_type),
   ).length;
-  const agentCount = sessionLogs.filter((row) => AGENT_CALL_TYPES.includes(row.call_type)).length;
-  const mcpCount = sessionLogs.filter((row) => MCP_CALL_TYPES.includes(row.call_type)).length;
-  const logsForList = isSessionMode ? sessionLogs : currentLog ? [currentLog] : [];
-  const leftPanelId = isSessionMode ? sessionId || "" : currentLog?.request_id || "";
+  const agentCount = sessionLogs.filter((row) =>
+    AGENT_CALL_TYPES.includes(row.call_type),
+  ).length;
+  const mcpCount = sessionLogs.filter((row) =>
+    MCP_CALL_TYPES.includes(row.call_type),
+  ).length;
+  const logsForList = isSessionMode
+    ? sessionLogs
+    : currentLog
+      ? [currentLog]
+      : [];
+  const leftPanelId = isSessionMode
+    ? sessionId || ""
+    : currentLog?.request_id || "";
   const leftPanelDisplayId =
     leftPanelId.length > 14 ? `${leftPanelId.slice(0, 11)}...` : leftPanelId;
 
@@ -236,7 +285,9 @@ export function LogDetailsDrawer({
       await navigator.clipboard.writeText(leftPanelId);
       setCopiedLeftPanelId(true);
       setTimeout(() => setCopiedLeftPanelId(false), 1200);
-    } catch { /* clipboard unavailable in non-secure contexts */ }
+    } catch {
+      /* clipboard unavailable in non-secure contexts */
+    }
   };
 
   if (!currentLog || !enrichedLog) return null;
@@ -257,26 +308,26 @@ export function LogDetailsDrawer({
       }}
     >
       <div style={{ height: "100%" }} className="flex relative">
-          {!isSidebarCollapsed ? (
-            <Button
-              type="text"
-              size="small"
-              icon={<LeftOutlined />}
-              onClick={() => setIsSidebarCollapsed(true)}
-              className="absolute top-2 left-2 z-20 !bg-white !border !border-slate-200 !rounded-md"
-              aria-label="Collapse trace sidebar"
-            />
-          ) : (
-            <Button
-              type="text"
-              size="small"
-              icon={<RightOutlined />}
-              onClick={() => setIsSidebarCollapsed(false)}
-              className="absolute top-2 left-2 z-20 !bg-white !border !border-slate-200 !rounded-md"
-              aria-label="Expand trace sidebar"
-            />
-          )}
-          {!isSidebarCollapsed && (
+        {!isSidebarCollapsed ? (
+          <Button
+            type="text"
+            size="small"
+            icon={<LeftOutlined />}
+            onClick={() => setIsSidebarCollapsed(true)}
+            className="absolute top-2 left-2 z-20 !bg-white !border !border-slate-200 !rounded-md"
+            aria-label="Collapse trace sidebar"
+          />
+        ) : (
+          <Button
+            type="text"
+            size="small"
+            icon={<RightOutlined />}
+            onClick={() => setIsSidebarCollapsed(false)}
+            className="absolute top-2 left-2 z-20 !bg-white !border !border-slate-200 !rounded-md"
+            aria-label="Expand trace sidebar"
+          />
+        )}
+        {!isSidebarCollapsed && (
           <div
             className="border-r border-slate-200 bg-slate-50 flex flex-col"
             style={{ width: SIDEBAR_WIDTH_PX }}
@@ -311,10 +362,19 @@ export function LogDetailsDrawer({
                     ? llmCount
                     : logsForList.filter(
                         (row) =>
-                          !MCP_CALL_TYPES.includes(row.call_type) && !AGENT_CALL_TYPES.includes(row.call_type),
+                          !MCP_CALL_TYPES.includes(row.call_type) &&
+                          !AGENT_CALL_TYPES.includes(row.call_type),
                       ).length,
-                  isSessionMode ? agentCount : logsForList.filter((row) => AGENT_CALL_TYPES.includes(row.call_type)).length,
-                  isSessionMode ? mcpCount : logsForList.filter((row) => MCP_CALL_TYPES.includes(row.call_type)).length,
+                  isSessionMode
+                    ? agentCount
+                    : logsForList.filter((row) =>
+                        AGENT_CALL_TYPES.includes(row.call_type),
+                      ).length,
+                  isSessionMode
+                    ? mcpCount
+                    : logsForList.filter((row) =>
+                        MCP_CALL_TYPES.includes(row.call_type),
+                      ).length,
                 ].map((count, i) => {
                   const label = [" LLM", " Agent", " MCP"][i];
                   return count > 0 ? (
@@ -339,9 +399,14 @@ export function LogDetailsDrawer({
             </div>
 
             <div className="flex-1 overflow-y-auto">
-              {normalizeGuardrailEntries(metadata?.guardrail_information).length > 0 && (
+              {normalizeGuardrailEntries(metadata?.guardrail_information)
+                .length > 0 && (
                 <div className="px-3 pt-2">
-                  <GuardrailJumpLink guardrailEntries={normalizeGuardrailEntries(metadata?.guardrail_information)} />
+                  <GuardrailJumpLink
+                    guardrailEntries={normalizeGuardrailEntries(
+                      metadata?.guardrail_information,
+                    )}
+                  />
                 </div>
               )}
               {isSessionMode ? (
@@ -354,10 +419,14 @@ export function LogDetailsDrawer({
                       return (
                         <div key={row.request_id} className="relative">
                           <div className="absolute left-4 top-3 w-3 border-t border-slate-300" />
-                          {isLast && <div className="absolute left-4 top-3 bottom-0 w-px bg-slate-50" />}
+                          {isLast && (
+                            <div className="absolute left-4 top-3 bottom-0 w-px bg-slate-50" />
+                          )}
                           <TraceEventRow
                             row={row}
-                            isSelected={row.request_id === currentLog.request_id}
+                            isSelected={
+                              row.request_id === currentLog.request_id
+                            }
                             onClick={() => {
                               setSelectedSessionRequestId(row.request_id);
                               onSelectLog?.(row);
@@ -382,27 +451,27 @@ export function LogDetailsDrawer({
               )}
             </div>
           </div>
-          )}
+        )}
 
-          <div className="flex-1 flex flex-col overflow-hidden">
-            <DrawerHeader
-              log={currentLog}
-              onClose={onClose}
-              onPrevious={selectPreviousLog}
-              onNext={selectNextLog}
-              statusLabel={statusLabel}
-              statusColor={statusColor}
-              environment={environment}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <DrawerHeader
+            log={currentLog}
+            onClose={onClose}
+            onPrevious={selectPreviousLog}
+            onNext={selectNextLog}
+            statusLabel={statusLabel}
+            statusColor={statusColor}
+            environment={environment}
+          />
+          <div className="flex-1 overflow-y-auto">
+            <LogDetailContent
+              logEntry={enrichedLog}
+              isLoadingDetails={isLoadingDetails}
+              accessToken={accessToken ?? null}
             />
-            <div className="flex-1 overflow-y-auto">
-              <LogDetailContent
-                logEntry={enrichedLog}
-                isLoadingDetails={isLoadingDetails}
-                accessToken={accessToken ?? null}
-              />
-            </div>
           </div>
         </div>
+      </div>
     </Drawer>
   );
 }

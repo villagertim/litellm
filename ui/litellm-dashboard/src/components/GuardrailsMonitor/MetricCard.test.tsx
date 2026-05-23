@@ -1,5 +1,5 @@
-import { renderWithProviders, screen } from "../../../tests/test-utils";
 import React from "react";
+import { renderWithProviders, screen } from "../../../tests/test-utils";
 import { MetricCard } from "./MetricCard";
 
 describe("MetricCard", () => {
@@ -25,7 +25,7 @@ describe("MetricCard", () => {
         label="Metric"
         value={100}
         icon={<span data-testid="test-icon">icon</span>}
-      />
+      />,
     );
     expect(screen.getByTestId("test-icon")).toBeInTheDocument();
   });
@@ -37,7 +37,7 @@ describe("MetricCard", () => {
 
   it("should render subtitle when provided", () => {
     renderWithProviders(
-      <MetricCard label="Metric" value={100} subtitle="Last 24 hours" />
+      <MetricCard label="Metric" value={100} subtitle="Last 24 hours" />,
     );
     expect(screen.getByText("Last 24 hours")).toBeInTheDocument();
   });

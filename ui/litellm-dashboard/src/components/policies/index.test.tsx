@@ -1,8 +1,8 @@
-import React from "react";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderWithProviders } from "../../../tests/test-utils";
+import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "../../../tests/test-utils";
 import PoliciesPanel from "./index";
 
 /**
@@ -20,7 +20,8 @@ vi.mock("antd", async (importOriginal) => {
   };
 });
 
-const EXPECTED_ATTACHMENT_ID = "att-11111111-2222-3333-4444-555555555555" as const;
+const EXPECTED_ATTACHMENT_ID =
+  "att-11111111-2222-3333-4444-555555555555" as const;
 
 const networkingMocks = vi.hoisted(() => ({
   deletePolicyAttachmentCall: vi.fn().mockResolvedValue(undefined),
@@ -75,8 +76,9 @@ vi.mock("@tremor/react", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@tremor/react")>();
   return {
     ...actual,
-    Button: React.forwardRef<HTMLButtonElement, any>(({ children, ...props }, ref) =>
-      React.createElement("button", { ...props, ref }, children),
+    Button: React.forwardRef<HTMLButtonElement, any>(
+      ({ children, ...props }, ref) =>
+        React.createElement("button", { ...props, ref }, children),
     ),
     Tooltip: ({ children }: { children?: React.ReactNode }) =>
       React.createElement(React.Fragment, null, children),
@@ -93,7 +95,8 @@ vi.mock("@tremor/react", async (importOriginal) => {
         type: "checkbox",
         role: "switch",
         checked,
-        onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange?.(e.target.checked),
+        onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+          onChange?.(e.target.checked),
         className,
       }),
     Icon: ({ icon: _IconComp, onClick, className }: any) =>
@@ -156,7 +159,9 @@ describe("PoliciesPanel attachment delete", () => {
 
   it("should call deletePolicyAttachmentCall after the user confirms delete in the attachment modal", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<PoliciesPanel accessToken="test-token" userRole="Admin" />);
+    renderWithProviders(
+      <PoliciesPanel accessToken="test-token" userRole="Admin" />,
+    );
 
     await waitFor(() => {
       expect(networkingMocks.getPolicyAttachmentsList).toHaveBeenCalled();
@@ -172,14 +177,21 @@ describe("PoliciesPanel attachment delete", () => {
 
     const dialog = await screen.findByRole("dialog", {}, { timeout: 5000 });
     expect(
-      within(dialog).getByText(/Are you sure you want to delete this attachment/i),
+      within(dialog).getByText(
+        /Are you sure you want to delete this attachment/i,
+      ),
     ).toBeInTheDocument();
 
     await user.click(within(dialog).getByRole("button", { name: /^delete$/i }));
 
     await waitFor(() => {
-      expect(networkingMocks.deletePolicyAttachmentCall).toHaveBeenCalledTimes(1);
-      expect(networkingMocks.deletePolicyAttachmentCall).toHaveBeenCalledWith("test-token", EXPECTED_ATTACHMENT_ID);
+      expect(networkingMocks.deletePolicyAttachmentCall).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(networkingMocks.deletePolicyAttachmentCall).toHaveBeenCalledWith(
+        "test-token",
+        EXPECTED_ATTACHMENT_ID,
+      );
     });
   });
 
@@ -188,10 +200,14 @@ describe("PoliciesPanel attachment delete", () => {
     const deletePromise = new Promise<void>((resolve) => {
       resolveDelete = resolve;
     });
-    networkingMocks.deletePolicyAttachmentCall.mockImplementationOnce(() => deletePromise);
+    networkingMocks.deletePolicyAttachmentCall.mockImplementationOnce(
+      () => deletePromise,
+    );
 
     const user = userEvent.setup();
-    renderWithProviders(<PoliciesPanel accessToken="test-token" userRole="Admin" />);
+    renderWithProviders(
+      <PoliciesPanel accessToken="test-token" userRole="Admin" />,
+    );
 
     await waitFor(() => {
       expect(networkingMocks.getPolicyAttachmentsList).toHaveBeenCalled();
@@ -205,11 +221,15 @@ describe("PoliciesPanel attachment delete", () => {
     await user.click(screen.getByRole("button", { name: /TrashIcon/i }));
     const dialog = await screen.findByRole("dialog", {}, { timeout: 5000 });
 
-    const deleteButton = within(dialog).getByRole("button", { name: /^delete$/i });
+    const deleteButton = within(dialog).getByRole("button", {
+      name: /^delete$/i,
+    });
     await user.click(deleteButton);
 
     await waitFor(() => {
-      expect(within(dialog).getByRole("button", { name: /deleting/i })).toBeDisabled();
+      expect(
+        within(dialog).getByRole("button", { name: /deleting/i }),
+      ).toBeDisabled();
     });
 
     resolveDelete?.();

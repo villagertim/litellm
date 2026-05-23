@@ -1,7 +1,12 @@
-import React from "react";
-import { Typography, Select, Button, Checkbox, Tooltip, Tag } from "antd";
-import { CloseOutlined, EyeInvisibleOutlined, StopOutlined, FilterOutlined } from "@ant-design/icons";
-import { PiiEntityCategory } from "./types";
+import {
+  CloseOutlined,
+  EyeInvisibleOutlined,
+  FilterOutlined,
+  StopOutlined,
+} from "@ant-design/icons";
+import { Button, Checkbox, Select, Tag, Tooltip, Typography } from "antd";
+import type React from "react";
+import type { PiiEntityCategory } from "./types";
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -29,7 +34,11 @@ export interface CategoryFilterProps {
   onChange: (categories: string[]) => void;
 }
 
-export const CategoryFilter: React.FC<CategoryFilterProps> = ({ categories, selectedCategories, onChange }) => {
+export const CategoryFilter: React.FC<CategoryFilterProps> = ({
+  categories,
+  selectedCategories,
+  onChange,
+}) => {
   return (
     <div>
       <div className="flex items-center mb-2">
@@ -47,7 +56,12 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({ categories, sele
         optionFilterProp="children"
         className="mb-4"
         tagRender={(props) => (
-          <Tag color="blue" closable={props.closable} onClose={props.onClose} className="mr-2 mb-2">
+          <Tag
+            color="blue"
+            closable={props.closable}
+            onClose={props.onClose}
+            className="mr-2 mb-2"
+          >
             {props.label}
           </Tag>
         )}
@@ -69,7 +83,11 @@ export interface QuickActionsProps {
   hasSelectedEntities: boolean;
 }
 
-export const QuickActions: React.FC<QuickActionsProps> = ({ onSelectAll, onUnselectAll, hasSelectedEntities }) => {
+export const QuickActions: React.FC<QuickActionsProps> = ({
+  onSelectAll,
+  onUnselectAll,
+  hasSelectedEntities,
+}) => {
   return (
     <div className="bg-gray-50 p-5 rounded-lg mb-6 border border-gray-200 shadow-sm">
       <div className="flex items-center justify-between mb-4">
@@ -149,7 +167,9 @@ export const PiiEntityList: React.FC<PiiEntityListProps> = ({
       </div>
       <div className="max-h-[400px] overflow-y-auto">
         {entities.length === 0 ? (
-          <div className="py-10 text-center text-gray-500">No PII types match your filter criteria</div>
+          <div className="py-10 text-center text-gray-500">
+            No PII types match your filter criteria
+          </div>
         ) : (
           entities.map((entity) => (
             <div
@@ -164,7 +184,13 @@ export const PiiEntityList: React.FC<PiiEntityListProps> = ({
                   onChange={() => onEntitySelect(entity)}
                   className="mr-3"
                 />
-                <Text className={selectedEntities.includes(entity) ? "font-medium text-gray-900" : "text-gray-700"}>
+                <Text
+                  className={
+                    selectedEntities.includes(entity)
+                      ? "font-medium text-gray-900"
+                      : "text-gray-700"
+                  }
+                >
                   {formatEntityName(entity)}
                 </Text>
                 {entityToCategoryMap.get(entity) && (
@@ -175,7 +201,11 @@ export const PiiEntityList: React.FC<PiiEntityListProps> = ({
               </div>
               <div className="w-32">
                 <Select
-                  value={selectedEntities.includes(entity) ? selectedActions[entity] || "MASK" : "MASK"}
+                  value={
+                    selectedEntities.includes(entity)
+                      ? selectedActions[entity] || "MASK"
+                      : "MASK"
+                  }
                   onChange={(value) => onActionSelect(entity, value)}
                   style={{ width: 120 }}
                   disabled={!selectedEntities.includes(entity)}

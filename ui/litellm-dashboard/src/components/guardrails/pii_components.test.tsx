@@ -1,13 +1,17 @@
 import { render } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
-import { CategoryFilter, QuickActions, PiiEntityList } from "./pii_components";
+import { describe, expect, it } from "vitest";
+import { CategoryFilter, PiiEntityList, QuickActions } from "./pii_components";
 import type { PiiEntityCategory } from "./types";
 
 describe("CategoryFilter", () => {
   it("should render", () => {
     const emptyCategories: PiiEntityCategory[] = [];
     const { getByText } = render(
-      <CategoryFilter categories={emptyCategories} selectedCategories={[]} onChange={() => {}} />,
+      <CategoryFilter
+        categories={emptyCategories}
+        selectedCategories={[]}
+        onChange={() => {}}
+      />,
     );
     expect(getByText("Filter by category")).toBeInTheDocument();
   });
@@ -16,7 +20,11 @@ describe("CategoryFilter", () => {
 describe("QuickActions", () => {
   it("should render", () => {
     const { getByText } = render(
-      <QuickActions onSelectAll={() => {}} onUnselectAll={() => {}} hasSelectedEntities={false} />,
+      <QuickActions
+        onSelectAll={() => {}}
+        onUnselectAll={() => {}}
+        hasSelectedEntities={false}
+      />,
     );
     expect(getByText("Quick Actions")).toBeInTheDocument();
   });
@@ -35,6 +43,8 @@ describe("PiiEntityList", () => {
         entityToCategoryMap={new Map()}
       />,
     );
-    expect(getByText("No PII types match your filter criteria")).toBeInTheDocument();
+    expect(
+      getByText("No PII types match your filter criteria"),
+    ).toBeInTheDocument();
   });
 });

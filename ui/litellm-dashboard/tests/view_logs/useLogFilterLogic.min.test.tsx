@@ -1,7 +1,7 @@
-import React from "react";
-import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { render, screen } from "@testing-library/react";
+import React from "react";
+import { describe, expect, it } from "vitest";
 import { useLogFilterLogic } from "../../src/components/view_logs/log_filter_logic";
 
 // Minimal mocks to avoid real network during hook init
@@ -34,7 +34,13 @@ function Harness({ logs }: { logs: any }) {
 describe("useLogFilterLogic (minimal)", () => {
   it("useLogFilterLogic minimal: updates filteredLogs when logs change", async () => {
     const qc = createQueryClient();
-    const logsA = { data: [{ request_id: "a" }], total: 1, page: 1, page_size: 50, total_pages: 1 };
+    const logsA = {
+      data: [{ request_id: "a" }],
+      total: 1,
+      page: 1,
+      page_size: 50,
+      total_pages: 1,
+    };
     const logsB = {
       data: [{ request_id: "a" }, { request_id: "b" }],
       total: 2,

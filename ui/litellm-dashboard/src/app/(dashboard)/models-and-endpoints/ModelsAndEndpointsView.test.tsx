@@ -31,13 +31,18 @@ vi.mock("@/components/networking", () => ({
   getCallbacksCall: vi.fn().mockResolvedValue({ router_settings: {} }),
   setCallbacksCall: vi.fn().mockResolvedValue(undefined),
   getUiSettings: vi.fn().mockResolvedValue({ values: {} }),
-  latestHealthChecksCall: vi.fn().mockResolvedValue({ latest_health_checks: {} }),
+  latestHealthChecksCall: vi
+    .fn()
+    .mockResolvedValue({ latest_health_checks: {} }),
   getModelCostMapReloadStatus: vi.fn().mockResolvedValue({}),
 }));
 
-vi.mock("@/app/(dashboard)/models-and-endpoints/components/ModelAnalyticsTab/ModelAnalyticsTab", () => ({
-  default: () => null,
-}));
+vi.mock(
+  "@/app/(dashboard)/models-and-endpoints/components/ModelAnalyticsTab/ModelAnalyticsTab",
+  () => ({
+    default: () => null,
+  }),
+);
 
 vi.mock("@/components/add_model/add_auto_router_tab", () => ({
   default: () => null,
@@ -47,7 +52,9 @@ vi.mock("@/components/add_model/AddModelForm", () => ({
   default: () => null,
 }));
 
-const mockHealthCheckComponent = vi.fn((_props: { all_models_on_proxy?: string[] }) => null);
+const mockHealthCheckComponent = vi.fn(
+  (_props: { all_models_on_proxy?: string[] }) => null,
+);
 vi.mock("@/components/model_dashboard/HealthCheckComponent", () => ({
   default: (props: { all_models_on_proxy?: string[] }) => {
     mockHealthCheckComponent(props);
@@ -130,7 +137,9 @@ describe("ModelsAndEndpointsView", () => {
         />
       </QueryClientProvider>,
     );
-    expect(await findByText("Model Management", {}, { timeout: 10000 })).toBeInTheDocument();
+    expect(
+      await findByText("Model Management", {}, { timeout: 10000 }),
+    ).toBeInTheDocument();
   });
 
   it("should show Missing provider banner by default", async () => {
@@ -148,7 +157,9 @@ describe("ModelsAndEndpointsView", () => {
         />
       </QueryClientProvider>,
     );
-    expect(await findByText("Missing a provider?", {}, { timeout: 10000 })).toBeInTheDocument();
+    expect(
+      await findByText("Missing a provider?", {}, { timeout: 10000 }),
+    ).toBeInTheDocument();
   });
 
   it("should hide Missing provider banner when dismiss button is clicked and persist to localStorage", async () => {
@@ -168,10 +179,14 @@ describe("ModelsAndEndpointsView", () => {
     );
 
     // Wait for banner to appear
-    expect(await findByText("Missing a provider?", {}, { timeout: 10000 })).toBeInTheDocument();
+    expect(
+      await findByText("Missing a provider?", {}, { timeout: 10000 }),
+    ).toBeInTheDocument();
 
     // Find and click dismiss button (X button)
-    const dismissButton = container.querySelector('button[aria-label="Dismiss banner"]');
+    const dismissButton = container.querySelector(
+      'button[aria-label="Dismiss banner"]',
+    );
     expect(dismissButton).not.toBeNull();
     fireEvent.click(dismissButton!);
 
@@ -206,7 +221,9 @@ describe("ModelsAndEndpointsView", () => {
     expect(queryByText("Missing a provider?")).not.toBeInTheDocument();
 
     // Compact Request Provider button should be visible in header
-    const requestProviderLinks = document.querySelectorAll('a[href="https://models.litellm.ai/?request=true"]');
+    const requestProviderLinks = document.querySelectorAll(
+      'a[href="https://models.litellm.ai/?request=true"]',
+    );
     // There should be a compact button when banner is hidden
     expect(requestProviderLinks.length).toBeGreaterThan(0);
   });
@@ -246,7 +263,10 @@ describe("ModelsAndEndpointsView", () => {
 
     expect(mockHealthCheckComponent).toHaveBeenCalled();
     const healthCheckProps = mockHealthCheckComponent.mock.calls[0][0];
-    expect(healthCheckProps.all_models_on_proxy).toEqual(["deployment-id-1", "deployment-id-2"]);
+    expect(healthCheckProps.all_models_on_proxy).toEqual([
+      "deployment-id-1",
+      "deployment-id-2",
+    ]);
     expect(healthCheckProps.all_models_on_proxy).not.toContain("gpt-4");
   });
 });

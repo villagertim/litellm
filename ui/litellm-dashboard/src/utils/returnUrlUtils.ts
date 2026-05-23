@@ -28,14 +28,15 @@ export function getCurrentUrl(): string | null {
  * Sets a cookie with the given name and value.
  * Automatically adds Secure flag when running over HTTPS.
  */
-function setCookie(name: string, value: string, maxAgeSeconds: number = 300): void {
+function setCookie(name: string, value: string, maxAgeSeconds = 300): void {
   if (typeof document === "undefined") {
     return;
   }
   // Set cookie with path=/ so it's available across all paths
   // Use SameSite=Lax to allow the cookie to be sent on navigation from external sites (SSO redirect)
   // Add Secure flag when running over HTTPS to prevent cookie from being sent over unencrypted connections
-  const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
+  const isSecure =
+    typeof window !== "undefined" && window.location.protocol === "https:";
   const secureFlag = isSecure ? "; Secure" : "";
   document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAgeSeconds}; SameSite=Lax${secureFlag}`;
 }
@@ -130,7 +131,10 @@ export function getReturnUrlFromParams(): string | null {
  * @param baseLoginUrl - The base login URL (e.g., "/ui/login")
  * @param returnUrl - The URL to redirect to after login (defaults to current URL)
  */
-export function buildLoginUrlWithReturn(baseLoginUrl: string, returnUrl?: string): string {
+export function buildLoginUrlWithReturn(
+  baseLoginUrl: string,
+  returnUrl?: string,
+): string {
   const url = returnUrl || getCurrentUrl();
 
   if (!url) {
@@ -282,7 +286,10 @@ export function consumeReturnUrl(): string | null {
     }
     // Log rejected URLs in development for debugging
     if (isDevEnvironment()) {
-      console.warn("[returnUrlUtils] Invalid return URL in params rejected:", paramUrl);
+      console.warn(
+        "[returnUrlUtils] Invalid return URL in params rejected:",
+        paramUrl,
+      );
     }
   }
 
@@ -295,7 +302,10 @@ export function consumeReturnUrl(): string | null {
     }
     // Log rejected URLs in development for debugging
     if (isDevEnvironment()) {
-      console.warn("[returnUrlUtils] Invalid return URL in cookie rejected:", storedUrl);
+      console.warn(
+        "[returnUrlUtils] Invalid return URL in cookie rejected:",
+        storedUrl,
+      );
     }
   }
 

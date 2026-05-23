@@ -1,11 +1,27 @@
-import React, { useState, useEffect } from "react";
-import { Card, Button, InputNumber, Typography, Spin, Select, Tag, Row, Col } from "antd";
 import { EditOutlined, SaveOutlined } from "@ant-design/icons";
-import { getDefaultTeamSettings, updateDefaultTeamSettings } from "./networking";
-import BudgetDurationDropdown, { getBudgetDurationLabel } from "./common_components/budget_duration_dropdown";
+import {
+  Button,
+  Card,
+  Col,
+  InputNumber,
+  Row,
+  Select,
+  Spin,
+  Tag,
+  Typography,
+} from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { ModelSelect } from "./ModelSelect/ModelSelect";
+import BudgetDurationDropdown, {
+  getBudgetDurationLabel,
+} from "./common_components/budget_duration_dropdown";
 import { getModelDisplayName } from "./key_team_helpers/fetch_available_models_team_key";
 import NotificationsManager from "./molecules/notifications_manager";
-import { ModelSelect } from "./ModelSelect/ModelSelect";
+import {
+  getDefaultTeamSettings,
+  updateDefaultTeamSettings,
+} from "./networking";
 
 const { Title, Text } = Typography;
 
@@ -40,11 +56,19 @@ interface SettingRowProps {
   editContent: React.ReactNode;
 }
 
-const SettingRow: React.FC<SettingRowProps> = ({ label, description, isEditing, viewContent, editContent }) => (
+const SettingRow: React.FC<SettingRowProps> = ({
+  label,
+  description,
+  isEditing,
+  viewContent,
+  editContent,
+}) => (
   <Row className="py-5 border-b border-gray-100 last:border-0">
     <Col span={8} className="pr-6">
       <div className="text-sm font-semibold text-gray-900">{label}</div>
-      <div className="text-xs text-gray-500 mt-1 leading-relaxed">{description}</div>
+      <div className="text-xs text-gray-500 mt-1 leading-relaxed">
+        {description}
+      </div>
     </Col>
     <Col span={16} className="flex items-center">
       <div className="w-full">{isEditing ? editContent : viewContent}</div>
@@ -89,7 +113,8 @@ const TeamSSOSettings: React.FC<TeamSSOSettingsProps> = ({ accessToken }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [values, setValues] = useState<SettingsValues>(DEFAULT_VALUES);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [editedValues, setEditedValues] = useState<SettingsValues>(DEFAULT_VALUES);
+  const [editedValues, setEditedValues] =
+    useState<SettingsValues>(DEFAULT_VALUES);
   const [saving, setSaving] = useState<boolean>(false);
   const [fetchError, setFetchError] = useState<boolean>(false);
 
@@ -122,12 +147,20 @@ const TeamSSOSettings: React.FC<TeamSSOSettingsProps> = ({ accessToken }) => {
 
     setSaving(true);
     try {
-      const updatedSettings = await updateDefaultTeamSettings(accessToken, editedValues);
-      const newValues = { ...DEFAULT_VALUES, ...(updatedSettings.settings || {}) };
+      const updatedSettings = await updateDefaultTeamSettings(
+        accessToken,
+        editedValues,
+      );
+      const newValues = {
+        ...DEFAULT_VALUES,
+        ...(updatedSettings.settings || {}),
+      };
       setValues(newValues);
       setEditedValues(newValues);
       setIsEditing(false);
-      NotificationsManager.success("Default team settings updated successfully");
+      NotificationsManager.success(
+        "Default team settings updated successfully",
+      );
     } catch (error) {
       console.error("Error updating team settings:", error);
       NotificationsManager.fromBackend("Failed to update team settings");
@@ -141,7 +174,10 @@ const TeamSSOSettings: React.FC<TeamSSOSettingsProps> = ({ accessToken }) => {
     setEditedValues(values);
   };
 
-  const update = <K extends keyof SettingsValues>(key: K, value: SettingsValues[K]) => {
+  const update = <K extends keyof SettingsValues>(
+    key: K,
+    value: SettingsValues[K],
+  ) => {
     setEditedValues((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -156,7 +192,9 @@ const TeamSSOSettings: React.FC<TeamSSOSettingsProps> = ({ accessToken }) => {
   if (fetchError) {
     return (
       <Card>
-        <Text>No team settings available or you do not have permission to view them.</Text>
+        <Text>
+          No team settings available or you do not have permission to view them.
+        </Text>
       </Card>
     );
   }
@@ -179,7 +217,12 @@ const TeamSSOSettings: React.FC<TeamSSOSettingsProps> = ({ accessToken }) => {
               <Button onClick={handleCancel} disabled={saving}>
                 Cancel
               </Button>
-              <Button type="primary" onClick={handleSave} loading={saving} icon={<SaveOutlined />}>
+              <Button
+                type="primary"
+                onClick={handleSave}
+                loading={saving}
+                icon={<SaveOutlined />}
+              >
                 Save Changes
               </Button>
             </div>
@@ -194,14 +237,20 @@ const TeamSSOSettings: React.FC<TeamSSOSettingsProps> = ({ accessToken }) => {
       <div className="mt-8">
         {/* Budget & Rate Limits */}
         <div className="mb-8">
-          <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Budget & Rate Limits</div>
+          <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+            Budget & Rate Limits
+          </div>
           <div className="border-t border-gray-100">
             <SettingRow
               label="Max Budget"
               description="Maximum budget (in USD) for new automatically created teams."
               isEditing={isEditing}
               viewContent={
-                values.max_budget != null ? <Text>${Number(values.max_budget).toLocaleString()}</Text> : <NotSet />
+                values.max_budget != null ? (
+                  <Text>${Number(values.max_budget).toLocaleString()}</Text>
+                ) : (
+                  <NotSet />
+                )
               }
               editContent={
                 <InputNumber
@@ -221,7 +270,11 @@ const TeamSSOSettings: React.FC<TeamSSOSettingsProps> = ({ accessToken }) => {
               description="How frequently the team's budget resets."
               isEditing={isEditing}
               viewContent={
-                values.budget_duration ? <Text>{getBudgetDurationLabel(values.budget_duration)}</Text> : <NotSet />
+                values.budget_duration ? (
+                  <Text>{getBudgetDurationLabel(values.budget_duration)}</Text>
+                ) : (
+                  <NotSet />
+                )
               }
               editContent={
                 <BudgetDurationDropdown
@@ -237,7 +290,11 @@ const TeamSSOSettings: React.FC<TeamSSOSettingsProps> = ({ accessToken }) => {
               description="Maximum tokens per minute allowed across all models."
               isEditing={isEditing}
               viewContent={
-                values.tpm_limit != null ? <Text>{values.tpm_limit.toLocaleString()}</Text> : <NotSet />
+                values.tpm_limit != null ? (
+                  <Text>{values.tpm_limit.toLocaleString()}</Text>
+                ) : (
+                  <NotSet />
+                )
               }
               editContent={
                 <InputNumber
@@ -256,7 +313,11 @@ const TeamSSOSettings: React.FC<TeamSSOSettingsProps> = ({ accessToken }) => {
               description="Maximum requests per minute allowed across all models."
               isEditing={isEditing}
               viewContent={
-                values.rpm_limit != null ? <Text>{values.rpm_limit.toLocaleString()}</Text> : <NotSet />
+                values.rpm_limit != null ? (
+                  <Text>{values.rpm_limit.toLocaleString()}</Text>
+                ) : (
+                  <NotSet />
+                )
               }
               editContent={
                 <InputNumber
@@ -274,7 +335,9 @@ const TeamSSOSettings: React.FC<TeamSSOSettingsProps> = ({ accessToken }) => {
 
         {/* Access & Permissions */}
         <div className="mb-8">
-          <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Access & Permissions</div>
+          <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+            Access & Permissions
+          </div>
           <div className="border-t border-gray-100">
             <SettingRow
               label="Models"
@@ -305,7 +368,12 @@ const TeamSSOSettings: React.FC<TeamSSOSettingsProps> = ({ accessToken }) => {
                   onChange={(v) => update("team_member_permissions", v)}
                   placeholder="Select permissions"
                   tagRender={({ label, closable, onClose }) => (
-                    <Tag color="blue" closable={closable} onClose={onClose} className="mr-1 mt-1 mb-1">
+                    <Tag
+                      color="blue"
+                      closable={closable}
+                      onClose={onClose}
+                      className="mr-1 mt-1 mb-1"
+                    >
                       {label}
                     </Tag>
                   )}

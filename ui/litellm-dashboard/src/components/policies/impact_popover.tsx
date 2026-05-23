@@ -1,14 +1,15 @@
-import React, { useState } from "react";
-import { Icon } from "@tremor/react";
 import { EyeIcon } from "@heroicons/react/outline";
-import { Tooltip, Tag, Popover, Spin } from "antd";
-import { PolicyAttachment } from "./types";
+import { Icon } from "@tremor/react";
+import { Popover, Spin, Tag, Tooltip } from "antd";
+import type React from "react";
+import { useState } from "react";
 import { estimateAttachmentImpactCall } from "../networking";
+import type { PolicyAttachment } from "./types";
 
-const ImpactPopover: React.FC<{ attachment: PolicyAttachment; accessToken: string | null }> = ({
-  attachment,
-  accessToken,
-}) => {
+const ImpactPopover: React.FC<{
+  attachment: PolicyAttachment;
+  accessToken: string | null;
+}> = ({ attachment, accessToken }) => {
   const [impact, setImpact] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -35,22 +36,30 @@ const ImpactPopover: React.FC<{ attachment: PolicyAttachment; accessToken: strin
   };
 
   const content = loading ? (
-    <div className="p-2 text-center"><Spin size="small" /> Loading...</div>
+    <div className="p-2 text-center">
+      <Spin size="small" /> Loading...
+    </div>
   ) : impact ? (
     <div className="text-xs" style={{ maxWidth: 280 }}>
       {impact.affected_keys_count === -1 ? (
-        <p className="font-medium text-amber-600">Global scope — affects all keys and teams</p>
+        <p className="font-medium text-amber-600">
+          Global scope — affects all keys and teams
+        </p>
       ) : (
         <>
           <p className="mb-1">
-            <strong>{impact.affected_keys_count}</strong> key{impact.affected_keys_count !== 1 ? "s" : ""},{" "}
-            <strong>{impact.affected_teams_count}</strong> team{impact.affected_teams_count !== 1 ? "s" : ""} affected
+            <strong>{impact.affected_keys_count}</strong> key
+            {impact.affected_keys_count !== 1 ? "s" : ""},{" "}
+            <strong>{impact.affected_teams_count}</strong> team
+            {impact.affected_teams_count !== 1 ? "s" : ""} affected
           </p>
           {impact.sample_keys.length > 0 && (
             <div className="mb-1">
               <span className="text-gray-500">Keys: </span>
               {impact.sample_keys.map((k: string) => (
-                <Tag key={k} style={{ fontSize: 10, margin: 1 }}>{k}</Tag>
+                <Tag key={k} style={{ fontSize: 10, margin: 1 }}>
+                  {k}
+                </Tag>
               ))}
             </div>
           )}
@@ -58,13 +67,18 @@ const ImpactPopover: React.FC<{ attachment: PolicyAttachment; accessToken: strin
             <div>
               <span className="text-gray-500">Teams: </span>
               {impact.sample_teams.map((t: string) => (
-                <Tag key={t} style={{ fontSize: 10, margin: 1 }}>{t}</Tag>
+                <Tag key={t} style={{ fontSize: 10, margin: 1 }}>
+                  {t}
+                </Tag>
               ))}
             </div>
           )}
-          {impact.affected_keys_count === 0 && impact.affected_teams_count === 0 && (
-            <p className="text-gray-400">No keys or teams currently affected</p>
-          )}
+          {impact.affected_keys_count === 0 &&
+            impact.affected_teams_count === 0 && (
+              <p className="text-gray-400">
+                No keys or teams currently affected
+              </p>
+            )}
         </>
       )}
     </div>
@@ -73,9 +87,20 @@ const ImpactPopover: React.FC<{ attachment: PolicyAttachment; accessToken: strin
   );
 
   return (
-    <Popover content={content} title="Blast Radius" trigger="click" onOpenChange={(open) => { if (open) loadImpact(); }}>
+    <Popover
+      content={content}
+      title="Blast Radius"
+      trigger="click"
+      onOpenChange={(open) => {
+        if (open) loadImpact();
+      }}
+    >
       <Tooltip title="View blast radius">
-        <Icon icon={EyeIcon} size="sm" className="cursor-pointer hover:text-blue-500" />
+        <Icon
+          icon={EyeIcon}
+          size="sm"
+          className="cursor-pointer hover:text-blue-500"
+        />
       </Tooltip>
     </Popover>
   );

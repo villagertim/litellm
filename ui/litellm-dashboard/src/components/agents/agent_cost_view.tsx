@@ -1,7 +1,7 @@
-import React from "react";
 import { Title } from "@tremor/react";
 import { Descriptions } from "antd";
-import { Agent } from "./types";
+import type React from "react";
+import type { Agent } from "./types";
 
 interface AgentCostViewProps {
   agent: Agent;
@@ -43,4 +43,3 @@ const AgentCostView: React.FC<AgentCostViewProps> = ({ agent }) => {
 };
 
 export default AgentCostView;
-

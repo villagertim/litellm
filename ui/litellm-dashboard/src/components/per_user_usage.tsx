@@ -1,22 +1,23 @@
-import React, { useState, useEffect } from "react";
 import {
-  Title,
-  Subtitle,
-  Table,
-  TableHead,
-  TableRow,
-  TableHeaderCell,
-  TableBody,
-  TableCell,
   BarChart,
-  Text,
   Button,
+  Subtitle,
   Tab,
   TabGroup,
   TabList,
   TabPanel,
   TabPanels,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+  Text,
+  Title,
 } from "@tremor/react";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { perUserAnalyticsCall } from "./networking";
 
 interface PerUserMetrics {
@@ -44,7 +45,11 @@ interface PerUserUsageProps {
   formatAbbreviatedNumber: (value: number, decimalPlaces?: number) => string;
 }
 
-const PerUserUsage: React.FC<PerUserUsageProps> = ({ accessToken, selectedTags, formatAbbreviatedNumber }) => {
+const PerUserUsage: React.FC<PerUserUsageProps> = ({
+  accessToken,
+  selectedTags,
+  formatAbbreviatedNumber,
+}) => {
   // Maximum number of user agent categories to show in charts to prevent color palette overflow
   const MAX_USER_AGENTS = 8;
   const [perUserData, setPerUserData] = useState<PerUserAnalyticsResponse>({
@@ -113,46 +118,69 @@ const PerUserUsage: React.FC<PerUserUsageProps> = ({ accessToken, selectedTags, 
                   <TableHeaderCell>User ID</TableHeaderCell>
                   <TableHeaderCell>User Email</TableHeaderCell>
                   <TableHeaderCell>User Agent</TableHeaderCell>
-                  <TableHeaderCell className="text-right">Success Generations</TableHeaderCell>
-                  <TableHeaderCell className="text-right">Total Tokens</TableHeaderCell>
-                  <TableHeaderCell className="text-right">Failed Requests</TableHeaderCell>
-                  <TableHeaderCell className="text-right">Total Cost</TableHeaderCell>
+                  <TableHeaderCell className="text-right">
+                    Success Generations
+                  </TableHeaderCell>
+                  <TableHeaderCell className="text-right">
+                    Total Tokens
+                  </TableHeaderCell>
+                  <TableHeaderCell className="text-right">
+                    Failed Requests
+                  </TableHeaderCell>
+                  <TableHeaderCell className="text-right">
+                    Total Cost
+                  </TableHeaderCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {perUserData.results.slice(0, 10).map((item: PerUserMetrics, index: number) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <Text className="font-medium">{item.user_id}</Text>
-                    </TableCell>
-                    <TableCell>
-                      <Text>{item.user_email || "N/A"}</Text>
-                    </TableCell>
-                    <TableCell>
-                      <Text>{item.user_agent || "Unknown"}</Text>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Text>{formatAbbreviatedNumber(item.successful_requests)}</Text>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Text>{formatAbbreviatedNumber(item.total_tokens)}</Text>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Text>{formatAbbreviatedNumber(item.failed_requests)}</Text>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Text>${formatAbbreviatedNumber(item.spend, 4)}</Text>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {perUserData.results
+                  .slice(0, 10)
+                  .map((item: PerUserMetrics, index: number) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        <Text className="font-medium">{item.user_id}</Text>
+                      </TableCell>
+                      <TableCell>
+                        <Text>{item.user_email || "N/A"}</Text>
+                      </TableCell>
+                      <TableCell>
+                        <Text>{item.user_agent || "Unknown"}</Text>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Text>
+                          {formatAbbreviatedNumber(item.successful_requests)}
+                        </Text>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Text>
+                          {formatAbbreviatedNumber(item.total_tokens)}
+                        </Text>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Text>
+                          {formatAbbreviatedNumber(item.failed_requests)}
+                        </Text>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Text>${formatAbbreviatedNumber(item.spend, 4)}</Text>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
 
             {perUserData.results.length > 10 && (
               <div className="mt-4 flex justify-between items-center">
-                <Text className="text-sm text-gray-500">Showing 10 of {perUserData.total_count} results</Text>
+                <Text className="text-sm text-gray-500">
+                  Showing 10 of {perUserData.total_count} results
+                </Text>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="secondary" onClick={handlePrevPage} disabled={currentPage === 1}>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={handlePrevPage}
+                    disabled={currentPage === 1}
+                  >
                     Previous
                   </Button>
                   <Button
@@ -172,7 +200,9 @@ const PerUserUsage: React.FC<PerUserUsageProps> = ({ accessToken, selectedTags, 
           <TabPanel>
             <div className="mb-4">
               <Title className="text-lg">User Usage Distribution</Title>
-              <Subtitle>Number of users by successful request frequency</Subtitle>
+              <Subtitle>
+                Number of users by successful request frequency
+              </Subtitle>
             </div>
 
             <BarChart
@@ -181,7 +211,10 @@ const PerUserUsage: React.FC<PerUserUsageProps> = ({ accessToken, selectedTags, 
                 const userAgentCounts = new Map<string, number>();
                 perUserData.results.forEach((item: PerUserMetrics) => {
                   const agent = item.user_agent || "Unknown";
-                  userAgentCounts.set(agent, (userAgentCounts.get(agent) || 0) + 1);
+                  userAgentCounts.set(
+                    agent,
+                    (userAgentCounts.get(agent) || 0) + 1,
+                  );
                 });
 
                 const topUserAgents = Array.from(userAgentCounts.entries())
@@ -191,12 +224,30 @@ const PerUserUsage: React.FC<PerUserUsageProps> = ({ accessToken, selectedTags, 
 
                 // Categorize users by successful request count and user agent
                 const categories = {
-                  "1-9 requests": { range: [1, 9], agents: {} as Record<string, number> },
-                  "10-99 requests": { range: [10, 99], agents: {} as Record<string, number> },
-                  "100-999 requests": { range: [100, 999], agents: {} as Record<string, number> },
-                  "1K-9.9K requests": { range: [1000, 9999], agents: {} as Record<string, number> },
-                  "10K-99.9K requests": { range: [10000, 99999], agents: {} as Record<string, number> },
-                  "100K+ requests": { range: [100000, Infinity], agents: {} as Record<string, number> },
+                  "1-9 requests": {
+                    range: [1, 9],
+                    agents: {} as Record<string, number>,
+                  },
+                  "10-99 requests": {
+                    range: [10, 99],
+                    agents: {} as Record<string, number>,
+                  },
+                  "100-999 requests": {
+                    range: [100, 999],
+                    agents: {} as Record<string, number>,
+                  },
+                  "1K-9.9K requests": {
+                    range: [1000, 9999],
+                    agents: {} as Record<string, number>,
+                  },
+                  "10K-99.9K requests": {
+                    range: [10000, 99999],
+                    agents: {} as Record<string, number>,
+                  },
+                  "100K+ requests": {
+                    range: [100000, Number.POSITIVE_INFINITY],
+                    agents: {} as Record<string, number>,
+                  },
                 };
 
                 // Count users in each category by user agent (only for top user agents)
@@ -206,28 +257,37 @@ const PerUserUsage: React.FC<PerUserUsageProps> = ({ accessToken, selectedTags, 
 
                   // Only process if this is one of the top user agents
                   if (topUserAgents.includes(userAgent)) {
-                    Object.entries(categories).forEach(([categoryName, category]) => {
-                      if (successCount >= category.range[0] && successCount <= category.range[1]) {
-                        if (!category.agents[userAgent]) {
-                          category.agents[userAgent] = 0;
+                    Object.entries(categories).forEach(
+                      ([categoryName, category]) => {
+                        if (
+                          successCount >= category.range[0] &&
+                          successCount <= category.range[1]
+                        ) {
+                          if (!category.agents[userAgent]) {
+                            category.agents[userAgent] = 0;
+                          }
+                          category.agents[userAgent]++;
                         }
-                        category.agents[userAgent]++;
-                      }
-                    });
+                      },
+                    );
                   }
                 });
 
                 // Convert to chart data format for stacked bar chart
-                return Object.entries(categories).map(([categoryName, category]) => {
-                  const dataPoint: Record<string, any> = { category: categoryName };
+                return Object.entries(categories).map(
+                  ([categoryName, category]) => {
+                    const dataPoint: Record<string, any> = {
+                      category: categoryName,
+                    };
 
-                  // Add count for each top user agent
-                  topUserAgents.forEach((agent) => {
-                    dataPoint[agent] = category.agents[agent] || 0;
-                  });
+                    // Add count for each top user agent
+                    topUserAgents.forEach((agent) => {
+                      dataPoint[agent] = category.agents[agent] || 0;
+                    });
 
-                  return dataPoint;
-                });
+                    return dataPoint;
+                  },
+                );
               })()}
               index="category"
               categories={(() => {
@@ -235,7 +295,10 @@ const PerUserUsage: React.FC<PerUserUsageProps> = ({ accessToken, selectedTags, 
                 const userAgentCounts = new Map<string, number>();
                 perUserData.results.forEach((item: PerUserMetrics) => {
                   const agent = item.user_agent || "Unknown";
-                  userAgentCounts.set(agent, (userAgentCounts.get(agent) || 0) + 1);
+                  userAgentCounts.set(
+                    agent,
+                    (userAgentCounts.get(agent) || 0) + 1,
+                  );
                 });
 
                 // Sort by frequency (most common first) and limit to top MAX_USER_AGENTS
@@ -244,7 +307,16 @@ const PerUserUsage: React.FC<PerUserUsageProps> = ({ accessToken, selectedTags, 
                   .slice(0, MAX_USER_AGENTS)
                   .map(([agent]) => agent);
               })()}
-              colors={["blue", "green", "orange", "red", "purple", "yellow", "pink", "indigo"]}
+              colors={[
+                "blue",
+                "green",
+                "orange",
+                "red",
+                "purple",
+                "yellow",
+                "pink",
+                "indigo",
+              ]}
               valueFormatter={(value: number) => `${value} users`}
               yAxisWidth={80}
               showLegend={true}

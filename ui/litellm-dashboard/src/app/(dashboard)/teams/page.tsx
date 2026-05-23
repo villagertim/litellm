@@ -1,11 +1,11 @@
 "use client";
 
-import TeamsView from "@/app/(dashboard)/teams/TeamsView";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import useTeams from "@/app/(dashboard)/hooks/useTeams";
-import { useEffect, useState } from "react";
-import { Organization } from "@/components/networking";
+import TeamsView from "@/app/(dashboard)/teams/TeamsView";
+import type { Organization } from "@/components/networking";
 import { fetchOrganizations } from "@/components/organizations";
+import { useEffect, useState } from "react";
 
 const TeamsPage = () => {
   const { accessToken, userId, userRole } = useAuthorized();

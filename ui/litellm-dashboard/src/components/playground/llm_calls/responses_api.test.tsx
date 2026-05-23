@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { MessageType } from "../chat_ui/types";
 import { makeOpenAIResponsesRequest } from "./responses_api";
-import { MessageType } from "../chat_ui/types";
 
 vi.mock("@/components/networking", () => ({
   getProxyBaseUrl: vi.fn(() => "https://example.com"),
@@ -49,7 +49,12 @@ describe("responses_api", () => {
   });
 
   it("should send a basic responses request", async () => {
-    await makeOpenAIResponsesRequest(messages, mockUpdateTextUI, "gpt-4", "test-token");
+    await makeOpenAIResponsesRequest(
+      messages,
+      mockUpdateTextUI,
+      "gpt-4",
+      "test-token",
+    );
 
     expect(mockResponsesCreate).toHaveBeenCalledTimes(1);
     expect(mockResponsesCreate).toHaveBeenCalledWith(

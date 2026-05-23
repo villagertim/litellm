@@ -1,18 +1,30 @@
-import React, { useState } from "react";
-import { Select, Typography, Spin } from "antd";
 import MessageManager from "@/components/molecules/message_manager";
-import { Button, TextInput } from "@tremor/react";
 import { ArrowLeftIcon, PlusIcon } from "@heroicons/react/outline";
 import { DotsVerticalIcon } from "@heroicons/react/solid";
-import { GuardrailPipeline, PipelineStep, PipelineTestResult, PolicyCreateRequest, PolicyUpdateRequest, Policy } from "./types";
-import { Guardrail } from "../guardrails/types";
-import { testPipelineCall, listPolicyVersions, createPolicyVersion, updatePolicyVersionStatus } from "../networking";
-import NotificationsManager from "../molecules/notifications_manager";
+import { Button, TextInput } from "@tremor/react";
+import { Select, Spin, Typography } from "antd";
+import React, { useState } from "react";
 import {
   getComplianceDatasetPrompts,
   getFrameworks,
 } from "../../data/compliancePrompts";
 import type { CompliancePrompt } from "../../data/compliancePrompts";
+import type { Guardrail } from "../guardrails/types";
+import NotificationsManager from "../molecules/notifications_manager";
+import {
+  createPolicyVersion,
+  listPolicyVersions,
+  testPipelineCall,
+  updatePolicyVersionStatus,
+} from "../networking";
+import type {
+  GuardrailPipeline,
+  PipelineStep,
+  PipelineTestResult,
+  Policy,
+  PolicyCreateRequest,
+  PolicyUpdateRequest,
+} from "./types";
 
 const TEST_SOURCE_QUICK = "quick_chat";
 const TEST_SOURCE_ALL = "__all__";
@@ -66,7 +78,7 @@ function removeStep(steps: PipelineStep[], index: number): PipelineStep[] {
 function updateStepAtIndex(
   steps: PipelineStep[],
   index: number,
-  updated: Partial<PipelineStep>
+  updated: Partial<PipelineStep>,
 ): PipelineStep[] {
   return steps.map((s, i) => (i === index ? { ...s, ...updated } : s));
 }
@@ -76,7 +88,9 @@ function updateStepAtIndex(
  * When it only has guardrails_add (legacy/simple form), convert those guardrails
  * into pipeline steps in order.
  */
-function derivePipelineFromPolicy(policy: Policy | null | undefined): GuardrailPipeline {
+function derivePipelineFromPolicy(
+  policy: Policy | null | undefined,
+): GuardrailPipeline {
   if (!policy) {
     return { mode: "pre_call", steps: [createDefaultStep()] };
   }
@@ -116,7 +130,16 @@ const GuardrailIcon: React.FC = () => (
       flexShrink: 0,
     }}
   >
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#6366f1"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <circle cx="12" cy="12" r="10" />
       <path d="M12 8v4" />
     </svg>
@@ -136,27 +159,63 @@ const PlayIcon: React.FC = () => (
       flexShrink: 0,
     }}
   >
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="#6b7280" stroke="none">
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="#6b7280"
+      stroke="none"
+    >
       <polygon points="6,3 20,12 6,21" />
     </svg>
   </div>
 );
 
 const PassIcon: React.FC = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#22c55e"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    style={{ flexShrink: 0 }}
+  >
     <circle cx="12" cy="12" r="10" />
     <path d="M9 12l2 2 4-4" />
   </svg>
 );
 
 const FailIcon: React.FC = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#f87171"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    style={{ flexShrink: 0 }}
+  >
     <circle cx="12" cy="12" r="10" />
   </svg>
 );
 
 const ApiFailureIcon: React.FC = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#d97706"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    style={{ flexShrink: 0 }}
+  >
     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
     <line x1="12" y1="9" x2="12" y2="13" />
     <line x1="12" y1="17" x2="12.01" y2="17" />
@@ -277,14 +336,24 @@ const StepCard: React.FC<StepCardProps> = ({
             }}
             title="Delete step"
           >
-            <DotsVerticalIcon style={{ width: 16, height: 16, color: "#9ca3af" }} />
+            <DotsVerticalIcon
+              style={{ width: 16, height: 16, color: "#9ca3af" }}
+            />
           </button>
         </div>
       </div>
 
       {/* Guardrail selector */}
       <div style={{ padding: "12px 20px 16px 20px" }}>
-        <label style={{ fontSize: 12, fontWeight: 500, color: "#6b7280", display: "block", marginBottom: 6 }}>
+        <label
+          style={{
+            fontSize: 12,
+            fontWeight: 500,
+            color: "#6b7280",
+            display: "block",
+            marginBottom: 6,
+          }}
+        >
           Guardrail
         </label>
         <Select
@@ -295,7 +364,10 @@ const StepCard: React.FC<StepCardProps> = ({
           onChange={(value) => onChange({ guardrail: value })}
           options={guardrailOptions}
           filterOption={(input, option) =>
-            (option?.label ?? "").toString().toLowerCase().includes(input.toLowerCase())
+            (option?.label ?? "")
+              .toString()
+              .toLowerCase()
+              .includes(input.toLowerCase())
           }
         />
       </div>
@@ -304,26 +376,48 @@ const StepCard: React.FC<StepCardProps> = ({
       <div style={{ borderTop: "1px solid #f0f0f0", padding: "14px 20px" }}>
         <div className="flex items-center gap-2" style={{ marginBottom: 8 }}>
           <PassIcon />
-          <span style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>ON PASS</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>
+            ON PASS
+          </span>
         </div>
-        <label style={{ fontSize: 12, fontWeight: 500, color: "#6b7280", display: "block", marginBottom: 6 }}>
+        <label
+          style={{
+            fontSize: 12,
+            fontWeight: 500,
+            color: "#6b7280",
+            display: "block",
+            marginBottom: 6,
+          }}
+        >
           Action
         </label>
         <Select
           style={{ width: "100%" }}
           value={step.on_pass}
-          onChange={(value) => onChange({ on_pass: value as PipelineStep["on_pass"] })}
+          onChange={(value) =>
+            onChange({ on_pass: value as PipelineStep["on_pass"] })
+          }
           options={ACTION_OPTIONS}
         />
         {step.on_pass === "modify_response" && (
           <div style={{ marginTop: 8 }}>
-            <label style={{ fontSize: 12, fontWeight: 500, color: "#6b7280", display: "block", marginBottom: 6 }}>
+            <label
+              style={{
+                fontSize: 12,
+                fontWeight: 500,
+                color: "#6b7280",
+                display: "block",
+                marginBottom: 6,
+              }}
+            >
               Custom Response Message
             </label>
             <TextInput
               placeholder="Enter custom response..."
               value={step.modify_response_message || ""}
-              onChange={(e) => onChange({ modify_response_message: e.target.value || null })}
+              onChange={(e) =>
+                onChange({ modify_response_message: e.target.value || null })
+              }
             />
           </div>
         )}
@@ -333,26 +427,48 @@ const StepCard: React.FC<StepCardProps> = ({
       <div style={{ borderTop: "1px solid #f0f0f0", padding: "14px 20px" }}>
         <div className="flex items-center gap-2" style={{ marginBottom: 8 }}>
           <FailIcon />
-          <span style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>ON FAIL</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>
+            ON FAIL
+          </span>
         </div>
-        <label style={{ fontSize: 12, fontWeight: 500, color: "#6b7280", display: "block", marginBottom: 6 }}>
+        <label
+          style={{
+            fontSize: 12,
+            fontWeight: 500,
+            color: "#6b7280",
+            display: "block",
+            marginBottom: 6,
+          }}
+        >
           Action
         </label>
         <Select
           style={{ width: "100%" }}
           value={step.on_fail}
-          onChange={(value) => onChange({ on_fail: value as PipelineStep["on_fail"] })}
+          onChange={(value) =>
+            onChange({ on_fail: value as PipelineStep["on_fail"] })
+          }
           options={ACTION_OPTIONS}
         />
         {step.on_fail === "modify_response" && (
           <div style={{ marginTop: 8 }}>
-            <label style={{ fontSize: 12, fontWeight: 500, color: "#6b7280", display: "block", marginBottom: 6 }}>
+            <label
+              style={{
+                fontSize: 12,
+                fontWeight: 500,
+                color: "#6b7280",
+                display: "block",
+                marginBottom: 6,
+              }}
+            >
               Custom Response Message
             </label>
             <TextInput
               placeholder="Enter custom response..."
               value={step.modify_response_message || ""}
-              onChange={(e) => onChange({ modify_response_message: e.target.value || null })}
+              onChange={(e) =>
+                onChange({ modify_response_message: e.target.value || null })
+              }
             />
           </div>
         )}
@@ -362,9 +478,19 @@ const StepCard: React.FC<StepCardProps> = ({
       <div style={{ borderTop: "1px solid #f0f0f0", padding: "14px 20px" }}>
         <div className="flex items-center gap-2" style={{ marginBottom: 8 }}>
           <ApiFailureIcon />
-          <span style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>ON API FAILURE</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>
+            ON API FAILURE
+          </span>
         </div>
-        <label style={{ fontSize: 12, fontWeight: 500, color: "#6b7280", display: "block", marginBottom: 6 }}>
+        <label
+          style={{
+            fontSize: 12,
+            fontWeight: 500,
+            color: "#6b7280",
+            display: "block",
+            marginBottom: 6,
+          }}
+        >
           Action
         </label>
         <Select
@@ -374,23 +500,37 @@ const StepCard: React.FC<StepCardProps> = ({
           value={step.on_error ?? undefined}
           onChange={(value) =>
             onChange({
-              on_error: value === undefined || value === null ? undefined : (value as PipelineStep["on_error"]),
+              on_error:
+                value === undefined || value === null
+                  ? undefined
+                  : (value as PipelineStep["on_error"]),
             })
           }
           options={ACTION_OPTIONS}
         />
-        {step.on_error === "modify_response" && step.on_fail !== "modify_response" && (
-          <div style={{ marginTop: 8 }}>
-            <label style={{ fontSize: 12, fontWeight: 500, color: "#6b7280", display: "block", marginBottom: 6 }}>
-              Custom Response Message
-            </label>
-            <TextInput
-              placeholder="Enter custom response..."
-              value={step.modify_response_message || ""}
-              onChange={(e) => onChange({ modify_response_message: e.target.value || null })}
-            />
-          </div>
-        )}
+        {step.on_error === "modify_response" &&
+          step.on_fail !== "modify_response" && (
+            <div style={{ marginTop: 8 }}>
+              <label
+                style={{
+                  fontSize: 12,
+                  fontWeight: 500,
+                  color: "#6b7280",
+                  display: "block",
+                  marginBottom: 6,
+                }}
+              >
+                Custom Response Message
+              </label>
+              <TextInput
+                placeholder="Enter custom response..."
+                value={step.modify_response_message || ""}
+                onChange={(e) =>
+                  onChange({ modify_response_message: e.target.value || null })
+                }
+              />
+            </div>
+          )}
       </div>
     </div>
   );
@@ -455,7 +595,14 @@ const PipelineFlowBuilder: React.FC<PipelineFlowBuilderProps> = ({
             >
               TRIGGER
             </span>
-            <span style={{ fontSize: 14, fontWeight: 600, color: "#111827", display: "block" }}>
+            <span
+              style={{
+                fontSize: 14,
+                fontWeight: 600,
+                color: "#111827",
+                display: "block",
+              }}
+            >
               Incoming LLM Request
             </span>
             <span style={{ fontSize: 13, color: "#9ca3af" }}>
@@ -507,7 +654,16 @@ const PipelineFlowBuilder: React.FC<PipelineFlowBuilderProps> = ({
               flexShrink: 0,
             }}
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#6b7280"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <rect x="3" y="3" width="18" height="18" rx="2" />
               <line x1="8" y1="12" x2="16" y2="12" />
             </svg>
@@ -526,7 +682,14 @@ const PipelineFlowBuilder: React.FC<PipelineFlowBuilderProps> = ({
             >
               END
             </span>
-            <span style={{ fontSize: 14, fontWeight: 600, color: "#111827", display: "block" }}>
+            <span
+              style={{
+                fontSize: 14,
+                fontWeight: 600,
+                color: "#111827",
+                display: "block",
+              }}
+            >
               Continue to LLM
             </span>
             <span style={{ fontSize: 13, color: "#9ca3af" }}>
@@ -547,7 +710,9 @@ interface PipelineInfoDisplayProps {
   pipeline: GuardrailPipeline;
 }
 
-export const PipelineInfoDisplay: React.FC<PipelineInfoDisplayProps> = ({ pipeline }) => (
+export const PipelineInfoDisplay: React.FC<PipelineInfoDisplayProps> = ({
+  pipeline,
+}) => (
   <div className="flex flex-col items-center" style={{ padding: "16px 0" }}>
     {/* Trigger */}
     <div
@@ -563,7 +728,17 @@ export const PipelineInfoDisplay: React.FC<PipelineInfoDisplayProps> = ({ pipeli
       <div className="flex items-center gap-3">
         <PlayIcon />
         <div>
-          <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: "#6b7280", letterSpacing: "0.06em", display: "block", marginBottom: 2 }}>
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              textTransform: "uppercase",
+              color: "#6b7280",
+              letterSpacing: "0.06em",
+              display: "block",
+              marginBottom: 2,
+            }}
+          >
             TRIGGER
           </span>
           <span style={{ fontSize: 14, fontWeight: 600, color: "#111827" }}>
@@ -591,18 +766,38 @@ export const PipelineInfoDisplay: React.FC<PipelineInfoDisplayProps> = ({ pipeli
           }}
         >
           {/* Header */}
-          <div className="flex items-center justify-between" style={{ marginBottom: 8 }}>
+          <div
+            className="flex items-center justify-between"
+            style={{ marginBottom: 8 }}
+          >
             <div className="flex items-center gap-2">
               <GuardrailIcon />
-              <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: "#6366f1", letterSpacing: "0.06em" }}>
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  color: "#6366f1",
+                  letterSpacing: "0.06em",
+                }}
+              >
                 GUARDRAIL
               </span>
             </div>
-            <span style={{ fontSize: 13, color: "#9ca3af" }}>Step {index + 1}</span>
+            <span style={{ fontSize: 13, color: "#9ca3af" }}>
+              Step {index + 1}
+            </span>
           </div>
 
           {/* Name */}
-          <div style={{ fontSize: 15, fontWeight: 600, color: "#111827", marginBottom: 8 }}>
+          <div
+            style={{
+              fontSize: 15,
+              fontWeight: 600,
+              color: "#111827",
+              marginBottom: 8,
+            }}
+          >
             {step.guardrail}
           </div>
 
@@ -610,12 +805,17 @@ export const PipelineInfoDisplay: React.FC<PipelineInfoDisplayProps> = ({ pipeli
           <div style={{ borderTop: "1px solid #f3f4f6", marginBottom: 10 }} />
 
           {/* Pass / Fail / API failure */}
-          <div className="flex flex-col gap-2" style={{ fontSize: 13, color: "#374151" }}>
+          <div
+            className="flex flex-col gap-2"
+            style={{ fontSize: 13, color: "#374151" }}
+          >
             <span className="flex items-center gap-1.5">
-              <PassIcon /> Pass &#8594; {ACTION_LABELS[step.on_pass] || step.on_pass}
+              <PassIcon /> Pass &#8594;{" "}
+              {ACTION_LABELS[step.on_pass] || step.on_pass}
             </span>
             <span className="flex items-center gap-1.5">
-              <FailIcon /> On fail &#8594; {ACTION_LABELS[step.on_fail] || step.on_fail}
+              <FailIcon /> On fail &#8594;{" "}
+              {ACTION_LABELS[step.on_fail] || step.on_fail}
             </span>
             <span className="flex items-center gap-1.5">
               <ApiFailureIcon /> On API failure &#8594;{" "}
@@ -640,7 +840,10 @@ interface PipelineTestPanelProps {
   onClose: () => void;
 }
 
-const OUTCOME_STYLES: Record<string, { bg: string; color: string; label: string }> = {
+const OUTCOME_STYLES: Record<
+  string,
+  { bg: string; color: string; label: string }
+> = {
   pass: { bg: "#f0fdf4", color: "#16a34a", label: "PASS" },
   fail: { bg: "#fef2f2", color: "#dc2626", label: "FAIL" },
   error: { bg: "#fffbeb", color: "#d97706", label: "ERROR" },
@@ -659,7 +862,10 @@ interface ComplianceRunEntry {
   matched: boolean;
 }
 
-function complianceMatchExpected(expected: "pass" | "fail", terminalAction: string): boolean {
+function complianceMatchExpected(
+  expected: "pass" | "fail",
+  terminalAction: string,
+): boolean {
   if (expected === "pass") {
     return terminalAction === "allow" || terminalAction === "modify_response";
   }
@@ -682,7 +888,9 @@ const PipelineTestPanel: React.FC<PipelineTestPanelProps> = ({
   const [isRunning, setIsRunning] = useState(false);
   const [result, setResult] = useState<PipelineTestResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [complianceResults, setComplianceResults] = useState<ComplianceRunEntry[]>([]);
+  const [complianceResults, setComplianceResults] = useState<
+    ComplianceRunEntry[]
+  >([]);
 
   const isQuickChat = testSource === TEST_SOURCE_QUICK;
   const promptsForSource = getPromptsForTestSource(testSource);
@@ -704,11 +912,9 @@ const PipelineTestPanel: React.FC<PipelineTestPanelProps> = ({
 
     if (isQuickChat) {
       try {
-        const data = await testPipelineCall(
-          accessToken,
-          pipeline,
-          [{ role: "user", content: testMessage }]
-        );
+        const data = await testPipelineCall(accessToken, pipeline, [
+          { role: "user", content: testMessage },
+        ]);
         setResult(data);
       } catch (e) {
         setError(e instanceof Error ? e.message : String(e));
@@ -724,7 +930,10 @@ const PipelineTestPanel: React.FC<PipelineTestPanelProps> = ({
         const data = await testPipelineCall(accessToken, pipeline, [
           { role: "user", content: prompt.prompt },
         ]);
-        const matched = complianceMatchExpected(prompt.expectedResult, data.terminal_action);
+        const matched = complianceMatchExpected(
+          prompt.expectedResult,
+          data.terminal_action,
+        );
         entries.push({ prompt, result: data, matched });
       } catch (e) {
         const errMsg = e instanceof Error ? e.message : String(e);
@@ -762,7 +971,9 @@ const PipelineTestPanel: React.FC<PipelineTestPanelProps> = ({
           justifyContent: "space-between",
         }}
       >
-        <span style={{ fontSize: 14, fontWeight: 600, color: "#111827" }}>Test Pipeline</span>
+        <span style={{ fontSize: 14, fontWeight: 600, color: "#111827" }}>
+          Test Pipeline
+        </span>
         <button
           onClick={onClose}
           style={{
@@ -780,7 +991,15 @@ const PipelineTestPanel: React.FC<PipelineTestPanelProps> = ({
 
       {/* Input section */}
       <div style={{ padding: 16, borderBottom: "1px solid #e5e7eb" }}>
-        <label style={{ fontSize: 12, fontWeight: 500, color: "#6b7280", display: "block", marginBottom: 6 }}>
+        <label
+          style={{
+            fontSize: 12,
+            fontWeight: 500,
+            color: "#6b7280",
+            display: "block",
+            marginBottom: 6,
+          }}
+        >
           Test with
         </label>
         <Select
@@ -792,7 +1011,15 @@ const PipelineTestPanel: React.FC<PipelineTestPanelProps> = ({
         />
         {isQuickChat && (
           <>
-            <label style={{ fontSize: 12, fontWeight: 500, color: "#6b7280", display: "block", marginBottom: 6 }}>
+            <label
+              style={{
+                fontSize: 12,
+                fontWeight: 500,
+                color: "#6b7280",
+                display: "block",
+                marginBottom: 6,
+              }}
+            >
               Message
             </label>
             <textarea
@@ -859,7 +1086,8 @@ const PipelineTestPanel: React.FC<PipelineTestPanelProps> = ({
           <div>
             {/* Step results */}
             {result.step_results.map((step, i) => {
-              const style = OUTCOME_STYLES[step.outcome] || OUTCOME_STYLES.error;
+              const style =
+                OUTCOME_STYLES[step.outcome] || OUTCOME_STYLES.error;
               return (
                 <div
                   key={i}
@@ -870,8 +1098,17 @@ const PipelineTestPanel: React.FC<PipelineTestPanelProps> = ({
                     marginBottom: 8,
                   }}
                 >
-                  <div className="flex items-center justify-between" style={{ marginBottom: 4 }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>
+                  <div
+                    className="flex items-center justify-between"
+                    style={{ marginBottom: 4 }}
+                  >
+                    <span
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 600,
+                        color: "#111827",
+                      }}
+                    >
                       Step {i + 1}: {step.guardrail_name}
                     </span>
                     <span
@@ -888,7 +1125,8 @@ const PipelineTestPanel: React.FC<PipelineTestPanelProps> = ({
                     </span>
                   </div>
                   <div style={{ fontSize: 12, color: "#6b7280" }}>
-                    Action: {ACTION_LABELS[step.action_taken] || step.action_taken}
+                    Action:{" "}
+                    {ACTION_LABELS[step.action_taken] || step.action_taken}
                     {step.duration_seconds != null && (
                       <span style={{ marginLeft: 8 }}>
                         ({(step.duration_seconds * 1000).toFixed(0)}ms)
@@ -896,7 +1134,9 @@ const PipelineTestPanel: React.FC<PipelineTestPanelProps> = ({
                     )}
                   </div>
                   {step.error_detail && (
-                    <div style={{ fontSize: 12, color: "#dc2626", marginTop: 4 }}>
+                    <div
+                      style={{ fontSize: 12, color: "#dc2626", marginTop: 4 }}
+                    >
                       {step.error_detail}
                     </div>
                   )}
@@ -913,9 +1153,15 @@ const PipelineTestPanel: React.FC<PipelineTestPanelProps> = ({
               }}
             >
               <div className="flex items-center justify-between">
-                <span style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>Result</span>
+                <span
+                  style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}
+                >
+                  Result
+                </span>
                 {(() => {
-                  const ts = TERMINAL_STYLES[result.terminal_action] || TERMINAL_STYLES.block;
+                  const ts =
+                    TERMINAL_STYLES[result.terminal_action] ||
+                    TERMINAL_STYLES.block;
                   return (
                     <span
                       style={{
@@ -928,7 +1174,9 @@ const PipelineTestPanel: React.FC<PipelineTestPanelProps> = ({
                         textTransform: "uppercase",
                       }}
                     >
-                      {result.terminal_action === "modify_response" ? "Custom Response" : result.terminal_action}
+                      {result.terminal_action === "modify_response"
+                        ? "Custom Response"
+                        : result.terminal_action}
                     </span>
                   );
                 })()}
@@ -966,8 +1214,8 @@ const PipelineTestPanel: React.FC<PipelineTestPanelProps> = ({
                 marginBottom: 10,
               }}
             >
-              {complianceResults.filter((e) => e.matched).length} / {complianceResults.length} matched
-              expected
+              {complianceResults.filter((e) => e.matched).length} /{" "}
+              {complianceResults.length} matched expected
             </div>
             <div
               style={{
@@ -979,7 +1227,8 @@ const PipelineTestPanel: React.FC<PipelineTestPanelProps> = ({
             >
               {complianceResults.map((entry, i) => {
                 const actual =
-                  entry.result?.terminal_action ?? (entry.error ? "error" : "—");
+                  entry.result?.terminal_action ??
+                  (entry.error ? "error" : "—");
                 const matchStyle = entry.matched
                   ? { bg: "#f0fdf4", color: "#16a34a" }
                   : { bg: "#fef2f2", color: "#dc2626" };
@@ -1019,9 +1268,7 @@ const PipelineTestPanel: React.FC<PipelineTestPanelProps> = ({
                         expected: {entry.prompt.expectedResult}
                       </span>
                       <span style={{ color: "#9ca3af" }}>→</span>
-                      <span style={{ color: "#6b7280" }}>
-                        actual: {actual}
-                      </span>
+                      <span style={{ color: "#6b7280" }}>actual: {actual}</span>
                       <span
                         style={{
                           backgroundColor: matchStyle.bg,
@@ -1047,8 +1294,16 @@ const PipelineTestPanel: React.FC<PipelineTestPanelProps> = ({
         )}
 
         {!result && !error && complianceResults.length === 0 && (
-          <div style={{ textAlign: "center", color: "#9ca3af", fontSize: 13, marginTop: 24 }}>
-            Choose a test source above (quick chat or a compliance dataset) and click &quot;Run Test&quot;
+          <div
+            style={{
+              textAlign: "center",
+              color: "#9ca3af",
+              fontSize: 13,
+              marginTop: 24,
+            }}
+          >
+            Choose a test source above (quick chat or a compliance dataset) and
+            click &quot;Run Test&quot;
           </div>
         )}
       </div>
@@ -1060,10 +1315,7 @@ const PipelineTestPanel: React.FC<PipelineTestPanelProps> = ({
 // Policy Versions Sidebar (left sidebar when editing a policy)
 // ─────────────────────────────────────────────────────────────────────────────
 
-const VERSION_STATUS_STYLES: Record<
-  string,
-  { bg: string; color: string }
-> = {
+const VERSION_STATUS_STYLES: Record<string, { bg: string; color: string }> = {
   draft: { bg: "#f3f4f6", color: "#6b7280" },
   published: { bg: "#eff6ff", color: "#2563eb" },
   production: { bg: "#f0fdf4", color: "#16a34a" },
@@ -1099,7 +1351,8 @@ const PolicyVersionsSidebar: React.FC<PolicyVersionsSidebarProps> = ({
   onPromoteToProduction,
 }) => {
   const canPublish = editingVersionStatus === "draft" && onPublish;
-  const canPromote = editingVersionStatus === "published" && onPromoteToProduction;
+  const canPromote =
+    editingVersionStatus === "published" && onPromoteToProduction;
 
   return (
     <div
@@ -1149,7 +1402,9 @@ const PolicyVersionsSidebar: React.FC<PolicyVersionsSidebarProps> = ({
             + New Version
           </Button>
           {isLoading ? (
-            <div style={{ display: "flex", justifyContent: "center", padding: 16 }}>
+            <div
+              style={{ display: "flex", justifyContent: "center", padding: 16 }}
+            >
               <Spin size="small" />
             </div>
           ) : versions.length === 0 ? (
@@ -1173,13 +1428,24 @@ const PolicyVersionsSidebar: React.FC<PolicyVersionsSidebarProps> = ({
                       textAlign: "left",
                       padding: "10px 12px",
                       borderRadius: 8,
-                      border: isActive ? "1px solid #6366f1" : "1px solid #e5e7eb",
+                      border: isActive
+                        ? "1px solid #6366f1"
+                        : "1px solid #e5e7eb",
                       backgroundColor: isActive ? "#eef2ff" : "#fff",
                       cursor: "pointer",
                     }}
                   >
-                    <div className="flex items-center justify-between" style={{ marginBottom: 4 }}>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>
+                    <div
+                      className="flex items-center justify-between"
+                      style={{ marginBottom: 4 }}
+                    >
+                      <span
+                        style={{
+                          fontSize: 13,
+                          fontWeight: 600,
+                          color: "#111827",
+                        }}
+                      >
                         v{v.version_number ?? 1}
                       </span>
                       <span
@@ -1204,7 +1470,13 @@ const PolicyVersionsSidebar: React.FC<PolicyVersionsSidebarProps> = ({
 
           {/* Publish / Promote to production for selected version */}
           {(canPublish || canPromote) && (
-            <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #e5e7eb" }}>
+            <div
+              style={{
+                marginTop: 12,
+                paddingTop: 12,
+                borderTop: "1px solid #e5e7eb",
+              }}
+            >
               {canPublish && (
                 <>
                   <Button
@@ -1225,7 +1497,8 @@ const PolicyVersionsSidebar: React.FC<PolicyVersionsSidebarProps> = ({
                       marginBottom: canPromote ? 8 : 0,
                     }}
                   >
-                    Published versions can be tested in the Playground before promoting to production.
+                    Published versions can be tested in the Playground before
+                    promoting to production.
                   </span>
                 </>
               )}
@@ -1247,7 +1520,8 @@ const PolicyVersionsSidebar: React.FC<PolicyVersionsSidebarProps> = ({
                       display: "block",
                     }}
                   >
-                    This version will be used when anyone calls this policy by name.
+                    This version will be used when anyone calls this policy by
+                    name.
                   </span>
                 </>
               )}
@@ -1290,8 +1564,8 @@ const PolicyVersionsSidebar: React.FC<PolicyVersionsSidebarProps> = ({
               display: "block",
             }}
           >
-            Test policy versions on production traffic without blocking requests.
-            Shadow testing helps validate changes before full rollout.
+            Test policy versions on production traffic without blocking
+            requests. Shadow testing helps validate changes before full rollout.
           </span>
         </div>
       </div>
@@ -1310,7 +1584,11 @@ interface FlowBuilderPageProps {
   editingPolicy?: Policy | null;
   availableGuardrails: Guardrail[];
   createPolicy: (accessToken: string, policyData: any) => Promise<any>;
-  updatePolicy: (accessToken: string, policyId: string, policyData: any) => Promise<any>;
+  updatePolicy: (
+    accessToken: string,
+    policyId: string,
+    policyData: any,
+  ) => Promise<any>;
   onVersionCreated?: (newPolicy: Policy) => void;
   onSelectVersion?: (policy: Policy) => void;
   onVersionStatusUpdated?: (updatedPolicy: Policy) => void;
@@ -1331,12 +1609,16 @@ export const FlowBuilderPage: React.FC<FlowBuilderPageProps> = ({
   const isEditing = !!editingPolicy?.policy_id;
   const showVersionsSidebar = !!editingPolicy?.policy_name;
 
-  const [policyName, setPolicyName] = useState(editingPolicy?.policy_name || "");
-  const [description, setDescription] = useState(editingPolicy?.description || "");
+  const [policyName, setPolicyName] = useState(
+    editingPolicy?.policy_name || "",
+  );
+  const [description, setDescription] = useState(
+    editingPolicy?.description || "",
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showTestPanel, setShowTestPanel] = useState(false);
-  const [pipeline, setPipeline] = useState<GuardrailPipeline>(
-    () => derivePipelineFromPolicy(editingPolicy)
+  const [pipeline, setPipeline] = useState<GuardrailPipeline>(() =>
+    derivePipelineFromPolicy(editingPolicy),
   );
   const [versions, setVersions] = useState<Policy[]>([]);
   const [isVersionsLoading, setIsVersionsLoading] = useState(false);
@@ -1348,7 +1630,13 @@ export const FlowBuilderPage: React.FC<FlowBuilderPageProps> = ({
     setPolicyName(editingPolicy?.policy_name || "");
     setDescription(editingPolicy?.description || "");
     setPipeline(derivePipelineFromPolicy(editingPolicy));
-  }, [editingPolicy?.policy_id, editingPolicy?.policy_name, editingPolicy?.description, editingPolicy?.pipeline, editingPolicy?.guardrails_add]);
+  }, [
+    editingPolicy?.policy_id,
+    editingPolicy?.policy_name,
+    editingPolicy?.description,
+    editingPolicy?.pipeline,
+    editingPolicy?.guardrails_add,
+  ]);
 
   // Fetch versions when editing an existing policy by name
   React.useEffect(() => {
@@ -1377,14 +1665,21 @@ export const FlowBuilderPage: React.FC<FlowBuilderPageProps> = ({
     if (!accessToken || !editingPolicy?.policy_name) return;
     setIsCreatingVersion(true);
     try {
-      const newPolicy = await createPolicyVersion(accessToken, editingPolicy.policy_name);
+      const newPolicy = await createPolicyVersion(
+        accessToken,
+        editingPolicy.policy_name,
+      );
       NotificationsManager.success("New draft version created");
       onVersionCreated?.(newPolicy);
-      const list = await listPolicyVersions(accessToken, editingPolicy.policy_name);
+      const list = await listPolicyVersions(
+        accessToken,
+        editingPolicy.policy_name,
+      );
       setVersions(list.versions ?? []);
     } catch (error) {
       NotificationsManager.fromBackend(
-        "Failed to create version: " + (error instanceof Error ? error.message : String(error))
+        "Failed to create version: " +
+          (error instanceof Error ? error.message : String(error)),
       );
     } finally {
       setIsCreatingVersion(false);
@@ -1399,16 +1694,24 @@ export const FlowBuilderPage: React.FC<FlowBuilderPageProps> = ({
     if (!accessToken || !editingPolicy?.policy_id) return;
     setIsUpdatingStatus(true);
     try {
-      const updated = await updatePolicyVersionStatus(accessToken, editingPolicy.policy_id, "published");
-      NotificationsManager.success(
-        "Version published. You can test it in the Playground by selecting this version in the Policies dropdown."
+      const updated = await updatePolicyVersionStatus(
+        accessToken,
+        editingPolicy.policy_id,
+        "published",
       );
-      const list = await listPolicyVersions(accessToken, editingPolicy.policy_name ?? "");
+      NotificationsManager.success(
+        "Version published. You can test it in the Playground by selecting this version in the Policies dropdown.",
+      );
+      const list = await listPolicyVersions(
+        accessToken,
+        editingPolicy.policy_name ?? "",
+      );
       setVersions(list.versions ?? []);
       onVersionStatusUpdated?.(updated);
     } catch (error) {
       NotificationsManager.fromBackend(
-        "Failed to publish: " + (error instanceof Error ? error.message : String(error))
+        "Failed to publish: " +
+          (error instanceof Error ? error.message : String(error)),
       );
     } finally {
       setIsUpdatingStatus(false);
@@ -1419,14 +1722,22 @@ export const FlowBuilderPage: React.FC<FlowBuilderPageProps> = ({
     if (!accessToken || !editingPolicy?.policy_id) return;
     setIsUpdatingStatus(true);
     try {
-      const updated = await updatePolicyVersionStatus(accessToken, editingPolicy.policy_id, "production");
+      const updated = await updatePolicyVersionStatus(
+        accessToken,
+        editingPolicy.policy_id,
+        "production",
+      );
       NotificationsManager.success("Version promoted to production");
-      const list = await listPolicyVersions(accessToken, editingPolicy.policy_name ?? "");
+      const list = await listPolicyVersions(
+        accessToken,
+        editingPolicy.policy_name ?? "",
+      );
       setVersions(list.versions ?? []);
       onVersionStatusUpdated?.(updated);
     } catch (error) {
       NotificationsManager.fromBackend(
-        "Failed to promote to production: " + (error instanceof Error ? error.message : String(error))
+        "Failed to promote to production: " +
+          (error instanceof Error ? error.message : String(error)),
       );
     } finally {
       setIsUpdatingStatus(false);
@@ -1464,7 +1775,11 @@ export const FlowBuilderPage: React.FC<FlowBuilderPageProps> = ({
       };
 
       if (isEditing && editingPolicy) {
-        await updatePolicy(accessToken, editingPolicy.policy_id, data as PolicyUpdateRequest);
+        await updatePolicy(
+          accessToken,
+          editingPolicy.policy_id,
+          data as PolicyUpdateRequest,
+        );
         NotificationsManager.success("Policy updated successfully");
         onSuccess();
       } else {
@@ -1476,7 +1791,8 @@ export const FlowBuilderPage: React.FC<FlowBuilderPageProps> = ({
     } catch (error) {
       console.error("Failed to save policy:", error);
       NotificationsManager.fromBackend(
-        "Failed to save policy: " + (error instanceof Error ? error.message : String(error))
+        "Failed to save policy: " +
+          (error instanceof Error ? error.message : String(error)),
       );
     } finally {
       setIsSubmitting(false);
@@ -1522,7 +1838,9 @@ export const FlowBuilderPage: React.FC<FlowBuilderPageProps> = ({
               alignItems: "center",
             }}
           >
-            <ArrowLeftIcon style={{ width: 18, height: 18, color: "#6b7280" }} />
+            <ArrowLeftIcon
+              style={{ width: 18, height: 18, color: "#6b7280" }}
+            />
           </button>
           <span style={{ fontSize: 14, color: "#6b7280" }}>Policies</span>
           <span style={{ fontSize: 14, color: "#d1d5db" }}>/</span>

@@ -1,6 +1,6 @@
 import { Card, LineChart, Title } from "@tremor/react";
 import { useMemo } from "react";
-import { DailyData } from "../../../types";
+import type { DailyData } from "../../../types";
 
 interface EndpointUsageLineChartProps {
   dailyData?: { results: DailyData[] };
@@ -8,14 +8,18 @@ interface EndpointUsageLineChartProps {
 }
 
 // Transform daily data into chart format
-function transformDailyDataToChart(dailyData: DailyData[]): Array<Record<string, string | number>> {
+function transformDailyDataToChart(
+  dailyData: DailyData[],
+): Array<Record<string, string | number>> {
   const chartData: Array<Record<string, string | number>> = [];
 
   // Get all unique endpoint names
   const endpointNames = new Set<string>();
   dailyData.forEach((day) => {
     if (day.breakdown.endpoints) {
-      Object.keys(day.breakdown.endpoints).forEach((name) => endpointNames.add(name));
+      Object.keys(day.breakdown.endpoints).forEach((name) =>
+        endpointNames.add(name),
+      );
     }
   });
 
@@ -42,7 +46,10 @@ function transformDailyDataToChart(dailyData: DailyData[]): Array<Record<string,
   return chartData.reverse();
 }
 
-export function EndpointUsageLineChart({ dailyData, endpointData }: EndpointUsageLineChartProps) {
+export function EndpointUsageLineChart({
+  dailyData,
+  endpointData,
+}: EndpointUsageLineChartProps) {
   const chartData = useMemo(() => {
     if (!dailyData?.results || dailyData.results.length === 0) {
       return [];
@@ -59,7 +66,18 @@ export function EndpointUsageLineChart({ dailyData, endpointData }: EndpointUsag
   }, [chartData]);
 
   // Tremor color palette for multiple lines
-  const colors = ["blue", "cyan", "indigo", "violet", "purple", "fuchsia", "pink", "rose", "red", "orange"];
+  const colors = [
+    "blue",
+    "cyan",
+    "indigo",
+    "violet",
+    "purple",
+    "fuchsia",
+    "pink",
+    "rose",
+    "red",
+    "orange",
+  ];
 
   return (
     <Card className="mb-6">

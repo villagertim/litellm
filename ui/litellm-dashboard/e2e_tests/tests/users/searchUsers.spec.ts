@@ -1,4 +1,4 @@
-import { test, expect, Page } from "@playwright/test";
+import { type Page, expect, test } from "@playwright/test";
 import { ADMIN_STORAGE_PATH } from "../../constants";
 test.skip("Internal Users Search", () => {
   test.use({ storageState: ADMIN_STORAGE_PATH });
@@ -43,7 +43,10 @@ test.skip("Internal Users Search", () => {
     // 🔹 Clear filter + wait for unfiltered request
     await Promise.all([
       page.waitForResponse(
-        (res) => res.url().includes("/user/list") && !res.url().includes("user_email=") && res.status() === 200,
+        (res) =>
+          res.url().includes("/user/list") &&
+          !res.url().includes("user_email=") &&
+          res.status() === 200,
       ),
       searchInput.clear(),
     ]);
@@ -70,7 +73,10 @@ test.skip("Internal Users Search", () => {
     const ssoIdInput = page.getByPlaceholder("Filter by SSO ID");
     await Promise.all([
       page.waitForResponse(
-        (res) => res.url().includes("/user/list") && res.url().includes("user_ids=user") && res.status() === 200,
+        (res) =>
+          res.url().includes("/user/list") &&
+          res.url().includes("user_ids=user") &&
+          res.status() === 200,
       ),
       userIdInput.fill("user"),
     ]);

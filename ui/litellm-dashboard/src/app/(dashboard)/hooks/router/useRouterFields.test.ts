@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
-import React, { ReactNode } from "react";
+import React, { type ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { RouterFieldsResponse, useRouterFields } from "./useRouterFields";
+import { type RouterFieldsResponse, useRouterFields } from "./useRouterFields";
 
 // Mock the networking module
 vi.mock("@/components/networking", () => ({
@@ -30,7 +30,8 @@ const mockRouterFieldsResponse: RouterFieldsResponse = {
     {
       field_name: "routing_strategy",
       field_type: "String",
-      field_description: "Routing strategy to use for load balancing across deployments",
+      field_description:
+        "Routing strategy to use for load balancing across deployments",
       field_default: "simple-shuffle",
       options: ["simple-shuffle", "least-busy", "latency-based-routing"],
       ui_field_name: "Routing Strategy",
@@ -47,9 +48,12 @@ const mockRouterFieldsResponse: RouterFieldsResponse = {
     },
   ],
   routing_strategy_descriptions: {
-    "simple-shuffle": "Randomly picks a deployment from the list. Simple and fast.",
-    "least-busy": "Routes to the deployment with the lowest number of ongoing requests.",
-    "latency-based-routing": "Routes to the deployment with the lowest latency over a sliding window.",
+    "simple-shuffle":
+      "Randomly picks a deployment from the list. Simple and fast.",
+    "least-busy":
+      "Routes to the deployment with the lowest number of ongoing requests.",
+    "latency-based-routing":
+      "Routes to the deployment with the lowest latency over a sliding window.",
   },
 };
 
@@ -383,6 +387,8 @@ describe("useRouterFields", () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(result.current.data?.fields[0].link).toBe("https://docs.litellm.ai/docs/proxy/tag_routing");
+    expect(result.current.data?.fields[0].link).toBe(
+      "https://docs.litellm.ai/docs/proxy/tag_routing",
+    );
   });
 });

@@ -1,11 +1,12 @@
-import React, { useMemo, useState } from "react";
-import { Text } from "@tremor/react";
-import { SearchOutlined } from "@ant-design/icons";
-import { Input, Select } from "antd";
-import { Plugin } from "@/components/claude_code_plugins/types";
+import SkillDetail from "@/components/claude_code_plugins/skill_detail";
+import type { Plugin } from "@/components/claude_code_plugins/types";
 import { ModelDataTable } from "@/components/model_dashboard/table";
 import { skillHubColumns } from "@/components/skill_hub_table_columns";
-import SkillDetail from "@/components/claude_code_plugins/skill_detail";
+import { SearchOutlined } from "@ant-design/icons";
+import { Text } from "@tremor/react";
+import { Input, Select } from "antd";
+import type React from "react";
+import { useMemo, useState } from "react";
 
 interface SkillHubDashboardProps {
   skills: Plugin[];
@@ -25,7 +26,9 @@ const SkillHubDashboard: React.FC<SkillHubDashboardProps> = ({
   onPublishSuccess,
 }) => {
   const [search, setSearch] = useState("");
-  const [domainFilter, setDomainFilter] = useState<string | undefined>(undefined);
+  const [domainFilter, setDomainFilter] = useState<string | undefined>(
+    undefined,
+  );
   const [selectedSkill, setSelectedSkill] = useState<Plugin | null>(null);
 
   const copyToClipboard = (text: string) => {
@@ -34,8 +37,14 @@ const SkillHubDashboard: React.FC<SkillHubDashboardProps> = ({
 
   // Derived stats
   const totalSkills = skills.length;
-  const domains = useMemo(() => [...new Set(skills.map((s) => s.domain).filter(Boolean))], [skills]);
-  const namespaces = useMemo(() => [...new Set(skills.map((s) => s.namespace).filter(Boolean))], [skills]);
+  const domains = useMemo(
+    () => [...new Set(skills.map((s) => s.domain).filter(Boolean))],
+    [skills],
+  );
+  const namespaces = useMemo(
+    () => [...new Set(skills.map((s) => s.namespace).filter(Boolean))],
+    [skills],
+  );
 
   // Filtered table data
   const filteredSkills = useMemo(() => {
@@ -51,7 +60,7 @@ const SkillHubDashboard: React.FC<SkillHubDashboardProps> = ({
           s.description?.toLowerCase().includes(q) ||
           s.domain?.toLowerCase().includes(q) ||
           s.namespace?.toLowerCase().includes(q) ||
-          s.keywords?.some((k) => k.toLowerCase().includes(q))
+          s.keywords?.some((k) => k.toLowerCase().includes(q)),
       );
     }
     return result;
@@ -70,7 +79,9 @@ const SkillHubDashboard: React.FC<SkillHubDashboardProps> = ({
   }
 
   if (isLoading) {
-    return <div className="text-center py-16 text-gray-400">Loading skills...</div>;
+    return (
+      <div className="text-center py-16 text-gray-400">Loading skills...</div>
+    );
   }
 
   return (
@@ -79,15 +90,21 @@ const SkillHubDashboard: React.FC<SkillHubDashboardProps> = ({
       <div className="grid grid-cols-3 gap-4">
         <div className="border border-gray-200 rounded-lg p-4">
           <div className="text-xs text-gray-500 mb-1">Total Skills</div>
-          <div className="text-2xl font-semibold text-gray-900">{totalSkills}</div>
+          <div className="text-2xl font-semibold text-gray-900">
+            {totalSkills}
+          </div>
         </div>
         <div className="border border-gray-200 rounded-lg p-4">
           <div className="text-xs text-gray-500 mb-1">Namespaces</div>
-          <div className="text-2xl font-semibold text-gray-900">{namespaces.length}</div>
+          <div className="text-2xl font-semibold text-gray-900">
+            {namespaces.length}
+          </div>
         </div>
         <div className="border border-gray-200 rounded-lg p-4">
           <div className="text-xs text-gray-500 mb-1">Domains</div>
-          <div className="text-2xl font-semibold text-gray-900">{domains.length}</div>
+          <div className="text-2xl font-semibold text-gray-900">
+            {domains.length}
+          </div>
         </div>
       </div>
 
@@ -120,7 +137,7 @@ const SkillHubDashboard: React.FC<SkillHubDashboardProps> = ({
           columns={skillHubColumns(
             (skill) => setSelectedSkill(skill),
             copyToClipboard,
-            publicPage
+            publicPage,
           )}
           data={filteredSkills}
           isLoading={false}
@@ -128,7 +145,8 @@ const SkillHubDashboard: React.FC<SkillHubDashboardProps> = ({
         />
         <div className="mt-3 text-center">
           <Text className="text-sm text-gray-500">
-            Showing {filteredSkills.length} of {totalSkills} skill{totalSkills !== 1 ? "s" : ""}
+            Showing {filteredSkills.length} of {totalSkills} skill
+            {totalSkills !== 1 ? "s" : ""}
           </Text>
         </div>
       </div>

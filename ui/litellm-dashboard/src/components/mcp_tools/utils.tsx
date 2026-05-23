@@ -1,4 +1,6 @@
-export const extractMCPToken = (url: string): { token: string | null; baseUrl: string } => {
+export const extractMCPToken = (
+  url: string,
+): { token: string | null; baseUrl: string } => {
   try {
     const mcpIndex = url.indexOf("/mcp/");
     if (mcpIndex === -1) return { token: null, baseUrl: url };
@@ -28,7 +30,9 @@ export const maskUrl = (url: string): string => {
   return baseUrl + "...";
 };
 
-export const getMaskedAndFullUrl = (url: string): { maskedUrl: string; hasToken: boolean } => {
+export const getMaskedAndFullUrl = (
+  url: string,
+): { maskedUrl: string; hasToken: boolean } => {
   const { token } = extractMCPToken(url);
   return {
     maskedUrl: maskUrl(url),
@@ -43,11 +47,15 @@ export const validateMCPServerUrl = (value: string) => {
   const urlPattern = /^https?:\/\/[^\s/$.?#].[^\s]*$/i;
   return urlPattern.test(value)
     ? Promise.resolve()
-    : Promise.reject("Please enter a valid URL (e.g., http://service-name.domain:1234/path or https://example.com)");
+    : Promise.reject(
+        "Please enter a valid URL (e.g., http://service-name.domain:1234/path or https://example.com)",
+      );
 };
 
 export const validateMCPServerName = (value: string) => {
   return value && (value.includes("-") || value.includes(" "))
-    ? Promise.reject("Cannot contain '-' (hyphen) or spaces. Please use '_' (underscore) instead.")
+    ? Promise.reject(
+        "Cannot contain '-' (hyphen) or spaces. Please use '_' (underscore) instead.",
+      )
     : Promise.resolve();
 };

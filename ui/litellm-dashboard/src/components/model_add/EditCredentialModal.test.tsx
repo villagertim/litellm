@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+import type { CredentialItem } from "../networking";
 import { Providers } from "../provider_info_helpers";
-import { CredentialItem } from "../networking";
 import EditCredentialModal from "./EditCredentialModal";
 
 vi.mock("../networking", async () => {
@@ -115,7 +115,9 @@ describe("EditCredentialModal", () => {
     );
 
     await waitFor(() => {
-      const credentialNameInput = screen.getByLabelText("Credential Name:") as HTMLInputElement;
+      const credentialNameInput = screen.getByLabelText(
+        "Credential Name:",
+      ) as HTMLInputElement;
       expect(credentialNameInput.value).toBe("test-credential");
       expect(credentialNameInput.disabled).toBe(true);
     });

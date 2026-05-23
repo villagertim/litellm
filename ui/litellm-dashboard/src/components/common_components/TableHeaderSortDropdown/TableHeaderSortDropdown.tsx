@@ -1,6 +1,11 @@
-import React from "react";
-import { Button, Dropdown, MenuProps } from "antd";
-import { SwitchVerticalIcon, ChevronUpIcon, ChevronDownIcon, XIcon } from "@heroicons/react/outline";
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  SwitchVerticalIcon,
+  XIcon,
+} from "@heroicons/react/outline";
+import { Button, Dropdown, type MenuProps } from "antd";
+import type React from "react";
 
 export type SortState = "asc" | "desc" | false;
 
@@ -20,10 +25,9 @@ interface TableHeaderSortDropdownProps {
   columnId?: string;
 }
 
-export const TableHeaderSortDropdown: React.FC<TableHeaderSortDropdownProps> = ({
-  sortState,
-  onSortChange,
-}) => {
+export const TableHeaderSortDropdown: React.FC<
+  TableHeaderSortDropdownProps
+> = ({ sortState, onSortChange }) => {
   const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
     if (key === "asc") {
       onSortChange("asc");
@@ -78,7 +82,11 @@ export const TableHeaderSortDropdown: React.FC<TableHeaderSortDropdownProps> = (
         type="text"
         onClick={(e) => e.stopPropagation()}
         icon={renderIcon()}
-        className={sortState ? "text-blue-500 hover:text-blue-600" : "text-gray-400 hover:text-blue-500"}
+        className={
+          sortState
+            ? "text-blue-500 hover:text-blue-600"
+            : "text-gray-400 hover:text-blue-500"
+        }
       />
     </Dropdown>
   );

@@ -1,10 +1,12 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import SSOSettingsLoadingSkeleton from "./SSOSettingsLoadingSkeleton";
 
 // Mock lucide-react icons
 vi.mock("lucide-react", () => ({
-  Shield: ({ className }: any) => <div data-testid="shield-icon" className={className} />,
+  Shield: ({ className }: any) => (
+    <div data-testid="shield-icon" className={className} />
+  ),
 }));
 
 // Mock Ant Design components
@@ -16,7 +18,12 @@ vi.mock("antd", () => ({
   ),
   Descriptions: Object.assign(
     ({ children, bordered, column, ...props }: any) => (
-      <div data-testid="descriptions" data-bordered={bordered} data-column={JSON.stringify(column)} {...props}>
+      <div
+        data-testid="descriptions"
+        data-bordered={bordered}
+        data-column={JSON.stringify(column)}
+        {...props}
+      >
         {children}
       </div>
     ),
@@ -42,7 +49,13 @@ vi.mock("antd", () => ({
     ),
   },
   Space: ({ children, direction, size, className, ...props }: any) => (
-    <div data-testid="space" data-direction={direction} data-size={size} className={className} {...props}>
+    <div
+      data-testid="space"
+      data-direction={direction}
+      data-size={size}
+      className={className}
+      {...props}
+    >
       {children}
     </div>
   ),
@@ -59,7 +72,12 @@ vi.mock("antd", () => ({
       </div>
     ),
     Node: ({ active, style, ...props }: any) => (
-      <div data-testid="skeleton-node" data-active={active} data-style={JSON.stringify(style)} {...props}>
+      <div
+        data-testid="skeleton-node"
+        data-active={active}
+        data-style={JSON.stringify(style)}
+        {...props}
+      >
         Node Skeleton
       </div>
     ),
@@ -106,7 +124,9 @@ describe("SSOSettingsLoadingSkeleton", () => {
       const text = screen.getByTestId("typography-text");
       expect(text).toBeInTheDocument();
       expect(text).toHaveAttribute("data-type", "secondary");
-      expect(text).toHaveTextContent("Manage Single Sign-On authentication settings");
+      expect(text).toHaveTextContent(
+        "Manage Single Sign-On authentication settings",
+      );
     });
 
     it("should render two skeleton buttons with correct styles", () => {
@@ -117,12 +137,18 @@ describe("SSOSettingsLoadingSkeleton", () => {
       // First button
       expect(buttons[0]).toHaveAttribute("data-active", "true");
       expect(buttons[0]).toHaveAttribute("data-size", "default");
-      expect(buttons[0]).toHaveAttribute("data-style", JSON.stringify({ width: 170, height: 32 }));
+      expect(buttons[0]).toHaveAttribute(
+        "data-style",
+        JSON.stringify({ width: 170, height: 32 }),
+      );
 
       // Second button
       expect(buttons[1]).toHaveAttribute("data-active", "true");
       expect(buttons[1]).toHaveAttribute("data-size", "default");
-      expect(buttons[1]).toHaveAttribute("data-style", JSON.stringify({ width: 190, height: 32 }));
+      expect(buttons[1]).toHaveAttribute(
+        "data-style",
+        JSON.stringify({ width: 190, height: 32 }),
+      );
     });
   });
 
@@ -145,7 +171,10 @@ describe("SSOSettingsLoadingSkeleton", () => {
         sm: 1,
         xs: 1,
       };
-      expect(descriptions).toHaveAttribute("data-column", JSON.stringify(expectedColumn));
+      expect(descriptions).toHaveAttribute(
+        "data-column",
+        JSON.stringify(expectedColumn),
+      );
     });
 
     it("should render exactly 5 description items", () => {
@@ -166,7 +195,9 @@ describe("SSOSettingsLoadingSkeleton", () => {
         const skeletonNodes = screen.getAllByTestId("skeleton-node");
 
         const labelNodes = skeletonNodes.filter(
-          (node) => node.getAttribute("data-style") === JSON.stringify({ width: 80, height: 16 }),
+          (node) =>
+            node.getAttribute("data-style") ===
+            JSON.stringify({ width: 80, height: 16 }),
         );
         expect(labelNodes).toHaveLength(5);
 
@@ -183,7 +214,9 @@ describe("SSOSettingsLoadingSkeleton", () => {
         const expectedWidths = [100, 200, 250, 180, 220];
         expectedWidths.forEach((width) => {
           const contentNode = skeletonNodes.find(
-            (node) => node.getAttribute("data-style") === JSON.stringify({ width, height: 16 }),
+            (node) =>
+              node.getAttribute("data-style") ===
+              JSON.stringify({ width, height: 16 }),
           );
           expect(contentNode).toBeInTheDocument();
           expect(contentNode).toHaveAttribute("data-active", "true");

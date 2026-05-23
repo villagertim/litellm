@@ -1,12 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { Card, Title, Text, Divider, TextInput } from "@tremor/react";
-import { Button, Typography, Spin, Switch, Select, InputNumber } from "antd";
-import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
-import { getInternalUserSettings, updateInternalUserSettings, modelAvailableCall } from "./networking";
-import BudgetDurationDropdown, { getBudgetDurationLabel } from "./common_components/budget_duration_dropdown";
-import { getModelDisplayName } from "./key_team_helpers/fetch_available_models_team_key";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { Card, Divider, Text, TextInput, Title } from "@tremor/react";
+import { Button, InputNumber, Select, Spin, Switch, Typography } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
+import BudgetDurationDropdown, {
+  getBudgetDurationLabel,
+} from "./common_components/budget_duration_dropdown";
+import { getModelDisplayName } from "./key_team_helpers/fetch_available_models_team_key";
 import NotificationManager from "./molecules/notifications_manager";
+import {
+  getInternalUserSettings,
+  modelAvailableCall,
+  updateInternalUserSettings,
+} from "./networking";
 
 interface DefaultUserSettingsProps {
   accessToken: string | null;
@@ -51,9 +58,15 @@ const DefaultUserSettings: React.FC<DefaultUserSettingsProps> = ({
         // Fetch available models
         if (accessToken) {
           try {
-            const modelResponse = await modelAvailableCall(accessToken, userID, userRole);
+            const modelResponse = await modelAvailableCall(
+              accessToken,
+              userID,
+              userRole,
+            );
             if (modelResponse && modelResponse.data) {
-              const modelNames = modelResponse.data.map((model: { id: string }) => model.id);
+              const modelNames = modelResponse.data.map(
+                (model: { id: string }) => model.id,
+              );
               setAvailableModels(modelNames);
             }
           } catch (error) {
@@ -85,7 +98,10 @@ const DefaultUserSettings: React.FC<DefaultUserSettingsProps> = ({
         {} as Record<string, any>,
       );
 
-      const updatedSettings = await updateInternalUserSettings(accessToken, processedValues);
+      const updatedSettings = await updateInternalUserSettings(
+        accessToken,
+        processedValues,
+      );
       setSettings({ ...settings, values: updatedSettings.settings });
       setIsEditing(false);
     } catch (error) {
@@ -180,11 +196,15 @@ const DefaultUserSettings: React.FC<DefaultUserSettingsProps> = ({
               </div>
 
               <div>
-                <Text className="text-sm font-medium mb-1">Max Budget in Team</Text>
+                <Text className="text-sm font-medium mb-1">
+                  Max Budget in Team
+                </Text>
                 <InputNumber
                   style={{ width: "100%" }}
                   value={team.max_budget_in_team}
-                  onChange={(value) => updateTeam(index, "max_budget_in_team", value)}
+                  onChange={(value) =>
+                    updateTeam(index, "max_budget_in_team", value)
+                  }
                   placeholder="Optional"
                   min={0}
                   step={0.01}
@@ -218,7 +238,9 @@ const DefaultUserSettings: React.FC<DefaultUserSettingsProps> = ({
     const type = property.type;
 
     if (key === "teams") {
-      return <div className="mt-2">{renderTeamsEditor(editedValues[key] || [])}</div>;
+      return (
+        <div className="mt-2">{renderTeamsEditor(editedValues[key] || [])}</div>
+      );
     } else if (key === "user_role" && possibleUIRoles) {
       return (
         <Select
@@ -233,7 +255,9 @@ const DefaultUserSettings: React.FC<DefaultUserSettingsProps> = ({
               <Option key={role} value={role}>
                 <div className="flex items-center">
                   <span>{ui_label}</span>
-                  <span className="ml-2 text-xs text-gray-500">{description}</span>
+                  <span className="ml-2 text-xs text-gray-500">
+                    {description}
+                  </span>
                 </div>
               </Option>
             ))}
@@ -250,7 +274,10 @@ const DefaultUserSettings: React.FC<DefaultUserSettingsProps> = ({
     } else if (type === "boolean") {
       return (
         <div className="mt-2">
-          <Switch checked={!!editedValues[key]} onChange={(checked) => handleTextInputChange(key, checked)} />
+          <Switch
+            checked={!!editedValues[key]}
+            onChange={(checked) => handleTextInputChange(key, checked)}
+          />
         </div>
       );
     } else if (type === "array" && property.items?.enum) {
@@ -309,7 +336,9 @@ const DefaultUserSettings: React.FC<DefaultUserSettingsProps> = ({
     } else {
       return (
         <TextInput
-          value={editedValues[key] !== undefined ? String(editedValues[key]) : ""}
+          value={
+            editedValues[key] !== undefined ? String(editedValues[key]) : ""
+          }
           onChange={(e) => handleTextInputChange(key, e.target.value)}
           placeholder={property.description || ""}
           className="mt-2"
@@ -319,10 +348,12 @@ const DefaultUserSettings: React.FC<DefaultUserSettingsProps> = ({
   };
 
   const renderValue = (key: string, value: any): JSX.Element => {
-    if (value === null || value === undefined) return <span className="text-gray-400">Not set</span>;
+    if (value === null || value === undefined)
+      return <span className="text-gray-400">Not set</span>;
 
     if (key === "teams" && Array.isArray(value)) {
-      if (value.length === 0) return <span className="text-gray-400">No teams assigned</span>;
+      if (value.length === 0)
+        return <span className="text-gray-400">No teams assigned</span>;
 
       const normalizedTeams = normalizeTeams(value);
 
@@ -333,7 +364,9 @@ const DefaultUserSettings: React.FC<DefaultUserSettingsProps> = ({
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
                 <div>
                   <span className="font-medium text-gray-600">Team ID:</span>
-                  <p className="text-gray-900">{team.team_id || "Not specified"}</p>
+                  <p className="text-gray-900">
+                    {team.team_id || "Not specified"}
+                  </p>
                 </div>
                 <div>
                   <span className="font-medium text-gray-600">Max Budget:</span>
@@ -359,7 +392,9 @@ const DefaultUserSettings: React.FC<DefaultUserSettingsProps> = ({
       return (
         <div>
           <span className="font-medium">{ui_label}</span>
-          {description && <p className="text-xs text-gray-500 mt-1">{description}</p>}
+          {description && (
+            <p className="text-xs text-gray-500 mt-1">{description}</p>
+          )}
         </div>
       );
     }
@@ -373,7 +408,8 @@ const DefaultUserSettings: React.FC<DefaultUserSettingsProps> = ({
     }
 
     if (key === "models" && Array.isArray(value)) {
-      if (value.length === 0) return <span className="text-gray-400">None</span>;
+      if (value.length === 0)
+        return <span className="text-gray-400">None</span>;
 
       return (
         <div className="flex flex-wrap gap-2 mt-1">
@@ -388,12 +424,16 @@ const DefaultUserSettings: React.FC<DefaultUserSettingsProps> = ({
 
     if (typeof value === "object") {
       if (Array.isArray(value)) {
-        if (value.length === 0) return <span className="text-gray-400">None</span>;
+        if (value.length === 0)
+          return <span className="text-gray-400">None</span>;
 
         return (
           <div className="flex flex-wrap gap-2 mt-1">
             {value.map((item, index) => (
-              <span key={index} className="px-2 py-1 bg-blue-100 rounded text-xs">
+              <span
+                key={index}
+                className="px-2 py-1 bg-blue-100 rounded text-xs"
+              >
                 {typeof item === "object" ? JSON.stringify(item) : String(item)}
               </span>
             ))}
@@ -401,7 +441,11 @@ const DefaultUserSettings: React.FC<DefaultUserSettingsProps> = ({
         );
       }
 
-      return <pre className="bg-gray-100 p-2 rounded text-xs overflow-auto mt-1">{JSON.stringify(value, null, 2)}</pre>;
+      return (
+        <pre className="bg-gray-100 p-2 rounded text-xs overflow-auto mt-1">
+          {JSON.stringify(value, null, 2)}
+        </pre>
+      );
     }
 
     return <span>{String(value)}</span>;
@@ -418,7 +462,9 @@ const DefaultUserSettings: React.FC<DefaultUserSettingsProps> = ({
   if (!settings) {
     return (
       <Card>
-        <Text>No settings available or you do not have permission to view them.</Text>
+        <Text>
+          No settings available or you do not have permission to view them.
+        </Text>
       </Card>
     );
   }
@@ -431,25 +477,36 @@ const DefaultUserSettings: React.FC<DefaultUserSettingsProps> = ({
       return <Text>No schema information available</Text>;
     }
 
-    return Object.entries(field_schema.properties).map(([key, property]: [string, any]) => {
-      const value = values[key];
-      const displayName = key.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+    return Object.entries(field_schema.properties).map(
+      ([key, property]: [string, any]) => {
+        const value = values[key];
+        const displayName = key
+          .replace(/_/g, " ")
+          .replace(/\b\w/g, (l) => l.toUpperCase());
 
-      return (
-        <div key={key} className="mb-6 pb-6 border-b border-gray-200 last:border-0">
-          <Text className="font-medium text-lg">{displayName}</Text>
-          <Paragraph className="text-sm text-gray-500 mt-1">
-            {property.description || "No description available"}
-          </Paragraph>
+        return (
+          <div
+            key={key}
+            className="mb-6 pb-6 border-b border-gray-200 last:border-0"
+          >
+            <Text className="font-medium text-lg">{displayName}</Text>
+            <Paragraph className="text-sm text-gray-500 mt-1">
+              {property.description || "No description available"}
+            </Paragraph>
 
-          {isEditing ? (
-            <div className="mt-2">{renderEditableField(key, property, value)}</div>
-          ) : (
-            <div className="mt-1 p-2 bg-gray-50 rounded">{renderValue(key, value)}</div>
-          )}
-        </div>
-      );
-    });
+            {isEditing ? (
+              <div className="mt-2">
+                {renderEditableField(key, property, value)}
+              </div>
+            ) : (
+              <div className="mt-1 p-2 bg-gray-50 rounded">
+                {renderValue(key, value)}
+              </div>
+            )}
+          </div>
+        );
+      },
+    );
   };
 
   return (
@@ -469,17 +526,25 @@ const DefaultUserSettings: React.FC<DefaultUserSettingsProps> = ({
               >
                 Cancel
               </Button>
-              <Button type="primary" onClick={handleSaveSettings} loading={saving}>
+              <Button
+                type="primary"
+                onClick={handleSaveSettings}
+                loading={saving}
+              >
                 Save Changes
               </Button>
             </div>
           ) : (
-            <Button type="primary" onClick={() => setIsEditing(true)}>Edit Settings</Button>
+            <Button type="primary" onClick={() => setIsEditing(true)}>
+              Edit Settings
+            </Button>
           ))}
       </div>
 
       {settings?.field_schema?.description && (
-        <Paragraph className="mb-4">{settings.field_schema.description}</Paragraph>
+        <Paragraph className="mb-4">
+          {settings.field_schema.description}
+        </Paragraph>
       )}
       <Divider />
 

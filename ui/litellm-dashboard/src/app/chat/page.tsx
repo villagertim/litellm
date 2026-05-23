@@ -1,8 +1,8 @@
 "use client";
 
-import { Suspense } from "react";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import ChatPage from "@/components/chat/ChatPage";
+import { Suspense } from "react";
 
 // ChatPage uses useSearchParams() which requires a Suspense boundary for static export.
 const ChatPageContent = () => {

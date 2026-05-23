@@ -4,19 +4,35 @@ import { describe, expect, it, vi } from "vitest";
 import TeamsHeaderTabs from "./TeamsHeaderTabs";
 
 vi.mock("@tremor/react", () => ({
-  TabGroup: ({ children, ...props }: any) => <div data-testid="tab-group" {...props}>{children}</div>,
-  TabList: ({ children, ...props }: any) => <div data-testid="tab-list" {...props}>{children}</div>,
+  TabGroup: ({ children, ...props }: any) => (
+    <div data-testid="tab-group" {...props}>
+      {children}
+    </div>
+  ),
+  TabList: ({ children, ...props }: any) => (
+    <div data-testid="tab-list" {...props}>
+      {children}
+    </div>
+  ),
   Tab: ({ children, ...props }: any) => <button {...props}>{children}</button>,
-  TabPanels: ({ children, ...props }: any) => <div data-testid="tab-panels" {...props}>{children}</div>,
+  TabPanels: ({ children, ...props }: any) => (
+    <div data-testid="tab-panels" {...props}>
+      {children}
+    </div>
+  ),
   Text: ({ children, ...props }: any) => <span {...props}>{children}</span>,
-  Icon: ({ onClick, ...props }: any) => <button data-testid="refresh-icon" onClick={onClick} />,
+  Icon: ({ onClick, ...props }: any) => (
+    <button data-testid="refresh-icon" onClick={onClick} />
+  ),
 }));
 
 vi.mock("@heroicons/react/outline", () => ({
   RefreshIcon: () => <svg data-testid="refresh-svg" />,
 }));
 
-const renderTabs = (props: Partial<Parameters<typeof TeamsHeaderTabs>[0]> = {}) => {
+const renderTabs = (
+  props: Partial<Parameters<typeof TeamsHeaderTabs>[0]> = {},
+) => {
   const defaults = {
     lastRefreshed: "",
     onRefresh: vi.fn(),
@@ -49,6 +65,8 @@ describe("TeamsHeaderTabs", () => {
   it("should display last refreshed time when provided", () => {
     renderTabs({ lastRefreshed: "2024-06-01 12:00:00" });
 
-    expect(screen.getByText("Last Refreshed: 2024-06-01 12:00:00")).toBeInTheDocument();
+    expect(
+      screen.getByText("Last Refreshed: 2024-06-01 12:00:00"),
+    ).toBeInTheDocument();
   });
 });

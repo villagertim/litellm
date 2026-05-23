@@ -1,9 +1,13 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
+import {
+  type CredentialItem,
+  type CredentialsResponse,
+  credentialListCall,
+} from "@/components/networking";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { ReactNode } from "react";
+import { renderHook, waitFor } from "@testing-library/react";
+import React, { type ReactNode } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useCredentials } from "./useCredentials";
-import { credentialListCall, CredentialsResponse, CredentialItem } from "@/components/networking";
 
 // Mock the networking function
 vi.mock("@/components/networking", () => ({

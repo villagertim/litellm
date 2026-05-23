@@ -1,8 +1,8 @@
+import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { allEndUsersCall } from "@/components/networking";
+import { all_admin_roles } from "@/utils/roles";
 import { useQuery } from "@tanstack/react-query";
 import { createQueryKeys } from "../common/queryKeysFactory";
-import { all_admin_roles } from "@/utils/roles";
-import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 const customersKeys = createQueryKeys("customers");
 
 export interface Customer {

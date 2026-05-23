@@ -1,15 +1,18 @@
-import React, { useState } from "react";
+import { BulbOutlined, DownOutlined, RightOutlined } from "@ant-design/icons";
 import { Button } from "antd";
+import type React from "react";
+import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coy } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { DownOutlined, RightOutlined, BulbOutlined } from "@ant-design/icons";
 
 interface ReasoningContentProps {
   reasoningContent: string;
 }
 
-const ReasoningContent: React.FC<ReasoningContentProps> = ({ reasoningContent }) => {
+const ReasoningContent: React.FC<ReasoningContentProps> = ({
+  reasoningContent,
+}) => {
   const [isExpanded, setIsExpanded] = useState(true);
 
   if (!reasoningContent) return null;
@@ -23,7 +26,11 @@ const ReasoningContent: React.FC<ReasoningContentProps> = ({ reasoningContent })
         icon={<BulbOutlined />}
       >
         {isExpanded ? "Hide reasoning" : "Show reasoning"}
-        {isExpanded ? <DownOutlined className="ml-1" /> : <RightOutlined className="ml-1" />}
+        {isExpanded ? (
+          <DownOutlined className="ml-1" />
+        ) : (
+          <RightOutlined className="ml-1" />
+        )}
       </Button>
 
       {isExpanded && (
@@ -52,7 +59,10 @@ const ReasoningContent: React.FC<ReasoningContentProps> = ({ reasoningContent })
                     {String(children).replace(/\n$/, "")}
                   </SyntaxHighlighter>
                 ) : (
-                  <code className={`${className} px-1.5 py-0.5 rounded bg-gray-100 text-sm font-mono`} {...props}>
+                  <code
+                    className={`${className} px-1.5 py-0.5 rounded bg-gray-100 text-sm font-mono`}
+                    {...props}
+                  >
                     {children}
                   </code>
                 );

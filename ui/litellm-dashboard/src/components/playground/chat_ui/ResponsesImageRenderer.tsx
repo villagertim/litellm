@@ -1,18 +1,22 @@
-import React from "react";
-import { MessageType } from "./types";
-import { shouldShowAttachedImage } from "./ResponsesImageUtils";
 import { FilePdfOutlined } from "@ant-design/icons";
+import type React from "react";
+import { shouldShowAttachedImage } from "./ResponsesImageUtils";
+import type { MessageType } from "./types";
 
 interface ResponsesImageRendererProps {
   message: MessageType;
 }
 
-const ResponsesImageRenderer: React.FC<ResponsesImageRendererProps> = ({ message }) => {
+const ResponsesImageRenderer: React.FC<ResponsesImageRendererProps> = ({
+  message,
+}) => {
   if (!shouldShowAttachedImage(message)) {
     return null;
   }
 
-  const isPdf = typeof message.content === "string" && message.content.includes("[PDF attached]");
+  const isPdf =
+    typeof message.content === "string" &&
+    message.content.includes("[PDF attached]");
 
   return (
     <div className="mb-2">

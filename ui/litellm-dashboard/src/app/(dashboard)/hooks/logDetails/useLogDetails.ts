@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { uiSpendLogDetailsCall } from "@/components/networking";
+import { useQuery } from "@tanstack/react-query";
 
 /**
  * Hook to lazy-load log details (messages/response) for a specific log entry.

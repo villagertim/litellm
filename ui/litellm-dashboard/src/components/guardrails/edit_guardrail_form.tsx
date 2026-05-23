@@ -1,16 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { Form, Typography, Select, Input, Switch, Modal } from "antd";
 import { Button, TextInput } from "@tremor/react";
+import { Form, Input, Modal, Select, Switch, Typography } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
+import NotificationsManager from "../molecules/notifications_manager";
 import {
-  guardrail_provider_map,
-  guardrailLogoMap,
-  getGuardrailProviders,
+  getGlobalLitellmHeaderName,
+  getGuardrailUISettings,
+} from "../networking";
+import {
   type SkipSystemMessageChoice,
   type SkipToolMessageChoice,
+  getGuardrailProviders,
+  guardrailLogoMap,
+  guardrail_provider_map,
 } from "./guardrail_info_helpers";
-import { getGuardrailUISettings, getGlobalLitellmHeaderName } from "../networking";
 import PiiConfiguration from "./pii_configuration";
-import NotificationsManager from "../molecules/notifications_manager";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -56,10 +60,15 @@ const EditGuardrailForm: React.FC<EditGuardrailFormProps> = ({
 }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [selectedProvider, setSelectedProvider] = useState<string | null>(initialValues?.provider || null);
-  const [guardrailSettings, setGuardrailSettings] = useState<GuardrailSettings | null>(null);
+  const [selectedProvider, setSelectedProvider] = useState<string | null>(
+    initialValues?.provider || null,
+  );
+  const [guardrailSettings, setGuardrailSettings] =
+    useState<GuardrailSettings | null>(null);
   const [selectedEntities, setSelectedEntities] = useState<string[]>([]);
-  const [selectedActions, setSelectedActions] = useState<{ [key: string]: string }>({});
+  const [selectedActions, setSelectedActions] = useState<{
+    [key: string]: string;
+  }>({});
 
   // Fetch guardrail settings when the component mounts
   useEffect(() => {
@@ -80,7 +89,10 @@ const EditGuardrailForm: React.FC<EditGuardrailFormProps> = ({
 
   // Initialize selected entities and actions from initialValues
   useEffect(() => {
-    if (initialValues?.pii_entities_config && Object.keys(initialValues.pii_entities_config).length > 0) {
+    if (
+      initialValues?.pii_entities_config &&
+      Object.keys(initialValues.pii_entities_config).length > 0
+    ) {
       const entities = Object.keys(initialValues.pii_entities_config);
       setSelectedEntities(entities);
       setSelectedActions(initialValues.pii_entities_config);
@@ -125,13 +137,17 @@ const EditGuardrailForm: React.FC<EditGuardrailFormProps> = ({
       const guardrailProvider = guardrail_provider_map[values.provider];
 
       const litellm_params: Record<string, any> =
-        fullLitellmParams && typeof fullLitellmParams === "object" ? { ...fullLitellmParams } : {};
+        fullLitellmParams && typeof fullLitellmParams === "object"
+          ? { ...fullLitellmParams }
+          : {};
 
       litellm_params.guardrail = guardrailProvider;
       litellm_params.mode = values.mode;
       litellm_params.default_on = values.default_on;
 
-      const skipChoice = values.skip_system_message_choice as SkipSystemMessageChoice | undefined;
+      const skipChoice = values.skip_system_message_choice as
+        | SkipSystemMessageChoice
+        | undefined;
       if (skipChoice === "yes") {
         litellm_params.skip_system_message_in_guardrail = true;
       } else if (skipChoice === "no") {
@@ -140,7 +156,9 @@ const EditGuardrailForm: React.FC<EditGuardrailFormProps> = ({
         delete litellm_params.skip_system_message_in_guardrail;
       }
 
-      const skipToolChoice = values.skip_tool_message_choice as SkipToolMessageChoice | undefined;
+      const skipToolChoice = values.skip_tool_message_choice as
+        | SkipToolMessageChoice
+        | undefined;
       if (skipToolChoice === "yes") {
         litellm_params.skip_tool_message_in_guardrail = true;
       } else if (skipToolChoice === "no") {
@@ -204,7 +222,10 @@ const EditGuardrailForm: React.FC<EditGuardrailFormProps> = ({
         throw new Error("No access token available");
       }
 
-      console.log("Sending guardrail update data:", JSON.stringify(guardrailData));
+      console.log(
+        "Sending guardrail update data:",
+        JSON.stringify(guardrailData),
+      );
 
       // Call the update endpoint
       const url = `/guardrails/${guardrailId}`;
@@ -230,7 +251,8 @@ const EditGuardrailForm: React.FC<EditGuardrailFormProps> = ({
     } catch (error) {
       console.error("Failed to update guardrail:", error);
       NotificationsManager.fromBackend(
-        "Failed to update guardrail: " + (error instanceof Error ? error.message : String(error)),
+        "Failed to update guardrail: " +
+          (error instanceof Error ? error.message : String(error)),
       );
     } finally {
       setLoading(false);
@@ -238,7 +260,12 @@ const EditGuardrailForm: React.FC<EditGuardrailFormProps> = ({
   };
 
   const renderPiiConfiguration = () => {
-    if (!guardrailSettings || !selectedProvider || selectedProvider !== "PresidioPII") return null;
+    if (
+      !guardrailSettings ||
+      !selectedProvider ||
+      selectedProvider !== "PresidioPII"
+    )
+      return null;
 
     return (
       <PiiConfiguration
@@ -264,7 +291,11 @@ const EditGuardrailForm: React.FC<EditGuardrailFormProps> = ({
     switch (selectedProvider) {
       case "Aporia":
         return (
-          <Form.Item label="Aporia Configuration" name="config" tooltip="JSON configuration for Aporia">
+          <Form.Item
+            label="Aporia Configuration"
+            name="config"
+            tooltip="JSON configuration for Aporia"
+          >
             <Input.TextArea
               rows={4}
               placeholder={`{
@@ -276,7 +307,11 @@ const EditGuardrailForm: React.FC<EditGuardrailFormProps> = ({
         );
       case "AimSecurity":
         return (
-          <Form.Item label="Aim Security Configuration" name="config" tooltip="JSON configuration for Aim Security">
+          <Form.Item
+            label="Aim Security Configuration"
+            name="config"
+            tooltip="JSON configuration for Aim Security"
+          >
             <Input.TextArea
               rows={4}
               placeholder={`{
@@ -303,7 +338,11 @@ const EditGuardrailForm: React.FC<EditGuardrailFormProps> = ({
         );
       case "GuardrailsAI":
         return (
-          <Form.Item label="Guardrails.ai Configuration" name="config" tooltip="JSON configuration for Guardrails.ai">
+          <Form.Item
+            label="Guardrails.ai Configuration"
+            name="config"
+            tooltip="JSON configuration for Guardrails.ai"
+          >
             <Input.TextArea
               rows={4}
               placeholder={`{
@@ -315,7 +354,11 @@ const EditGuardrailForm: React.FC<EditGuardrailFormProps> = ({
         );
       case "LakeraAI":
         return (
-          <Form.Item label="Lakera AI Configuration" name="config" tooltip="JSON configuration for Lakera AI">
+          <Form.Item
+            label="Lakera AI Configuration"
+            name="config"
+            tooltip="JSON configuration for Lakera AI"
+          >
             <Input.TextArea
               rows={4}
               placeholder={`{
@@ -341,7 +384,11 @@ const EditGuardrailForm: React.FC<EditGuardrailFormProps> = ({
         );
       default:
         return (
-          <Form.Item label="Custom Configuration" name="config" tooltip="JSON configuration for your custom guardrail">
+          <Form.Item
+            label="Custom Configuration"
+            name="config"
+            tooltip="JSON configuration for your custom guardrail"
+          >
             <Input.TextArea
               rows={4}
               placeholder={`{
@@ -355,7 +402,13 @@ const EditGuardrailForm: React.FC<EditGuardrailFormProps> = ({
   };
 
   return (
-    <Modal title="Edit Guardrail" open={visible} onCancel={onClose} footer={null} width={700}>
+    <Modal
+      title="Edit Guardrail"
+      open={visible}
+      onCancel={onClose}
+      footer={null}
+      width={700}
+    >
       <Form form={form} layout="vertical" initialValues={initialValues}>
         <Form.Item
           name="guardrail_name"

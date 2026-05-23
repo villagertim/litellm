@@ -1,12 +1,12 @@
 "use client";
 
-import ViewUserDashboard from "@/components/view_users";
+import { useOrganizations } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import useTeams from "@/app/(dashboard)/hooks/useTeams";
-import { useOrganizations } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
+import type { Organization } from "@/components/networking";
+import ViewUserDashboard from "@/components/view_users";
 import { isProxyAdminRole } from "@/utils/roles";
-import { useState, useMemo } from "react";
-import { Organization } from "@/components/networking";
+import { useMemo, useState } from "react";
 
 const UsersPage = () => {
   const { accessToken, userRole, userId, token } = useAuthorized();
@@ -19,7 +19,10 @@ const UsersPage = () => {
   // - undefined: org data still loading (non-proxy-admin) — query should wait
   // - null: proxy admin or no org filtering needed — query runs unfiltered
   // - Array<{organization_id, organization_alias}>: org admin orgs — query runs filtered
-  const orgAdminOrgIds = useMemo((): Array<{organization_id: string, organization_alias: string}> | null | undefined => {
+  const orgAdminOrgIds = useMemo(():
+    | Array<{ organization_id: string; organization_alias: string }>
+    | null
+    | undefined => {
     if (!userId || !userRole) return null;
     // Proxy admins see all users — no org filtering
     if (isProxyAdminRole(userRole)) return null;
@@ -29,9 +32,15 @@ const UsersPage = () => {
 
     const adminOrgs = organizations
       .filter((org: Organization) =>
-        org.members?.some((member) => member.user_id === userId && member.user_role === "org_admin")
+        org.members?.some(
+          (member) =>
+            member.user_id === userId && member.user_role === "org_admin",
+        ),
       )
-      .map((org: Organization) => ({ organization_id: org.organization_id, organization_alias: org.organization_alias }));
+      .map((org: Organization) => ({
+        organization_id: org.organization_id,
+        organization_alias: org.organization_alias,
+      }));
 
     return adminOrgs.length > 0 ? adminOrgs : null;
   }, [userId, organizations, userRole, isOrgsLoading]);

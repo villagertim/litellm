@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from "react";
-import { Select } from "antd";
 import { TextInput } from "@tremor/react";
+import { Select } from "antd";
+import React, { useMemo, useState } from "react";
 interface ModelSelectorProps {
   value: string;
   onChange: (value: string) => void;
@@ -8,7 +8,13 @@ interface ModelSelectorProps {
   loading?: boolean;
   disabled?: boolean;
 }
-export function ModelSelector({ value, onChange, models, loading, disabled }: ModelSelectorProps) {
+export function ModelSelector({
+  value,
+  onChange,
+  models,
+  loading,
+  disabled,
+}: ModelSelectorProps) {
   const [isAddingCustom, setIsAddingCustom] = useState(false);
   const [customValue, setCustomValue] = useState("");
 

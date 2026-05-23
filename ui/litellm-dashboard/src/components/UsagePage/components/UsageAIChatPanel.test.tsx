@@ -15,10 +15,7 @@ beforeAll(() => {
 
 vi.mock("../../networking", () => ({
   modelHubCall: vi.fn().mockResolvedValue({
-    data: [
-      { model_group: "gpt-4" },
-      { model_group: "claude-3-opus" },
-    ],
+    data: [{ model_group: "gpt-4" }, { model_group: "claude-3-opus" }],
   }),
   usageAiChatStream: vi.fn(),
 }));
@@ -35,20 +32,24 @@ describe("UsageAIChatPanel", () => {
 
     expect(screen.getByText("Ask AI")).toBeInTheDocument();
     expect(
-      screen.getByText("Ask about your spend, models, keys, and trends")
+      screen.getByText("Ask about your spend, models, keys, and trends"),
     ).toBeInTheDocument();
   });
 
   it("should render model selector", () => {
     renderWithProviders(<UsageAIChatPanel {...defaultProps} />);
 
-    expect(screen.getByText("Select a model (optional, defaults to gpt-4o-mini)")).toBeInTheDocument();
+    expect(
+      screen.getByText("Select a model (optional, defaults to gpt-4o-mini)"),
+    ).toBeInTheDocument();
   });
 
   it("should render empty state message when no conversation", () => {
     renderWithProviders(<UsageAIChatPanel {...defaultProps} />);
 
-    expect(screen.getByText("Ask a question about your usage")).toBeInTheDocument();
+    expect(
+      screen.getByText("Ask a question about your usage"),
+    ).toBeInTheDocument();
   });
 
   it("should render the send button", () => {
@@ -60,7 +61,9 @@ describe("UsageAIChatPanel", () => {
   it("should render input placeholder", () => {
     renderWithProviders(<UsageAIChatPanel {...defaultProps} />);
 
-    expect(screen.getByPlaceholderText("Ask about your usage...")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Ask about your usage..."),
+    ).toBeInTheDocument();
   });
 
   it("should render clear chat button", () => {
@@ -73,13 +76,19 @@ describe("UsageAIChatPanel", () => {
     renderWithProviders(<UsageAIChatPanel {...defaultProps} open={false} />);
 
     expect(screen.getByTestId("usage-ai-chat-panel")).toBeInTheDocument();
-    expect(screen.getByTestId("usage-ai-chat-panel")).toHaveClass("translate-x-full");
+    expect(screen.getByTestId("usage-ai-chat-panel")).toHaveClass(
+      "translate-x-full",
+    );
   });
 
   it("should not have translate-x-full class when open", () => {
     renderWithProviders(<UsageAIChatPanel {...defaultProps} open={true} />);
 
-    expect(screen.getByTestId("usage-ai-chat-panel")).not.toHaveClass("translate-x-full");
-    expect(screen.getByTestId("usage-ai-chat-panel")).toHaveClass("translate-x-0");
+    expect(screen.getByTestId("usage-ai-chat-panel")).not.toHaveClass(
+      "translate-x-full",
+    );
+    expect(screen.getByTestId("usage-ai-chat-panel")).toHaveClass(
+      "translate-x-0",
+    );
   });
 });

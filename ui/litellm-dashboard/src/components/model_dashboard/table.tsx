@@ -1,19 +1,30 @@
 import {
-  ColumnDef,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  SwitchVerticalIcon,
+} from "@heroicons/react/outline";
+import {
+  type ColumnDef,
+  type ColumnResizeMode,
+  type OnChangeFn,
+  type PaginationState,
+  type SortingState,
+  type VisibilityState,
   flexRender,
   getCoreRowModel,
-  getSortedRowModel,
   getPaginationRowModel,
-  SortingState,
+  getSortedRowModel,
   useReactTable,
-  ColumnResizeMode,
-  VisibilityState,
-  PaginationState,
-  OnChangeFn,
 } from "@tanstack/react-table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+} from "@tremor/react";
 import React from "react";
-import { Table, TableHead, TableHeaderCell, TableBody, TableRow, TableCell } from "@tremor/react";
-import { SwitchVerticalIcon, ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/outline";
 
 // Extend the column meta type to include className
 declare module "@tanstack/react-table" {
@@ -46,7 +57,8 @@ export function ModelDataTable<TData, TValue>({
   const [sorting, setSorting] = React.useState<SortingState>(defaultSorting);
   const [columnResizeMode] = React.useState<ColumnResizeMode>("onChange");
   const [columnSizing, setColumnSizing] = React.useState({});
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
 
   const tableInstance = useReactTable({
     data,
@@ -64,7 +76,9 @@ export function ModelDataTable<TData, TValue>({
     ...(enablePagination && onPaginationChange ? { onPaginationChange } : {}),
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    ...(enablePagination ? { getPaginationRowModel: getPaginationRowModel() } : {}),
+    ...(enablePagination
+      ? { getPaginationRowModel: getPaginationRowModel() }
+      : {}),
     enableSorting: true,
     enableColumnResizing: true,
     defaultColumn: {
@@ -79,7 +93,11 @@ export function ModelDataTable<TData, TValue>({
     }
     if (typeof header === "function") {
       const headerElement = header();
-      if (headerElement && headerElement.props && headerElement.props.children) {
+      if (
+        headerElement &&
+        headerElement.props &&
+        headerElement.props.children
+      ) {
         const children = headerElement.props.children;
         if (typeof children === "string") {
           return children;
@@ -117,36 +135,51 @@ export function ModelDataTable<TData, TValue>({
                       } ${header.column.columnDef.meta?.className || ""}`}
                       style={{
                         width: header.id === "actions" ? 120 : header.getSize(),
-                        position: header.id === "actions" ? "sticky" : "relative",
+                        position:
+                          header.id === "actions" ? "sticky" : "relative",
                         right: header.id === "actions" ? 0 : "auto",
                       }}
-                      onClick={header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined}
+                      onClick={
+                        header.column.getCanSort()
+                          ? header.column.getToggleSortingHandler()
+                          : undefined
+                      }
                     >
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center">
                           {header.isPlaceholder
                             ? null
-                            : flexRender(header.column.columnDef.header, header.getContext())}
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
                         </div>
-                        {header.id !== "actions" && header.column.getCanSort() && (
-                          <div className="w-4">
-                            {header.column.getIsSorted() ? (
-                              {
-                                asc: <ChevronUpIcon className="h-4 w-4 text-blue-500" />,
-                                desc: <ChevronDownIcon className="h-4 w-4 text-blue-500" />,
-                              }[header.column.getIsSorted() as string]
-                            ) : (
-                              <SwitchVerticalIcon className="h-4 w-4 text-gray-400" />
-                            )}
-                          </div>
-                        )}
+                        {header.id !== "actions" &&
+                          header.column.getCanSort() && (
+                            <div className="w-4">
+                              {header.column.getIsSorted() ? (
+                                {
+                                  asc: (
+                                    <ChevronUpIcon className="h-4 w-4 text-blue-500" />
+                                  ),
+                                  desc: (
+                                    <ChevronDownIcon className="h-4 w-4 text-blue-500" />
+                                  ),
+                                }[header.column.getIsSorted() as string]
+                              ) : (
+                                <SwitchVerticalIcon className="h-4 w-4 text-gray-400" />
+                              )}
+                            </div>
+                          )}
                       </div>
                       {header.column.getCanResize() && (
                         <div
                           onMouseDown={header.getResizeHandler()}
                           onTouchStart={header.getResizeHandler()}
                           className={`absolute right-0 top-0 h-full w-2 cursor-col-resize select-none touch-none ${
-                            header.column.getIsResizing() ? "bg-blue-500" : "hover:bg-blue-200"
+                            header.column.getIsResizing()
+                              ? "bg-blue-500"
+                              : "hover:bg-blue-200"
                           }`}
                         />
                       )}
@@ -158,7 +191,10 @@ export function ModelDataTable<TData, TValue>({
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-8 text-center">
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-8 text-center"
+                  >
                     <div className="text-center text-gray-500">
                       <p>🚅 Loading models...</p>
                     </div>
@@ -169,7 +205,9 @@ export function ModelDataTable<TData, TValue>({
                   <TableRow
                     key={row.id}
                     onClick={() => onRowClick?.(row.original)}
-                    className={onRowClick ? "cursor-pointer hover:bg-gray-50" : ""}
+                    className={
+                      onRowClick ? "cursor-pointer hover:bg-gray-50" : ""
+                    }
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell
@@ -180,19 +218,31 @@ export function ModelDataTable<TData, TValue>({
                             : ""
                         } ${cell.column.columnDef.meta?.className || ""}`}
                         style={{
-                          width: cell.column.id === "actions" ? 120 : cell.column.getSize(),
-                          position: cell.column.id === "actions" ? "sticky" : "relative",
+                          width:
+                            cell.column.id === "actions"
+                              ? 120
+                              : cell.column.getSize(),
+                          position:
+                            cell.column.id === "actions"
+                              ? "sticky"
+                              : "relative",
                           right: cell.column.id === "actions" ? 0 : "auto",
                         }}
                       >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
                       </TableCell>
                     ))}
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-8 text-center">
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-8 text-center"
+                  >
                     <div className="text-center text-gray-500">
                       <p>No models found</p>
                     </div>

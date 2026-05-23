@@ -1,5 +1,5 @@
-import React from "react";
 import { Input } from "antd";
+import type React from "react";
 
 interface VariableInputProps {
   extractedVariables: string[];
@@ -25,7 +25,9 @@ const VariableInput: React.FC<VariableInputProps> = ({
         {extractedVariables.map((varName) => (
           <div key={varName}>
             <label className="block text-xs text-gray-600 mb-1 font-medium">
-              {"{{"}{varName}{"}}"}
+              {"{{"}
+              {varName}
+              {"}}"}
             </label>
             <Input
               value={variables[varName] || ""}
@@ -41,4 +43,3 @@ const VariableInput: React.FC<VariableInputProps> = ({
 };
 
 export default VariableInput;
-

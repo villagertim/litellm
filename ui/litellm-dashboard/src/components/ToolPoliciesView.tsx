@@ -1,19 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
 import { ToolDetail } from "@/components/ToolDetail";
 import { ToolPolicies } from "@/components/ToolPolicies";
+import React, { useState } from "react";
 
-type View =
-  | { type: "overview" }
-  | { type: "detail"; toolName: string };
+type View = { type: "overview" } | { type: "detail"; toolName: string };
 
 interface ToolPoliciesViewProps {
   accessToken: string | null;
   userRole?: string;
 }
 
-export default function ToolPoliciesView({ accessToken, userRole }: ToolPoliciesViewProps) {
+export default function ToolPoliciesView({
+  accessToken,
+  userRole,
+}: ToolPoliciesViewProps) {
   const [view, setView] = useState<View>({ type: "overview" });
 
   const handleSelectTool = (toolName: string) => {

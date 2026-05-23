@@ -5,8 +5,9 @@ import { useUpdateHashicorpVaultConfig } from "@/app/(dashboard)/hooks/configOve
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import NotificationManager from "@/components/molecules/notifications_manager";
 import { Button, Divider, Form, Input, Modal, Space, Typography } from "antd";
-import React, { useEffect } from "react";
-import { SENSITIVE_FIELDS, FIELD_LABELS } from "./constants";
+import type React from "react";
+import { useEffect } from "react";
+import { FIELD_LABELS, SENSITIVE_FIELDS } from "./constants";
 
 interface FieldGroup {
   title: string;
@@ -17,16 +18,23 @@ interface FieldGroup {
 const FIELD_GROUPS: FieldGroup[] = [
   {
     title: "Connection",
-    fields: ["vault_addr", "vault_namespace", "vault_mount_name", "vault_path_prefix"],
+    fields: [
+      "vault_addr",
+      "vault_namespace",
+      "vault_mount_name",
+      "vault_path_prefix",
+    ],
   },
   {
     title: "Token Authentication",
-    subtitle: "Use a Vault token to authenticate. Only one auth method is required.",
+    subtitle:
+      "Use a Vault token to authenticate. Only one auth method is required.",
     fields: ["vault_token"],
   },
   {
     title: "AppRole Authentication",
-    subtitle: "Use AppRole credentials to authenticate. Only one auth method is required.",
+    subtitle:
+      "Use AppRole credentials to authenticate. Only one auth method is required.",
     fields: ["approle_role_id", "approle_secret_id", "approle_mount_path"],
   },
   {
@@ -85,7 +93,9 @@ const EditHashicorpVaultModal: React.FC<EditHashicorpVaultModalProps> = ({
 
     mutate(config, {
       onSuccess: () => {
-        NotificationManager.success("Hashicorp Vault configuration updated successfully");
+        NotificationManager.success(
+          "Hashicorp Vault configuration updated successfully",
+        );
         onSuccess();
       },
       onError: (err) => {
@@ -105,12 +115,18 @@ const EditHashicorpVaultModal: React.FC<EditHashicorpVaultModalProps> = ({
 
     const rules =
       fieldName === "vault_addr"
-        ? [{ pattern: /^https?:\/\/.+/, message: "Must start with http:// or https://" }]
+        ? [
+            {
+              pattern: /^https?:\/\/.+/,
+              message: "Must start with http:// or https://",
+            },
+          ]
         : undefined;
 
     const isSensitive = SENSITIVE_FIELDS.has(fieldName);
     const existingValue = rawValues[fieldName];
-    const hasExistingValue = isSensitive && existingValue != null && existingValue !== "";
+    const hasExistingValue =
+      isSensitive && existingValue != null && existingValue !== "";
     const placeholder = hasExistingValue
       ? `Leave blank to keep existing (${existingValue})`
       : fieldSchema?.description;
@@ -141,7 +157,11 @@ const EditHashicorpVaultModal: React.FC<EditHashicorpVaultModalProps> = ({
           <Button onClick={handleCancel} disabled={isPending}>
             Cancel
           </Button>
-          <Button type="primary" loading={isPending} onClick={() => form.submit()}>
+          <Button
+            type="primary"
+            loading={isPending}
+            onClick={() => form.submit()}
+          >
             {isPending ? "Saving..." : "Save"}
           </Button>
         </Space>
@@ -156,7 +176,10 @@ const EditHashicorpVaultModal: React.FC<EditHashicorpVaultModalProps> = ({
               {group.title}
             </Typography.Title>
             {group.subtitle && (
-              <Typography.Paragraph type="secondary" style={{ marginBottom: 16 }}>
+              <Typography.Paragraph
+                type="secondary"
+                style={{ marginBottom: 16 }}
+              >
                 {group.subtitle}
               </Typography.Paragraph>
             )}

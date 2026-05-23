@@ -1,9 +1,9 @@
-import React from "react";
-import { describe, it, expect, vi } from "vitest";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import React from "react";
+import { describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../tests/test-utils";
-import { HelpLink, HelpIcon, DocsMenu } from "./HelpLink";
+import { DocsMenu, HelpIcon, HelpLink } from "./HelpLink";
 
 describe("HelpLink", () => {
   it("should render with default children and open in new tab", () => {
@@ -17,7 +17,7 @@ describe("HelpLink", () => {
 
   it("should render custom children text", () => {
     renderWithProviders(
-      <HelpLink href="https://docs.example.com">Custom docs link</HelpLink>
+      <HelpLink href="https://docs.example.com">Custom docs link</HelpLink>,
     );
 
     expect(screen.getByText("Custom docs link")).toBeInTheDocument();
@@ -25,7 +25,10 @@ describe("HelpLink", () => {
 
   it("should have the correct href", () => {
     renderWithProviders(<HelpLink href="https://docs.example.com/test" />);
-    expect(screen.getByRole("link")).toHaveAttribute("href", "https://docs.example.com/test");
+    expect(screen.getByRole("link")).toHaveAttribute(
+      "href",
+      "https://docs.example.com/test",
+    );
   });
 
   it("should include a screen-reader-only label for accessibility", () => {
@@ -39,7 +42,9 @@ describe("HelpIcon", () => {
   it("should render a help button with accessible label", () => {
     renderWithProviders(<HelpIcon content="Some help text" />);
 
-    expect(screen.getByRole("button", { name: /help information/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /help information/i }),
+    ).toBeInTheDocument();
   });
 
   it("should show tooltip content on hover", async () => {
@@ -59,7 +64,7 @@ describe("HelpIcon", () => {
   it("should show learn more link when learnMoreHref is provided", async () => {
     const user = userEvent.setup();
     renderWithProviders(
-      <HelpIcon content="Help text" learnMoreHref="https://docs.example.com" />
+      <HelpIcon content="Help text" learnMoreHref="https://docs.example.com" />,
     );
     await user.hover(screen.getByRole("button", { name: /help information/i }));
     expect(screen.getByText("Learn more")).toBeInTheDocument();
@@ -72,7 +77,7 @@ describe("HelpIcon", () => {
         content="Help text"
         learnMoreHref="https://docs.example.com"
         learnMoreText="Read docs"
-      />
+      />,
     );
 
     await user.hover(screen.getByRole("button", { name: /help information/i }));

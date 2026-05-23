@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useMemo } from "react";
 import { Form, Input, Modal, Select, Space, Typography } from "antd";
+import type React from "react";
+import { useMemo } from "react";
 import type { RoutingGroup, RoutingStrategy } from "./types";
 
 const { Text, Paragraph } = Typography;
@@ -26,7 +27,10 @@ interface FormValues {
   routing_strategy_args?: string;
 }
 
-const STRATEGIES_WITH_ARGS = new Set<string>(["latency-based-routing", "usage-based-routing"]);
+const STRATEGIES_WITH_ARGS = new Set<string>([
+  "latency-based-routing",
+  "usage-based-routing",
+]);
 
 const GROUP_NAME_PATTERN = /^[A-Za-z0-9._-]+$/;
 const GROUP_NAME_MAX_LENGTH = 64;
@@ -49,22 +53,33 @@ const RoutingGroupModal: React.FC<RoutingGroupModalProps> = ({
   const initialValues: FormValues = {
     group_name: initialValue?.group_name ?? "",
     models: initialValue?.models ?? [],
-    routing_strategy: initialValue?.routing_strategy ?? availableStrategies[0] ?? "simple-shuffle",
+    routing_strategy:
+      initialValue?.routing_strategy ??
+      availableStrategies[0] ??
+      "simple-shuffle",
     routing_strategy_args: initialValue?.routing_strategy_args
       ? JSON.stringify(initialValue.routing_strategy_args, null, 2)
       : "",
   };
 
   const reservedNames = useMemo(() => {
-    const others = existingGroupNames.filter((n) => n !== initialValue?.group_name);
+    const others = existingGroupNames.filter(
+      (n) => n !== initialValue?.group_name,
+    );
     return new Set(others.map((n) => n.toLowerCase()));
   }, [existingGroupNames, initialValue]);
 
   const handleSubmit = async () => {
     const values = await form.validateFields();
-    const strategySupportsArgs = STRATEGIES_WITH_ARGS.has(String(values.routing_strategy));
+    const strategySupportsArgs = STRATEGIES_WITH_ARGS.has(
+      String(values.routing_strategy),
+    );
     let parsedArgs: Record<string, unknown> | null = null;
-    if (strategySupportsArgs && values.routing_strategy_args && values.routing_strategy_args.trim()) {
+    if (
+      strategySupportsArgs &&
+      values.routing_strategy_args &&
+      values.routing_strategy_args.trim()
+    ) {
       try {
         parsedArgs = JSON.parse(values.routing_strategy_args);
       } catch {
@@ -88,7 +103,11 @@ const RoutingGroupModal: React.FC<RoutingGroupModalProps> = ({
 
   return (
     <Modal
-      title={mode === "create" ? "Create Routing Group" : `Edit ${initialValue?.group_name ?? ""}`}
+      title={
+        mode === "create"
+          ? "Create Routing Group"
+          : `Edit ${initialValue?.group_name ?? ""}`
+      }
       open={open}
       onCancel={onClose}
       onOk={handleSubmit}
@@ -99,7 +118,9 @@ const RoutingGroupModal: React.FC<RoutingGroupModalProps> = ({
       width={560}
     >
       <Form<FormValues>
-        key={mode === "edit" ? `edit-${initialValue?.group_name ?? ""}` : "create"}
+        key={
+          mode === "edit" ? `edit-${initialValue?.group_name ?? ""}` : "create"
+        }
         form={form}
         layout="vertical"
         preserve={false}
@@ -110,16 +131,22 @@ const RoutingGroupModal: React.FC<RoutingGroupModalProps> = ({
           name="group_name"
           rules={[
             { required: true, message: "Group name is required" },
-            { max: GROUP_NAME_MAX_LENGTH, message: `Must be ${GROUP_NAME_MAX_LENGTH} characters or fewer` },
+            {
+              max: GROUP_NAME_MAX_LENGTH,
+              message: `Must be ${GROUP_NAME_MAX_LENGTH} characters or fewer`,
+            },
             {
               pattern: GROUP_NAME_PATTERN,
-              message: "Only letters, numbers, dot, underscore, and dash are allowed",
+              message:
+                "Only letters, numbers, dot, underscore, and dash are allowed",
             },
             {
               validator: (_, value: string) => {
                 if (!value) return Promise.resolve();
                 if (reservedNames.has(value.trim().toLowerCase())) {
-                  return Promise.reject(new Error("A group with this name already exists"));
+                  return Promise.reject(
+                    new Error("A group with this name already exists"),
+                  );
                 }
                 return Promise.resolve();
               },
@@ -168,8 +195,8 @@ const RoutingGroupModal: React.FC<RoutingGroupModalProps> = ({
             name="routing_strategy_args"
             extra={
               selectedStrategy === "latency-based-routing"
-                ? "Example: { \"ttl\": 3600, \"lowest_latency_buffer\": 0 }"
-                : "Example: { \"ttl\": 60 }"
+                ? 'Example: { "ttl": 3600, "lowest_latency_buffer": 0 }'
+                : 'Example: { "ttl": 60 }'
             }
           >
             <Input.TextArea
@@ -182,8 +209,8 @@ const RoutingGroupModal: React.FC<RoutingGroupModalProps> = ({
 
         <Space direction="vertical" className="w-full mt-2">
           <Text type="secondary" className="text-xs">
-            Models not claimed by an explicit group fall through to the proxy&apos;s top-level routing
-            strategy.
+            Models not claimed by an explicit group fall through to the
+            proxy&apos;s top-level routing strategy.
           </Text>
         </Space>
       </Form>

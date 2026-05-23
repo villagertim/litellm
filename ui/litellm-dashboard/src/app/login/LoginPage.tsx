@@ -3,15 +3,33 @@
 import { useLogin } from "@/app/(dashboard)/hooks/login/useLogin";
 import { useUIConfig } from "@/app/(dashboard)/hooks/uiConfig/useUIConfig";
 import LoadingScreen from "@/components/common_components/LoadingScreen";
-import { exchangeLoginCode, getProxyBaseUrl, switchToWorkerUrl } from "@/components/networking";
+import {
+  exchangeLoginCode,
+  getProxyBaseUrl,
+  switchToWorkerUrl,
+} from "@/components/networking";
+import { useWorker } from "@/hooks/useWorker";
 import { clearTokenCookies, getCookie } from "@/utils/cookieUtils";
 import { isJwtExpired } from "@/utils/jwtUtils";
-import { consumeReturnUrl, getReturnUrl, isValidReturnUrl } from "@/utils/returnUrlUtils";
-import { InfoCircleOutlined, CloudServerOutlined } from "@ant-design/icons";
-import { Alert, Button, Card, Form, Input, Popover, Select, Space, Typography } from "antd";
+import {
+  consumeReturnUrl,
+  getReturnUrl,
+  isValidReturnUrl,
+} from "@/utils/returnUrlUtils";
+import { CloudServerOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import {
+  Alert,
+  Button,
+  Card,
+  Form,
+  Input,
+  Popover,
+  Select,
+  Space,
+  Typography,
+} from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useWorker } from "@/hooks/useWorker";
 
 function LoginPageContent() {
   const [username, setUsername] = useState("");
@@ -51,16 +69,24 @@ function LoginPageContent() {
     // plus common URL-safe chars) so that arbitrary user input cannot trigger the
     // exchange endpoint.
     const ssoCode =
-      rawSsoCode && /^[a-zA-Z0-9._~+/=-]+$/.test(rawSsoCode) ? rawSsoCode : null;
+      rawSsoCode && /^[a-zA-Z0-9._~+/=-]+$/.test(rawSsoCode)
+        ? rawSsoCode
+        : null;
     if (ssoCode) {
       const rawWorkerUrl = localStorage.getItem("litellm_worker_url");
       // Validate the stored worker URL: only allow http(s) URLs.
       const workerUrl =
-        rawWorkerUrl && /^https?:\/\/.+/.test(rawWorkerUrl) ? rawWorkerUrl : null;
+        rawWorkerUrl && /^https?:\/\/.+/.test(rawWorkerUrl)
+          ? rawWorkerUrl
+          : null;
       exchangeLoginCode(ssoCode, workerUrl).then(() => {
         params.delete("code");
         const cleanSearch = params.toString();
-        window.history.replaceState(null, "", window.location.pathname + (cleanSearch ? `?${cleanSearch}` : ""));
+        window.history.replaceState(
+          null,
+          "",
+          window.location.pathname + (cleanSearch ? `?${cleanSearch}` : ""),
+        );
         router.replace("/ui/?login=success");
       });
       return;
@@ -102,7 +128,9 @@ function LoginPageContent() {
 
   const handleSubmit = () => {
     // If a worker is selected, point proxyBaseUrl at it before login
-    const selectedWorker = workers.find((w) => w.worker_id === selectedWorkerId);
+    const selectedWorker = workers.find(
+      (w) => w.worker_id === selectedWorkerId,
+    );
     if (selectedWorker) {
       switchToWorkerUrl(selectedWorker.url);
     }
@@ -136,7 +164,8 @@ function LoginPageContent() {
     );
   };
 
-  const error = loginMutation.error instanceof Error ? loginMutation.error.message : null;
+  const error =
+    loginMutation.error instanceof Error ? loginMutation.error.message : null;
   const isLoginLoading = loginMutation.isPending;
 
   const { Title, Text, Paragraph } = Typography;
@@ -160,11 +189,14 @@ function LoginPageContent() {
               description={
                 <>
                   <Paragraph className="text-sm">
-                    The Admin UI has been disabled by the administrator. To re-enable it, please update the following
-                    environment variable:
+                    The Admin UI has been disabled by the administrator. To
+                    re-enable it, please update the following environment
+                    variable:
                   </Paragraph>
                   <Paragraph className="text-sm">
-                    <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">DISABLE_ADMIN_UI=False</code>
+                    <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">
+                      DISABLE_ADMIN_UI=False
+                    </code>
                   </Paragraph>
                 </>
               }
@@ -195,13 +227,23 @@ function LoginPageContent() {
             description={
               <>
                 <Paragraph className="text-sm">
-                  By default, Username is <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">admin</code> and
-                  Password is your set LiteLLM Proxy
-                  <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">MASTER_KEY</code>.
+                  By default, Username is{" "}
+                  <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">
+                    admin
+                  </code>{" "}
+                  and Password is your set LiteLLM Proxy
+                  <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">
+                    MASTER_KEY
+                  </code>
+                  .
                 </Paragraph>
                 <Paragraph className="text-sm">
                   Need to set UI credentials or SSO?{" "}
-                  <a href="https://docs.litellm.ai/docs/proxy/ui" target="_blank" rel="noopener noreferrer">
+                  <a
+                    href="https://docs.litellm.ai/docs/proxy/ui"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     Check the documentation
                   </a>
                   .
@@ -235,7 +277,9 @@ function LoginPageContent() {
             <Form.Item
               label="Username"
               name="username"
-              rules={[{ required: true, message: "Please enter your username" }]}
+              rules={[
+                { required: true, message: "Please enter your username" },
+              ]}
             >
               <Input
                 placeholder="Enter your username"
@@ -251,7 +295,9 @@ function LoginPageContent() {
             <Form.Item
               label="Password"
               name="password"
-              rules={[{ required: true, message: "Please enter your password" }]}
+              rules={[
+                { required: true, message: "Please enter your password" },
+              ]}
             >
               <Input.Password
                 placeholder="Enter your password"
@@ -287,19 +333,31 @@ function LoginPageContent() {
                 </Popover>
               ) : (
                 <Button
-                  disabled={isLoginLoading || (!!selectedWorkerId && workers.length === 0)}
+                  disabled={
+                    isLoginLoading ||
+                    (!!selectedWorkerId && workers.length === 0)
+                  }
                   onClick={() => {
-                    const selectedWorker = workers.find((w) => w.worker_id === selectedWorkerId);
+                    const selectedWorker = workers.find(
+                      (w) => w.worker_id === selectedWorkerId,
+                    );
                     if (selectedWorker) {
                       // Store worker selection so useWorker hook restores it after redirect
-                      localStorage.setItem("litellm_selected_worker_id", selectedWorkerId!);
+                      localStorage.setItem(
+                        "litellm_selected_worker_id",
+                        selectedWorkerId!,
+                      );
                       switchToWorkerUrl(selectedWorker.url);
                     }
                     // SSO on the worker (or this instance if no worker), always
                     // include return_to so the callback redirects back here
                     const ssoBase = selectedWorker?.url ?? getProxyBaseUrl();
-                    const returnTo = encodeURIComponent(window.location.origin + "/ui/login");
-                    router.push(`${ssoBase}/sso/key/generate?return_to=${returnTo}`);
+                    const returnTo = encodeURIComponent(
+                      window.location.origin + "/ui/login",
+                    );
+                    router.push(
+                      `${ssoBase}/sso/key/generate?return_to=${returnTo}`,
+                    );
                   }}
                   block
                   size="large"
@@ -315,7 +373,15 @@ function LoginPageContent() {
             type="info"
             showIcon
             closable
-            message={<Text>Single Sign-On (SSO) is enabled. LiteLLM no longer automatically redirects to the SSO login flow upon loading this page. To re-enable auto-redirect-to-SSO, set <Text code>AUTO_REDIRECT_UI_LOGIN_TO_SSO=true</Text> in your environment configuration.</Text>}
+            message={
+              <Text>
+                Single Sign-On (SSO) is enabled. LiteLLM no longer automatically
+                redirects to the SSO login flow upon loading this page. To
+                re-enable auto-redirect-to-SSO, set{" "}
+                <Text code>AUTO_REDIRECT_UI_LOGIN_TO_SSO=true</Text> in your
+                environment configuration.
+              </Text>
+            }
           />
         )}
       </Card>

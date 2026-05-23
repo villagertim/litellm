@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { Text, Badge } from "@tremor/react";
 import { UserGroupIcon } from "@heroicons/react/outline";
+import { Badge, Text } from "@tremor/react";
 import { Tooltip } from "antd";
+import React, { useState, useEffect } from "react";
 import { getAgentsList } from "../networking";
 
 interface Agent {
@@ -17,10 +17,10 @@ interface AgentPermissionsProps {
   accessToken?: string | null;
 }
 
-export function AgentPermissions({ 
-  agents, 
-  agentAccessGroups = [], 
-  accessToken 
+export function AgentPermissions({
+  agents,
+  agentAccessGroups = [],
+  accessToken,
 }: AgentPermissionsProps) {
   const [agentDetails, setAgentDetails] = useState<Agent[]>([]);
 
@@ -43,9 +43,14 @@ export function AgentPermissions({
 
   // Function to get display name for agent
   const getAgentDisplayName = (agentId: string) => {
-    const agentDetail = agentDetails.find((agent) => agent.agent_id === agentId);
+    const agentDetail = agentDetails.find(
+      (agent) => agent.agent_id === agentId,
+    );
     if (agentDetail) {
-      const truncatedId = agentId.length > 7 ? `${agentId.slice(0, 3)}...${agentId.slice(-4)}` : agentId;
+      const truncatedId =
+        agentId.length > 7
+          ? `${agentId.slice(0, 3)}...${agentId.slice(-4)}`
+          : agentId;
       return `${agentDetail.agent_name} (${truncatedId})`;
     }
     return agentId;
@@ -54,7 +59,10 @@ export function AgentPermissions({
   // Merge agents and access groups into one list
   const mergedItems = [
     ...agents.map((agent) => ({ type: "agent", value: agent })),
-    ...agentAccessGroups.map((group) => ({ type: "accessGroup", value: group })),
+    ...agentAccessGroups.map((group) => ({
+      type: "accessGroup",
+      value: group,
+    })),
   ];
   const totalCount = mergedItems.length;
 
@@ -67,26 +75,28 @@ export function AgentPermissions({
           {totalCount}
         </Badge>
       </div>
-      
+
       {totalCount > 0 ? (
         <div className="max-h-[400px] overflow-y-auto space-y-2 pr-1">
           {mergedItems.map((item, index) => (
             <div key={index} className="space-y-2">
-              <div 
-                className="flex items-center gap-3 py-2 px-3 rounded-lg border border-gray-200 bg-white"
-              >
+              <div className="flex items-center gap-3 py-2 px-3 rounded-lg border border-gray-200 bg-white">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                   {item.type === "agent" ? (
                     <Tooltip title={`Full ID: ${item.value}`} placement="top">
                       <div className="inline-flex items-center gap-2 min-w-0">
                         <span className="inline-block w-1.5 h-1.5 bg-purple-500 rounded-full flex-shrink-0"></span>
-                        <span className="text-sm font-medium text-gray-900 truncate">{getAgentDisplayName(item.value)}</span>
+                        <span className="text-sm font-medium text-gray-900 truncate">
+                          {getAgentDisplayName(item.value)}
+                        </span>
                       </div>
                     </Tooltip>
                   ) : (
                     <div className="inline-flex items-center gap-2 min-w-0">
                       <span className="inline-block w-1.5 h-1.5 bg-green-500 rounded-full flex-shrink-0"></span>
-                      <span className="text-sm font-medium text-gray-900 truncate">{item.value}</span>
+                      <span className="text-sm font-medium text-gray-900 truncate">
+                        {item.value}
+                      </span>
                       <span className="ml-1 px-1.5 py-0.5 text-[9px] font-semibold text-green-600 bg-green-50 border border-green-200 rounded uppercase tracking-wide flex-shrink-0">
                         Group
                       </span>
@@ -100,7 +110,9 @@ export function AgentPermissions({
       ) : (
         <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50 border border-gray-200">
           <UserGroupIcon className="h-4 w-4 text-gray-400" />
-          <Text className="text-gray-500 text-sm">No agents or access groups configured</Text>
+          <Text className="text-gray-500 text-sm">
+            No agents or access groups configured
+          </Text>
         </div>
       )}
     </div>
@@ -108,4 +120,3 @@ export function AgentPermissions({
 }
 
 export default AgentPermissions;
-

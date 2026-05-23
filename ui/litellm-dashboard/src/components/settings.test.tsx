@@ -1,6 +1,10 @@
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { alertingSettingsCall, getCallbackConfigsCall, getCallbacksCall } from "./networking";
+import {
+  alertingSettingsCall,
+  getCallbackConfigsCall,
+  getCallbacksCall,
+} from "./networking";
 import Settings from "./settings";
 
 vi.mock("./networking", () => ({
@@ -108,7 +112,9 @@ describe("Settings", () => {
     render(<Settings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(mockGetCallbackConfigsCall).toHaveBeenCalledWith(defaultProps.accessToken);
+      expect(mockGetCallbackConfigsCall).toHaveBeenCalledWith(
+        defaultProps.accessToken,
+      );
     });
   });
 
@@ -151,7 +157,11 @@ describe("Settings", () => {
       available_callbacks: {
         langfuse: {
           litellm_callback_name: "langfuse",
-          litellm_callback_params: ["LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY", "LANGFUSE_HOST"],
+          litellm_callback_params: [
+            "LANGFUSE_PUBLIC_KEY",
+            "LANGFUSE_SECRET_KEY",
+            "LANGFUSE_HOST",
+          ],
           ui_callback_name: "Langfuse",
         },
       },
@@ -170,7 +180,9 @@ describe("Settings", () => {
       expect(getByText("Langfuse")).toBeInTheDocument();
     });
 
-    const actionsCell = container.querySelector('[class*="flex justify-end gap-2"]');
+    const actionsCell = container.querySelector(
+      '[class*="flex justify-end gap-2"]',
+    );
     expect(actionsCell).toBeTruthy();
 
     const icons = actionsCell?.querySelectorAll("svg");

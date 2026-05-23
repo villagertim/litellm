@@ -49,7 +49,9 @@ export function UserEditView({
       models: userData.user_info?.models || [],
       max_budget: isUnlimited ? "" : maxBudget,
       budget_duration: userData.user_info?.budget_duration,
-      metadata: userData.user_info?.metadata ? JSON.stringify(userData.user_info.metadata, null, 2) : undefined,
+      metadata: userData.user_info?.metadata
+        ? JSON.stringify(userData.user_info.metadata, null, 2)
+        : undefined,
     });
   }, [userData, form]);
 
@@ -72,7 +74,11 @@ export function UserEditView({
       }
     }
 
-    if (unlimitedBudget || values.max_budget === "" || values.max_budget === undefined) {
+    if (
+      unlimitedBudget ||
+      values.max_budget === "" ||
+      values.max_budget === undefined
+    ) {
       values.max_budget = null;
     }
 
@@ -110,16 +116,21 @@ export function UserEditView({
       >
         <Select>
           {possibleUIRoles &&
-            Object.entries(possibleUIRoles).map(([role, { ui_label, description }]) => (
-              <SelectItem key={role} value={role} title={ui_label}>
-                <div className="flex">
-                  {ui_label}{" "}
-                  <p className="ml-2" style={{ color: "gray", fontSize: "12px" }}>
-                    {description}
-                  </p>
-                </div>
-              </SelectItem>
-            ))}
+            Object.entries(possibleUIRoles).map(
+              ([role, { ui_label, description }]) => (
+                <SelectItem key={role} value={role} title={ui_label}>
+                  <div className="flex">
+                    {ui_label}{" "}
+                    <p
+                      className="ml-2"
+                      style={{ color: "gray", fontSize: "12px" }}
+                    >
+                      {description}
+                    </p>
+                  </div>
+                </SelectItem>
+              ),
+            )}
         </Select>
       </Form.Item>
 
@@ -170,8 +181,13 @@ export function UserEditView({
         rules={[
           {
             validator: (_, value) => {
-              if (!unlimitedBudget && (value === "" || value === null || value === undefined)) {
-                return Promise.reject(new Error("Please enter a budget or select Unlimited Budget"));
+              if (
+                !unlimitedBudget &&
+                (value === "" || value === null || value === undefined)
+              ) {
+                return Promise.reject(
+                  new Error("Please enter a budget or select Unlimited Budget"),
+                );
               }
               return Promise.resolve();
             },

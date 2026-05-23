@@ -1,8 +1,8 @@
-import { useState, useCallback } from "react";
-import { Modal, Form, Button, Select, Tooltip } from "antd";
-import { UserAddOutlined } from "@ant-design/icons";
-import debounce from "lodash/debounce";
 import { userFilterUICall } from "@/components/networking";
+import { UserAddOutlined } from "@ant-design/icons";
+import { Button, Form, Modal, Select, Tooltip } from "antd";
+import debounce from "lodash/debounce";
+import { useCallback, useState } from "react";
 interface User {
   user_id: string;
   user_email: string;
@@ -48,9 +48,14 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
     {
       label: "admin",
       value: "admin",
-      description: "Admin role. Can create team keys, add members, and manage settings.",
+      description:
+        "Admin role. Can create team keys, add members, and manage settings.",
     },
-    { label: "user", value: "user", description: "User role. Can view team info, but not manage it." },
+    {
+      label: "user",
+      value: "user",
+      description: "User role. Can view team info, but not manage it.",
+    },
   ],
   defaultRole = "user",
   teamId,
@@ -58,10 +63,15 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
   const [form] = Form.useForm<FormValues>();
   const [userOptions, setUserOptions] = useState<UserOption[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [selectedField, setSelectedField] = useState<"user_email" | "user_id">("user_email");
+  const [selectedField, setSelectedField] = useState<"user_email" | "user_id">(
+    "user_email",
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const fetchUsers = async (searchText: string, fieldName: "user_email" | "user_id"): Promise<void> => {
+  const fetchUsers = async (
+    searchText: string,
+    fieldName: "user_email" | "user_id",
+  ): Promise<void> => {
     if (!searchText) {
       setUserOptions([]);
       return;
@@ -81,7 +91,8 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
 
       const data: User[] = response;
       const options: UserOption[] = data.map((user) => ({
-        label: fieldName === "user_email" ? `${user.user_email}` : `${user.user_id}`,
+        label:
+          fieldName === "user_email" ? `${user.user_email}` : `${user.user_id}`,
         value: fieldName === "user_email" ? user.user_email : user.user_id,
         user,
       }));
@@ -94,11 +105,18 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
   };
 
   const debouncedSearch = useCallback(
-    debounce((text: string, fieldName: "user_email" | "user_id") => fetchUsers(text, fieldName), 300),
+    debounce(
+      (text: string, fieldName: "user_email" | "user_id") =>
+        fetchUsers(text, fieldName),
+      300,
+    ),
     [],
   );
 
-  const handleSearch = (value: string, fieldName: "user_email" | "user_id"): void => {
+  const handleSearch = (
+    value: string,
+    fieldName: "user_email" | "user_id",
+  ): void => {
     setSelectedField(fieldName);
     debouncedSearch(value, fieldName);
   };
@@ -128,7 +146,14 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
   };
 
   return (
-    <Modal title={title} open={isVisible} onCancel={handleClose} footer={null} width={800} maskClosable={!isSubmitting}>
+    <Modal
+      title={title}
+      open={isVisible}
+      onCancel={handleClose}
+      footer={null}
+      width={800}
+      maskClosable={!isSubmitting}
+    >
       <Form<FormValues>
         form={form}
         onFinish={handleSubmit}
@@ -146,7 +171,9 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
             placeholder="Search by email"
             filterOption={false}
             onSearch={(value) => handleSearch(value, "user_email")}
-            onSelect={(value, option) => handleSelect(value, option as UserOption)}
+            onSelect={(value, option) =>
+              handleSelect(value, option as UserOption)
+            }
             options={selectedField === "user_email" ? userOptions : []}
             loading={loading}
             allowClear
@@ -163,7 +190,9 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
             placeholder="Search by user ID"
             filterOption={false}
             onSearch={(value) => handleSearch(value, "user_id")}
-            onSelect={(value, option) => handleSelect(value, option as UserOption)}
+            onSelect={(value, option) =>
+              handleSelect(value, option as UserOption)
+            }
             options={selectedField === "user_id" ? userOptions : []}
             loading={loading}
             allowClear
@@ -176,7 +205,9 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
               <Select.Option key={role.value} value={role.value}>
                 <Tooltip title={role.description}>
                   <span className="font-medium">{role.label}</span>
-                  <span className="ml-2 text-gray-500 text-sm">- {role.description}</span>
+                  <span className="ml-2 text-gray-500 text-sm">
+                    - {role.description}
+                  </span>
                 </Tooltip>
               </Select.Option>
             ))}
@@ -184,7 +215,12 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
         </Form.Item>
 
         <div className="text-right mt-4">
-          <Button type="primary" htmlType="submit" icon={<UserAddOutlined />} loading={isSubmitting}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            icon={<UserAddOutlined />}
+            loading={isSubmitting}
+          >
             {isSubmitting ? "Adding..." : "Add Member"}
           </Button>
         </div>

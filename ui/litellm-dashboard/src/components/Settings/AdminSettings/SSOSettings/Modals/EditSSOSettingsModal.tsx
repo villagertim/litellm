@@ -1,13 +1,14 @@
 "use client";
 
-import { Button, Form, Modal, Space } from "antd";
-import React, { useEffect } from "react";
-import BaseSSOSettingsForm from "./BaseSSOSettingsForm";
+import { useEditSSOSettings } from "@/app/(dashboard)/hooks/sso/useEditSSOSettings";
+import { useSSOSettings } from "@/app/(dashboard)/hooks/sso/useSSOSettings";
 import NotificationsManager from "@/components/molecules/notifications_manager";
 import { parseErrorMessage } from "@/components/shared/errorUtils";
+import { Button, Form, Modal, Space } from "antd";
+import type React from "react";
+import { useEffect } from "react";
 import { processSSOSettingsPayload } from "../utils";
-import { useSSOSettings } from "@/app/(dashboard)/hooks/sso/useSSOSettings";
-import { useEditSSOSettings } from "@/app/(dashboard)/hooks/sso/useEditSSOSettings";
+import BaseSSOSettingsForm from "./BaseSSOSettingsForm";
 
 interface EditSSOSettingsModalProps {
   isVisible: boolean;
@@ -15,7 +16,11 @@ interface EditSSOSettingsModalProps {
   onSuccess: () => void;
 }
 
-const EditSSOSettingsModal: React.FC<EditSSOSettingsModalProps> = ({ isVisible, onCancel, onSuccess }) => {
+const EditSSOSettingsModal: React.FC<EditSSOSettingsModalProps> = ({
+  isVisible,
+  onCancel,
+  onSuccess,
+}) => {
   const [form] = Form.useForm();
 
   // Use react-query hooks for SSO settings
@@ -64,7 +69,9 @@ const EditSSOSettingsModal: React.FC<EditSSOSettingsModalProps> = ({ isVisible, 
           proxy_admin_teams: joinTeams(roleMappings.roles?.proxy_admin),
           admin_viewer_teams: joinTeams(roleMappings.roles?.proxy_admin_viewer),
           internal_user_teams: joinTeams(roleMappings.roles?.internal_user),
-          internal_viewer_teams: joinTeams(roleMappings.roles?.internal_user_viewer),
+          internal_viewer_teams: joinTeams(
+            roleMappings.roles?.internal_user_viewer,
+          ),
         };
       }
 
@@ -92,7 +99,10 @@ const EditSSOSettingsModal: React.FC<EditSSOSettingsModalProps> = ({ isVisible, 
       form.resetFields();
       setTimeout(() => {
         form.setFieldsValue(formValues);
-        console.log("Form values set, current form values:", form.getFieldsValue()); // Debug log
+        console.log(
+          "Form values set, current form values:",
+          form.getFieldsValue(),
+        ); // Debug log
       }, 100);
     }
   }, [isVisible, ssoSettings.data, form]);
@@ -108,12 +118,16 @@ const EditSSOSettingsModal: React.FC<EditSSOSettingsModalProps> = ({ isVisible, 
           onSuccess();
         },
         onError: (error) => {
-          NotificationsManager.fromBackend("Failed to save SSO settings: " + parseErrorMessage(error));
+          NotificationsManager.fromBackend(
+            "Failed to save SSO settings: " + parseErrorMessage(error),
+          );
         },
       });
     } catch (error) {
       // Handle processing errors gracefully
-      NotificationsManager.fromBackend("Failed to process SSO settings: " + parseErrorMessage(error));
+      NotificationsManager.fromBackend(
+        "Failed to process SSO settings: " + parseErrorMessage(error),
+      );
     }
   };
 

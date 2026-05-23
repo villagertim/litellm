@@ -1,5 +1,5 @@
-import React from "react";
-import { Typography, Select, Modal, Space, Button, Input } from "antd";
+import { Button, Input, Modal, Select, Space, Typography } from "antd";
+import type React from "react";
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -48,8 +48,12 @@ const KeywordModal: React.FC<KeywordModalProps> = ({
 
         <div>
           <Text strong>Action</Text>
-          <Text type="secondary" style={{ display: "block", marginTop: 4, marginBottom: 8 }}>
-            Choose what action the guardrail should take when this keyword is detected
+          <Text
+            type="secondary"
+            style={{ display: "block", marginTop: 4, marginBottom: 8 }}
+          >
+            Choose what action the guardrail should take when this keyword is
+            detected
           </Text>
           <Select
             value={action}
@@ -73,10 +77,15 @@ const KeywordModal: React.FC<KeywordModalProps> = ({
         </div>
       </Space>
 
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "24px" }}>
-        <Button onClick={onCancel}>
-          Cancel
-        </Button>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          gap: "8px",
+          marginTop: "24px",
+        }}
+      >
+        <Button onClick={onCancel}>Cancel</Button>
         <Button type="primary" onClick={onAdd}>
           Add
         </Button>
@@ -86,4 +95,3 @@ const KeywordModal: React.FC<KeywordModalProps> = ({
 };
 
 export default KeywordModal;
-

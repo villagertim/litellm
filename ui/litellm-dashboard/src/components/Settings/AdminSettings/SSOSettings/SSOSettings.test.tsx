@@ -32,6 +32,8 @@ describe("SSOSettings", () => {
     );
 
     expect(screen.getByText("SSO Configuration")).toBeInTheDocument();
-    expect(screen.getByText("Manage Single Sign-On authentication settings")).toBeInTheDocument();
+    expect(
+      screen.getByText("Manage Single Sign-On authentication settings"),
+    ).toBeInTheDocument();
   });
 });

@@ -1,16 +1,19 @@
 "use client";
 
-import React from "react";
-import { Form, Select, InputNumber, Input, Tooltip } from "antd";
 import { PlusOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { Form, Input, InputNumber, Select, Tooltip } from "antd";
 import { Button } from "antd";
+import type React from "react";
 
 interface LLMJudgeFieldsProps {
   availableModels: string[];
   form: any;
 }
 
-const LLMJudgeFields: React.FC<LLMJudgeFieldsProps> = ({ availableModels, form }) => {
+const LLMJudgeFields: React.FC<LLMJudgeFieldsProps> = ({
+  availableModels,
+  form,
+}) => {
   return (
     <>
       <div
@@ -24,8 +27,9 @@ const LLMJudgeFields: React.FC<LLMJudgeFieldsProps> = ({ availableModels, form }
           color: "#389e0d",
         }}
       >
-        After each LLM response, the <strong>Judge Model</strong> scores it 0–100 against your criteria.
-        If the weighted average falls below the threshold, the response is blocked (or logged).
+        After each LLM response, the <strong>Judge Model</strong> scores it
+        0–100 against your criteria. If the weighted average falls below the
+        threshold, the response is blocked (or logged).
       </div>
 
       <Form.Item
@@ -59,7 +63,12 @@ const LLMJudgeFields: React.FC<LLMJudgeFieldsProps> = ({ availableModels, form }
         }
         initialValue={80}
       >
-        <InputNumber min={0} max={100} addonAfter="/ 100" style={{ width: "100%" }} />
+        <InputNumber
+          min={0}
+          max={100}
+          addonAfter="/ 100"
+          style={{ width: "100%" }}
+        />
       </Form.Item>
 
       <Form.Item
@@ -90,7 +99,10 @@ const LLMJudgeFields: React.FC<LLMJudgeFieldsProps> = ({ availableModels, form }
           </span>
         }
       >
-        <Form.List name="criteria" initialValue={[{ name: "", weight: 100, description: "" }]}>
+        <Form.List
+          name="criteria"
+          initialValue={[{ name: "", weight: 100, description: "" }]}
+        >
           {(fields, { add, remove }) => (
             <>
               {fields.map(({ key, name, ...restField }) => (
@@ -103,11 +115,15 @@ const LLMJudgeFields: React.FC<LLMJudgeFieldsProps> = ({ availableModels, form }
                     marginBottom: 8,
                   }}
                 >
-                  <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
+                  <div
+                    style={{ display: "flex", gap: 8, alignItems: "flex-end" }}
+                  >
                     <Form.Item
                       {...restField}
                       name={[name, "name"]}
-                      rules={[{ required: true, message: "Enter criterion name" }]}
+                      rules={[
+                        { required: true, message: "Enter criterion name" },
+                      ]}
                       style={{ flex: 2, marginBottom: 8 }}
                     >
                       <Input placeholder="Criterion name (e.g. Policy accuracy)" />
@@ -118,7 +134,10 @@ const LLMJudgeFields: React.FC<LLMJudgeFieldsProps> = ({ availableModels, form }
                       label={
                         <Tooltip title="How much this criterion counts toward the final score. All weights must add up to 100%.">
                           <span style={{ fontSize: 12, color: "#595959" }}>
-                            Weight <QuestionCircleOutlined style={{ color: "#bfbfbf" }} />
+                            Weight{" "}
+                            <QuestionCircleOutlined
+                              style={{ color: "#bfbfbf" }}
+                            />
                           </span>
                         </Tooltip>
                       }
@@ -147,7 +166,9 @@ const LLMJudgeFields: React.FC<LLMJudgeFieldsProps> = ({ availableModels, form }
                   <Form.Item
                     {...restField}
                     name={[name, "description"]}
-                    rules={[{ required: true, message: "Describe what to check" }]}
+                    rules={[
+                      { required: true, message: "Describe what to check" },
+                    ]}
                     style={{ marginBottom: 8 }}
                   >
                     <Input placeholder="What should the judge check for this criterion?" />
@@ -166,15 +187,23 @@ const LLMJudgeFields: React.FC<LLMJudgeFieldsProps> = ({ availableModels, form }
               {fields.length > 0 && (
                 <Form.Item shouldUpdate noStyle>
                   {() => {
-                    const allCriteria: any[] = form.getFieldValue("criteria") || [];
+                    const allCriteria: any[] =
+                      form.getFieldValue("criteria") || [];
                     const weightTotal = allCriteria.reduce(
                       (sum: number, c: any) => sum + (Number(c?.weight) || 0),
                       0,
                     );
                     const weightOk = weightTotal === 100;
                     return (
-                      <div style={{ marginTop: 6, fontSize: 12, color: weightOk ? "#52c41a" : "#faad14" }}>
-                        Weights total: {weightTotal}%{weightOk ? " ✓" : " — must add up to 100%"}
+                      <div
+                        style={{
+                          marginTop: 6,
+                          fontSize: 12,
+                          color: weightOk ? "#52c41a" : "#faad14",
+                        }}
+                      >
+                        Weights total: {weightTotal}%
+                        {weightOk ? " ✓" : " — must add up to 100%"}
                       </div>
                     );
                   }}

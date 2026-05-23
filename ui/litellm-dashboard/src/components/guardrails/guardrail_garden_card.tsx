@@ -1,8 +1,12 @@
-import React, { useState } from "react";
 import { CheckCircleFilled } from "@ant-design/icons";
-import { GuardrailCardInfo } from "./guardrail_garden_data";
+import type React from "react";
+import { useState } from "react";
+import type { GuardrailCardInfo } from "./guardrail_garden_data";
 
-const LogoWithFallback: React.FC<{ src: string; name: string }> = ({ src, name }) => {
+const LogoWithFallback: React.FC<{ src: string; name: string }> = ({
+  src,
+  name,
+}) => {
   const [hasError, setHasError] = useState(false);
 
   if (hasError || !src) {
@@ -31,13 +35,22 @@ const LogoWithFallback: React.FC<{ src: string; name: string }> = ({ src, name }
     <img
       src={src}
       alt=""
-      style={{ width: 28, height: 28, borderRadius: 6, objectFit: "contain", flexShrink: 0 }}
+      style={{
+        width: 28,
+        height: 28,
+        borderRadius: 6,
+        objectFit: "contain",
+        flexShrink: 0,
+      }}
       onError={() => setHasError(true)}
     />
   );
 };
 
-const GuardrailCard: React.FC<{ card: GuardrailCardInfo; onClick: () => void }> = ({ card, onClick }) => {
+const GuardrailCard: React.FC<{
+  card: GuardrailCardInfo;
+  onClick: () => void;
+}> = ({ card, onClick }) => {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -59,22 +72,51 @@ const GuardrailCard: React.FC<{ card: GuardrailCardInfo; onClick: () => void }> 
       }}
     >
       {/* Icon + Name row */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          marginBottom: 10,
+        }}
+      >
         <LogoWithFallback src={card.logo} name={card.name} />
-        <span style={{ fontSize: 14, fontWeight: 600, color: "#111827", lineHeight: 1.3 }}>{card.name}</span>
+        <span
+          style={{
+            fontSize: 14,
+            fontWeight: 600,
+            color: "#111827",
+            lineHeight: 1.3,
+          }}
+        >
+          {card.name}
+        </span>
       </div>
 
       {/* Description */}
       <p
         className="line-clamp-3"
-        style={{ fontSize: 12, color: "#6b7280", lineHeight: 1.6, margin: 0, flex: 1 }}
+        style={{
+          fontSize: 12,
+          color: "#6b7280",
+          lineHeight: 1.6,
+          margin: 0,
+          flex: 1,
+        }}
       >
         {card.description}
       </p>
 
       {/* Eval badge */}
       {card.eval && (
-        <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 4 }}>
+        <div
+          style={{
+            marginTop: 10,
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+          }}
+        >
           <CheckCircleFilled style={{ color: "#16a34a", fontSize: 12 }} />
           <span style={{ fontSize: 11, color: "#16a34a", fontWeight: 500 }}>
             F1: {card.eval.f1}% &middot; {card.eval.testCases} test cases

@@ -1,5 +1,10 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
-import { copyToClipboard, formatNumberWithCommas, getSpendString, updateExistingKeys } from "./dataUtils";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  copyToClipboard,
+  formatNumberWithCommas,
+  getSpendString,
+  updateExistingKeys,
+} from "./dataUtils";
 
 // Mock NotificationsManager
 vi.mock("../../src/components/molecules/notifications_manager", () => ({
@@ -74,7 +79,7 @@ describe("dataUtils", () => {
     it("should handle zero and non-finite values", () => {
       expect(formatNumberWithCommas(0)).toBe("0");
       expect(formatNumberWithCommas(0, 2)).toBe("0.00");
-      expect(formatNumberWithCommas(Infinity)).toBe("-");
+      expect(formatNumberWithCommas(Number.POSITIVE_INFINITY)).toBe("-");
       expect(formatNumberWithCommas(Number.NaN)).toBe("-");
     });
 
@@ -136,14 +141,18 @@ describe("dataUtils", () => {
         const result = await copyToClipboard("test text");
 
         expect(navigator.clipboard.writeText).toHaveBeenCalledWith("test text");
-        expect(mockNotificationsManager.success).toHaveBeenCalledWith("Copied to clipboard");
+        expect(mockNotificationsManager.success).toHaveBeenCalledWith(
+          "Copied to clipboard",
+        );
         expect(result).toBe(true);
       });
 
       it("should use custom message when provided", async () => {
         await copyToClipboard("test text", "Custom message");
 
-        expect(mockNotificationsManager.success).toHaveBeenCalledWith("Custom message");
+        expect(mockNotificationsManager.success).toHaveBeenCalledWith(
+          "Custom message",
+        );
       });
 
       it("should return false for null/undefined text", async () => {
@@ -154,7 +163,9 @@ describe("dataUtils", () => {
 
       it("should fall back to execCommand when clipboard API fails", async () => {
         // Make clipboard API fail
-        navigator.clipboard.writeText = vi.fn().mockRejectedValue(new Error("Permission denied"));
+        navigator.clipboard.writeText = vi
+          .fn()
+          .mockRejectedValue(new Error("Permission denied"));
 
         // Mock successful execCommand
         document.execCommand = vi.fn().mockReturnValue(true);
@@ -175,7 +186,9 @@ describe("dataUtils", () => {
 
         expect(navigator.clipboard.writeText).toHaveBeenCalledWith("test text");
         expect(document.execCommand).toHaveBeenCalledWith("copy");
-        expect(mockNotificationsManager.success).toHaveBeenCalledWith("Copied to clipboard");
+        expect(mockNotificationsManager.success).toHaveBeenCalledWith(
+          "Copied to clipboard",
+        );
         expect(result).toBe(true);
       });
     });
@@ -208,7 +221,9 @@ describe("dataUtils", () => {
 
         expect(document.createElement).toHaveBeenCalledWith("textarea");
         expect(document.execCommand).toHaveBeenCalledWith("copy");
-        expect(mockNotificationsManager.success).toHaveBeenCalledWith("Copied to clipboard");
+        expect(mockNotificationsManager.success).toHaveBeenCalledWith(
+          "Copied to clipboard",
+        );
         expect(result).toBe(true);
       });
 
@@ -239,7 +254,9 @@ describe("dataUtils", () => {
         const result = await copyToClipboard("test text");
 
         expect(document.execCommand).toHaveBeenCalledWith("copy");
-        expect(mockNotificationsManager.fromBackend).toHaveBeenCalledWith("Failed to copy to clipboard");
+        expect(mockNotificationsManager.fromBackend).toHaveBeenCalledWith(
+          "Failed to copy to clipboard",
+        );
         expect(result).toBe(false);
       });
 
@@ -250,7 +267,9 @@ describe("dataUtils", () => {
 
         const result = await copyToClipboard("test text");
 
-        expect(mockNotificationsManager.fromBackend).toHaveBeenCalledWith("Failed to copy to clipboard");
+        expect(mockNotificationsManager.fromBackend).toHaveBeenCalledWith(
+          "Failed to copy to clipboard",
+        );
         expect(result).toBe(false);
       });
 

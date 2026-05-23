@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock the useWorker hook
 const mockUseWorker = vi.fn();
@@ -51,7 +51,9 @@ describe("WorkerDropdown", () => {
       workers,
     });
 
-    const { container } = render(<WorkerDropdown onWorkerSwitch={mockOnWorkerSwitch} />);
+    const { container } = render(
+      <WorkerDropdown onWorkerSwitch={mockOnWorkerSwitch} />,
+    );
     expect(container).toBeEmptyDOMElement();
   });
 
@@ -62,7 +64,9 @@ describe("WorkerDropdown", () => {
       workers,
     });
 
-    const { container } = render(<WorkerDropdown onWorkerSwitch={mockOnWorkerSwitch} />);
+    const { container } = render(
+      <WorkerDropdown onWorkerSwitch={mockOnWorkerSwitch} />,
+    );
     expect(container).toBeEmptyDOMElement();
   });
 
@@ -111,7 +115,9 @@ describe("WorkerDropdown", () => {
 
     render(<WorkerDropdown onWorkerSwitch={mockOnWorkerSwitch} />);
     const options = screen.getAllByRole("option");
-    const selectedOption = options.find((opt) => (opt as HTMLOptionElement).value === "w1");
+    const selectedOption = options.find(
+      (opt) => (opt as HTMLOptionElement).value === "w1",
+    );
     expect(selectedOption).toBeDisabled();
   });
 

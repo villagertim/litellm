@@ -1,12 +1,12 @@
 /**
  * UI for controlling slack alerting settings
  */
-import React, { useState, useEffect } from "react";
+import type React from "react";
+import { useEffect, useState } from "react";
 
-
+import NotificationsManager from "../molecules/notifications_manager";
 import { alertingSettingsCall, updateConfigFieldSetting } from "../networking";
 import DynamicForm from "./dynamic_form";
-import NotificationsManager from "../molecules/notifications_manager";
 interface alertingSettingsItem {
   field_name: string;
   field_type: string;
@@ -22,8 +22,13 @@ interface AlertingSettingsProps {
   premiumUser: boolean;
 }
 
-const AlertingSettings: React.FC<AlertingSettingsProps> = ({ accessToken, premiumUser }) => {
-  const [alertingSettings, setAlertingSettings] = useState<alertingSettingsItem[]>([]);
+const AlertingSettings: React.FC<AlertingSettingsProps> = ({
+  accessToken,
+  premiumUser,
+}) => {
+  const [alertingSettings, setAlertingSettings] = useState<
+    alertingSettingsItem[]
+  >([]);
 
   useEffect(() => {
     // get values
@@ -38,7 +43,9 @@ const AlertingSettings: React.FC<AlertingSettingsProps> = ({ accessToken, premiu
   const handleInputChange = (fieldName: string, newValue: any) => {
     // Update the value in the state
     const updatedSettings = alertingSettings.map((setting) =>
-      setting.field_name === fieldName ? { ...setting, field_value: newValue } : setting,
+      setting.field_name === fieldName
+        ? { ...setting, field_value: newValue }
+        : setting,
     );
 
     console.log(`updatedSettings: ${JSON.stringify(updatedSettings)}`);
@@ -51,7 +58,7 @@ const AlertingSettings: React.FC<AlertingSettingsProps> = ({ accessToken, premiu
     }
 
     console.log(`formValues: ${formValues}`);
-    let fieldValue = formValues;
+    const fieldValue = formValues;
 
     if (fieldValue == null || fieldValue == undefined) {
       return;
@@ -67,7 +74,9 @@ const AlertingSettings: React.FC<AlertingSettingsProps> = ({ accessToken, premiu
     const mergedFormValues = { ...formValues, ...initialFormValues };
     console.log(`mergedFormValues: ${JSON.stringify(mergedFormValues)}`);
     const { slack_alerting, ...alertingArgs } = mergedFormValues;
-    console.log(`slack_alerting: ${slack_alerting}, alertingArgs: ${JSON.stringify(alertingArgs)}`);
+    console.log(
+      `slack_alerting: ${slack_alerting}, alertingArgs: ${JSON.stringify(alertingArgs)}`,
+    );
     try {
       updateConfigFieldSetting(accessToken, "alerting_args", alertingArgs);
       if (typeof slack_alerting === "boolean") {

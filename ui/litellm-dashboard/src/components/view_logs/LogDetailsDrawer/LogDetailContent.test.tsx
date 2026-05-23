@@ -1,11 +1,13 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { LogDetailContent } from "./LogDetailContent";
 import type { LogEntry } from "../columns";
+import { LogDetailContent } from "./LogDetailContent";
 
 vi.mock("../GuardrailViewer/GuardrailViewer", () => ({
-  default: ({ data }: { data: unknown }) => <div data-testid="guardrail-viewer">{JSON.stringify(data)}</div>,
+  default: ({ data }: { data: unknown }) => (
+    <div data-testid="guardrail-viewer">{JSON.stringify(data)}</div>
+  ),
 }));
 
 const createLogEntry = (overrides: Partial<LogEntry> = {}): LogEntry =>
@@ -92,7 +94,9 @@ describe("LogDetailContent", () => {
   });
 
   it("should not display tags section when request_tags is empty", () => {
-    render(<LogDetailContent logEntry={createLogEntry({ request_tags: {} })} />);
+    render(
+      <LogDetailContent logEntry={createLogEntry({ request_tags: {} })} />,
+    );
 
     expect(screen.queryByText("Tags")).not.toBeInTheDocument();
   });
@@ -139,7 +143,9 @@ describe("LogDetailContent", () => {
     expect(screen.getByText("3")).toBeInTheDocument();
     expect(screen.getByText("28")).toBeInTheDocument();
     // Combined TokenFlow line should not appear (would include "prompt tokens")
-    expect(screen.queryByText(/prompt tokens \+ .* completion tokens/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/prompt tokens \+ .* completion tokens/),
+    ).not.toBeInTheDocument();
   });
 
   it("should display ConfigInfoMessage when no messages, response, or error and not loading", () => {
@@ -153,7 +159,9 @@ describe("LogDetailContent", () => {
       />,
     );
 
-    expect(screen.getByText("Request/Response Data Not Available")).toBeInTheDocument();
+    expect(
+      screen.getByText("Request/Response Data Not Available"),
+    ).toBeInTheDocument();
   });
 
   it("should not display ConfigInfoMessage when isLoadingDetails is true even without data", () => {
@@ -168,18 +176,19 @@ describe("LogDetailContent", () => {
       />,
     );
 
-    expect(screen.queryByText("Request/Response Data Not Available")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Request/Response Data Not Available"),
+    ).not.toBeInTheDocument();
   });
 
   it("should display loading state when isLoadingDetails is true", () => {
     render(
-      <LogDetailContent
-        logEntry={createLogEntry()}
-        isLoadingDetails={true}
-      />,
+      <LogDetailContent logEntry={createLogEntry()} isLoadingDetails={true} />,
     );
 
-    expect(screen.getByText("Loading request & response data...")).toBeInTheDocument();
+    expect(
+      screen.getByText("Loading request & response data..."),
+    ).toBeInTheDocument();
   });
 
   it("should display Request & Response section with Pretty and JSON view modes", () => {
@@ -310,7 +319,9 @@ describe("LogDetailContent", () => {
 
     expect(screen.getByText("Start Time")).toBeInTheDocument();
     expect(screen.getByText("End Time")).toBeInTheDocument();
-    const dateElements = screen.getAllByText((content) => content.includes("2025-11-14"));
+    const dateElements = screen.getAllByText((content) =>
+      content.includes("2025-11-14"),
+    );
     expect(dateElements.length).toBeGreaterThanOrEqual(2);
   });
 
@@ -327,7 +338,10 @@ describe("LogDetailContent", () => {
                 custom_llm_provider: "openai",
                 start_time: 1700000000,
                 end_time: 1700000001,
-                vector_store_search_response: { data: [], search_query: "test" },
+                vector_store_search_response: {
+                  data: [],
+                  search_query: "test",
+                },
               },
             ],
           },
@@ -347,8 +361,12 @@ describe("LogDetailContent", () => {
       />,
     );
 
-    const descriptions = screen.getByText("Provider").closest(".ant-descriptions-item");
+    const descriptions = screen
+      .getByText("Provider")
+      .closest(".ant-descriptions-item");
     expect(descriptions).toBeInTheDocument();
-    expect(within(descriptions as HTMLElement).getByText("-")).toBeInTheDocument();
+    expect(
+      within(descriptions as HTMLElement).getByText("-"),
+    ).toBeInTheDocument();
   });
 });

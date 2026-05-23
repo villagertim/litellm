@@ -1,9 +1,16 @@
-import React, { useState } from "react";
-import { Button, Input, Card, Typography, Spin, Divider } from "antd";
 import MessageManager from "@/components/molecules/message_manager";
-import { SendOutlined, DatabaseOutlined, LoadingOutlined, DownOutlined, RightOutlined } from "@ant-design/icons";
-import { vectorStoreSearchCall } from "../networking";
+import {
+  DatabaseOutlined,
+  DownOutlined,
+  LoadingOutlined,
+  RightOutlined,
+  SendOutlined,
+} from "@ant-design/icons";
+import { Button, Card, Divider, Input, Spin, Typography } from "antd";
+import type React from "react";
+import { useState } from "react";
 import NotificationsManager from "../molecules/notifications_manager";
+import { vectorStoreSearchCall } from "../networking";
 
 const { TextArea } = Input;
 const { Text, Title } = Typography;
@@ -33,7 +40,11 @@ interface VectorStoreTesterProps {
   className?: string;
 }
 
-export const VectorStoreTester: React.FC<VectorStoreTesterProps> = ({ vectorStoreId, accessToken, className = "" }) => {
+export const VectorStoreTester: React.FC<VectorStoreTesterProps> = ({
+  vectorStoreId,
+  accessToken,
+  className = "",
+}) => {
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [searchHistory, setSearchHistory] = useState<
@@ -43,7 +54,9 @@ export const VectorStoreTester: React.FC<VectorStoreTesterProps> = ({ vectorStor
       timestamp: number;
     }[]
   >([]);
-  const [expandedResults, setExpandedResults] = useState<Record<string, boolean>>({});
+  const [expandedResults, setExpandedResults] = useState<
+    Record<string, boolean>
+  >({});
 
   const handleSearch = async () => {
     if (!query.trim()) {
@@ -54,7 +67,11 @@ export const VectorStoreTester: React.FC<VectorStoreTesterProps> = ({ vectorStor
     setIsLoading(true);
 
     try {
-      const response = await vectorStoreSearchCall(accessToken, vectorStoreId, query);
+      const response = await vectorStoreSearchCall(
+        accessToken,
+        vectorStoreId,
+        query,
+      );
 
       const historyEntry = {
         query,
@@ -119,8 +136,12 @@ export const VectorStoreTester: React.FC<VectorStoreTesterProps> = ({ vectorStor
         <div className="flex-1 overflow-auto p-4 pb-0">
           {searchHistory.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-gray-400">
-              <DatabaseOutlined style={{ fontSize: "48px", marginBottom: "16px" }} />
-              <Text>Test your vector store by entering a search query below</Text>
+              <DatabaseOutlined
+                style={{ fontSize: "48px", marginBottom: "16px" }}
+              />
+              <Text>
+                Test your vector store by entering a search query below
+              </Text>
             </div>
           ) : (
             <div className="space-y-4">
@@ -131,7 +152,9 @@ export const VectorStoreTester: React.FC<VectorStoreTesterProps> = ({ vectorStor
                     <div className="inline-block max-w-[80%] rounded-lg shadow-sm p-3 bg-blue-50 border border-blue-200">
                       <div className="flex items-center gap-2 mb-1">
                         <strong className="text-sm">Query</strong>
-                        <span className="text-xs text-gray-500">{formatTimestamp(entry.timestamp)}</span>
+                        <span className="text-xs text-gray-500">
+                          {formatTimestamp(entry.timestamp)}
+                        </span>
                       </div>
                       <div className="text-left">{entry.query}</div>
                     </div>
@@ -142,7 +165,9 @@ export const VectorStoreTester: React.FC<VectorStoreTesterProps> = ({ vectorStor
                     <div className="inline-block max-w-[80%] rounded-lg shadow-sm p-3 bg-white border border-gray-200">
                       <div className="flex items-center gap-2 mb-2">
                         <DatabaseOutlined className="text-green-500" />
-                        <strong className="text-sm">Vector Store Results</strong>
+                        <strong className="text-sm">
+                          Vector Store Results
+                        </strong>
                         {entry.response && (
                           <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600">
                             {entry.response.data?.length || 0} results
@@ -150,17 +175,26 @@ export const VectorStoreTester: React.FC<VectorStoreTesterProps> = ({ vectorStor
                         )}
                       </div>
 
-                      {entry.response && entry.response.data && entry.response.data.length > 0 ? (
+                      {entry.response &&
+                      entry.response.data &&
+                      entry.response.data.length > 0 ? (
                         <div className="space-y-3">
                           {entry.response.data.map((result, resultIndex) => {
-                            const isExpanded = expandedResults[`${index}-${resultIndex}`] || false;
+                            const isExpanded =
+                              expandedResults[`${index}-${resultIndex}`] ||
+                              false;
 
                             return (
-                              <div key={resultIndex} className="border rounded-lg overflow-hidden bg-gray-50">
+                              <div
+                                key={resultIndex}
+                                className="border rounded-lg overflow-hidden bg-gray-50"
+                              >
                                 {/* Clickable Header */}
                                 <div
                                   className="flex justify-between items-center p-3 cursor-pointer hover:bg-gray-100 transition-colors"
-                                  onClick={() => toggleResultExpansion(index, resultIndex)}
+                                  onClick={() =>
+                                    toggleResultExpansion(index, resultIndex)
+                                  }
                                 >
                                   <div className="flex items-center">
                                     {isExpanded ? (
@@ -168,13 +202,22 @@ export const VectorStoreTester: React.FC<VectorStoreTesterProps> = ({ vectorStor
                                     ) : (
                                       <RightOutlined className="text-gray-500 mr-2" />
                                     )}
-                                    <span className="font-medium text-sm">Result {resultIndex + 1}</span>
+                                    <span className="font-medium text-sm">
+                                      Result {resultIndex + 1}
+                                    </span>
                                     {/* Show preview of content when collapsed */}
-                                    {!isExpanded && result.content && result.content[0] && (
-                                      <span className="ml-2 text-xs text-gray-500 truncate max-w-md">
-                                        - {result.content[0].text.substring(0, 100)}...
-                                      </span>
-                                    )}
+                                    {!isExpanded &&
+                                      result.content &&
+                                      result.content[0] && (
+                                        <span className="ml-2 text-xs text-gray-500 truncate max-w-md">
+                                          -{" "}
+                                          {result.content[0].text.substring(
+                                            0,
+                                            100,
+                                          )}
+                                          ...
+                                        </span>
+                                      )}
                                   </div>
                                   <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
                                     Score: {result.score.toFixed(4)}
@@ -186,38 +229,63 @@ export const VectorStoreTester: React.FC<VectorStoreTesterProps> = ({ vectorStor
                                   <div className="border-t bg-white p-3">
                                     {/* Content */}
                                     {result.content &&
-                                      result.content.map((content, contentIndex) => (
-                                        <div key={contentIndex} className="mb-3">
-                                          <div className="text-xs text-gray-500 mb-1">Content ({content.type})</div>
-                                          <div className="text-sm bg-gray-50 p-3 rounded border text-gray-800 max-h-40 overflow-y-auto">
-                                            {content.text}
+                                      result.content.map(
+                                        (content, contentIndex) => (
+                                          <div
+                                            key={contentIndex}
+                                            className="mb-3"
+                                          >
+                                            <div className="text-xs text-gray-500 mb-1">
+                                              Content ({content.type})
+                                            </div>
+                                            <div className="text-sm bg-gray-50 p-3 rounded border text-gray-800 max-h-40 overflow-y-auto">
+                                              {content.text}
+                                            </div>
                                           </div>
-                                        </div>
-                                      ))}
+                                        ),
+                                      )}
 
                                     {/* Metadata */}
-                                    {(result.file_id || result.filename || result.attributes) && (
+                                    {(result.file_id ||
+                                      result.filename ||
+                                      result.attributes) && (
                                       <div className="mt-3 pt-3 border-t border-gray-200">
-                                        <div className="text-xs text-gray-500 mb-2 font-medium">Metadata</div>
+                                        <div className="text-xs text-gray-500 mb-2 font-medium">
+                                          Metadata
+                                        </div>
                                         <div className="space-y-2 text-xs">
                                           {result.file_id && (
                                             <div className="bg-gray-50 p-2 rounded">
-                                              <span className="font-medium">File ID:</span> {result.file_id}
+                                              <span className="font-medium">
+                                                File ID:
+                                              </span>{" "}
+                                              {result.file_id}
                                             </div>
                                           )}
                                           {result.filename && (
                                             <div className="bg-gray-50 p-2 rounded">
-                                              <span className="font-medium">Filename:</span> {result.filename}
+                                              <span className="font-medium">
+                                                Filename:
+                                              </span>{" "}
+                                              {result.filename}
                                             </div>
                                           )}
-                                          {result.attributes && Object.keys(result.attributes).length > 0 && (
-                                            <div className="bg-gray-50 p-2 rounded">
-                                              <span className="font-medium block mb-1">Attributes:</span>
-                                              <pre className="text-xs bg-white p-2 rounded border overflow-x-auto">
-                                                {JSON.stringify(result.attributes, null, 2)}
-                                              </pre>
-                                            </div>
-                                          )}
+                                          {result.attributes &&
+                                            Object.keys(result.attributes)
+                                              .length > 0 && (
+                                              <div className="bg-gray-50 p-2 rounded">
+                                                <span className="font-medium block mb-1">
+                                                  Attributes:
+                                                </span>
+                                                <pre className="text-xs bg-white p-2 rounded border overflow-x-auto">
+                                                  {JSON.stringify(
+                                                    result.attributes,
+                                                    null,
+                                                    2,
+                                                  )}
+                                                </pre>
+                                              </div>
+                                            )}
                                         </div>
                                       </div>
                                     )}
@@ -228,7 +296,9 @@ export const VectorStoreTester: React.FC<VectorStoreTesterProps> = ({ vectorStor
                           })}
                         </div>
                       ) : (
-                        <div className="text-gray-500 text-sm">No results found</div>
+                        <div className="text-gray-500 text-sm">
+                          No results found
+                        </div>
                       )}
                     </div>
                   </div>
@@ -241,7 +311,9 @@ export const VectorStoreTester: React.FC<VectorStoreTesterProps> = ({ vectorStor
 
           {isLoading && (
             <div className="flex justify-center items-center my-4">
-              <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+              <Spin
+                indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
+              />
             </div>
           )}
         </div>

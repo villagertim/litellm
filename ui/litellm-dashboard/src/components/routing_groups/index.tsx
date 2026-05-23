@@ -1,15 +1,23 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
-import { Button, Card, Flex, Input, Modal, Space, Typography } from "antd";
-import { PlusOutlined, ReloadOutlined, SearchOutlined } from "@ant-design/icons";
-import { useRoutingGroups, useSaveRoutingGroups } from "@/app/(dashboard)/hooks/routingGroups/useRoutingGroups";
-import { useRouterFields } from "@/app/(dashboard)/hooks/router/useRouterFields";
 import { useModelHub } from "@/app/(dashboard)/hooks/models/useModels";
 import useProxySettings from "@/app/(dashboard)/hooks/proxySettings/useProxySettings";
-import RoutingGroupsTable from "./RoutingGroupsTable";
-import RoutingGroupModal from "./RoutingGroupModal";
+import { useRouterFields } from "@/app/(dashboard)/hooks/router/useRouterFields";
+import {
+  useRoutingGroups,
+  useSaveRoutingGroups,
+} from "@/app/(dashboard)/hooks/routingGroups/useRoutingGroups";
+import {
+  PlusOutlined,
+  ReloadOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
+import { Button, Card, Flex, Input, Modal, Space, Typography } from "antd";
+import type React from "react";
+import { useMemo, useState } from "react";
 import NotificationsManager from "../molecules/notifications_manager";
+import RoutingGroupModal from "./RoutingGroupModal";
+import RoutingGroupsTable from "./RoutingGroupsTable";
 import type { RoutingGroup } from "./types";
 
 const { Text } = Typography;
@@ -42,15 +50,20 @@ const RoutingGroups: React.FC = () => {
 
   const availableStrategies = useMemo(() => {
     if (data?.availableStrategies?.length) return data.availableStrategies;
-    const fromFields = routerFields?.fields?.find((f) => f.field_name === "routing_strategy")?.options;
+    const fromFields = routerFields?.fields?.find(
+      (f) => f.field_name === "routing_strategy",
+    )?.options;
     return fromFields ?? [];
   }, [data?.availableStrategies, routerFields]);
 
-  const strategyDescriptions = routerFields?.routing_strategy_descriptions ?? {};
+  const strategyDescriptions =
+    routerFields?.routing_strategy_descriptions ?? {};
 
   const modelOptions = useMemo<string[]>(() => {
     const records = (modelHub?.data ?? []) as Array<{ model_group?: string }>;
-    const names = records.map((r) => r.model_group).filter((n): n is string => Boolean(n));
+    const names = records
+      .map((r) => r.model_group)
+      .filter((n): n is string => Boolean(n));
     return Array.from(new Set(names));
   }, [modelHub]);
 
@@ -70,7 +83,9 @@ const RoutingGroups: React.FC = () => {
     const next: RoutingGroup[] =
       drawerMode === "create"
         ? [...groups, incoming]
-        : groups.map((g) => (g.group_name === editingGroup?.group_name ? incoming : g));
+        : groups.map((g) =>
+            g.group_name === editingGroup?.group_name ? incoming : g,
+          );
 
     try {
       await saveMutation.mutateAsync(next);
@@ -89,10 +104,14 @@ const RoutingGroups: React.FC = () => {
 
   const confirmDelete = async () => {
     if (!deletingGroup) return;
-    const next = groups.filter((g) => g.group_name !== deletingGroup.group_name);
+    const next = groups.filter(
+      (g) => g.group_name !== deletingGroup.group_name,
+    );
     try {
       await saveMutation.mutateAsync(next);
-      NotificationsManager.success(`Deleted routing group "${deletingGroup.group_name}"`);
+      NotificationsManager.success(
+        `Deleted routing group "${deletingGroup.group_name}"`,
+      );
       setDeletingGroup(null);
     } catch (err) {
       NotificationsManager.error(
@@ -125,7 +144,8 @@ const RoutingGroups: React.FC = () => {
               Create Group
             </Button>
             <Text type="secondary" className="text-sm whitespace-nowrap">
-              Showing {filteredGroups.length} {filteredGroups.length === 1 ? "result" : "results"}
+              Showing {filteredGroups.length}{" "}
+              {filteredGroups.length === 1 ? "result" : "results"}
             </Text>
           </Flex>
         </Flex>
@@ -166,8 +186,9 @@ const RoutingGroups: React.FC = () => {
         onCancel={() => setDeletingGroup(null)}
       >
         <Text>
-          Models in <Text strong>{deletingGroup?.group_name}</Text> will fall back to the proxy&apos;s
-          top-level routing strategy. This cannot be undone.
+          Models in <Text strong>{deletingGroup?.group_name}</Text> will fall
+          back to the proxy&apos;s top-level routing strategy. This cannot be
+          undone.
         </Text>
       </Modal>
     </Space>

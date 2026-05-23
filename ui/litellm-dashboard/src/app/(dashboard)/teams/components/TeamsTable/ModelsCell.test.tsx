@@ -1,7 +1,7 @@
+import type { Team } from "@/components/key_team_helpers/key_list";
 import { act, render, screen } from "@testing-library/react";
 import React from "react";
 import { describe, expect, it, vi } from "vitest";
-import { Team } from "@/components/key_team_helpers/key_list";
 import ModelsCell from "./ModelsCell";
 
 // The Icon component from @tremor/react does not forward onClick to the rendered element
@@ -11,8 +11,15 @@ vi.mock("@tremor/react", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@tremor/react")>();
   return {
     ...actual,
-    Icon: ({ onClick, "aria-label": ariaLabel }: { onClick?: () => void; "aria-label"?: string }) =>
-      React.createElement("button", { onClick, "aria-label": ariaLabel ?? "accordion-toggle", type: "button" }),
+    Icon: ({
+      onClick,
+      "aria-label": ariaLabel,
+    }: { onClick?: () => void; "aria-label"?: string }) =>
+      React.createElement("button", {
+        onClick,
+        "aria-label": ariaLabel ?? "accordion-toggle",
+        type: "button",
+      }),
   };
 });
 
@@ -63,7 +70,9 @@ describe("ModelsCell", () => {
     expect(screen.getByText("gpt-4")).toBeInTheDocument();
     expect(screen.getByText("gpt-3.5-turbo")).toBeInTheDocument();
     expect(screen.getByText("claude-3")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /accordion/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /accordion/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("should truncate model names longer than 30 characters with an ellipsis", () => {
@@ -95,7 +104,9 @@ describe("ModelsCell", () => {
   it("should show the accordion toggle button when there are more than 3 models", () => {
     renderModelsCell(makeTeam(["m1", "m2", "m3", "m4"]));
 
-    expect(screen.getByRole("button", { name: /accordion/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /accordion/i }),
+    ).toBeInTheDocument();
   });
 
   it("should expand to show all models when the accordion toggle is clicked", () => {
@@ -133,6 +144,8 @@ describe("ModelsCell", () => {
     expect(screen.queryByText("m1")).not.toBeInTheDocument();
     expect(screen.queryByText("m2")).not.toBeInTheDocument();
     expect(screen.queryByText("m3")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /accordion/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /accordion/i }),
+    ).not.toBeInTheDocument();
   });
 });

@@ -1,6 +1,6 @@
-import React from "react";
-import { Form, Input, Tooltip } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
+import { Form, Input, Tooltip } from "antd";
+import type React from "react";
 
 interface StdioConfigurationProps {
   isVisible: boolean;
@@ -11,7 +11,10 @@ interface StdioConfigurationProps {
   required?: boolean;
 }
 
-const StdioConfiguration: React.FC<StdioConfigurationProps> = ({ isVisible, required = true }) => {
+const StdioConfiguration: React.FC<StdioConfigurationProps> = ({
+  isVisible,
+  required = true,
+}) => {
   if (!isVisible) return null;
 
   return (
@@ -26,7 +29,9 @@ const StdioConfiguration: React.FC<StdioConfigurationProps> = ({ isVisible, requ
       }
       name="stdio_config"
       rules={[
-        ...(required ? [{ required: true, message: "Please enter stdio configuration" }] : []),
+        ...(required
+          ? [{ required: true, message: "Please enter stdio configuration" }]
+          : []),
         {
           validator: (_, value) => {
             if (!value) return Promise.resolve();

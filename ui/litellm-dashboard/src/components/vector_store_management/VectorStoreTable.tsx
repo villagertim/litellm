@@ -1,18 +1,29 @@
-import { ChevronDownIcon, ChevronUpIcon, SwitchVerticalIcon } from "@heroicons/react/outline";
 import {
-  ColumnDef,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  SwitchVerticalIcon,
+} from "@heroicons/react/outline";
+import {
+  type ColumnDef,
+  type SortingState,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "@tremor/react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+} from "@tremor/react";
 import { Tooltip } from "antd";
 import React from "react";
 import TableIconActionButton from "../common_components/IconActionButton/TableIconActionButtons/TableIconActionButton";
 import { getProviderLogoAndName } from "../provider_info_helpers";
-import { VectorStore } from "./types";
+import type { VectorStore } from "./types";
 
 interface VectorStoreTableProps {
   data: VectorStore[];
@@ -21,8 +32,15 @@ interface VectorStoreTableProps {
   onDelete: (vectorStoreId: string) => void;
 }
 
-const VectorStoreTable: React.FC<VectorStoreTableProps> = ({ data, onView, onEdit, onDelete }) => {
-  const [sorting, setSorting] = React.useState<SortingState>([{ id: "created_at", desc: true }]);
+const VectorStoreTable: React.FC<VectorStoreTableProps> = ({
+  data,
+  onView,
+  onEdit,
+  onDelete,
+}) => {
+  const [sorting, setSorting] = React.useState<SortingState>([
+    { id: "created_at", desc: true },
+  ]);
 
   const columns: ColumnDef<VectorStore>[] = [
     {
@@ -49,7 +67,9 @@ const VectorStoreTable: React.FC<VectorStoreTableProps> = ({ data, onView, onEdi
         const vectorStore = row.original;
         return (
           <Tooltip title={vectorStore.vector_store_name}>
-            <span className="text-xs">{vectorStore.vector_store_name || "-"}</span>
+            <span className="text-xs">
+              {vectorStore.vector_store_name || "-"}
+            </span>
           </Tooltip>
         );
       },
@@ -61,7 +81,9 @@ const VectorStoreTable: React.FC<VectorStoreTableProps> = ({ data, onView, onEdi
         const vectorStore = row.original;
         return (
           <Tooltip title={vectorStore.vector_store_description}>
-            <span className="text-xs">{vectorStore.vector_store_description || "-"}</span>
+            <span className="text-xs">
+              {vectorStore.vector_store_description || "-"}
+            </span>
           </Tooltip>
         );
       },
@@ -71,20 +93,22 @@ const VectorStoreTable: React.FC<VectorStoreTableProps> = ({ data, onView, onEdi
       accessorKey: "vector_store_metadata",
       cell: ({ row }) => {
         const vectorStore = row.original;
-        const ingestedFiles = vectorStore.vector_store_metadata?.ingested_files || [];
-        
+        const ingestedFiles =
+          vectorStore.vector_store_metadata?.ingested_files || [];
+
         if (ingestedFiles.length === 0) {
           return <span className="text-xs text-gray-400">-</span>;
         }
-        
+
         const filenames = ingestedFiles
           .map((file) => file.filename || file.file_url || "Unknown")
           .join(", ");
-        
-        const displayText = ingestedFiles.length === 1 
-          ? ingestedFiles[0].filename || ingestedFiles[0].file_url || "1 file"
-          : `${ingestedFiles.length} files`;
-        
+
+        const displayText =
+          ingestedFiles.length === 1
+            ? ingestedFiles[0].filename || ingestedFiles[0].file_url || "1 file"
+            : `${ingestedFiles.length} files`;
+
         return (
           <Tooltip title={filenames}>
             <span className="text-xs text-blue-600">{displayText}</span>
@@ -97,7 +121,9 @@ const VectorStoreTable: React.FC<VectorStoreTableProps> = ({ data, onView, onEdi
       accessorKey: "custom_llm_provider",
       cell: ({ row }) => {
         const vectorStore = row.original;
-        const { displayName, logo } = getProviderLogoAndName(vectorStore.custom_llm_provider);
+        const { displayName, logo } = getProviderLogoAndName(
+          vectorStore.custom_llm_provider,
+        );
         return (
           <div className="flex items-center space-x-2">
             {logo && <img src={logo} alt={displayName} className="h-4 w-4" />}
@@ -112,7 +138,11 @@ const VectorStoreTable: React.FC<VectorStoreTableProps> = ({ data, onView, onEdi
       sortingFn: "datetime",
       cell: ({ row }) => {
         const vectorStore = row.original;
-        return <span className="text-xs">{new Date(vectorStore.created_at).toLocaleDateString()}</span>;
+        return (
+          <span className="text-xs">
+            {new Date(vectorStore.created_at).toLocaleDateString()}
+          </span>
+        );
       },
     },
     {
@@ -121,7 +151,11 @@ const VectorStoreTable: React.FC<VectorStoreTableProps> = ({ data, onView, onEdi
       sortingFn: "datetime",
       cell: ({ row }) => {
         const vectorStore = row.original;
-        return <span className="text-xs">{new Date(vectorStore.updated_at).toLocaleDateString()}</span>;
+        return (
+          <span className="text-xs">
+            {new Date(vectorStore.updated_at).toLocaleDateString()}
+          </span>
+        );
       },
     },
     {
@@ -170,20 +204,31 @@ const VectorStoreTable: React.FC<VectorStoreTableProps> = ({ data, onView, onEdi
                   <TableHeaderCell
                     key={header.id}
                     className={`py-1 h-8 ${
-                      header.id === "actions" ? "sticky right-0 bg-white shadow-[-4px_0_8px_-6px_rgba(0,0,0,0.1)]" : ""
+                      header.id === "actions"
+                        ? "sticky right-0 bg-white shadow-[-4px_0_8px_-6px_rgba(0,0,0,0.1)]"
+                        : ""
                     }`}
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center">
-                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                       </div>
                       {header.id !== "actions" && (
                         <div className="w-4">
                           {header.column.getIsSorted() ? (
                             {
-                              asc: <ChevronUpIcon className="h-4 w-4 text-blue-500" />,
-                              desc: <ChevronDownIcon className="h-4 w-4 text-blue-500" />,
+                              asc: (
+                                <ChevronUpIcon className="h-4 w-4 text-blue-500" />
+                              ),
+                              desc: (
+                                <ChevronDownIcon className="h-4 w-4 text-blue-500" />
+                              ),
                             }[header.column.getIsSorted() as string]
                           ) : (
                             <SwitchVerticalIcon className="h-4 w-4 text-gray-400" />
@@ -209,7 +254,10 @@ const VectorStoreTable: React.FC<VectorStoreTableProps> = ({ data, onView, onEdi
                           : ""
                       }`}
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>

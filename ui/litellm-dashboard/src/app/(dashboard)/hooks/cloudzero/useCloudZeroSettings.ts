@@ -1,13 +1,20 @@
-import { CloudZeroSettings } from "@/components/CloudZeroCostTracking/types";
-import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "@/components/networking";
+import type { CloudZeroSettings } from "@/components/CloudZeroCostTracking/types";
+import {
+  getGlobalLitellmHeaderName,
+  getProxyBaseUrl,
+} from "@/components/networking";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createQueryKeys } from "../common/queryKeysFactory";
 
 const cloudZeroSettingsKeys = createQueryKeys("cloudZeroSettings");
 
-const getCloudZeroSettings = async (accessToken: string): Promise<CloudZeroSettings | null> => {
+const getCloudZeroSettings = async (
+  accessToken: string,
+): Promise<CloudZeroSettings | null> => {
   const proxyBaseUrl = getProxyBaseUrl();
-  const url = proxyBaseUrl ? `${proxyBaseUrl}/cloudzero/settings` : `/cloudzero/settings`;
+  const url = proxyBaseUrl
+    ? `${proxyBaseUrl}/cloudzero/settings`
+    : `/cloudzero/settings`;
 
   const response = await fetch(url, {
     method: "GET",
@@ -28,7 +35,9 @@ const getCloudZeroSettings = async (accessToken: string): Promise<CloudZeroSetti
           errorData?.error ||
           errorData?.message ||
           errorData?.detail ||
-          (typeof errorData?.error === "string" ? errorData.error : errorMessage);
+          (typeof errorData?.error === "string"
+            ? errorData.error
+            : errorMessage);
       } else if (typeof errorData === "string") {
         errorMessage = errorData;
       }
@@ -75,9 +84,14 @@ interface DeleteResponse {
   status: string;
 }
 
-const updateCloudZeroSettings = async (accessToken: string, params: UpdateParams): Promise<UpdateResponse> => {
+const updateCloudZeroSettings = async (
+  accessToken: string,
+  params: UpdateParams,
+): Promise<UpdateResponse> => {
   const proxyBaseUrl = getProxyBaseUrl();
-  const url = proxyBaseUrl ? `${proxyBaseUrl}/cloudzero/settings` : `/cloudzero/settings`;
+  const url = proxyBaseUrl
+    ? `${proxyBaseUrl}/cloudzero/settings`
+    : `/cloudzero/settings`;
 
   const response = await fetch(url, {
     method: "PUT",
@@ -102,7 +116,9 @@ const updateCloudZeroSettings = async (accessToken: string, params: UpdateParams
           errorData?.error ||
           errorData?.message ||
           errorData?.detail ||
-          (typeof errorData?.error === "string" ? errorData.error : errorMessage);
+          (typeof errorData?.error === "string"
+            ? errorData.error
+            : errorMessage);
       } else if (typeof errorData === "string") {
         errorMessage = errorData;
       }
@@ -128,14 +144,20 @@ export const useCloudZeroUpdateSettings = (accessToken: string) => {
     },
     onSuccess: () => {
       // Invalidate the settings query to refetch updated data
-      queryClient.invalidateQueries({ queryKey: cloudZeroSettingsKeys.list({}) });
+      queryClient.invalidateQueries({
+        queryKey: cloudZeroSettingsKeys.list({}),
+      });
     },
   });
 };
 
-const deleteCloudZeroSettings = async (accessToken: string): Promise<DeleteResponse> => {
+const deleteCloudZeroSettings = async (
+  accessToken: string,
+): Promise<DeleteResponse> => {
   const proxyBaseUrl = getProxyBaseUrl();
-  const url = proxyBaseUrl ? `${proxyBaseUrl}/cloudzero/delete` : `/cloudzero/delete`;
+  const url = proxyBaseUrl
+    ? `${proxyBaseUrl}/cloudzero/delete`
+    : `/cloudzero/delete`;
 
   const response = await fetch(url, {
     method: "DELETE",
@@ -155,7 +177,9 @@ const deleteCloudZeroSettings = async (accessToken: string): Promise<DeleteRespo
           errorData?.error ||
           errorData?.message ||
           errorData?.detail ||
-          (typeof errorData?.error === "string" ? errorData.error : errorMessage);
+          (typeof errorData?.error === "string"
+            ? errorData.error
+            : errorMessage);
       } else if (typeof errorData === "string") {
         errorMessage = errorData;
       }
@@ -181,7 +205,9 @@ export const useCloudZeroDeleteSettings = (accessToken: string) => {
     },
     onSuccess: () => {
       // Invalidate the settings query to refetch updated data
-      queryClient.invalidateQueries({ queryKey: cloudZeroSettingsKeys.list({}) });
+      queryClient.invalidateQueries({
+        queryKey: cloudZeroSettingsKeys.list({}),
+      });
     },
   });
 };

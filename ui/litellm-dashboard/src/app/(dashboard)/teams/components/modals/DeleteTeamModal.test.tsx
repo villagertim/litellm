@@ -1,8 +1,8 @@
+import type { Team } from "@/components/key_team_helpers/key_list";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { describe, expect, it, vi } from "vitest";
-import { Team } from "@/components/key_team_helpers/key_list";
 import DeleteTeamModal from "./DeleteTeamModal";
 
 const makeTeam = (overrides: Partial<Team> = {}): Team => ({
@@ -21,7 +21,9 @@ const makeTeam = (overrides: Partial<Team> = {}): Team => ({
   ...overrides,
 });
 
-const renderModal = (props: Partial<Parameters<typeof DeleteTeamModal>[0]> = {}) => {
+const renderModal = (
+  props: Partial<Parameters<typeof DeleteTeamModal>[0]> = {},
+) => {
   const defaults = {
     teams: [makeTeam()],
     teamToDelete: "team-1",
@@ -37,14 +39,20 @@ describe("DeleteTeamModal", () => {
 
     expect(screen.getByText("Delete Team")).toBeInTheDocument();
     expect(screen.getByText("Engineering")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Enter team name exactly")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Enter team name exactly"),
+    ).toBeInTheDocument();
   });
 
   it("should render Cancel and Force Delete buttons", () => {
     renderModal();
 
-    expect(screen.getByRole("button", { name: /^cancel$/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /force delete/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /^cancel$/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /force delete/i }),
+    ).toBeInTheDocument();
   });
 
   it("should not show the warning banner when the team has no keys", () => {
@@ -57,38 +65,57 @@ describe("DeleteTeamModal", () => {
     const team = makeTeam({ keys: [{ token: "tok-1" } as any] });
     renderModal({ teams: [team] });
 
-    expect(screen.getByText(/This team has 1 associated key\./)).toBeInTheDocument();
+    expect(
+      screen.getByText(/This team has 1 associated key\./),
+    ).toBeInTheDocument();
   });
 
   it("should show a warning with plural 'keys' when the team has multiple keys", () => {
     const team = makeTeam({
-      keys: [{ token: "tok-1" } as any, { token: "tok-2" } as any, { token: "tok-3" } as any],
+      keys: [
+        { token: "tok-1" } as any,
+        { token: "tok-2" } as any,
+        { token: "tok-3" } as any,
+      ],
     });
     renderModal({ teams: [team] });
 
-    expect(screen.getByText(/This team has 3 associated keys\./)).toBeInTheDocument();
+    expect(
+      screen.getByText(/This team has 3 associated keys\./),
+    ).toBeInTheDocument();
   });
 
   it("should note that associated keys will also be deleted in the warning", () => {
     const team = makeTeam({ keys: [{ token: "tok-1" } as any] });
     renderModal({ teams: [team] });
 
-    expect(screen.getByText(/Deleting the team will also delete all associated keys/)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /Deleting the team will also delete all associated keys/,
+      ),
+    ).toBeInTheDocument();
   });
 
   it("should disable Force Delete when the input is empty", () => {
     renderModal();
 
-    expect(screen.getByRole("button", { name: /force delete/i })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /force delete/i }),
+    ).toBeDisabled();
   });
 
   it("should keep Force Delete disabled when the input does not exactly match the team name", async () => {
     const user = userEvent.setup();
     renderModal();
 
-    await user.type(screen.getByPlaceholderText("Enter team name exactly"), "engineer");
+    await user.type(
+      screen.getByPlaceholderText("Enter team name exactly"),
+      "engineer",
+    );
 
-    expect(screen.getByRole("button", { name: /force delete/i })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /force delete/i }),
+    ).toBeDisabled();
   });
 
   it("should enable Force Delete only after typing the exact team name (case-sensitive)", async () => {
@@ -107,7 +134,10 @@ describe("DeleteTeamModal", () => {
     const onConfirm = vi.fn();
     renderModal({ onConfirm });
 
-    await user.type(screen.getByPlaceholderText("Enter team name exactly"), "Engineering");
+    await user.type(
+      screen.getByPlaceholderText("Enter team name exactly"),
+      "Engineering",
+    );
     await user.click(screen.getByRole("button", { name: /force delete/i }));
 
     expect(onConfirm).toHaveBeenCalledTimes(1);

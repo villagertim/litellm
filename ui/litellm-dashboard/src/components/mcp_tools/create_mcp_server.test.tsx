@@ -1,4 +1,10 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as networking from "../networking";
@@ -6,7 +12,9 @@ import CreateMCPServer from "./create_mcp_server";
 
 vi.mock("../networking", () => ({
   createMCPServer: vi.fn(),
-  testMCPToolsListRequest: vi.fn().mockResolvedValue({ tools: [], error: null }),
+  testMCPToolsListRequest: vi
+    .fn()
+    .mockResolvedValue({ tools: [], error: null }),
 }));
 
 vi.mock("@/hooks/useMcpOAuthFlow", () => ({
@@ -48,7 +56,8 @@ const defaultProps = {
 };
 
 /** Helper: get the server_name input by its Ant Form id */
-const getServerNameInput = () => document.getElementById("server_name") as HTMLInputElement;
+const getServerNameInput = () =>
+  document.getElementById("server_name") as HTMLInputElement;
 
 /** Helper: select a dropdown option by opening a select near a label and clicking an option */
 async function selectAntOption(labelText: string, optionText: string) {
@@ -80,9 +89,9 @@ async function selectAntOption(labelText: string, optionText: string) {
     expect(options.length).toBeGreaterThan(0);
   });
 
-  const option = Array.from(document.querySelectorAll(".ant-select-item-option")).find((el) =>
-    el.textContent?.includes(optionText),
-  );
+  const option = Array.from(
+    document.querySelectorAll(".ant-select-item-option"),
+  ).find((el) => el.textContent?.includes(optionText));
   expect(option).toBeTruthy();
   act(() => {
     fireEvent.click(option!);
@@ -113,7 +122,9 @@ describe("CreateMCPServer", () => {
 
     // Verify the option was applied by checking the URL field appears
     await waitFor(() => {
-      expect(screen.getByPlaceholderText("https://your-mcp-server.com")).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText("https://your-mcp-server.com"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -124,14 +135,18 @@ describe("CreateMCPServer", () => {
 
       // Wait for URL field to appear (confirms transport was set)
       await waitFor(() => {
-        expect(screen.getByPlaceholderText("https://your-mcp-server.com")).toBeInTheDocument();
+        expect(
+          screen.getByPlaceholderText("https://your-mcp-server.com"),
+        ).toBeInTheDocument();
       });
     }
 
     it("should show URL field after selecting HTTP transport", async () => {
       await selectHttpTransport();
 
-      expect(screen.getByPlaceholderText("https://your-mcp-server.com")).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText("https://your-mcp-server.com"),
+      ).toBeInTheDocument();
     });
 
     it("should show auth type dropdown after selecting HTTP transport", async () => {
@@ -160,7 +175,9 @@ describe("CreateMCPServer", () => {
       await user.type(nameInput, "Test_Server");
 
       // Fill in URL
-      const urlInput = screen.getByPlaceholderText("https://your-mcp-server.com");
+      const urlInput = screen.getByPlaceholderText(
+        "https://your-mcp-server.com",
+      );
       await user.type(urlInput, "https://example.com/mcp");
 
       // Select API Key auth type
@@ -184,7 +201,9 @@ describe("CreateMCPServer", () => {
         updated_by: "user-1",
       });
 
-      const submitButton = screen.getByRole("button", { name: "Add MCP Server" });
+      const submitButton = screen.getByRole("button", {
+        name: "Add MCP Server",
+      });
       await act(async () => {
         fireEvent.click(submitButton);
       });
@@ -203,7 +222,9 @@ describe("CreateMCPServer", () => {
       const nameInput = getServerNameInput();
       await user.type(nameInput, "Test_Server");
 
-      const urlInput = screen.getByPlaceholderText("https://your-mcp-server.com");
+      const urlInput = screen.getByPlaceholderText(
+        "https://your-mcp-server.com",
+      );
       await user.type(urlInput, "https://example.com/mcp");
 
       await selectAntOption("Authentication", "Bearer Token");
@@ -226,7 +247,9 @@ describe("CreateMCPServer", () => {
         updated_by: "user-1",
       });
 
-      const submitButton = screen.getByRole("button", { name: "Add MCP Server" });
+      const submitButton = screen.getByRole("button", {
+        name: "Add MCP Server",
+      });
       await act(async () => {
         fireEvent.click(submitButton);
       });
@@ -244,7 +267,9 @@ describe("CreateMCPServer", () => {
       const nameInput = getServerNameInput();
       await user.type(nameInput, "My_Server");
 
-      const urlInput = screen.getByPlaceholderText("https://your-mcp-server.com");
+      const urlInput = screen.getByPlaceholderText(
+        "https://your-mcp-server.com",
+      );
       await user.type(urlInput, "https://example.com/mcp");
 
       await selectAntOption("Authentication", "API Key");
@@ -270,7 +295,9 @@ describe("CreateMCPServer", () => {
         updated_by: "user-1",
       });
 
-      const submitButton = screen.getByRole("button", { name: "Add MCP Server" });
+      const submitButton = screen.getByRole("button", {
+        name: "Add MCP Server",
+      });
       await act(async () => {
         fireEvent.click(submitButton);
       });
@@ -279,7 +306,8 @@ describe("CreateMCPServer", () => {
         expect(networking.createMCPServer).toHaveBeenCalledTimes(1);
       });
 
-      const [token, payload] = vi.mocked(networking.createMCPServer).mock.calls[0];
+      const [token, payload] = vi.mocked(networking.createMCPServer).mock
+        .calls[0];
       expect(token).toBe("test-token");
       expect(payload.credentials).toEqual({ auth_value: "my-secret-key" });
     });
@@ -291,7 +319,9 @@ describe("CreateMCPServer", () => {
 
       // Auth value field should not appear for "None"
       await waitFor(() => {
-        expect(screen.queryByText("Authentication Value")).not.toBeInTheDocument();
+        expect(
+          screen.queryByText("Authentication Value"),
+        ).not.toBeInTheDocument();
       });
     });
 
@@ -303,7 +333,9 @@ describe("CreateMCPServer", () => {
       const nameInput = getServerNameInput();
       await user.type(nameInput, "No_Auth_Server");
 
-      const urlInput = screen.getByPlaceholderText("https://your-mcp-server.com");
+      const urlInput = screen.getByPlaceholderText(
+        "https://your-mcp-server.com",
+      );
       await user.type(urlInput, "https://example.com/mcp");
 
       await selectAntOption("Authentication", "None");
@@ -321,7 +353,9 @@ describe("CreateMCPServer", () => {
         updated_by: "user-1",
       });
 
-      const submitButton = screen.getByRole("button", { name: "Add MCP Server" });
+      const submitButton = screen.getByRole("button", {
+        name: "Add MCP Server",
+      });
       await act(async () => {
         fireEvent.click(submitButton);
       });
@@ -344,7 +378,9 @@ describe("CreateMCPServer", () => {
       await selectAntOption("Transport Type", "Streamable HTTP");
 
       await waitFor(() => {
-        expect(screen.getByPlaceholderText("https://your-mcp-server.com")).toBeInTheDocument();
+        expect(
+          screen.getByPlaceholderText("https://your-mcp-server.com"),
+        ).toBeInTheDocument();
       });
 
       await selectAntOption("Authentication", "OAuth");
@@ -356,8 +392,12 @@ describe("CreateMCPServer", () => {
 
       // OAuthFormFields defaults to INTERACTIVE, so the new fields should appear
       await waitFor(() => {
-        expect(screen.getByText("Token Validation Rules (optional)")).toBeInTheDocument();
-        expect(screen.getByText("Token Storage TTL (seconds, optional)")).toBeInTheDocument();
+        expect(
+          screen.getByText("Token Validation Rules (optional)"),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText("Token Storage TTL (seconds, optional)"),
+        ).toBeInTheDocument();
       });
     }
 
@@ -383,22 +423,34 @@ describe("CreateMCPServer", () => {
       await setupOAuthInteractive();
 
       // Fill required form fields
-      const nameInput = document.getElementById("server_name") as HTMLInputElement;
+      const nameInput = document.getElementById(
+        "server_name",
+      ) as HTMLInputElement;
       await act(async () => {
         fireEvent.change(nameInput, { target: { value: "OAuth_Server" } });
       });
-      const urlInput = screen.getByPlaceholderText("https://your-mcp-server.com");
+      const urlInput = screen.getByPlaceholderText(
+        "https://your-mcp-server.com",
+      );
       await act(async () => {
-        fireEvent.change(urlInput, { target: { value: "https://example.com/mcp" } });
+        fireEvent.change(urlInput, {
+          target: { value: "https://example.com/mcp" },
+        });
       });
 
       // Fill in the token_validation_json textarea
-      const textarea = document.getElementById("token_validation_json") as HTMLTextAreaElement;
+      const textarea = document.getElementById(
+        "token_validation_json",
+      ) as HTMLTextAreaElement;
       await act(async () => {
-        fireEvent.change(textarea, { target: { value: '{"organization": "my-org", "team.id": "42"}' } });
+        fireEvent.change(textarea, {
+          target: { value: '{"organization": "my-org", "team.id": "42"}' },
+        });
       });
 
-      const submitButton = screen.getByRole("button", { name: "Add MCP Server" });
+      const submitButton = screen.getByRole("button", {
+        name: "Add MCP Server",
+      });
       await act(async () => {
         fireEvent.click(submitButton);
       });
@@ -408,7 +460,10 @@ describe("CreateMCPServer", () => {
       });
 
       const [, payload] = vi.mocked(networking.createMCPServer).mock.calls[0];
-      expect(payload.token_validation).toEqual({ organization: "my-org", "team.id": "42" });
+      expect(payload.token_validation).toEqual({
+        organization: "my-org",
+        "team.id": "42",
+      });
     });
 
     it("omits token_validation from payload when token_validation_json is empty", async () => {
@@ -427,17 +482,25 @@ describe("CreateMCPServer", () => {
 
       await setupOAuthInteractive();
 
-      const nameInput = document.getElementById("server_name") as HTMLInputElement;
+      const nameInput = document.getElementById(
+        "server_name",
+      ) as HTMLInputElement;
       await act(async () => {
         fireEvent.change(nameInput, { target: { value: "OAuth_Server" } });
       });
-      const urlInput = screen.getByPlaceholderText("https://your-mcp-server.com");
+      const urlInput = screen.getByPlaceholderText(
+        "https://your-mcp-server.com",
+      );
       await act(async () => {
-        fireEvent.change(urlInput, { target: { value: "https://example.com/mcp" } });
+        fireEvent.change(urlInput, {
+          target: { value: "https://example.com/mcp" },
+        });
       });
 
       // Leave token_validation_json empty
-      const submitButton = screen.getByRole("button", { name: "Add MCP Server" });
+      const submitButton = screen.getByRole("button", {
+        name: "Add MCP Server",
+      });
       await act(async () => {
         fireEvent.click(submitButton);
       });
@@ -453,17 +516,23 @@ describe("CreateMCPServer", () => {
     it("does not submit and shows validation error for invalid JSON in token_validation_json", async () => {
       await setupOAuthInteractive();
 
-      const textarea = document.getElementById("token_validation_json") as HTMLTextAreaElement;
+      const textarea = document.getElementById(
+        "token_validation_json",
+      ) as HTMLTextAreaElement;
       await act(async () => {
         fireEvent.change(textarea, { target: { value: "not-valid-json{" } });
       });
 
-      const nameInput = document.getElementById("server_name") as HTMLInputElement;
+      const nameInput = document.getElementById(
+        "server_name",
+      ) as HTMLInputElement;
       await act(async () => {
         fireEvent.change(nameInput, { target: { value: "OAuth_Server" } });
       });
 
-      const submitButton = screen.getByRole("button", { name: "Add MCP Server" });
+      const submitButton = screen.getByRole("button", {
+        name: "Add MCP Server",
+      });
       await act(async () => {
         fireEvent.click(submitButton);
       });
@@ -472,7 +541,8 @@ describe("CreateMCPServer", () => {
       // both indicate the submit was blocked.
       await waitFor(() => {
         const inlineError = screen.queryByText("Must be valid JSON");
-        const notCalled = !vi.mocked(networking.createMCPServer).mock.calls.length;
+        const notCalled = !vi.mocked(networking.createMCPServer).mock.calls
+          .length;
         expect(inlineError !== null || notCalled).toBe(true);
       });
     });
@@ -500,7 +570,9 @@ describe("CreateMCPServer", () => {
       // Auth and URL fields should not be present for stdio
       await waitFor(() => {
         expect(screen.queryByText("Authentication")).not.toBeInTheDocument();
-        expect(screen.queryByPlaceholderText("https://your-mcp-server.com")).not.toBeInTheDocument();
+        expect(
+          screen.queryByPlaceholderText("https://your-mcp-server.com"),
+        ).not.toBeInTheDocument();
       });
     });
   });
@@ -529,7 +601,12 @@ describe("CreateMCPServer", () => {
   describe("with back to discovery button", () => {
     it("should show back button and call onBackToDiscovery when clicked", async () => {
       const onBackToDiscovery = vi.fn();
-      render(<CreateMCPServer {...defaultProps} onBackToDiscovery={onBackToDiscovery} />);
+      render(
+        <CreateMCPServer
+          {...defaultProps}
+          onBackToDiscovery={onBackToDiscovery}
+        />,
+      );
 
       // The back arrow button should be visible
       const backButton = screen.getByText("←");

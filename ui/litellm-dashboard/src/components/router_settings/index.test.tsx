@@ -1,6 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderWithProviders, screen, waitFor } from "../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  renderWithProviders,
+  screen,
+  waitFor,
+} from "../../../tests/test-utils";
 import RouterSettings from "./index";
 
 vi.mock("antd", async (importOriginal) => {
@@ -21,7 +25,7 @@ vi.mock("antd", async (importOriginal) => {
         Option: ({ value, children }: any) => (
           <option value={value}>{children}</option>
         ),
-      }
+      },
     ),
   };
 });
@@ -32,12 +36,12 @@ vi.mock("@/components/networking", () => ({
   setCallbacksCall: vi.fn(),
 }));
 
+import NotificationsManager from "@/components/molecules/notifications_manager";
 import {
   getCallbacksCall,
   getRouterSettingsCall,
   setCallbacksCall,
 } from "@/components/networking";
-import NotificationsManager from "@/components/molecules/notifications_manager";
 
 const mockCallbacksResponse = {
   router_settings: {
@@ -81,20 +85,24 @@ describe("RouterSettings", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(getCallbacksCall).mockResolvedValue(mockCallbacksResponse);
-    vi.mocked(getRouterSettingsCall).mockResolvedValue(mockRouterSettingsResponse);
+    vi.mocked(getRouterSettingsCall).mockResolvedValue(
+      mockRouterSettingsResponse,
+    );
     vi.mocked(setCallbacksCall).mockResolvedValue({});
   });
 
   it("should render nothing when accessToken is null", () => {
     const { container } = renderWithProviders(
-      <RouterSettings {...defaultProps} accessToken={null} />
+      <RouterSettings {...defaultProps} accessToken={null} />,
     );
     expect(container).toBeEmptyDOMElement();
   });
 
   it("should render the Save Changes and Reset buttons when authenticated", () => {
     renderWithProviders(<RouterSettings {...defaultProps} />);
-    expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /save changes/i }),
+    ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /reset/i })).toBeInTheDocument();
   });
 
@@ -102,15 +110,17 @@ describe("RouterSettings", () => {
     renderWithProviders(<RouterSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(getCallbacksCall).toHaveBeenCalledWith("test-token", "user-1", "Admin");
+      expect(getCallbacksCall).toHaveBeenCalledWith(
+        "test-token",
+        "user-1",
+        "Admin",
+      );
     });
     expect(getRouterSettingsCall).toHaveBeenCalledWith("test-token");
   });
 
   it("should not fetch data when any required prop is missing", () => {
-    renderWithProviders(
-      <RouterSettings {...defaultProps} userRole={null} />
-    );
+    renderWithProviders(<RouterSettings {...defaultProps} userRole={null} />);
     expect(getCallbacksCall).not.toHaveBeenCalled();
   });
 
@@ -144,7 +154,7 @@ describe("RouterSettings", () => {
         router_settings: expect.objectContaining({
           routing_strategy: "simple-shuffle",
         }),
-      })
+      }),
     );
   });
 
@@ -159,7 +169,7 @@ describe("RouterSettings", () => {
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     expect(NotificationsManager.success).toHaveBeenCalledWith(
-      "router settings updated successfully"
+      "router settings updated successfully",
     );
   });
 });

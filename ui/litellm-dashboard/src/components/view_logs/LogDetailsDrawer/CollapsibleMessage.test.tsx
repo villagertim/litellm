@@ -1,13 +1,13 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect } from "vitest";
+import React from "react";
+import { describe, expect, it } from "vitest";
 import { CollapsibleMessage } from "./CollapsibleMessage";
 
 describe("CollapsibleMessage", () => {
   it("should return null when content is empty", () => {
     const { container } = render(
-      <CollapsibleMessage label="SYSTEM" content="" />
+      <CollapsibleMessage label="SYSTEM" content="" />,
     );
     expect(container.innerHTML).toBe("");
   });
@@ -29,7 +29,7 @@ describe("CollapsibleMessage", () => {
         label="SYSTEM"
         content="Visible text"
         defaultExpanded={true}
-      />
+      />,
     );
     expect(screen.getByText("Visible text")).toBeInTheDocument();
   });
@@ -41,7 +41,7 @@ describe("CollapsibleMessage", () => {
         label="SYSTEM"
         content="Toggle me"
         defaultExpanded={false}
-      />
+      />,
     );
 
     // Content is rendered in DOM but collapsed by default

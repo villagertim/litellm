@@ -1,13 +1,40 @@
-import React, { useState, useEffect } from "react";
-import { Card, Text, Title, Button, Badge, TabGroup, TabList, Tab, TabPanels, TabPanel } from "@tremor/react";
-import { Form, Input, Select as Select2, Tooltip, Button as AntButton } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { ArrowLeftIcon } from "@heroicons/react/outline";
-import { vectorStoreInfoCall, vectorStoreUpdateCall, credentialListCall, CredentialItem } from "../networking";
-import { VectorStore } from "./types";
-import { Providers, providerLogoMap, provider_map } from "../provider_info_helpers";
-import VectorStoreTester from "./VectorStoreTester";
+import {
+  Badge,
+  Button,
+  Card,
+  Tab,
+  TabGroup,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Text,
+  Title,
+} from "@tremor/react";
+import {
+  Button as AntButton,
+  Form,
+  Input,
+  Select as Select2,
+  Tooltip,
+} from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
 import NotificationsManager from "../molecules/notifications_manager";
+import {
+  type CredentialItem,
+  credentialListCall,
+  vectorStoreInfoCall,
+  vectorStoreUpdateCall,
+} from "../networking";
+import {
+  Providers,
+  providerLogoMap,
+  provider_map,
+} from "../provider_info_helpers";
+import VectorStoreTester from "./VectorStoreTester";
+import type { VectorStore } from "./types";
 
 interface VectorStoreInfoViewProps {
   vectorStoreId: string;
@@ -25,11 +52,14 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
   editVectorStore,
 }) => {
   const [form] = Form.useForm();
-  const [vectorStoreDetails, setVectorStoreDetails] = useState<VectorStore | null>(null);
+  const [vectorStoreDetails, setVectorStoreDetails] =
+    useState<VectorStore | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(editVectorStore);
   const [metadataString, setMetadataString] = useState<string>("{}");
   const [credentials, setCredentials] = useState<CredentialItem[]>([]);
-  const [activeTab, setActiveTab] = useState<string>(editVectorStore ? "details" : "details");
+  const [activeTab, setActiveTab] = useState<string>(
+    editVectorStore ? "details" : "details",
+  );
 
   const fetchVectorStoreDetails = async () => {
     if (!accessToken) return;
@@ -52,13 +82,16 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
             vector_store_id: response.vector_store.vector_store_id,
             custom_llm_provider: response.vector_store.custom_llm_provider,
             vector_store_name: response.vector_store.vector_store_name,
-            vector_store_description: response.vector_store.vector_store_description,
+            vector_store_description:
+              response.vector_store.vector_store_description,
           });
         }
       }
     } catch (error) {
       console.error("Error fetching vector store details:", error);
-      NotificationsManager.fromBackend("Error fetching vector store details: " + error);
+      NotificationsManager.fromBackend(
+        "Error fetching vector store details: " + error,
+      );
     }
   };
 
@@ -116,13 +149,22 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
     <div className="p-4 max-w-full">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <Button icon={ArrowLeftIcon} variant="light" className="mb-4" onClick={onClose}>
+          <Button
+            icon={ArrowLeftIcon}
+            variant="light"
+            className="mb-4"
+            onClick={onClose}
+          >
             Back to Vector Stores
           </Button>
           <Title>Vector Store ID: {vectorStoreDetails.vector_store_id}</Title>
-          <Text className="text-gray-500">{vectorStoreDetails.vector_store_description || "No description"}</Text>
+          <Text className="text-gray-500">
+            {vectorStoreDetails.vector_store_description || "No description"}
+          </Text>
         </div>
-        {is_admin && !isEditing && <Button onClick={() => setIsEditing(true)}>Edit Vector Store</Button>}
+        {is_admin && !isEditing && (
+          <Button onClick={() => setIsEditing(true)}>Edit Vector Store</Button>
+        )}
       </div>
 
       <TabGroup>
@@ -140,20 +182,36 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
                   <Title>Edit Vector Store</Title>
                 </div>
                 <Card>
-                  <Form form={form} onFinish={handleSave} layout="vertical" initialValues={vectorStoreDetails}>
+                  <Form
+                    form={form}
+                    onFinish={handleSave}
+                    layout="vertical"
+                    initialValues={vectorStoreDetails}
+                  >
                     <Form.Item
                       label="Vector Store ID"
                       name="vector_store_id"
-                      rules={[{ required: true, message: "Please input a vector store ID" }]}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input a vector store ID",
+                        },
+                      ]}
                     >
                       <Input disabled />
                     </Form.Item>
 
-                    <Form.Item label="Vector Store Name" name="vector_store_name">
+                    <Form.Item
+                      label="Vector Store Name"
+                      name="vector_store_name"
+                    >
                       <Input />
                     </Form.Item>
 
-                    <Form.Item label="Description" name="vector_store_description">
+                    <Form.Item
+                      label="Description"
+                      name="vector_store_description"
+                    >
                       <Input.TextArea rows={4} />
                     </Form.Item>
 
@@ -167,56 +225,75 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
                         </span>
                       }
                       name="custom_llm_provider"
-                      rules={[{ required: true, message: "Please select a provider" }]}
+                      rules={[
+                        { required: true, message: "Please select a provider" },
+                      ]}
                     >
                       <Select2>
-                        {Object.entries(Providers).map(([providerEnum, providerDisplayName]) => {
-                          // Currently only showing Bedrock since it's the only supported provider
-                          if (providerEnum === "Bedrock") {
-                            return (
-                              <Select2.Option key={providerEnum} value={provider_map[providerEnum]}>
-                                <div className="flex items-center space-x-2">
-                                  <img
-                                    src={providerLogoMap[providerDisplayName]}
-                                    alt={`${providerEnum} logo`}
-                                    className="w-5 h-5"
-                                    onError={(e) => {
-                                      // Create a div with provider initial as fallback
-                                      const target = e.target as HTMLImageElement;
-                                      const parent = target.parentElement;
-                                      if (parent) {
-                                        const fallbackDiv = document.createElement("div");
-                                        fallbackDiv.className =
-                                          "w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-xs";
-                                        fallbackDiv.textContent = providerDisplayName.charAt(0);
-                                        parent.replaceChild(fallbackDiv, target);
-                                      }
-                                    }}
-                                  />
-                                  <span>{providerDisplayName}</span>
-                                </div>
-                              </Select2.Option>
-                            );
-                          }
-                          return null;
-                        })}
+                        {Object.entries(Providers).map(
+                          ([providerEnum, providerDisplayName]) => {
+                            // Currently only showing Bedrock since it's the only supported provider
+                            if (providerEnum === "Bedrock") {
+                              return (
+                                <Select2.Option
+                                  key={providerEnum}
+                                  value={provider_map[providerEnum]}
+                                >
+                                  <div className="flex items-center space-x-2">
+                                    <img
+                                      src={providerLogoMap[providerDisplayName]}
+                                      alt={`${providerEnum} logo`}
+                                      className="w-5 h-5"
+                                      onError={(e) => {
+                                        // Create a div with provider initial as fallback
+                                        const target =
+                                          e.target as HTMLImageElement;
+                                        const parent = target.parentElement;
+                                        if (parent) {
+                                          const fallbackDiv =
+                                            document.createElement("div");
+                                          fallbackDiv.className =
+                                            "w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-xs";
+                                          fallbackDiv.textContent =
+                                            providerDisplayName.charAt(0);
+                                          parent.replaceChild(
+                                            fallbackDiv,
+                                            target,
+                                          );
+                                        }
+                                      }}
+                                    />
+                                    <span>{providerDisplayName}</span>
+                                  </div>
+                                </Select2.Option>
+                              );
+                            }
+                            return null;
+                          },
+                        )}
                       </Select2>
                     </Form.Item>
 
                     {/* Credentials */}
                     <div className="mb-4">
                       <Text className="text-sm text-gray-500 mb-2">
-                        Either select existing credentials OR enter provider credentials below
+                        Either select existing credentials OR enter provider
+                        credentials below
                       </Text>
                     </div>
 
-                    <Form.Item label="Existing Credentials" name="litellm_credential_name">
+                    <Form.Item
+                      label="Existing Credentials"
+                      name="litellm_credential_name"
+                    >
                       <Select2
                         showSearch
                         placeholder="Select or search for existing credentials"
                         optionFilterProp="children"
                         filterOption={(input, option) =>
-                          (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                          (option?.label ?? "")
+                            .toLowerCase()
+                            .includes(input.toLowerCase())
                         }
                         options={[
                           { value: null, label: "None" },
@@ -254,7 +331,9 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
                     </Form.Item>
 
                     <div className="flex justify-end space-x-2">
-                      <AntButton onClick={() => setIsEditing(false)}>Cancel</AntButton>
+                      <AntButton onClick={() => setIsEditing(false)}>
+                        Cancel
+                      </AntButton>
                       <AntButton type="primary" htmlType="submit">
                         Save Changes
                       </AntButton>
@@ -266,7 +345,11 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
               <div>
                 <div className="flex justify-between items-center mb-4">
                   <Title>Vector Store Details</Title>
-                  {is_admin && <Button onClick={() => setIsEditing(true)}>Edit Vector Store</Button>}
+                  {is_admin && (
+                    <Button onClick={() => setIsEditing(true)}>
+                      Edit Vector Store
+                    </Button>
+                  )}
                 </div>
                 <Card>
                   <div className="space-y-4">
@@ -280,17 +363,22 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
                     </div>
                     <div>
                       <Text className="font-medium">Description</Text>
-                      <Text>{vectorStoreDetails.vector_store_description || "-"}</Text>
+                      <Text>
+                        {vectorStoreDetails.vector_store_description || "-"}
+                      </Text>
                     </div>
                     <div>
                       <Text className="font-medium">Provider</Text>
                       <div className="flex items-center space-x-2 mt-1">
                         {(() => {
-                          const provider = vectorStoreDetails.custom_llm_provider || "bedrock";
+                          const provider =
+                            vectorStoreDetails.custom_llm_provider || "bedrock";
                           const { displayName, logo } = (() => {
                             // Find the enum key by matching provider_map values
                             const enumKey = Object.keys(provider_map).find(
-                              (key) => provider_map[key].toLowerCase() === provider.toLowerCase(),
+                              (key) =>
+                                provider_map[key].toLowerCase() ===
+                                provider.toLowerCase(),
                             );
 
                             if (!enumKey) {
@@ -298,7 +386,8 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
                             }
 
                             // Get the display name from Providers enum and logo from map
-                            const displayName = Providers[enumKey as keyof typeof Providers];
+                            const displayName =
+                              Providers[enumKey as keyof typeof Providers];
                             const logo = providerLogoMap[displayName];
 
                             return { displayName, logo };
@@ -315,10 +404,12 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
                                     const target = e.target as HTMLImageElement;
                                     const parent = target.parentElement;
                                     if (parent) {
-                                      const fallbackDiv = document.createElement("div");
+                                      const fallbackDiv =
+                                        document.createElement("div");
                                       fallbackDiv.className =
                                         "w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-xs";
-                                      fallbackDiv.textContent = displayName.charAt(0);
+                                      fallbackDiv.textContent =
+                                        displayName.charAt(0);
                                       parent.replaceChild(fallbackDiv, target);
                                     }
                                   }}
@@ -339,13 +430,21 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
                     <div>
                       <Text className="font-medium">Created</Text>
                       <Text>
-                        {vectorStoreDetails.created_at ? new Date(vectorStoreDetails.created_at).toLocaleString() : "-"}
+                        {vectorStoreDetails.created_at
+                          ? new Date(
+                              vectorStoreDetails.created_at,
+                            ).toLocaleString()
+                          : "-"}
                       </Text>
                     </div>
                     <div>
                       <Text className="font-medium">Last Updated</Text>
                       <Text>
-                        {vectorStoreDetails.updated_at ? new Date(vectorStoreDetails.updated_at).toLocaleString() : "-"}
+                        {vectorStoreDetails.updated_at
+                          ? new Date(
+                              vectorStoreDetails.updated_at,
+                            ).toLocaleString()
+                          : "-"}
                       </Text>
                     </div>
                   </div>
@@ -356,7 +455,10 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
 
           {/* Test Tab */}
           <TabPanel>
-            <VectorStoreTester vectorStoreId={vectorStoreDetails.vector_store_id} accessToken={accessToken || ""} />
+            <VectorStoreTester
+              vectorStoreId={vectorStoreDetails.vector_store_id}
+              accessToken={accessToken || ""}
+            />
           </TabPanel>
         </TabPanels>
       </TabGroup>

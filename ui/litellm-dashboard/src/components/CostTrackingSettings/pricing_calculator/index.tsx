@@ -1,13 +1,15 @@
-import React, { useState, useCallback } from "react";
-import { Table, Select, InputNumber, Button, Radio } from "antd";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-import { PricingCalculatorProps, ModelEntry } from "./types";
+import { Button, InputNumber, Radio, Select, Table } from "antd";
+import type React from "react";
+import { useCallback, useState } from "react";
 import MultiCostResults from "./multi_cost_results";
+import type { ModelEntry, PricingCalculatorProps } from "./types";
 import { useMultiCostEstimate } from "./use_multi_cost_estimate";
 
 type TimePeriod = "day" | "month";
 
-const generateId = () => `entry-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+const generateId = () =>
+  `entry-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
 const createDefaultEntry = (): ModelEntry => ({
   id: generateId(),
@@ -28,10 +30,14 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({
     useMultiCostEstimate(accessToken);
 
   const handleEntryChange = useCallback(
-    (id: string, field: keyof ModelEntry, value: string | number | undefined) => {
+    (
+      id: string,
+      field: keyof ModelEntry,
+      value: string | number | undefined,
+    ) => {
       setEntries((prev) => {
         const updated = prev.map((entry) =>
-          entry.id === id ? { ...entry, [field]: value } : entry
+          entry.id === id ? { ...entry, [field]: value } : entry,
         );
         const changedEntry = updated.find((e) => e.id === id);
         if (changedEntry && changedEntry.model) {
@@ -40,7 +46,7 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({
         return updated;
       });
     },
-    [debouncedFetchForEntry]
+    [debouncedFetchForEntry],
   );
 
   const handleTimePeriodChange = useCallback((period: TimePeriod) => {
@@ -49,9 +55,11 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({
     setEntries((prev) =>
       prev.map((entry) => ({
         ...entry,
-        num_requests_per_day: period === "day" ? entry.num_requests_per_day : undefined,
-        num_requests_per_month: period === "month" ? entry.num_requests_per_month : undefined,
-      }))
+        num_requests_per_day:
+          period === "day" ? entry.num_requests_per_day : undefined,
+        num_requests_per_month:
+          period === "month" ? entry.num_requests_per_month : undefined,
+      })),
     );
   }, []);
 
@@ -64,7 +72,7 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({
       setEntries((prev) => prev.filter((entry) => entry.id !== id));
       removeEntry(id);
     },
-    [removeEntry]
+    [removeEntry],
   );
 
   const multiModelResult = getMultiModelResult(entries);
@@ -83,7 +91,9 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({
           onChange={(value) => handleEntryChange(record.id, "model", value)}
           optionFilterProp="label"
           filterOption={(input, option) =>
-            String(option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+            String(option?.label ?? "")
+              .toLowerCase()
+              .includes(input.toLowerCase())
           }
           options={models.map((model) => ({
             value: model,
@@ -103,10 +113,14 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({
         <InputNumber
           min={0}
           value={record.input_tokens}
-          onChange={(value) => handleEntryChange(record.id, "input_tokens", value ?? 0)}
+          onChange={(value) =>
+            handleEntryChange(record.id, "input_tokens", value ?? 0)
+          }
           style={{ width: "100%" }}
           size="small"
-          formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+          formatter={(value) =>
+            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+          }
         />
       ),
     },
@@ -119,33 +133,48 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({
         <InputNumber
           min={0}
           value={record.output_tokens}
-          onChange={(value) => handleEntryChange(record.id, "output_tokens", value ?? 0)}
+          onChange={(value) =>
+            handleEntryChange(record.id, "output_tokens", value ?? 0)
+          }
           style={{ width: "100%" }}
           size="small"
-          formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+          formatter={(value) =>
+            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+          }
         />
       ),
     },
     {
       title: `Requests/${timePeriod === "day" ? "Day" : "Month"}`,
-      dataIndex: timePeriod === "day" ? "num_requests_per_day" : "num_requests_per_month",
+      dataIndex:
+        timePeriod === "day"
+          ? "num_requests_per_day"
+          : "num_requests_per_month",
       key: "num_requests",
       width: "20%",
       render: (_: number | undefined, record: ModelEntry) => (
         <InputNumber
           min={0}
-          value={timePeriod === "day" ? record.num_requests_per_day : record.num_requests_per_month}
+          value={
+            timePeriod === "day"
+              ? record.num_requests_per_day
+              : record.num_requests_per_month
+          }
           onChange={(value) =>
             handleEntryChange(
               record.id,
-              timePeriod === "day" ? "num_requests_per_day" : "num_requests_per_month",
-              value ?? undefined
+              timePeriod === "day"
+                ? "num_requests_per_day"
+                : "num_requests_per_month",
+              value ?? undefined,
             )
           }
           style={{ width: "100%" }}
           size="small"
           placeholder="-"
-          formatter={(value) => (value ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "")}
+          formatter={(value) =>
+            value ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",") : ""
+          }
         />
       ),
     },
@@ -199,7 +228,10 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({
         )}
       />
 
-      <MultiCostResults multiResult={multiModelResult} timePeriod={timePeriod} />
+      <MultiCostResults
+        multiResult={multiModelResult}
+        timePeriod={timePeriod}
+      />
     </div>
   );
 };

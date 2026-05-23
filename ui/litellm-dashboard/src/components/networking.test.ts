@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { clearTokenCookies } from "@/utils/cookieUtils";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as Networking from "./networking";
 
 vi.mock("@/utils/cookieUtils", () => ({
@@ -30,7 +30,9 @@ describe("networking - expired session handling", () => {
 
   it("should call clearTokenCookies on expired session", async () => {
     const errorData = "Authentication Error - Expired Key";
-    const { default: NotificationsManager } = await import("./molecules/notifications_manager");
+    const { default: NotificationsManager } = await import(
+      "./molecules/notifications_manager"
+    );
 
     if (errorData.includes("Authentication Error - Expired Key")) {
       NotificationsManager.info("UI Session Expired. Logging out.");
@@ -55,7 +57,8 @@ describe("networking - expired session handling", () => {
 
     const backendError = {
       detail: {
-        error: "Set `'STORE_MODEL_IN_DB='True'` in your env to enable this feature.",
+        error:
+          "Set `'STORE_MODEL_IN_DB='True'` in your env to enable this feature.",
       },
     };
 
@@ -94,7 +97,10 @@ describe("loginCall - storeLoginToken integration", () => {
   it("calls storeLoginToken when response includes token", async () => {
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ redirect_url: "/ui/?login=success", token: "my-jwt" }),
+      json: async () => ({
+        redirect_url: "/ui/?login=success",
+        token: "my-jwt",
+      }),
     }) as any;
     const { storeLoginToken } = await import("@/utils/cookieUtils");
     await Networking.loginCall("admin", "pass");
@@ -138,7 +144,10 @@ describe("daily activity helpers", () => {
   it("appends tag list when tags argument is provided", async () => {
     const mockFetch = setupSuccessfulFetch();
 
-    await Networking.tagDailyActivityCall("token", startTime, endTime, 2, ["alpha", "beta"]);
+    await Networking.tagDailyActivityCall("token", startTime, endTime, 2, [
+      "alpha",
+      "beta",
+    ]);
 
     expect(mockFetch).toHaveBeenCalledOnce();
     const calledUrl = mockFetch.mock.calls[0][0] as string;
@@ -151,18 +160,37 @@ describe("daily activity helpers", () => {
   it("always includes exclude_team_ids but only adds team_ids when given", async () => {
     const mockFetchWithoutTeams = setupSuccessfulFetch();
 
-    await Networking.teamDailyActivityCall("token", startTime, endTime, 1, null);
-    const urlWithoutTeams = new URL(mockFetchWithoutTeams.mock.calls[0][0] as string, "http://example.com");
+    await Networking.teamDailyActivityCall(
+      "token",
+      startTime,
+      endTime,
+      1,
+      null,
+    );
+    const urlWithoutTeams = new URL(
+      mockFetchWithoutTeams.mock.calls[0][0] as string,
+      "http://example.com",
+    );
 
-    expect(urlWithoutTeams.searchParams.get("exclude_team_ids")).toBe("litellm-dashboard");
+    expect(urlWithoutTeams.searchParams.get("exclude_team_ids")).toBe(
+      "litellm-dashboard",
+    );
     expect(urlWithoutTeams.searchParams.has("team_ids")).toBe(false);
 
     const mockFetchWithTeams = setupSuccessfulFetch();
-    await Networking.teamDailyActivityCall("token", startTime, endTime, 3, ["team-a", "team-b"]);
-    const urlWithTeams = new URL(mockFetchWithTeams.mock.calls[0][0] as string, "http://example.com");
+    await Networking.teamDailyActivityCall("token", startTime, endTime, 3, [
+      "team-a",
+      "team-b",
+    ]);
+    const urlWithTeams = new URL(
+      mockFetchWithTeams.mock.calls[0][0] as string,
+      "http://example.com",
+    );
 
     expect(urlWithTeams.searchParams.get("team_ids")).toBe("team-a,team-b");
-    expect(urlWithTeams.searchParams.get("exclude_team_ids")).toBe("litellm-dashboard");
+    expect(urlWithTeams.searchParams.get("exclude_team_ids")).toBe(
+      "litellm-dashboard",
+    );
   });
 });
 
@@ -218,7 +246,9 @@ describe("UI config and public endpoints", () => {
     );
     expect(publicEndpointCall).toBeDefined();
     const calledUrl = publicEndpointCall![0] as string;
-    expect(calledUrl).toBe("https://example.com/api/v1/public/providers/fields");
+    expect(calledUrl).toBe(
+      "https://example.com/api/v1/public/providers/fields",
+    );
   });
 
   it("should use proxyBaseURL and server_root_path for /public/model_hub/info when server_root_path is defined", async () => {
@@ -260,7 +290,9 @@ describe("UI config and public endpoints", () => {
 
     expect(mockFetch).toHaveBeenCalledTimes(2);
     const publicEndpointCall = mockFetch.mock.calls.find(
-      (call) => (call[0] as string).includes("/public/model_hub") && !(call[0] as string).includes("/info"),
+      (call) =>
+        (call[0] as string).includes("/public/model_hub") &&
+        !(call[0] as string).includes("/info"),
     );
     expect(publicEndpointCall).toBeDefined();
     const calledUrl = publicEndpointCall![0] as string;
@@ -282,7 +314,9 @@ describe("UI config and public endpoints", () => {
     await Networking.agentHubPublicModelsCall();
 
     expect(mockFetch).toHaveBeenCalledTimes(2);
-    const publicEndpointCall = mockFetch.mock.calls.find((call) => (call[0] as string).includes("/public/agent_hub"));
+    const publicEndpointCall = mockFetch.mock.calls.find((call) =>
+      (call[0] as string).includes("/public/agent_hub"),
+    );
     expect(publicEndpointCall).toBeDefined();
     const calledUrl = publicEndpointCall![0] as string;
     expect(calledUrl).toBe("https://example.com/api/v1/public/agent_hub");
@@ -303,7 +337,9 @@ describe("UI config and public endpoints", () => {
     await Networking.mcpHubPublicServersCall();
 
     expect(mockFetch).toHaveBeenCalledTimes(2);
-    const publicEndpointCall = mockFetch.mock.calls.find((call) => (call[0] as string).includes("/public/mcp_hub"));
+    const publicEndpointCall = mockFetch.mock.calls.find((call) =>
+      (call[0] as string).includes("/public/mcp_hub"),
+    );
     expect(publicEndpointCall).toBeDefined();
     const calledUrl = publicEndpointCall![0] as string;
     expect(calledUrl).toBe("https://example.com/api/v1/public/mcp_hub");
@@ -338,7 +374,9 @@ describe("UI config and public endpoints", () => {
       proxy_base_url: "https://example.com",
     };
 
-    const mockFetch = setupMockFetch([{ url: "/litellm/.well-known/litellm-ui-config", data: uiConfig }]);
+    const mockFetch = setupMockFetch([
+      { url: "/litellm/.well-known/litellm-ui-config", data: uiConfig },
+    ]);
 
     const result = await Networking.getUiConfig();
 
@@ -374,13 +412,19 @@ describe("individualModelHealthCheckCall", () => {
     } as any);
     global.fetch = mockFetch as any;
 
-    await Networking.individualModelHealthCheckCall("token-123", "deployment-abc-456");
+    await Networking.individualModelHealthCheckCall(
+      "token-123",
+      "deployment-abc-456",
+    );
 
     expect(mockFetch).toHaveBeenCalledOnce();
     const [url] = mockFetch.mock.calls[0];
     const urlStr = typeof url === "string" ? url : (url as Request).url;
     expect(urlStr).toContain("health");
-    const parsed = typeof url === "string" ? new URL(url, "http://example.com") : new URL((url as Request).url);
+    const parsed =
+      typeof url === "string"
+        ? new URL(url, "http://example.com")
+        : new URL((url as Request).url);
     expect(parsed.searchParams.get("model_id")).toBe("deployment-abc-456");
     expect(parsed.searchParams.has("model")).toBe(false);
   });
@@ -400,7 +444,10 @@ describe("individualModelHealthCheckCall", () => {
     await Networking.individualModelHealthCheckCall("token", "id/with/slashes");
 
     const [url] = mockFetch.mock.calls[0];
-    const parsed = typeof url === "string" ? new URL(url, "http://example.com") : new URL((url as Request).url);
+    const parsed =
+      typeof url === "string"
+        ? new URL(url, "http://example.com")
+        : new URL((url as Request).url);
     expect(parsed.searchParams.get("model_id")).toBe("id/with/slashes");
   });
 });
@@ -419,7 +466,9 @@ describe("teamInfoCall", () => {
   it("should URL-encode team_id query param to handle special characters safely", async () => {
     const mockFetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: vi.fn().mockResolvedValue({ team_id: "team with spaces & special?chars" }),
+      json: vi
+        .fn()
+        .mockResolvedValue({ team_id: "team with spaces & special?chars" }),
     } as any);
     global.fetch = mockFetch as any;
 
@@ -429,7 +478,10 @@ describe("teamInfoCall", () => {
     expect(mockFetch).toHaveBeenCalledOnce();
     const [url] = mockFetch.mock.calls[0];
     const urlStr = typeof url === "string" ? url : (url as Request).url;
-    const parsed = typeof url === "string" ? new URL(url, "http://example.com") : new URL((url as Request).url);
+    const parsed =
+      typeof url === "string"
+        ? new URL(url, "http://example.com")
+        : new URL((url as Request).url);
 
     expect(urlStr).toContain("/team/info");
     // Encoded value is present in the raw URL string (verifies encodeURIComponent was used)
@@ -449,7 +501,10 @@ describe("teamInfoCall", () => {
 
     expect(mockFetch).toHaveBeenCalledOnce();
     const [url] = mockFetch.mock.calls[0];
-    const parsed = typeof url === "string" ? new URL(url, "http://example.com") : new URL((url as Request).url);
+    const parsed =
+      typeof url === "string"
+        ? new URL(url, "http://example.com")
+        : new URL((url as Request).url);
     expect(parsed.searchParams.has("team_id")).toBe(false);
   });
 });

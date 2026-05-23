@@ -1,9 +1,12 @@
 export type CrudOp = "read" | "create" | "update" | "delete" | "unknown";
 
 const DELETE_RE = /\b(delete|remove|destroy|purge|drop|erase|unlink)\b/i;
-const CREATE_RE = /\b(create|add|insert|new|post|submit|register|make|generate|write|upload)\b/i;
-const UPDATE_RE = /\b(update|edit|modify|change|patch|put|set|rename|move|transform)\b/i;
-const READ_RE = /\b(get|read|list|fetch|search|find|query|retrieve|show|view|check|describe|info)\b/i;
+const CREATE_RE =
+  /\b(create|add|insert|new|post|submit|register|make|generate|write|upload)\b/i;
+const UPDATE_RE =
+  /\b(update|edit|modify|change|patch|put|set|rename|move|transform)\b/i;
+const READ_RE =
+  /\b(get|read|list|fetch|search|find|query|retrieve|show|view|check|describe|info)\b/i;
 
 export interface MCPToolEntry {
   name: string;
@@ -39,7 +42,9 @@ export function classifyToolOp(name: string, description = ""): CrudOp {
   return "unknown";
 }
 
-export function groupToolsByCrud(tools: MCPToolEntry[]): Record<CrudOp, MCPToolEntry[]> {
+export function groupToolsByCrud(
+  tools: MCPToolEntry[],
+): Record<CrudOp, MCPToolEntry[]> {
   const groups: Record<CrudOp, MCPToolEntry[]> = {
     read: [],
     create: [],
@@ -56,7 +61,11 @@ export function groupToolsByCrud(tools: MCPToolEntry[]): Record<CrudOp, MCPToolE
 
 export const CRUD_GROUP_META: Record<
   CrudOp,
-  { label: string; description: string; risk: "low" | "medium" | "high" | "unknown" }
+  {
+    label: string;
+    description: string;
+    risk: "low" | "medium" | "high" | "unknown";
+  }
 > = {
   read: {
     label: "Read",

@@ -1,18 +1,18 @@
 import { describe, expect, it } from "vitest";
+import type { Agent } from "../llm_calls/fetch_agents";
 import {
-  EndpointId,
   ENDPOINT_CONFIGS,
+  EndpointId,
+  agentOptionsToSelectorOptions,
   getAvailableEndpoints,
+  getComparisonSelection,
   getEndpointConfig,
+  getSelectionFieldName,
+  hasValidSelection,
   isAgentEndpoint,
   isModelEndpoint,
   modelOptionsToSelectorOptions,
-  agentOptionsToSelectorOptions,
-  getSelectionFieldName,
-  getComparisonSelection,
-  hasValidSelection,
 } from "./endpoint_config";
-import { Agent } from "../llm_calls/fetch_agents";
 
 describe("endpoint_config", () => {
   it("should export EndpointId constants", () => {
@@ -23,7 +23,9 @@ describe("endpoint_config", () => {
   it("should have endpoint configs for all endpoint IDs", () => {
     expect(ENDPOINT_CONFIGS[EndpointId.CHAT_COMPLETIONS]).toBeDefined();
     expect(ENDPOINT_CONFIGS[EndpointId.A2A_AGENTS]).toBeDefined();
-    expect(ENDPOINT_CONFIGS[EndpointId.CHAT_COMPLETIONS].selectorType).toBe("model");
+    expect(ENDPOINT_CONFIGS[EndpointId.CHAT_COMPLETIONS].selectorType).toBe(
+      "model",
+    );
     expect(ENDPOINT_CONFIGS[EndpointId.A2A_AGENTS].selectorType).toBe("agent");
   });
 
@@ -62,7 +64,10 @@ describe("endpoint_config", () => {
     const options = modelOptionsToSelectorOptions(models);
     expect(options).toHaveLength(3);
     expect(options[0]).toEqual({ value: "gpt-4", label: "gpt-4" });
-    expect(options[1]).toEqual({ value: "gpt-3.5-turbo", label: "gpt-3.5-turbo" });
+    expect(options[1]).toEqual({
+      value: "gpt-3.5-turbo",
+      label: "gpt-3.5-turbo",
+    });
     expect(options[2]).toEqual({ value: "claude-3", label: "claude-3" });
   });
 
@@ -86,8 +91,12 @@ describe("endpoint_config", () => {
 
   it("should get comparison selection based on endpoint", () => {
     const comparison = { model: "gpt-4", agent: "agent-1" };
-    expect(getComparisonSelection(comparison, EndpointId.CHAT_COMPLETIONS)).toBe("gpt-4");
-    expect(getComparisonSelection(comparison, EndpointId.A2A_AGENTS)).toBe("agent-1");
+    expect(
+      getComparisonSelection(comparison, EndpointId.CHAT_COMPLETIONS),
+    ).toBe("gpt-4");
+    expect(getComparisonSelection(comparison, EndpointId.A2A_AGENTS)).toBe(
+      "agent-1",
+    );
   });
 
   it("should check if comparison has valid selection", () => {
@@ -96,9 +105,17 @@ describe("endpoint_config", () => {
     const comparisonEmpty = { model: "", agent: "" };
     const comparisonWhitespace = { model: "   ", agent: "" };
 
-    expect(hasValidSelection(comparisonWithModel, EndpointId.CHAT_COMPLETIONS)).toBe(true);
-    expect(hasValidSelection(comparisonWithAgent, EndpointId.A2A_AGENTS)).toBe(true);
-    expect(hasValidSelection(comparisonEmpty, EndpointId.CHAT_COMPLETIONS)).toBe(false);
-    expect(hasValidSelection(comparisonWhitespace, EndpointId.CHAT_COMPLETIONS)).toBe(false);
+    expect(
+      hasValidSelection(comparisonWithModel, EndpointId.CHAT_COMPLETIONS),
+    ).toBe(true);
+    expect(hasValidSelection(comparisonWithAgent, EndpointId.A2A_AGENTS)).toBe(
+      true,
+    );
+    expect(
+      hasValidSelection(comparisonEmpty, EndpointId.CHAT_COMPLETIONS),
+    ).toBe(false);
+    expect(
+      hasValidSelection(comparisonWhitespace, EndpointId.CHAT_COMPLETIONS),
+    ).toBe(false);
   });
 });

@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { ReactNode } from "react";
+import { renderHook, waitFor } from "@testing-library/react";
+import React, { type ReactNode } from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useStoreModelInDB } from "./useStoreModelInDB";
 
 vi.mock("@/components/networking", () => ({
@@ -54,7 +54,7 @@ describe("useStoreModelInDB", () => {
           field_value: true,
           config_type: "general_settings",
         }),
-      })
+      }),
     );
   });
 
@@ -80,15 +80,12 @@ describe("useStoreModelInDB", () => {
           field_value: false,
           config_type: "general_settings",
         }),
-      })
+      }),
     );
   });
 
   it("should throw error when access token is missing", async () => {
-    vi.spyOn(
-      await import("../useAuthorized"),
-      "default"
-    ).mockReturnValue({
+    vi.spyOn(await import("../useAuthorized"), "default").mockReturnValue({
       accessToken: null,
       userRole: null,
       userId: null,
@@ -142,6 +139,8 @@ describe("useStoreModelInDB", () => {
       expect(result.current.isError).toBe(true);
     });
 
-    expect(result.current.error?.message).toBe("Failed to update model storage settings");
+    expect(result.current.error?.message).toBe(
+      "Failed to update model storage settings",
+    );
   });
 });

@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Use vi.hoisted so the mock object is available when vi.mock is hoisted
 const mockStaticMessage = vi.hoisted(() => ({
@@ -24,7 +24,10 @@ describe("MessageManager", () => {
   describe("when no instance is set (falls back to static message)", () => {
     it("delegates success to static message", () => {
       MessageManager.success("done!");
-      expect(mockStaticMessage.success).toHaveBeenCalledWith("done!", undefined);
+      expect(mockStaticMessage.success).toHaveBeenCalledWith(
+        "done!",
+        undefined,
+      );
     });
 
     it("delegates error to static message", () => {
@@ -34,7 +37,10 @@ describe("MessageManager", () => {
 
     it("delegates warning to static message", () => {
       MessageManager.warning("watch out");
-      expect(mockStaticMessage.warning).toHaveBeenCalledWith("watch out", undefined);
+      expect(mockStaticMessage.warning).toHaveBeenCalledWith(
+        "watch out",
+        undefined,
+      );
     });
 
     it("delegates info to static message", () => {

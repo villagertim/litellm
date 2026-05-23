@@ -1,10 +1,10 @@
-import React from "react";
-import { renderHook, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useDeletePolicyAttachment } from "./useDeletePolicyAttachment";
-import { deletePolicyAttachmentCall } from "@/components/networking";
 import MessageManager from "@/components/molecules/message_manager";
-import { vi, describe, beforeEach, it, expect } from "vitest";
+import { deletePolicyAttachmentCall } from "@/components/networking";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { renderHook, waitFor } from "@testing-library/react";
+import type React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useDeletePolicyAttachment } from "./useDeletePolicyAttachment";
 
 // Mock dependencies
 vi.mock("@/components/networking", () => ({
@@ -40,7 +40,7 @@ describe("useDeletePolicyAttachment", () => {
           accessToken: "test-token",
           onSuccess: mockOnSuccess,
         }),
-      { wrapper }
+      { wrapper },
     );
 
     result.current.mutate("attachment-1");
@@ -49,8 +49,13 @@ describe("useDeletePolicyAttachment", () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(deletePolicyAttachmentCall).toHaveBeenCalledWith("test-token", "attachment-1");
-    expect(MessageManager.success).toHaveBeenCalledWith("Attachment deleted successfully");
+    expect(deletePolicyAttachmentCall).toHaveBeenCalledWith(
+      "test-token",
+      "attachment-1",
+    );
+    expect(MessageManager.success).toHaveBeenCalledWith(
+      "Attachment deleted successfully",
+    );
     expect(mockOnSuccess).toHaveBeenCalled();
   });
 
@@ -65,7 +70,7 @@ describe("useDeletePolicyAttachment", () => {
           accessToken: "test-token",
           onError: mockOnError,
         }),
-      { wrapper }
+      { wrapper },
     );
 
     result.current.mutate("attachment-1");
@@ -74,8 +79,13 @@ describe("useDeletePolicyAttachment", () => {
       expect(result.current.isError).toBe(true);
     });
 
-    expect(deletePolicyAttachmentCall).toHaveBeenCalledWith("test-token", "attachment-1");
-    expect(MessageManager.error).toHaveBeenCalledWith("Failed to delete attachment");
+    expect(deletePolicyAttachmentCall).toHaveBeenCalledWith(
+      "test-token",
+      "attachment-1",
+    );
+    expect(MessageManager.error).toHaveBeenCalledWith(
+      "Failed to delete attachment",
+    );
     expect(mockOnError).toHaveBeenCalledWith(error);
   });
 });

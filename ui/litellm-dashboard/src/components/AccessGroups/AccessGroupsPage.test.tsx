@@ -1,8 +1,8 @@
 import { renderWithProviders, screen, within } from "@/../tests/test-utils";
+import type { AccessGroupResponse } from "@/app/(dashboard)/hooks/accessGroups/useAccessGroups";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AccessGroupsPage } from "./AccessGroupsPage";
-import type { AccessGroupResponse } from "@/app/(dashboard)/hooks/accessGroups/useAccessGroups";
 
 const mockAccessGroups: AccessGroupResponse[] = [
   {
@@ -77,25 +77,28 @@ vi.mock("./AccessGroupsModal/AccessGroupCreateModal", () => ({
     ) : null,
 }));
 
-vi.mock("../common_components/IconActionButton/TableIconActionButtons/TableIconActionButton", () => ({
-  default: ({
-    variant,
-    tooltipText,
-    onClick,
-  }: {
-    variant: string;
-    tooltipText: string;
-    onClick: () => void;
-  }) => (
-    <button
-      data-testid={`action-button-${variant.toLowerCase()}`}
-      aria-label={tooltipText}
-      onClick={onClick}
-    >
-      {variant}
-    </button>
-  ),
-}));
+vi.mock(
+  "../common_components/IconActionButton/TableIconActionButtons/TableIconActionButton",
+  () => ({
+    default: ({
+      variant,
+      tooltipText,
+      onClick,
+    }: {
+      variant: string;
+      tooltipText: string;
+      onClick: () => void;
+    }) => (
+      <button
+        data-testid={`action-button-${variant.toLowerCase()}`}
+        aria-label={tooltipText}
+        onClick={onClick}
+      >
+        {variant}
+      </button>
+    ),
+  }),
+);
 
 describe("AccessGroupsPage", () => {
   beforeEach(() => {
@@ -112,12 +115,16 @@ describe("AccessGroupsPage", () => {
 
   it("should render", () => {
     renderWithProviders(<AccessGroupsPage />);
-    expect(screen.getByRole("heading", { name: "Access Groups" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Access Groups" }),
+    ).toBeInTheDocument();
   });
 
   it("should display page title and subtitle", () => {
     renderWithProviders(<AccessGroupsPage />);
-    expect(screen.getByRole("heading", { name: "Access Groups" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Access Groups" }),
+    ).toBeInTheDocument();
     expect(
       screen.getByText("Manage resource permissions for your organization"),
     ).toBeInTheDocument();
@@ -133,7 +140,9 @@ describe("AccessGroupsPage", () => {
   it("should display search input with placeholder", () => {
     renderWithProviders(<AccessGroupsPage />);
     expect(
-      screen.getByPlaceholderText("Search groups by name, ID, or description..."),
+      screen.getByPlaceholderText(
+        "Search groups by name, ID, or description...",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -199,17 +208,23 @@ describe("AccessGroupsPage", () => {
   it("should open create modal when Create Access Group button is clicked", async () => {
     const user = userEvent.setup();
     renderWithProviders(<AccessGroupsPage />);
-    await user.click(screen.getByRole("button", { name: /create access group/i }));
+    await user.click(
+      screen.getByRole("button", { name: /create access group/i }),
+    );
     expect(screen.getByTestId("create-access-group-modal")).toBeInTheDocument();
   });
 
   it("should close create modal when cancel is clicked", async () => {
     const user = userEvent.setup();
     renderWithProviders(<AccessGroupsPage />);
-    await user.click(screen.getByRole("button", { name: /create access group/i }));
+    await user.click(
+      screen.getByRole("button", { name: /create access group/i }),
+    );
     expect(screen.getByTestId("create-access-group-modal")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Cancel" }));
-    expect(screen.queryByTestId("create-access-group-modal")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("create-access-group-modal"),
+    ).not.toBeInTheDocument();
   });
 
   it("should navigate to detail view when group ID is clicked", async () => {
@@ -244,7 +259,9 @@ describe("AccessGroupsPage", () => {
         "Are you sure you want to delete this access group? This action cannot be undone.",
       ),
     ).toBeInTheDocument();
-    expect(within(dialog).getByText("Access Group Information")).toBeInTheDocument();
+    expect(
+      within(dialog).getByText("Access Group Information"),
+    ).toBeInTheDocument();
     expect(within(dialog).getByText("ag-1")).toBeInTheDocument();
     expect(within(dialog).getByText("Admin Group")).toBeInTheDocument();
   });
@@ -258,21 +275,27 @@ describe("AccessGroupsPage", () => {
     await user.click(deleteButtons[0]);
     const dialog = screen.getByRole("dialog", { name: "Delete Access Group" });
     await user.click(within(dialog).getByRole("button", { name: "Cancel" }));
-    expect(screen.queryByRole("dialog", { name: "Delete Access Group" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("dialog", { name: "Delete Access Group" }),
+    ).not.toBeInTheDocument();
   });
 
   it("should call delete mutation when delete is confirmed", async () => {
     const user = userEvent.setup();
-    mockMutate.mockImplementation((_id: string, opts?: { onSuccess?: () => void }) => {
-      opts?.onSuccess?.();
-    });
+    mockMutate.mockImplementation(
+      (_id: string, opts?: { onSuccess?: () => void }) => {
+        opts?.onSuccess?.();
+      },
+    );
     renderWithProviders(<AccessGroupsPage />);
     const deleteButtons = screen.getAllByRole("button", {
       name: "Delete access group",
     });
     await user.click(deleteButtons[0]);
     const dialog = screen.getByRole("dialog", { name: "Delete Access Group" });
-    const deleteConfirmButton = within(dialog).getByRole("button", { name: /delete/i });
+    const deleteConfirmButton = within(dialog).getByRole("button", {
+      name: /delete/i,
+    });
     await user.click(deleteConfirmButton);
     expect(mockMutate).toHaveBeenCalledWith("ag-1", expect.any(Object));
   });
@@ -284,10 +307,18 @@ describe("AccessGroupsPage", () => {
 
   it("should show table headers for ID, Name, Resources, and Actions", () => {
     renderWithProviders(<AccessGroupsPage />);
-    expect(screen.getByRole("columnheader", { name: /ID/i })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: /Name/i })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: /Resources/i })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: /Actions/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: /ID/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: /Name/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: /Resources/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: /Actions/i }),
+    ).toBeInTheDocument();
   });
 
   it("should display loading state when data is loading", () => {

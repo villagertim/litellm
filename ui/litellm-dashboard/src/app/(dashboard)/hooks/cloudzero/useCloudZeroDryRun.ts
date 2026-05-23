@@ -1,4 +1,7 @@
-import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "@/components/networking";
+import {
+  getGlobalLitellmHeaderName,
+  getProxyBaseUrl,
+} from "@/components/networking";
 import { useMutation } from "@tanstack/react-query";
 
 interface DryRunParams {
@@ -9,9 +12,14 @@ interface DryRunResponse {
   [key: string]: any;
 }
 
-const performCloudZeroDryRun = async (accessToken: string, params: DryRunParams = {}): Promise<DryRunResponse> => {
+const performCloudZeroDryRun = async (
+  accessToken: string,
+  params: DryRunParams = {},
+): Promise<DryRunResponse> => {
   const proxyBaseUrl = getProxyBaseUrl();
-  const url = proxyBaseUrl ? `${proxyBaseUrl}/cloudzero/dry-run` : `/cloudzero/dry-run`;
+  const url = proxyBaseUrl
+    ? `${proxyBaseUrl}/cloudzero/dry-run`
+    : `/cloudzero/dry-run`;
 
   const response = await fetch(url, {
     method: "POST",
@@ -27,7 +35,10 @@ const performCloudZeroDryRun = async (accessToken: string, params: DryRunParams 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     const errorMessage =
-      errorData?.error?.message || errorData?.message || errorData?.detail || "Failed to perform dry run";
+      errorData?.error?.message ||
+      errorData?.message ||
+      errorData?.detail ||
+      "Failed to perform dry run";
     throw new Error(errorMessage);
   }
 

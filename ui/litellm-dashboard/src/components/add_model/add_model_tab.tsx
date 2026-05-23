@@ -2,12 +2,12 @@ import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@tremor/react";
 import type { FormInstance } from "antd";
 import { Form } from "antd";
 import type { UploadProps } from "antd/es/upload";
-import React from "react";
+import type React from "react";
 import type { Team } from "../key_team_helpers/key_list";
-import { type CredentialItem } from "../networking";
-import { Providers } from "../provider_info_helpers";
-import AddAutoRouterTab from "./add_auto_router_tab";
+import type { CredentialItem } from "../networking";
+import type { Providers } from "../provider_info_helpers";
 import AddModelForm from "./AddModelForm";
+import AddAutoRouterTab from "./add_auto_router_tab";
 import { handleAddAutoRouterSubmit } from "./handle_add_auto_router_submit";
 
 interface AddModelTabProps {
@@ -50,7 +50,12 @@ const AddModelTab: React.FC<AddModelTabProps> = ({
     autoRouterForm
       .validateFields()
       .then((values) => {
-        handleAddAutoRouterSubmit(values, accessToken, autoRouterForm, handleOk);
+        handleAddAutoRouterSubmit(
+          values,
+          accessToken,
+          autoRouterForm,
+          handleOk,
+        );
       })
       .catch((error) => {
         console.error("Validation failed:", error);

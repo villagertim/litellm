@@ -1,11 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { Form, Select, Modal, Divider, Typography, Tag, Alert, Radio } from "antd";
-import { Button, TextInput, Textarea } from "@tremor/react";
-import { Policy, PolicyCreateRequest, PolicyUpdateRequest } from "./types";
-import { Guardrail } from "../guardrails/types";
-import { getResolvedGuardrails, modelAvailableCall } from "../networking";
-import NotificationsManager from "../molecules/notifications_manager";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { Button, TextInput, Textarea } from "@tremor/react";
+import {
+  Alert,
+  Divider,
+  Form,
+  Modal,
+  Radio,
+  Select,
+  Tag,
+  Typography,
+} from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
+import type { Guardrail } from "../guardrails/types";
+import NotificationsManager from "../molecules/notifications_manager";
+import { getResolvedGuardrails, modelAvailableCall } from "../networking";
+import type { Policy, PolicyCreateRequest, PolicyUpdateRequest } from "./types";
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -20,7 +30,11 @@ interface AddPolicyFormProps {
   existingPolicies: Policy[];
   availableGuardrails: Guardrail[];
   createPolicy: (accessToken: string, policyData: any) => Promise<any>;
-  updatePolicy: (accessToken: string, policyId: string, policyData: any) => Promise<any>;
+  updatePolicy: (
+    accessToken: string,
+    policyId: string,
+    policyData: any,
+  ) => Promise<any>;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -59,7 +73,16 @@ const ModePicker: React.FC<ModePicker> = ({ selected, onSelect }) => (
           marginBottom: 16,
         }}
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={selected === "simple" ? "#4f46e5" : "#6b7280"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke={selected === "simple" ? "#4f46e5" : "#6b7280"}
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <rect x="3" y="3" width="18" height="18" rx="2" />
           <path d="M8 7h8M8 12h8M8 17h5" />
         </svg>
@@ -111,7 +134,16 @@ const ModePicker: React.FC<ModePicker> = ({ selected, onSelect }) => (
           marginBottom: 16,
         }}
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={selected === "flow_builder" ? "#4f46e5" : "#6b7280"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke={selected === "flow_builder" ? "#4f46e5" : "#6b7280"}
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
         </svg>
       </div>
@@ -145,10 +177,14 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [resolvedGuardrails, setResolvedGuardrails] = useState<string[]>([]);
   const [isLoadingResolved, setIsLoadingResolved] = useState(false);
-  const [modelConditionType, setModelConditionType] = useState<"model" | "regex">("model");
+  const [modelConditionType, setModelConditionType] = useState<
+    "model" | "regex"
+  >("model");
   const [availableModels, setAvailableModels] = useState<string[]>([]);
   const [step, setStep] = useState<"pick_mode" | "simple_form">("pick_mode");
-  const [selectedMode, setSelectedMode] = useState<"simple" | "flow_builder">("simple");
+  const [selectedMode, setSelectedMode] = useState<"simple" | "flow_builder">(
+    "simple",
+  );
   const { userId, userRole } = useAuthorized();
 
   // Only consider it "editing" if editingPolicy has a policy_id (real existing policy)
@@ -157,7 +193,8 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
   useEffect(() => {
     if (visible && editingPolicy) {
       const modelCondition = editingPolicy.condition?.model;
-      const isRegex = modelCondition && /[.*+?^${}()|[\]\\]/.test(modelCondition);
+      const isRegex =
+        modelCondition && /[.*+?^${}()|[\]\\]/.test(modelCondition);
       setModelConditionType(isRegex ? "regex" : "model");
 
       form.setFieldsValue({
@@ -203,7 +240,9 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
     try {
       const response = await modelAvailableCall(accessToken, userId, userRole);
       if (response?.data) {
-        const models = response.data.map((m: any) => m.id || m.model_name).filter(Boolean);
+        const models = response.data
+          .map((m: any) => m.id || m.model_name)
+          .filter(Boolean);
         setAvailableModels(models);
       }
     } catch (error) {
@@ -230,13 +269,15 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
     const guardrailsAdd = values.guardrails_add || [];
     const guardrailsRemove = values.guardrails_remove || [];
 
-    let resolved = new Set<string>();
+    const resolved = new Set<string>();
 
     if (inheritFrom) {
-      const parentPolicy = existingPolicies.find(p => p.policy_name === inheritFrom);
+      const parentPolicy = existingPolicies.find(
+        (p) => p.policy_name === inheritFrom,
+      );
       if (parentPolicy) {
         const parentResolved = resolveParentGuardrails(parentPolicy);
-        parentResolved.forEach(g => resolved.add(g));
+        parentResolved.forEach((g) => resolved.add(g));
       }
     }
 
@@ -247,19 +288,21 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
   };
 
   const resolveParentGuardrails = (policy: Policy): string[] => {
-    let resolved = new Set<string>();
+    const resolved = new Set<string>();
 
     if (policy.inherit) {
-      const grandparent = existingPolicies.find(p => p.policy_name === policy.inherit);
+      const grandparent = existingPolicies.find(
+        (p) => p.policy_name === policy.inherit,
+      );
       if (grandparent) {
-        resolveParentGuardrails(grandparent).forEach(g => resolved.add(g));
+        resolveParentGuardrails(grandparent).forEach((g) => resolved.add(g));
       }
     }
     if (policy.guardrails_add) {
-      policy.guardrails_add.forEach(g => resolved.add(g));
+      policy.guardrails_add.forEach((g) => resolved.add(g));
     }
     if (policy.guardrails_remove) {
-      policy.guardrails_remove.forEach(g => resolved.delete(g));
+      policy.guardrails_remove.forEach((g) => resolved.delete(g));
     }
     return Array.from(resolved);
   };
@@ -310,7 +353,11 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
       };
 
       if (isEditing && editingPolicy) {
-        await updatePolicy(accessToken, editingPolicy.policy_id, data as PolicyUpdateRequest);
+        await updatePolicy(
+          accessToken,
+          editingPolicy.policy_id,
+          data as PolicyUpdateRequest,
+        );
         NotificationsManager.success("Policy updated successfully");
       } else {
         await createPolicy(accessToken, data as PolicyCreateRequest);
@@ -323,7 +370,8 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
     } catch (error) {
       console.error("Failed to save policy:", error);
       NotificationsManager.fromBackend(
-        "Failed to save policy: " + (error instanceof Error ? error.message : String(error))
+        "Failed to save policy: " +
+          (error instanceof Error ? error.message : String(error)),
       );
     } finally {
       setIsSubmitting(false);
@@ -378,7 +426,9 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
               border: "none",
             }}
           >
-            {selectedMode === "flow_builder" ? "Continue to Builder" : "Create Policy"}
+            {selectedMode === "flow_builder"
+              ? "Continue to Builder"
+              : "Create Policy"}
           </Button>
         </div>
       </Modal>
@@ -422,10 +472,7 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
         </Form.Item>
 
         <Form.Item name="description" label="Description">
-          <Textarea
-            rows={2}
-            placeholder="Describe what this policy does..."
-          />
+          <Textarea rows={2} placeholder="Describe what this policy does..." />
         </Form.Item>
 
         <Divider orientation="left">
@@ -482,8 +529,12 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
             message="Resolved Guardrails"
             description={
               <div>
-                <Text type="secondary" style={{ display: "block", marginBottom: 8 }}>
-                  These are the final guardrails that will be applied (including inheritance):
+                <Text
+                  type="secondary"
+                  style={{ display: "block", marginBottom: 8 }}
+                >
+                  These are the final guardrails that will be applied (including
+                  inheritance):
                 </Text>
                 <div className="flex flex-wrap gap-1">
                   {resolvedGuardrails.map((g) => (
@@ -527,7 +578,11 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
 
         <Form.Item
           name="model_condition"
-          label={modelConditionType === "model" ? "Model (Optional)" : "Regex Pattern (Optional)"}
+          label={
+            modelConditionType === "model"
+              ? "Model (Optional)"
+              : "Regex Pattern (Optional)"
+          }
           tooltip={
             modelConditionType === "model"
               ? "Select a specific model to apply this policy to. Leave empty to apply to all models."
@@ -544,7 +599,9 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
                 value: model,
               }))}
               filterOption={(input, option) =>
-                (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
               }
               style={{ width: "100%" }}
             />

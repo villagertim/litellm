@@ -1,9 +1,9 @@
 "use client";
 
-import ChatUI from "@/components/playground/chat_ui/ChatUI";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { useState, useEffect } from "react";
+import ChatUI from "@/components/playground/chat_ui/ChatUI";
 import { fetchProxySettings } from "@/utils/proxyUtils";
+import { useEffect, useState } from "react";
 
 interface ProxySettings {
   PROXY_BASE_URL?: string;
@@ -11,8 +11,11 @@ interface ProxySettings {
 }
 
 const TestKeyPage = () => {
-  const { token, accessToken, userRole, userId, disabledPersonalKeyCreation } = useAuthorized();
-  const [proxySettings, setProxySettings] = useState<ProxySettings | undefined>(undefined);
+  const { token, accessToken, userRole, userId, disabledPersonalKeyCreation } =
+    useAuthorized();
+  const [proxySettings, setProxySettings] = useState<ProxySettings | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
     const initializeProxySettings = async () => {

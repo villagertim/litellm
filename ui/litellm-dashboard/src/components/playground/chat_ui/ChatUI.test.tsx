@@ -1,7 +1,13 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import ChatUI from "./ChatUI";
 import * as fetchModelsModule from "../llm_calls/fetch_models";
+import ChatUI from "./ChatUI";
 
 // Mock the fetchAvailableModels function
 vi.mock("../llm_calls/fetch_models", () => ({
@@ -18,7 +24,7 @@ vi.mock("../networking", () => ({
 
 // Mock scrollIntoView which is not available in jsdom
 beforeEach(() => {
-  Element.prototype.scrollIntoView = () => { };
+  Element.prototype.scrollIntoView = () => {};
 });
 
 describe("ChatUI", () => {
@@ -70,7 +76,9 @@ describe("ChatUI", () => {
     // Find the endpoint selector by looking for the "Endpoint Type:" text and its associated Select
     const endpointTypeText = getByText("Endpoint Type");
     const selectContainer = endpointTypeText.parentElement;
-    const selectElement = selectContainer?.querySelector(".ant-select-selector");
+    const selectElement = selectContainer?.querySelector(
+      ".ant-select-selector",
+    );
 
     expect(selectElement).toBeInTheDocument();
 
@@ -97,7 +105,8 @@ describe("ChatUI", () => {
     // Verify the voice select component is present
     const voiceText = getByText("Voice");
     const voiceSelectContainer = voiceText.parentElement;
-    const voiceSelectElement = voiceSelectContainer?.querySelector(".ant-select");
+    const voiceSelectElement =
+      voiceSelectContainer?.querySelector(".ant-select");
     expect(voiceSelectElement).toBeInTheDocument();
   });
 
@@ -121,7 +130,9 @@ describe("ChatUI", () => {
     const selectModelLabel = getByText("Select Model");
     // The Select component is a sibling of the Text component, so we need to find it in the parent container
     const modelSelectContainer = selectModelLabel.closest("div");
-    const modelSelect = modelSelectContainer?.querySelector(".ant-select-selector");
+    const modelSelect = modelSelectContainer?.querySelector(
+      ".ant-select-selector",
+    );
     expect(modelSelect).toBeTruthy();
 
     fireEvent.mouseDown(modelSelect!);
@@ -156,7 +167,9 @@ describe("ChatUI", () => {
 
     // Open endpoint selector and explicitly select /v1/chat/completions
     const endpointTypeText = getByText("Endpoint Type");
-    const endpointSelect = endpointTypeText.parentElement?.querySelector(".ant-select-selector");
+    const endpointSelect = endpointTypeText.parentElement?.querySelector(
+      ".ant-select-selector",
+    );
     expect(endpointSelect).toBeTruthy();
     act(() => {
       fireEvent.mouseDown(endpointSelect!);
@@ -167,7 +180,9 @@ describe("ChatUI", () => {
     const selectModelLabel = getByText("Select Model");
     // The Select component is a sibling of the Text component, so we need to find it in the parent container
     const modelSelectContainer = selectModelLabel.closest("div");
-    const modelSelect = modelSelectContainer?.querySelector(".ant-select-selector");
+    const modelSelect = modelSelectContainer?.querySelector(
+      ".ant-select-selector",
+    );
     expect(modelSelect).toBeTruthy();
     act(() => {
       fireEvent.mouseDown(modelSelect!);
@@ -205,13 +220,17 @@ describe("ChatUI", () => {
     // Open the "Select Model" dropdown
     const selectModelLabel = getByText("Select Model");
     const modelSelectContainer = selectModelLabel.closest("div");
-    const modelSelect = modelSelectContainer?.querySelector(".ant-select-selector");
+    const modelSelect = modelSelectContainer?.querySelector(
+      ".ant-select-selector",
+    );
 
     fireEvent.mouseDown(modelSelect!);
 
     await waitFor(() => {
       // Get all options in the dropdown (Ant Design renders these in a portal)
-      const options = document.querySelectorAll(".ant-select-item-option-content");
+      const options = document.querySelectorAll(
+        ".ant-select-item-option-content",
+      );
       expect(options.length).toBeGreaterThan(0);
       // Check if the first option is 'Enter custom model'
       expect(options[0]).toHaveTextContent("Enter custom model");
@@ -234,7 +253,9 @@ describe("ChatUI", () => {
     });
 
     const endpointTypeText = screen.getByText("Endpoint Type");
-    const endpointSelect = endpointTypeText.parentElement?.querySelector(".ant-select-selector") as HTMLElement | null;
+    const endpointSelect = endpointTypeText.parentElement?.querySelector(
+      ".ant-select-selector",
+    ) as HTMLElement | null;
     expect(endpointSelect).not.toBeNull();
 
     const selectEndpointOption = async (label: string) => {
@@ -252,7 +273,10 @@ describe("ChatUI", () => {
     };
 
     const getMcpSelect = () =>
-      screen.getByText("MCP Servers").closest("div")?.querySelector(".ant-select") as HTMLElement | null;
+      screen
+        .getByText("MCP Servers")
+        .closest("div")
+        ?.querySelector(".ant-select") as HTMLElement | null;
 
     await selectEndpointOption("/v1/embeddings");
 
@@ -288,7 +312,9 @@ describe("ChatUI", () => {
     // Model Settings button only appears when a chat model is selected; select "Model 1" first
     const selectModelLabel = screen.getByText("Select Model");
     const modelSelectContainer = selectModelLabel.closest("div");
-    const modelSelect = modelSelectContainer?.querySelector(".ant-select-selector");
+    const modelSelect = modelSelectContainer?.querySelector(
+      ".ant-select-selector",
+    );
     expect(modelSelect).toBeTruthy();
 
     await act(async () => {
@@ -317,7 +343,9 @@ describe("ChatUI", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Model Settings")).toBeInTheDocument();
-      expect(screen.getByText(/Simulate failure to test fallbacks/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Simulate failure to test fallbacks/i),
+      ).toBeInTheDocument();
     });
 
     const fallbacksCheckbox = screen.getByRole("checkbox", {
@@ -330,7 +358,11 @@ describe("ChatUI", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByRole("checkbox", { name: /Simulate failure to test fallbacks/i })).toBeChecked();
+      expect(
+        screen.getByRole("checkbox", {
+          name: /Simulate failure to test fallbacks/i,
+        }),
+      ).toBeChecked();
     });
   });
 
@@ -369,7 +401,9 @@ describe("ChatUI", () => {
       expect(screen.queryByText("Fill")).toBeNull();
     });
 
-    const customProxyInput = screen.getByPlaceholderText("Optional: Enter custom proxy URL (e.g., http://localhost:5000)");
+    const customProxyInput = screen.getByPlaceholderText(
+      "Optional: Enter custom proxy URL (e.g., http://localhost:5000)",
+    );
     expect(customProxyInput).toHaveValue(testProxyUrl);
   });
 
@@ -381,7 +415,7 @@ describe("ChatUI", () => {
         userRole="user"
         userID="1234567890"
         disabledPersonalKeyCreation={false}
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -393,7 +427,9 @@ describe("ChatUI", () => {
 
     if (mcpServersText) {
       const selectContainer = mcpServersText.parentElement?.nextElementSibling;
-      const selectElement = selectContainer?.querySelector(".ant-select-selector");
+      const selectElement = selectContainer?.querySelector(
+        ".ant-select-selector",
+      );
       expect(selectElement).toBeInTheDocument();
 
       if (selectElement) {
@@ -406,7 +442,9 @@ describe("ChatUI", () => {
           }
         });
 
-        const searchInput = document.querySelector(".ant-select-selection-search-input");
+        const searchInput = document.querySelector(
+          ".ant-select-selection-search-input",
+        );
         expect(searchInput).toBeInTheDocument();
       }
     }

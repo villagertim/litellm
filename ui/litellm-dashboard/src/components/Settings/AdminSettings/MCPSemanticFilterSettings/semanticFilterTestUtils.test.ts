@@ -1,7 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { getCurlCommand, runSemanticFilterTest } from "./semanticFilterTestUtils";
-import { testMCPSemanticFilter } from "@/components/networking";
 import NotificationManager from "@/components/molecules/notifications_manager";
+import { testMCPSemanticFilter } from "@/components/networking";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  getCurlCommand,
+  runSemanticFilterTest,
+} from "./semanticFilterTestUtils";
 
 vi.mock("@/components/networking", () => ({
   testMCPSemanticFilter: vi.fn(),
@@ -41,13 +44,17 @@ describe("runSemanticFilterTest", () => {
 
   it("should call NotificationManager.error and not set isTesting when testQuery is empty", async () => {
     await runSemanticFilterTest({ ...baseArgs, testQuery: "" });
-    expect(NotificationManager.error).toHaveBeenCalledWith("Please enter a query and select a model");
+    expect(NotificationManager.error).toHaveBeenCalledWith(
+      "Please enter a query and select a model",
+    );
     expect(mockSetIsTesting).not.toHaveBeenCalled();
   });
 
   it("should call NotificationManager.error and not set isTesting when testModel is empty", async () => {
     await runSemanticFilterTest({ ...baseArgs, testModel: "" });
-    expect(NotificationManager.error).toHaveBeenCalledWith("Please enter a query and select a model");
+    expect(NotificationManager.error).toHaveBeenCalledWith(
+      "Please enter a query and select a model",
+    );
     expect(mockSetIsTesting).not.toHaveBeenCalled();
   });
 
@@ -88,7 +95,7 @@ describe("runSemanticFilterTest", () => {
       tools: ["wiki", "github", "slack"],
     });
     expect(NotificationManager.success).toHaveBeenCalledWith(
-      "Semantic filter test completed successfully"
+      "Semantic filter test completed successfully",
     );
   });
 
@@ -101,17 +108,23 @@ describe("runSemanticFilterTest", () => {
     await runSemanticFilterTest(baseArgs);
 
     expect(NotificationManager.warning).toHaveBeenCalledWith(
-      "Semantic filter is not enabled or no tools were filtered"
+      "Semantic filter is not enabled or no tools were filtered",
     );
-    expect(mockSetTestResult).not.toHaveBeenCalledWith(expect.objectContaining({ totalTools: expect.any(Number) }));
+    expect(mockSetTestResult).not.toHaveBeenCalledWith(
+      expect.objectContaining({ totalTools: expect.any(Number) }),
+    );
   });
 
   it("should show an error notification and finish testing when the API call fails", async () => {
-    vi.mocked(testMCPSemanticFilter).mockRejectedValueOnce(new Error("Network error"));
+    vi.mocked(testMCPSemanticFilter).mockRejectedValueOnce(
+      new Error("Network error"),
+    );
 
     await runSemanticFilterTest(baseArgs);
 
-    expect(NotificationManager.error).toHaveBeenCalledWith("Failed to test semantic filter");
+    expect(NotificationManager.error).toHaveBeenCalledWith(
+      "Failed to test semantic filter",
+    );
     expect(mockSetIsTesting).toHaveBeenLastCalledWith(false);
   });
 });

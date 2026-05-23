@@ -1,8 +1,10 @@
-import { Form } from "antd";
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
-import { renderWithProviders } from "../../../../../../tests/test-utils";
+import { Form } from "antd";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import BaseSSOSettingsForm, { renderProviderFields } from "./BaseSSOSettingsForm";
+import { renderWithProviders } from "../../../../../../tests/test-utils";
+import BaseSSOSettingsForm, {
+  renderProviderFields,
+} from "./BaseSSOSettingsForm";
 
 describe("BaseSSOSettingsForm", () => {
   afterEach(() => {
@@ -92,7 +94,9 @@ describe("BaseSSOSettingsForm", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText(/URL must start with http:\/\/ or https:\/\//i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/URL must start with http:\/\/ or https:\/\//i),
+      ).toBeInTheDocument();
     });
   });
 
@@ -113,7 +117,9 @@ describe("BaseSSOSettingsForm", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText(/URL must not end with a trailing slash/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/URL must not end with a trailing slash/i),
+      ).toBeInTheDocument();
     });
   });
 

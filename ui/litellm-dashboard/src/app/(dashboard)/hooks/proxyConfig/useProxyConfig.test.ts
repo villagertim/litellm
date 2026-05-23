@@ -1,18 +1,18 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { ReactNode } from "react";
+import { renderHook, waitFor } from "@testing-library/react";
+import React, { type ReactNode } from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  useProxyConfig,
-  useDeleteProxyConfigField,
-  getProxyConfigCall,
-  deleteProxyConfigFieldCall,
-  proxyConfigKeys,
   ConfigType,
-  GeneralSettingsFieldName,
-  type ProxyConfigResponse,
   type DeleteProxyConfigFieldRequest,
   type DeleteProxyConfigFieldResponse,
+  GeneralSettingsFieldName,
+  type ProxyConfigResponse,
+  deleteProxyConfigFieldCall,
+  getProxyConfigCall,
+  proxyConfigKeys,
+  useDeleteProxyConfigField,
+  useProxyConfig,
 } from "./useProxyConfig";
 
 const {
@@ -150,7 +150,10 @@ describe("useProxyConfig", () => {
       json: async () => mockProxyConfigResponse,
     });
 
-    const { result } = renderHook(() => useProxyConfig(ConfigType.GENERAL_SETTINGS), { wrapper });
+    const { result } = renderHook(
+      () => useProxyConfig(ConfigType.GENERAL_SETTINGS),
+      { wrapper },
+    );
 
     expect(result.current).toBeDefined();
     expect(result.current.isLoading).toBe(true);
@@ -162,7 +165,10 @@ describe("useProxyConfig", () => {
       json: async () => mockProxyConfigResponse,
     });
 
-    const { result } = renderHook(() => useProxyConfig(ConfigType.GENERAL_SETTINGS), { wrapper });
+    const { result } = renderHook(
+      () => useProxyConfig(ConfigType.GENERAL_SETTINGS),
+      { wrapper },
+    );
 
     expect(result.current.isLoading).toBe(true);
     expect(result.current.data).toBeUndefined();
@@ -196,7 +202,10 @@ describe("useProxyConfig", () => {
       json: async () => errorResponse,
     });
 
-    const { result } = renderHook(() => useProxyConfig(ConfigType.GENERAL_SETTINGS), { wrapper });
+    const { result } = renderHook(
+      () => useProxyConfig(ConfigType.GENERAL_SETTINGS),
+      { wrapper },
+    );
 
     expect(result.current.isLoading).toBe(true);
 
@@ -221,7 +230,10 @@ describe("useProxyConfig", () => {
       showSSOBanner: false,
     });
 
-    const { result } = renderHook(() => useProxyConfig(ConfigType.GENERAL_SETTINGS), { wrapper });
+    const { result } = renderHook(
+      () => useProxyConfig(ConfigType.GENERAL_SETTINGS),
+      { wrapper },
+    );
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toBeUndefined();
@@ -236,7 +248,10 @@ describe("useProxyConfig", () => {
       json: async () => mockProxyConfigResponse,
     });
 
-    const { result } = renderHook(() => useProxyConfig(ConfigType.GENERAL_SETTINGS), { wrapper });
+    const { result } = renderHook(
+      () => useProxyConfig(ConfigType.GENERAL_SETTINGS),
+      { wrapper },
+    );
 
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true);
@@ -249,7 +264,10 @@ describe("useProxyConfig", () => {
     const networkError = new Error("Network error");
     (fetchSpy as any).mockRejectedValue(networkError);
 
-    const { result } = renderHook(() => useProxyConfig(ConfigType.GENERAL_SETTINGS), { wrapper });
+    const { result } = renderHook(
+      () => useProxyConfig(ConfigType.GENERAL_SETTINGS),
+      { wrapper },
+    );
 
     await waitFor(() => {
       expect(result.current.isError).toBe(true);
@@ -265,7 +283,10 @@ describe("useProxyConfig", () => {
       json: async () => [],
     });
 
-    const { result } = renderHook(() => useProxyConfig(ConfigType.GENERAL_SETTINGS), { wrapper });
+    const { result } = renderHook(
+      () => useProxyConfig(ConfigType.GENERAL_SETTINGS),
+      { wrapper },
+    );
 
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true);
@@ -316,7 +337,9 @@ describe("useDeleteProxyConfigField", () => {
     React.createElement(QueryClientProvider, { client: queryClient }, children);
 
   it("should render successfully", () => {
-    const { result } = renderHook(() => useDeleteProxyConfigField(), { wrapper });
+    const { result } = renderHook(() => useDeleteProxyConfigField(), {
+      wrapper,
+    });
 
     expect(result.current).toBeDefined();
     expect(result.current.isIdle).toBe(true);
@@ -328,7 +351,9 @@ describe("useDeleteProxyConfigField", () => {
       json: async () => mockDeleteResponse,
     });
 
-    const { result } = renderHook(() => useDeleteProxyConfigField(), { wrapper });
+    const { result } = renderHook(() => useDeleteProxyConfigField(), {
+      wrapper,
+    });
 
     const deleteRequest: DeleteProxyConfigFieldRequest = {
       config_type: ConfigType.GENERAL_SETTINGS,
@@ -342,14 +367,17 @@ describe("useDeleteProxyConfigField", () => {
     });
 
     expect(result.current.data).toEqual(mockDeleteResponse);
-    expect(fetchSpy).toHaveBeenCalledWith(`${mockProxyBaseUrl}/config/field/delete`, {
-      method: "POST",
-      headers: {
-        [mockHeaderName]: `Bearer ${mockAccessToken}`,
-        "Content-Type": "application/json",
+    expect(fetchSpy).toHaveBeenCalledWith(
+      `${mockProxyBaseUrl}/config/field/delete`,
+      {
+        method: "POST",
+        headers: {
+          [mockHeaderName]: `Bearer ${mockAccessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(deleteRequest),
       },
-      body: JSON.stringify(deleteRequest),
-    });
+    );
     expect(fetchSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -362,7 +390,9 @@ describe("useDeleteProxyConfigField", () => {
       json: async () => errorResponse,
     });
 
-    const { result } = renderHook(() => useDeleteProxyConfigField(), { wrapper });
+    const { result } = renderHook(() => useDeleteProxyConfigField(), {
+      wrapper,
+    });
 
     const deleteRequest: DeleteProxyConfigFieldRequest = {
       config_type: ConfigType.GENERAL_SETTINGS,
@@ -391,7 +421,9 @@ describe("useDeleteProxyConfigField", () => {
       showSSOBanner: false,
     });
 
-    const { result } = renderHook(() => useDeleteProxyConfigField(), { wrapper });
+    const { result } = renderHook(() => useDeleteProxyConfigField(), {
+      wrapper,
+    });
 
     const deleteRequest: DeleteProxyConfigFieldRequest = {
       config_type: ConfigType.GENERAL_SETTINGS,
@@ -412,7 +444,9 @@ describe("useDeleteProxyConfigField", () => {
     const networkError = new Error("Network error");
     (fetchSpy as any).mockRejectedValue(networkError);
 
-    const { result } = renderHook(() => useDeleteProxyConfigField(), { wrapper });
+    const { result } = renderHook(() => useDeleteProxyConfigField(), {
+      wrapper,
+    });
 
     const deleteRequest: DeleteProxyConfigFieldRequest = {
       config_type: ConfigType.GENERAL_SETTINGS,
@@ -436,7 +470,9 @@ describe("useDeleteProxyConfigField", () => {
 
     const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useDeleteProxyConfigField(), { wrapper });
+    const { result } = renderHook(() => useDeleteProxyConfigField(), {
+      wrapper,
+    });
 
     result.current.mutate({
       config_type: ConfigType.GENERAL_SETTINGS,
@@ -447,7 +483,9 @@ describe("useDeleteProxyConfigField", () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: proxyConfigKeys.all });
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: proxyConfigKeys.all,
+    });
   });
 });
 
@@ -471,7 +509,10 @@ describe("getProxyConfigCall", () => {
       json: async () => mockProxyConfigResponse,
     });
 
-    const result = await getProxyConfigCall(mockAccessToken, ConfigType.GENERAL_SETTINGS);
+    const result = await getProxyConfigCall(
+      mockAccessToken,
+      ConfigType.GENERAL_SETTINGS,
+    );
 
     expect(result).toEqual(mockProxyConfigResponse);
     expect(fetchSpy).toHaveBeenCalledWith(
@@ -495,14 +536,18 @@ describe("getProxyConfigCall", () => {
       json: async () => errorResponse,
     });
 
-    await expect(getProxyConfigCall(mockAccessToken, ConfigType.GENERAL_SETTINGS)).rejects.toThrow(errorMessage);
+    await expect(
+      getProxyConfigCall(mockAccessToken, ConfigType.GENERAL_SETTINGS),
+    ).rejects.toThrow(errorMessage);
   });
 
   it("should handle network errors", async () => {
     const networkError = new Error("Network error");
     (fetchSpy as any).mockRejectedValue(networkError);
 
-    await expect(getProxyConfigCall(mockAccessToken, ConfigType.GENERAL_SETTINGS)).rejects.toThrow("Network error");
+    await expect(
+      getProxyConfigCall(mockAccessToken, ConfigType.GENERAL_SETTINGS),
+    ).rejects.toThrow("Network error");
     expect(consoleErrorSpy).toHaveBeenCalled();
   });
 });
@@ -532,17 +577,23 @@ describe("deleteProxyConfigFieldCall", () => {
       field_name: GeneralSettingsFieldName.MAXIMUM_SPEND_LOGS_RETENTION_PERIOD,
     };
 
-    const result = await deleteProxyConfigFieldCall(mockAccessToken, deleteRequest);
+    const result = await deleteProxyConfigFieldCall(
+      mockAccessToken,
+      deleteRequest,
+    );
 
     expect(result).toEqual(mockDeleteResponse);
-    expect(fetchSpy).toHaveBeenCalledWith(`${mockProxyBaseUrl}/config/field/delete`, {
-      method: "POST",
-      headers: {
-        [mockHeaderName]: `Bearer ${mockAccessToken}`,
-        "Content-Type": "application/json",
+    expect(fetchSpy).toHaveBeenCalledWith(
+      `${mockProxyBaseUrl}/config/field/delete`,
+      {
+        method: "POST",
+        headers: {
+          [mockHeaderName]: `Bearer ${mockAccessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(deleteRequest),
       },
-      body: JSON.stringify(deleteRequest),
-    });
+    );
   });
 
   it("should throw error when API returns error response", async () => {
@@ -559,7 +610,9 @@ describe("deleteProxyConfigFieldCall", () => {
       field_name: GeneralSettingsFieldName.MAXIMUM_SPEND_LOGS_RETENTION_PERIOD,
     };
 
-    await expect(deleteProxyConfigFieldCall(mockAccessToken, deleteRequest)).rejects.toThrow(errorMessage);
+    await expect(
+      deleteProxyConfigFieldCall(mockAccessToken, deleteRequest),
+    ).rejects.toThrow(errorMessage);
   });
 
   it("should handle network errors", async () => {
@@ -571,7 +624,9 @@ describe("deleteProxyConfigFieldCall", () => {
       field_name: GeneralSettingsFieldName.MAXIMUM_SPEND_LOGS_RETENTION_PERIOD,
     };
 
-    await expect(deleteProxyConfigFieldCall(mockAccessToken, deleteRequest)).rejects.toThrow("Network error");
+    await expect(
+      deleteProxyConfigFieldCall(mockAccessToken, deleteRequest),
+    ).rejects.toThrow("Network error");
     expect(consoleErrorSpy).toHaveBeenCalled();
   });
 });

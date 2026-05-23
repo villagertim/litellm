@@ -1,6 +1,6 @@
-import { useMutation, UseMutationResult } from "@tanstack/react-query";
-import { updateSSOSettings } from "@/components/networking";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { updateSSOSettings } from "@/components/networking";
+import { type UseMutationResult, useMutation } from "@tanstack/react-query";
 
 export interface EditSSOSettingsParams {
   google_client_id?: string | null;
@@ -24,7 +24,11 @@ export interface EditSSOSettingsResponse {
   [key: string]: any;
 }
 
-export const useEditSSOSettings = (): UseMutationResult<EditSSOSettingsResponse, Error, EditSSOSettingsParams> => {
+export const useEditSSOSettings = (): UseMutationResult<
+  EditSSOSettingsResponse,
+  Error,
+  EditSSOSettingsParams
+> => {
   const { accessToken } = useAuthorized();
 
   return useMutation<EditSSOSettingsResponse, Error, EditSSOSettingsParams>({

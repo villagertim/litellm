@@ -1,6 +1,6 @@
-import React from "react";
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../tests/test-utils";
 import AddPluginForm from "./add_plugin_form";
 
@@ -25,7 +25,9 @@ describe("AddPluginForm", () => {
 
     expect(screen.getByText("GitHub URL")).toBeInTheDocument();
     expect(
-      screen.getByPlaceholderText("https://github.com/org/repo/tree/main/my-skill")
+      screen.getByPlaceholderText(
+        "https://github.com/org/repo/tree/main/my-skill",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -33,7 +35,7 @@ describe("AddPluginForm", () => {
     renderWithProviders(<AddPluginForm {...DEFAULT_PROPS} />);
 
     const urlInput = screen.getByPlaceholderText(
-      "https://github.com/org/repo/tree/main/my-skill"
+      "https://github.com/org/repo/tree/main/my-skill",
     );
 
     await act(async () => {
@@ -51,13 +53,14 @@ describe("AddPluginForm", () => {
     renderWithProviders(<AddPluginForm {...DEFAULT_PROPS} />);
 
     const urlInput = screen.getByPlaceholderText(
-      "https://github.com/org/repo/tree/main/my-skill"
+      "https://github.com/org/repo/tree/main/my-skill",
     );
 
     await act(async () => {
       fireEvent.change(urlInput, {
         target: {
-          value: "https://github.com/anthropics/claude-code/tree/main/plugins/my-skill",
+          value:
+            "https://github.com/anthropics/claude-code/tree/main/plugins/my-skill",
         },
       });
     });
@@ -71,7 +74,7 @@ describe("AddPluginForm", () => {
     renderWithProviders(<AddPluginForm {...DEFAULT_PROPS} />);
 
     const urlInput = screen.getByPlaceholderText(
-      "https://github.com/org/repo/tree/main/my-skill"
+      "https://github.com/org/repo/tree/main/my-skill",
     );
 
     await act(async () => {
@@ -81,7 +84,9 @@ describe("AddPluginForm", () => {
     });
 
     await waitFor(() => {
-      const nameInput = screen.getByPlaceholderText("my-skill") as HTMLInputElement;
+      const nameInput = screen.getByPlaceholderText(
+        "my-skill",
+      ) as HTMLInputElement;
       expect(nameInput.value).toBe("my-awesome-skill");
     });
   });
@@ -89,11 +94,13 @@ describe("AddPluginForm", () => {
   it("does not auto-fill name when name is already set", async () => {
     renderWithProviders(<AddPluginForm {...DEFAULT_PROPS} />);
 
-    const nameInput = screen.getByPlaceholderText("my-skill") as HTMLInputElement;
+    const nameInput = screen.getByPlaceholderText(
+      "my-skill",
+    ) as HTMLInputElement;
     fireEvent.change(nameInput, { target: { value: "existing-name" } });
 
     const urlInput = screen.getByPlaceholderText(
-      "https://github.com/org/repo/tree/main/my-skill"
+      "https://github.com/org/repo/tree/main/my-skill",
     );
 
     await act(async () => {

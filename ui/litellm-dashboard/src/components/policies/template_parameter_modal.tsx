@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Modal, Spin, Radio, Select } from "antd";
 import { Button, TextInput } from "@tremor/react";
-import { modelHubCall, enrichPolicyTemplateStream } from "../networking";
+import { Modal, Radio, Select, Spin } from "antd";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { enrichPolicyTemplateStream, modelHubCall } from "../networking";
 
 interface TemplateParameter {
   name: string;
@@ -16,7 +17,7 @@ interface TemplateParameterModalProps {
   template: any;
   onConfirm: (
     parameters: Record<string, string>,
-    enrichmentOptions?: { model?: string; competitors?: string[] }
+    enrichmentOptions?: { model?: string; competitors?: string[] },
   ) => void;
   onCancel: () => void;
   isLoading?: boolean;
@@ -31,13 +32,19 @@ const TemplateParameterModal: React.FC<TemplateParameterModalProps> = ({
   isLoading = false,
   accessToken,
 }) => {
-  const [parameterValues, setParameterValues] = useState<Record<string, string>>({});
+  const [parameterValues, setParameterValues] = useState<
+    Record<string, string>
+  >({});
   const [competitorMode, setCompetitorMode] = useState<"ai" | "manual">("ai");
-  const [selectedModel, setSelectedModel] = useState<string | undefined>(undefined);
+  const [selectedModel, setSelectedModel] = useState<string | undefined>(
+    undefined,
+  );
   const [availableModels, setAvailableModels] = useState<string[]>([]);
   const [isLoadingModels, setIsLoadingModels] = useState(false);
   const [competitorTags, setCompetitorTags] = useState<string[]>([]);
-  const [variationsMap, setVariationsMap] = useState<Record<string, string[]>>({});
+  const [variationsMap, setVariationsMap] = useState<Record<string, string[]>>(
+    {},
+  );
   const [isGenerating, setIsGenerating] = useState(false);
   const [refinementInput, setRefinementInput] = useState("");
   const [isRefining, setIsRefining] = useState(false);
@@ -46,7 +53,9 @@ const TemplateParameterModal: React.FC<TemplateParameterModalProps> = ({
 
   const parameters: TemplateParameter[] = template?.parameters || [];
   const hasEnrichment = !!template?.llm_enrichment;
-  const enrichmentParam = hasEnrichment ? template.llm_enrichment.parameter : null;
+  const enrichmentParam = hasEnrichment
+    ? template.llm_enrichment.parameter
+    : null;
 
   const nonEnrichmentParams = hasEnrichment
     ? parameters.filter((p) => p.name !== enrichmentParam)
@@ -72,7 +81,12 @@ const TemplateParameterModal: React.FC<TemplateParameterModalProps> = ({
   }, [visible, template]);
 
   useEffect(() => {
-    if (visible && hasEnrichment && competitorMode === "ai" && availableModels.length === 0) {
+    if (
+      visible &&
+      hasEnrichment &&
+      competitorMode === "ai" &&
+      availableModels.length === 0
+    ) {
       loadModels();
     }
   }, [visible, hasEnrichment, competitorMode]);
@@ -97,7 +111,9 @@ const TemplateParameterModal: React.FC<TemplateParameterModalProps> = ({
 
   const handleGenerateNames = async () => {
     if (!accessToken || !selectedModel || !template) return;
-    const brandName = (parameterValues[enrichmentParam || "brand_name"] || "").trim();
+    const brandName = (
+      parameterValues[enrichmentParam || "brand_name"] || ""
+    ).trim();
     if (!brandName) return;
 
     setIsGenerating(true);
@@ -135,7 +151,8 @@ const TemplateParameterModal: React.FC<TemplateParameterModalProps> = ({
   };
 
   const handleRefine = async () => {
-    if (!accessToken || !selectedModel || !template || !refinementInput.trim()) return;
+    if (!accessToken || !selectedModel || !template || !refinementInput.trim())
+      return;
 
     setIsRefining(true);
     setStatusMessage("");
@@ -147,7 +164,8 @@ const TemplateParameterModal: React.FC<TemplateParameterModalProps> = ({
         selectedModel,
         (name) => {
           setCompetitorTags((prev) => {
-            if (prev.some((t) => t.toLowerCase() === name.toLowerCase())) return prev;
+            if (prev.some((t) => t.toLowerCase() === name.toLowerCase()))
+              return prev;
             return [...prev, name];
           });
         },
@@ -205,7 +223,12 @@ const TemplateParameterModal: React.FC<TemplateParameterModalProps> = ({
       onCancel={onCancel}
       width={700}
       footer={[
-        <Button key="cancel" variant="secondary" onClick={onCancel} disabled={isLoading}>
+        <Button
+          key="cancel"
+          variant="secondary"
+          onClick={onCancel}
+          disabled={isLoading}
+        >
           Cancel
         </Button>,
         <Button
@@ -292,9 +315,14 @@ const TemplateParameterModal: React.FC<TemplateParameterModalProps> = ({
                     loading={isLoadingModels}
                     showSearch
                     className="w-full"
-                    options={availableModels.map((m) => ({ label: m, value: m }))}
+                    options={availableModels.map((m) => ({
+                      label: m,
+                      value: m,
+                    }))}
                     filterOption={(input, option) =>
-                      (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                      (option?.label ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
                     }
                   />
                 </div>
@@ -305,7 +333,9 @@ const TemplateParameterModal: React.FC<TemplateParameterModalProps> = ({
                   disabled={!selectedModel || !brandNameFilled || isGenerating}
                   className="w-full"
                 >
-                  {isGenerating ? "✨ Generating names..." : "✨ Generate Competitor Names"}
+                  {isGenerating
+                    ? "✨ Generating names..."
+                    : "✨ Generate Competitor Names"}
                 </Button>
               </>
             )}
@@ -341,43 +371,51 @@ const TemplateParameterModal: React.FC<TemplateParameterModalProps> = ({
               )}
               {Object.keys(variationsMap).length > 0 && !statusMessage && (
                 <p className="text-xs text-green-600 mt-1">
-                  ✓ {Object.values(variationsMap).flat().length} alternate spellings & variations auto-generated for guardrail matching
+                  ✓ {Object.values(variationsMap).flat().length} alternate
+                  spellings & variations auto-generated for guardrail matching
                 </p>
               )}
             </div>
 
             {/* Refinement input — shown after initial generation in AI mode */}
-            {competitorMode === "ai" && hasGenerated && competitorTags.length > 0 && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Refine List
-                </label>
-                <div className="flex gap-2">
-                  <TextInput
-                    placeholder="e.g. add 10 more from Asia, increase to 50 total..."
-                    value={refinementInput}
-                    onChange={(e) => setRefinementInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && refinementInput.trim() && !isRefining) {
-                        handleRefine();
-                      }
-                    }}
-                    disabled={isRefining}
-                  />
-                  <Button
-                    onClick={handleRefine}
-                    loading={isRefining}
-                    disabled={!refinementInput.trim() || isRefining}
-                    size="xs"
-                  >
-                    {isRefining ? "..." : "Send"}
-                  </Button>
+            {competitorMode === "ai" &&
+              hasGenerated &&
+              competitorTags.length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Refine List
+                  </label>
+                  <div className="flex gap-2">
+                    <TextInput
+                      placeholder="e.g. add 10 more from Asia, increase to 50 total..."
+                      value={refinementInput}
+                      onChange={(e) => setRefinementInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (
+                          e.key === "Enter" &&
+                          refinementInput.trim() &&
+                          !isRefining
+                        ) {
+                          handleRefine();
+                        }
+                      }}
+                      disabled={isRefining}
+                    />
+                    <Button
+                      onClick={handleRefine}
+                      loading={isRefining}
+                      disabled={!refinementInput.trim() || isRefining}
+                      size="xs"
+                    >
+                      {isRefining ? "..." : "Send"}
+                    </Button>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Give instructions to add, remove, or change competitors.
+                    Press Enter to send.
+                  </p>
                 </div>
-                <p className="text-xs text-gray-400 mt-1">
-                  Give instructions to add, remove, or change competitors. Press Enter to send.
-                </p>
-              </div>
-            )}
+              )}
           </>
         )}
 

@@ -1,8 +1,22 @@
-import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from "vitest";
-import { render, screen, fireEvent, act, waitFor } from "@testing-library/react";
-import VersionHistorySidePanel from "./VersionHistorySidePanel";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import {
+  type Mock,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import { getPromptVersions } from "../../networking";
 import type { PromptSpec } from "../../networking";
+import VersionHistorySidePanel from "./VersionHistorySidePanel";
 
 // Mock the networking function
 vi.mock("../../networking", () => ({
@@ -16,7 +30,16 @@ vi.mock("antd", async () => {
   const actual = await vi.importActual("antd");
   return {
     ...actual,
-    Drawer: ({ children, title, onClose, open, width, placement, mask, maskClosable }: any) => (
+    Drawer: ({
+      children,
+      title,
+      onClose,
+      open,
+      width,
+      placement,
+      mask,
+      maskClosable,
+    }: any) => (
       <div
         data-testid="drawer"
         data-open={open}
@@ -32,7 +55,9 @@ vi.mock("antd", async () => {
       </div>
     ),
     List: ({ children, dataSource, renderItem }: any) => (
-      <div data-testid="list">{dataSource?.map((item: any, index: number) => renderItem(item, index))}</div>
+      <div data-testid="list">
+        {dataSource?.map((item: any, index: number) => renderItem(item, index))}
+      </div>
     ),
     Skeleton: ({ active }: any) => (
       <div data-testid="skeleton" data-active={active}>
@@ -137,7 +162,10 @@ describe("VersionHistorySidePanel", () => {
     it("should show loading skeleton initially", async () => {
       // Mock a delayed response to show loading state
       mockGetPromptVersions.mockImplementationOnce(
-        () => new Promise((resolve) => setTimeout(() => resolve({ prompts: mockPromptVersions }), 100)),
+        () =>
+          new Promise((resolve) =>
+            setTimeout(() => resolve({ prompts: mockPromptVersions }), 100),
+          ),
       );
 
       render(<VersionHistorySidePanel {...defaultProps} />);
@@ -155,7 +183,9 @@ describe("VersionHistorySidePanel", () => {
       render(<VersionHistorySidePanel {...defaultProps} />);
 
       await waitFor(() => {
-        expect(screen.getByText("No version history available.")).toBeInTheDocument();
+        expect(
+          screen.getByText("No version history available."),
+        ).toBeInTheDocument();
       });
     });
 
@@ -189,7 +219,12 @@ describe("VersionHistorySidePanel", () => {
     });
 
     it("should highlight the latest version when no activeVersionId is provided", async () => {
-      render(<VersionHistorySidePanel {...defaultProps} activeVersionId={undefined} />);
+      render(
+        <VersionHistorySidePanel
+          {...defaultProps}
+          activeVersionId={undefined}
+        />,
+      );
 
       await waitFor(() => {
         const latestTags = screen.getAllByText("Latest");
@@ -199,7 +234,12 @@ describe("VersionHistorySidePanel", () => {
 
     it("should call onSelectVersion when a version is clicked", async () => {
       const mockOnSelectVersion = vi.fn();
-      render(<VersionHistorySidePanel {...defaultProps} onSelectVersion={mockOnSelectVersion} />);
+      render(
+        <VersionHistorySidePanel
+          {...defaultProps}
+          onSelectVersion={mockOnSelectVersion}
+        />,
+      );
 
       await waitFor(() => {
         expect(screen.getByText("v1")).toBeInTheDocument();
@@ -289,7 +329,9 @@ describe("VersionHistorySidePanel", () => {
       await waitFor(() => {
         // Check that dates are displayed (format: YYYY-MM-DD HH:MM:SS)
         const dateElements = screen.getAllByTestId("text");
-        const dateText = dateElements.find((el) => el.textContent?.match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/));
+        const dateText = dateElements.find((el) =>
+          el.textContent?.match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/),
+        );
         expect(dateText).toBeTruthy();
       });
     });
@@ -340,15 +382,23 @@ describe("VersionHistorySidePanel", () => {
       render(<VersionHistorySidePanel {...defaultProps} />);
 
       await waitFor(() => {
-        expect(getPromptVersions).toHaveBeenCalledWith("test-token", "test-prompt");
+        expect(getPromptVersions).toHaveBeenCalledWith(
+          "test-token",
+          "test-prompt",
+        );
       });
     });
 
     it("should strip .v suffix from promptId when fetching versions", async () => {
-      render(<VersionHistorySidePanel {...defaultProps} promptId="test-prompt.v3" />);
+      render(
+        <VersionHistorySidePanel {...defaultProps} promptId="test-prompt.v3" />,
+      );
 
       await waitFor(() => {
-        expect(getPromptVersions).toHaveBeenCalledWith("test-token", "test-prompt");
+        expect(getPromptVersions).toHaveBeenCalledWith(
+          "test-token",
+          "test-prompt",
+        );
       });
     });
 
@@ -371,34 +421,51 @@ describe("VersionHistorySidePanel", () => {
     });
 
     it("should refetch versions when props change", async () => {
-      const { rerender } = render(<VersionHistorySidePanel {...defaultProps} />);
+      const { rerender } = render(
+        <VersionHistorySidePanel {...defaultProps} />,
+      );
 
       await waitFor(() => {
         expect(getPromptVersions).toHaveBeenCalledTimes(1);
       });
 
-      rerender(<VersionHistorySidePanel {...defaultProps} promptId="different-prompt.v1" />);
+      rerender(
+        <VersionHistorySidePanel
+          {...defaultProps}
+          promptId="different-prompt.v1"
+        />,
+      );
 
       await waitFor(() => {
         expect(getPromptVersions).toHaveBeenCalledTimes(2);
-        expect(getPromptVersions).toHaveBeenCalledWith("test-token", "different-prompt");
+        expect(getPromptVersions).toHaveBeenCalledWith(
+          "test-token",
+          "different-prompt",
+        );
       });
     });
   });
 
   describe("Error Handling", () => {
     it("should handle network errors gracefully", async () => {
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
       mockGetPromptVersions.mockRejectedValueOnce(new Error("Network error"));
 
       render(<VersionHistorySidePanel {...defaultProps} />);
 
       await waitFor(() => {
-        expect(consoleSpy).toHaveBeenCalledWith("Error fetching prompt versions:", expect.any(Error));
+        expect(consoleSpy).toHaveBeenCalledWith(
+          "Error fetching prompt versions:",
+          expect.any(Error),
+        );
       });
 
       // Should show empty state when there's an error
-      expect(screen.getByText("No version history available.")).toBeInTheDocument();
+      expect(
+        screen.getByText("No version history available."),
+      ).toBeInTheDocument();
 
       consoleSpy.mockRestore();
     });
@@ -407,7 +474,9 @@ describe("VersionHistorySidePanel", () => {
   describe("User Interactions", () => {
     it("should call onClose when close button is clicked", () => {
       const mockOnClose = vi.fn();
-      render(<VersionHistorySidePanel {...defaultProps} onClose={mockOnClose} />);
+      render(
+        <VersionHistorySidePanel {...defaultProps} onClose={mockOnClose} />,
+      );
 
       const drawer = screen.getByTestId("drawer");
       act(() => {
@@ -430,7 +499,12 @@ describe("VersionHistorySidePanel", () => {
 
   describe("Edge Cases", () => {
     it("should handle activeVersionId with .v suffix correctly", async () => {
-      render(<VersionHistorySidePanel {...defaultProps} activeVersionId="test-prompt.v1" />);
+      render(
+        <VersionHistorySidePanel
+          {...defaultProps}
+          activeVersionId="test-prompt.v1"
+        />,
+      );
 
       await waitFor(() => {
         expect(screen.getByText("Active")).toBeInTheDocument();
@@ -452,7 +526,12 @@ describe("VersionHistorySidePanel", () => {
         prompts: versionsWithUnderscore,
       });
 
-      render(<VersionHistorySidePanel {...defaultProps} activeVersionId="test-prompt_v2" />);
+      render(
+        <VersionHistorySidePanel
+          {...defaultProps}
+          activeVersionId="test-prompt_v2"
+        />,
+      );
 
       await waitFor(() => {
         expect(screen.getByText("Active")).toBeInTheDocument();

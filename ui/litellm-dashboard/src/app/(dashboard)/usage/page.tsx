@@ -1,8 +1,8 @@
 "use client";
 
-import UsagePageView from "@/components/UsagePage/components/UsagePageView";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import useTeams from "@/app/(dashboard)/hooks/useTeams";
+import UsagePageView from "@/components/UsagePage/components/UsagePageView";
 
 const UsagePage = () => {
   const { accessToken, userRole, userId, premiumUser } = useAuthorized();
