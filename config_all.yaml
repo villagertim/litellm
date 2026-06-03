@@ -40,9 +40,8 @@ model_list:
 
   - model_name: whisper
     litellm_params:
-      model: openrouter/openai/whisper-1
-      api_key: "os.environ/TIM_OPENROUTER_KEY"
-      api_base: "https://openrouter.ai/api/v1"
+      model: groq/whisper-large-v3-turbo
+      api_key: "os.environ/GROQ_API_KEY"
 
   # ── Local model ────────────────────────────────────────────────────────────
   - model_name: local-model
@@ -98,9 +97,8 @@ model_list:
 
   - model_name: chrisann-whisper
     litellm_params:
-      model: openrouter/openai/whisper-1
-      api_key: "os.environ/CHRISANN_OPENROUTER_KEY"
-      api_base: "https://openrouter.ai/api/v1"
+      model: groq/whisper-large-v3-turbo
+      api_key: "os.environ/GROQ_API_KEY"
 
   # ── Local model ────────────────────────────────────────────────────────────
   - model_name: chrisann-local-model
