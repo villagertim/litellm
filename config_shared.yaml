@@ -5,27 +5,27 @@ model_list:
   - model_name: cheap
     litellm_params:
       model: openrouter/qwen/qwen3-235b-a22b-2507
-      api_key: "os.environ/CHRISANN_OPENROUTER_KEY"
+      api_key: "os.environ/TIM_OPENROUTER_KEY"
 
   - model_name: cheap
     litellm_params:
       model: openrouter/meta-llama/llama-4-scout
-      api_key: "os.environ/CHRISANN_OPENROUTER_KEY"
+      api_key: "os.environ/TIM_OPENROUTER_KEY"
 
   - model_name: cheap
     litellm_params:
       model: openrouter/deepseek/deepseek-v4-flash
-      api_key: "os.environ/CHRISANN_OPENROUTER_KEY"
+      api_key: "os.environ/TIM_OPENROUTER_KEY"
 
   - model_name: complex
     litellm_params:
       model: openrouter/deepseek/deepseek-v4-pro
-      api_key: "os.environ/CHRISANN_OPENROUTER_KEY"
+      api_key: "os.environ/TIM_OPENROUTER_KEY"
 
   - model_name: reasoning
     litellm_params:
       model: openrouter/deepseek/deepseek-v4-pro
-      api_key: "os.environ/CHRISANN_OPENROUTER_KEY"
+      api_key: "os.environ/TIM_OPENROUTER_KEY"
 
   # ── Audio tiers via OpenRouter ─────────────────────────────────────────────
   # Uses custom_llm_provider: openai so LiteLLM's OpenAI SDK client sends the
@@ -34,14 +34,14 @@ model_list:
   - model_name: tts
     litellm_params:
       model: openai/gpt-4o-mini-tts-2025-12-15
-      api_key: "os.environ/CHRISANN_OPENROUTER_KEY"
+      api_key: "os.environ/TIM_OPENROUTER_KEY"
       api_base: "https://openrouter.ai/api/v1"
       custom_llm_provider: "openai"
 
   - model_name: whisper
     litellm_params:
       model: openrouter/openai/whisper-1
-      api_key: "os.environ/CHRISANN_OPENROUTER_KEY"
+      api_key: "os.environ/TIM_OPENROUTER_KEY"
       api_base: "https://openrouter.ai/api/v1"
 
   # ── Local models via vLLM (192.168.4.124:8001) ──────────────────────────
@@ -56,15 +56,6 @@ model_list:
       base_model: "Qwen/Qwen2.5-Coder-14B-Instruct-AWQ"
       max_tokens: 4096
       context_window: 23376
-
-  # - model_name: hermes-local
-  #   litellm_params:
-  #     model: openai/hermes3-llama31-8b-awq-local
-  #     api_base: "http://192.168.4.124:8001/v1"
-  #     api_key: "os.environ/LOCAL_MODEL_API_KEY"
-  #     include_reasoning: false
-  #     max_tokens: 4096
-  #     context_window: 32768
 
 litellm_settings:
   drop_params: True

@@ -1,0 +1,38 @@
+graph TD
+    subgraph "Incoming Request"
+        Client["POST /v1/chat/completions"]
+    end
+
+    subgraph "proxy/proxy_server.py"
+        Endpoint["chat_completion()"]
+    end
+
+    subgraph "proxy/auth/"
+        Auth["user_api_key_auth()"]
+    end
+
+    subgraph "proxy/"
+        PreCall["litellm_pre_call_utils.py"]
+        RouteRequest["route_llm_request.py"]
+    end
+
+    subgraph "litellm/"
+        Router["router.py"]
+        Main["main.py"]
+    end
+
+    subgraph "Infrastructure"
+        DualCache["DualCache<br/>(in-memory + Redis)"]
+        Postgres["PostgreSQL<br/>(keys, teams, spend logs)"]
+    end
+
+    Client --> Endpoint
+    Endpoint --> Auth
+    Auth --> DualCache
+    DualCache -.->|cache miss| Postgres
+    Auth --> PreCall
+    PreCall --> RouteRequest
+    RouteRequest --> Router
+    Router --> DualCache
+    Router --> Main
+    Main --> Client

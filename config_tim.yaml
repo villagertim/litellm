@@ -1,5 +1,17 @@
 model_list:
   # ── Text / Chat tiers via OpenRouter ──────────────────────────────────────
+  # All models confirmed to support tool calling (required for agentic use).
+  # Pricing: fractions of a cent per conversation.
+  - model_name: cheap
+    litellm_params:
+      model: openrouter/qwen/qwen3-235b-a22b-2507
+      api_key: "os.environ/TIM_OPENROUTER_KEY"
+
+  - model_name: cheap
+    litellm_params:
+      model: openrouter/meta-llama/llama-4-scout
+      api_key: "os.environ/TIM_OPENROUTER_KEY"
+
   - model_name: cheap
     litellm_params:
       model: openrouter/deepseek/deepseek-v4-flash
@@ -57,7 +69,13 @@ model_list:
 litellm_settings:
   drop_params: True
   telemetry: False
-  callbacks: ["litellm.proxy.hooks.tool_name_fixer_hook.tool_name_fixer"]
+
+router_settings:
+  routing_strategy: simple-shuffle
+  num_retries: 3
+  allowed_fails: 1
+  cooldown_time: 30
+  enable_pre_call_checks: true
 
 general_settings:
   master_key: "os.environ/LITELLM_MASTER_KEY"
