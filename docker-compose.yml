@@ -7,8 +7,7 @@ services:
       POSTGRES_DB: litellm_shared
       POSTGRES_USER: llmproxy
       POSTGRES_PASSWORD: dbpassword9090
-    ports:
-      - "5432:5432"
+    # No host port — access via: docker exec litellm_db psql -U llmproxy -d litellm_shared
     volumes:
       - ./init-scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
       - postgres_data:/var/lib/postgresql/data
