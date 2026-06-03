@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_DB: litellm_shared
       POSTGRES_USER: llmproxy
-      POSTGRES_PASSWORD: dbpassword9090
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     # No host port — access via: docker exec litellm_db psql -U llmproxy -d litellm_shared
     volumes:
       - ./init-scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
