@@ -1,0 +1,131 @@
+model_list:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # TIM + SHARED models — billed to TIM_OPENROUTER_KEY
+  # Used by: Tim's hermes agent (sk-Test2486!) + IDE/systems (sk-Test1234!)
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  # ── Text / Chat tiers ─────────────────────────────────────────────────────
+  - model_name: cheap
+    litellm_params:
+      model: openrouter/qwen/qwen3-235b-a22b-2507
+      api_key: "os.environ/TIM_OPENROUTER_KEY"
+
+  - model_name: cheap
+    litellm_params:
+      model: openrouter/meta-llama/llama-4-scout
+      api_key: "os.environ/TIM_OPENROUTER_KEY"
+
+  - model_name: cheap
+    litellm_params:
+      model: openrouter/deepseek/deepseek-v4-flash
+      api_key: "os.environ/TIM_OPENROUTER_KEY"
+
+  - model_name: complex
+    litellm_params:
+      model: openrouter/deepseek/deepseek-v4-pro
+      api_key: "os.environ/TIM_OPENROUTER_KEY"
+
+  - model_name: reasoning
+    litellm_params:
+      model: openrouter/deepseek/deepseek-v4-pro
+      api_key: "os.environ/TIM_OPENROUTER_KEY"
+
+  # ── Audio ──────────────────────────────────────────────────────────────────
+  - model_name: tts
+    litellm_params:
+      model: openai/gpt-4o-mini-tts
+      api_key: "os.environ/TIM_OPENROUTER_KEY"
+      api_base: "https://openrouter.ai/api/v1"
+      custom_llm_provider: "openai"
+
+  - model_name: whisper
+    litellm_params:
+      model: openrouter/openai/whisper-1
+      api_key: "os.environ/TIM_OPENROUTER_KEY"
+      api_base: "https://openrouter.ai/api/v1"
+
+  # ── Local model ────────────────────────────────────────────────────────────
+  - model_name: local-model
+    litellm_params:
+      model: openai/qwen25-coder-14b-awq-local
+      api_base: "http://192.168.4.124:8001/v1"
+      api_key: "os.environ/LOCAL_MODEL_API_KEY"
+      enable_auto_tool_choice: true
+      tool_call_parser: "hermes"
+    model_info:
+      base_model: "Qwen/Qwen2.5-Coder-14B-Instruct-AWQ"
+      max_tokens: 4096
+      context_window: 23376
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # CHRISANN models — billed to CHRISANN_OPENROUTER_KEY
+  # Used by: Chrisann's hermes agent (sk-Test5606!, virtual key)
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  # ── Text / Chat tiers ─────────────────────────────────────────────────────
+  - model_name: chrisann-cheap
+    litellm_params:
+      model: openrouter/qwen/qwen3-235b-a22b-2507
+      api_key: "os.environ/CHRISANN_OPENROUTER_KEY"
+
+  - model_name: chrisann-cheap
+    litellm_params:
+      model: openrouter/meta-llama/llama-4-scout
+      api_key: "os.environ/CHRISANN_OPENROUTER_KEY"
+
+  - model_name: chrisann-cheap
+    litellm_params:
+      model: openrouter/deepseek/deepseek-v4-flash
+      api_key: "os.environ/CHRISANN_OPENROUTER_KEY"
+
+  - model_name: chrisann-complex
+    litellm_params:
+      model: openrouter/deepseek/deepseek-v4-pro
+      api_key: "os.environ/CHRISANN_OPENROUTER_KEY"
+
+  - model_name: chrisann-reasoning
+    litellm_params:
+      model: openrouter/deepseek/deepseek-v4-pro
+      api_key: "os.environ/CHRISANN_OPENROUTER_KEY"
+
+  # ── Audio ──────────────────────────────────────────────────────────────────
+  - model_name: chrisann-tts
+    litellm_params:
+      model: openai/gpt-4o-mini-tts
+      api_key: "os.environ/CHRISANN_OPENROUTER_KEY"
+      api_base: "https://openrouter.ai/api/v1"
+      custom_llm_provider: "openai"
+
+  - model_name: chrisann-whisper
+    litellm_params:
+      model: openrouter/openai/whisper-1
+      api_key: "os.environ/CHRISANN_OPENROUTER_KEY"
+      api_base: "https://openrouter.ai/api/v1"
+
+  # ── Local model ────────────────────────────────────────────────────────────
+  - model_name: chrisann-local-model
+    litellm_params:
+      model: openai/qwen25-coder-14b-awq-local
+      api_base: "http://192.168.4.124:8001/v1"
+      api_key: "os.environ/LOCAL_MODEL_API_KEY"
+      enable_auto_tool_choice: true
+      tool_call_parser: "hermes"
+    model_info:
+      base_model: "Qwen/Qwen2.5-Coder-14B-Instruct-AWQ"
+      max_tokens: 4096
+      context_window: 23376
+
+litellm_settings:
+  drop_params: True
+  telemetry: False
+
+router_settings:
+  routing_strategy: simple-shuffle
+  num_retries: 3
+  allowed_fails: 1
+  cooldown_time: 30
+  enable_pre_call_checks: true
+
+general_settings:
+  master_key: "os.environ/LITELLM_MASTER_KEY"
+  database_url: "os.environ/DATABASE_URL"
