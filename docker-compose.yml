@@ -21,54 +21,6 @@ services:
         limits:
           memory: 256M
 
-  litellm-shared:
-    build: .
-    container_name: litellm_shared
-    ports:
-      - "4100:4000"
-    volumes:
-      - ./config_shared.yaml:/app/config.yaml
-    env_file:
-      - .env
-    environment:
-      DATABASE_URL: ${DATABASE_URL}
-    command: ["--config", "/app/config.yaml", "--port", "4000", "--detailed_debug"]
-    depends_on:
-      db:
-        condition: service_healthy
-
-  litellm-tim:
-    build: .
-    container_name: litellm_tim
-    ports:
-      - "4001:4000"
-    volumes:
-      - ./config_tim.yaml:/app/config.yaml
-    env_file:
-      - .tim.env
-    environment:
-      DATABASE_URL: ${DATABASE_URL}
-    command: ["--config", "/app/config.yaml", "--port", "4000", "--detailed_debug"]
-    depends_on:
-      db:
-        condition: service_healthy
-
-  litellm-chrisann:
-    build: .
-    container_name: litellm_chrisann
-    ports:
-      - "4002:4000"
-    volumes:
-      - ./config_chrisann.yaml:/app/config.yaml
-    env_file:
-      - .chrisann.env
-    environment:
-      DATABASE_URL: ${DATABASE_URL}
-    command: ["--config", "/app/config.yaml", "--port", "4000", "--detailed_debug"]
-    depends_on:
-      db:
-        condition: service_healthy
-
   # ── Merged instance — replaces litellm-shared + litellm-tim + litellm-chrisann ──
   # Network aliases allow existing clients to connect by their old hostnames.
   # Port mappings preserve all existing host-side connections (IDE MCP, etc.).
