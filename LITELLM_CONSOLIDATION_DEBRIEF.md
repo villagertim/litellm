@@ -80,9 +80,9 @@ Three keys now exist in the merged instance:
 
 | Key | Alias | Allowed Models |
 |---|---|---|
-| `sk-Test1234!` | master key | all models (IDE/systems use) |
-| `sk-Test2486!` | tim-agent | cheap, complex, reasoning, tts, whisper, local-model |
-| `sk-Test5606!` | chrisann-agent | chrisann-cheap, chrisann-complex, chrisann-reasoning, chrisann-tts, chrisann-whisper, chrisann-local-model |
+| `$LITELLM_MASTER_KEY (see /home/cia-one/dev/litellm/.env)` | master key | all models (IDE/systems use) |
+| `$TIM_LITELLM_KEY (see /home/cia-one/dev/litellm/.tim.env)` | tim-agent | cheap, complex, reasoning, tts, whisper, local-model |
+| `$CHRISANN_LITELLM_KEY (see /home/cia-one/dev/litellm/.chrisann.env)` | chrisann-agent | chrisann-cheap, chrisann-complex, chrisann-reasoning, chrisann-tts, chrisann-whisper, chrisann-local-model |
 
 No agent `.env` files changed — the existing keys became virtual keys.
 
@@ -91,15 +91,15 @@ No agent `.env` files changed — the existing keys became virtual keys.
 ```bash
 # Tim's key
 curl -X POST http://localhost:4001/key/generate \
-  -H "Authorization: Bearer sk-Test1234!" \
+  -H "Authorization: Bearer $LITELLM_MASTER_KEY (see /home/cia-one/dev/litellm/.env)" \
   -H "Content-Type: application/json" \
-  -d '{"key":"sk-Test2486!","key_alias":"tim-agent","models":["cheap","complex","reasoning","tts","whisper","local-model"]}'
+  -d '{"key":"$TIM_LITELLM_KEY (see /home/cia-one/dev/litellm/.tim.env)","key_alias":"tim-agent","models":["cheap","complex","reasoning","tts","whisper","local-model"]}'
 
 # Chrisann's key
 curl -X POST http://localhost:4001/key/generate \
-  -H "Authorization: Bearer sk-Test1234!" \
+  -H "Authorization: Bearer $LITELLM_MASTER_KEY (see /home/cia-one/dev/litellm/.env)" \
   -H "Content-Type: application/json" \
-  -d '{"key":"sk-Test5606!","key_alias":"chrisann-agent","models":["chrisann-cheap","chrisann-complex","chrisann-reasoning","chrisann-tts","chrisann-whisper","chrisann-local-model"]}'
+  -d '{"key":"$CHRISANN_LITELLM_KEY (see /home/cia-one/dev/litellm/.chrisann.env)","key_alias":"chrisann-agent","models":["chrisann-cheap","chrisann-complex","chrisann-reasoning","chrisann-tts","chrisann-whisper","chrisann-local-model"]}'
 ```
 
 ---
