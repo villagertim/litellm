@@ -16,6 +16,10 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 256M
 
   litellm-shared:
     build: .
@@ -92,6 +96,10 @@ services:
           - litellm-tim
           - litellm-chrisann
           - litellm-shared
+    deploy:
+      resources:
+        limits:
+          memory: 1500M
 
 volumes:
   postgres_data:
