@@ -77,9 +77,9 @@ services:
     build: .
     container_name: litellm
     ports:
-      - "4001:4000"   # was litellm-tim
-      - "4002:4000"   # was litellm-chrisann
-      - "4100:4000"   # was litellm-shared
+      - "127.0.0.1:4001:4000"   # was litellm-tim (localhost only)
+      - "127.0.0.1:4002:4000"   # was litellm-chrisann (localhost only)
+      - "127.0.0.1:4100:4000"   # was litellm-shared (localhost only)
     volumes:
       - ./config_all.yaml:/app/config.yaml
     env_file:
