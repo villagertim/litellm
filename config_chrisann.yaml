@@ -24,7 +24,7 @@ model_list:
 
   - model_name: reasoning
     litellm_params:
-      model: openrouter/deepseek/deepseek-v4-pro
+      model: openrouter/qwen/qwen3-235b-a22b-thinking-2507
       api_key: "os.environ/CHRISANN_OPENROUTER_KEY"
 
   # ── Audio tiers via OpenRouter ─────────────────────────────────────────────
@@ -47,15 +47,15 @@ model_list:
   # ── Local models via vLLM (192.168.4.124:8001) ──────────────────────────
   - model_name: local-model
     litellm_params:
-      model: openai/qwen25-coder-14b-awq-local
-      api_base: "http://192.168.4.124:8001/v1"
+      model: openai/unsloth--Qwen3.6-35B-A3B-UD-MLX-4bit
+      api_base: "http://192.168.4.46:8888/v1"
       api_key: "os.environ/LOCAL_MODEL_API_KEY"
       enable_auto_tool_choice: true
       tool_call_parser: "hermes"
     model_info:
-      base_model: "Qwen/Qwen2.5-Coder-14B-Instruct-AWQ"
+      base_model: "unsloth/Qwen3.6-35B-A3B-UD-MLX-4bit"
       max_tokens: 4096
-      context_window: 23376
+      context_window: 262144
 
   # - model_name: hermes-local
   #   litellm_params:

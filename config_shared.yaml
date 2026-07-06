@@ -24,7 +24,7 @@ model_list:
 
   - model_name: reasoning
     litellm_params:
-      model: openrouter/deepseek/deepseek-v4-pro
+      model: openrouter/qwen/qwen3-235b-a22b-thinking-2507
       api_key: "os.environ/TIM_OPENROUTER_KEY"
 
   # ── Audio tiers via OpenRouter ─────────────────────────────────────────────

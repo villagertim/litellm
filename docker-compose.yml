@@ -28,6 +28,7 @@ services:
   litellm:
     build: .
     container_name: litellm
+    restart: unless-stopped
     ports:
       - "127.0.0.1:4001:4000"   # was litellm-tim (localhost only)
       - "127.0.0.1:4002:4000"   # was litellm-chrisann (localhost only)
@@ -48,6 +49,12 @@ services:
           - litellm-tim
           - litellm-chrisann
           - litellm-shared
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:4000/health/readiness')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
     deploy:
       resources:
         limits:
