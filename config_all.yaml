@@ -46,15 +46,15 @@ model_list:
   # ── Local model ────────────────────────────────────────────────────────────
   - model_name: local-model
     litellm_params:
-      model: openai/unsloth--Qwen3.6-35B-A3B-UD-MLX-4bit
-      api_base: "http://192.168.4.46:8888/v1"
+      model: openai/mtplx-qwen38-27b-optimized-quality
+      api_base: "http://192.168.4.51:8001/v1"
       api_key: "os.environ/LOCAL_MODEL_API_KEY"
       enable_auto_tool_choice: true
       tool_call_parser: "hermes"
     model_info:
-      base_model: "unsloth/Qwen3.6-35B-A3B-UD-MLX-4bit"
+      base_model: "mtplx-qwen38-27b-optimized-quality"
       max_tokens: 4096
-      context_window: 65536
+      context_window: 262144
 
   # ═══════════════════════════════════════════════════════════════════════════
   # CHRISANN models — billed to CHRISANN_OPENROUTER_KEY
@@ -103,15 +103,15 @@ model_list:
   # ── Local model ────────────────────────────────────────────────────────────
   - model_name: chrisann-local-model
     litellm_params:
-      model: openai/unsloth--Qwen3.6-35B-A3B-UD-MLX-4bit
-      api_base: "http://192.168.4.46:8888/v1"
+      model: openai/mtplx-qwen38-27b-optimized-quality
+      api_base: "http://192.168.4.51:8001/v1"
       api_key: "os.environ/LOCAL_MODEL_API_KEY"
       enable_auto_tool_choice: true
       tool_call_parser: "hermes"
     model_info:
-      base_model: "unsloth/Qwen3.6-35B-A3B-UD-MLX-4bit"
-      max_tokens: 16000
-      context_window: 65536
+      base_model: "mtplx-qwen38-27b-optimized-quality"
+      max_tokens: 4096
+      context_window: 262144
 
 litellm_settings:
   drop_params: True

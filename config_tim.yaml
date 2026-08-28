@@ -44,16 +44,16 @@ model_list:
       api_key: "os.environ/TIM_OPENROUTER_KEY"
       api_base: "https://openrouter.ai/api/v1"
 
-  # ── Local models via vLLM (192.168.4.124:8001) ──────────────────────────
+  # ── Local models via vLLM (192.168.4.51:8001) ──────────────────────────
   - model_name: local-model
     litellm_params:
-      model: openai/unsloth--Qwen3.6-35B-A3B-UD-MLX-4bit
-      api_base: "http://192.168.4.46:8888/v1"
+      model: openai/mtplx-qwen38-27b-optimized-quality
+      api_base: "http://192.168.4.51:8001/v1"
       api_key: "os.environ/LOCAL_MODEL_API_KEY"
       enable_auto_tool_choice: true
       tool_call_parser: "hermes"
     model_info:
-      base_model: "unsloth/Qwen3.6-35B-A3B-UD-MLX-4bit"
+      base_model: "mtplx-qwen38-27b-optimized-quality"
       max_tokens: 4096
       context_window: 262144
 
